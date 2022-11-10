@@ -1,0 +1,5 @@
+Agregar algunos ejemplos de tabs con íconos.
+
+
+arreglar el form3, sale todo muy abajo. Y ver que todos los otros casos hayan quedado bien, capaz que hay que buscar los forms en un backup.
+

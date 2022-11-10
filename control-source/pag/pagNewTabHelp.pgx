@@ -1,0 +1,1469 @@
+ÿuY
+
+TabToolTipText property:
+	Type: String
+
+	Additional parameter(s):
+	    In	Required	Index	As	Variant
+	Returns or sets the text that will be shown as tooltip text when the mouse pointer is over the tab identified by the Index parameter.
+	If the tab has not a TabToolTipText set, it will show the control ToolTipText, if there is any text set on that property.
+
+
+TabTransition property:
+	Type: NTTabTransitionConstants
+	Returns or sets a value that determines whether the transition between tabs will be with an effect that smooths the transition (and its speed).
+
+
+TabVisible property:
+	Type: Boolean
+
+	Additional parameter(s):
+	    In	Required	Index	As	Integer
+	Returns or sets a value that determines whether the tab identified by the Index will be visible.
+
+
+TabWidthStyle property:
+	Type: NTTabWidthStyleConstants
+	Returns or sets a value that determines the justification or width of the tabs.
+
+	ssTWSFixed: All tabs has the same width. If TabMaxWidth is 0 (zero), the tab width will be the available space / TabsPerRow. If TabMaxWidth is greater than 0 (zero), that setting will determine the tabs width.
+
+	ssTWSNonJustified: The width of the tabs will be determined by the size of the caption + the size of the tab picture (if any). TabMinWidth and TabMaxWidth settings can set a boundary for the width that a tab can have. Unlike the original SSTab control, if the sum of the widths of all the tabs in a row exceeds the available space, the widths of the tabs in that row are shrunken to fit in the available space.
+
+	ssTWSJustified: If there is more than one row, each tab is wide enough to accommodate its contents and, if needed, the width of each tab is increased so that each row of tabs spans the width of the control. If all the tabs fit in one row, the tabs are not justified (it works the same as ssTWSNonJustified).
+
+	ssTWSAuto: The behavior is defined by the Style property setting.
+
+
+Tag property:
+	Type: String
+	Returns or sets an expression that stores any extra data needed for your program.
+
+
+TDIMode property:
+	Type: Boolean
+	Returns or sets a value that determines if the control will be used for TDI (tabbed dialog interface). The control behavior changes in some regards in this mode because some things are automated.
+
+
+Theme property:
+	Type: String
+	Returns or sets a value in string format that determines a set of property settings with a name, called "theme".
+
+
+Themes property:
+	Type: NewTabThemes (Read only)
+	Returns a collection of NewTabTheme objects. They basically provide the names of the themes that are available (and you can set in the Theme property).
+
+
+ToolTipText property:
+	Type: String
+	Returns or sets a the tool tip text to be displayed when the mouse is over the control.
+
+
+Top property:
+	Type: Single
+	Returns or sets the distance between the internal top edge of the control and the top edge of its container.
+
+
+UseMaskColor property:
+	Type: Boolean
+	Returns or sets a value that determines whether the color assigned in the MaskColor property is used as a mask (that is used to set transparent regions in the tab pictures).
+
+
+Visible property:
+	Type: Boolean
+	Returns or sets a value indicating whether the control is visible or hidden.
+
+
+VisibleTabs property:
+	Type: Long (Read only)
+	Returns the numbers of tabs that are visible. [TabVisible(Index) = True].
+
+
+WhatsThisHelpID property:
+	Type: Long
+	Returns or sets an associated context number for the control.
+
+
+Width property:
+	Type: Single
+	Returns or sets the width of the control.
+
+
+WordWrap property:
+	Type: Boolean
+	Returns or sets a value that determines how the control displays the text on each tab.
+	In a control that its size and/or the tab texts change dinamically, to make sure that text will not be truncated if it is too long, set the WordWrap property to True, the TabMaxWidth property to 0, and the TabHeight property to a height that allows to view the longest piece of text.
+
+
+Methods: 
+
+ControlMove method:
+	Parameter(s):
+	    In	Required	nControlName	As	String
+	    In	Required	Left	As	Single
+	    In	Required	Top	As	Single
+	    In	Required	Width	As	Single
+	    In	Required	Height	As	Single
+	    In/Out	Optional	OnThisTab	As	Integer
+
+	Replaces the ControlName.Move method. The difference is that it takes into account the Left offset of controls on inactive tabs.
+
+
+ControlSetTab method:
+	Parameter(s):
+	    In	Required	nControlName	As	String
+	    In	Required	nTab	As	Integer
+
+	Sets or change the tab where a contained control is.
+
+
+Drag method:
+	Parameter(s):
+	    In/Out	Optional	Action	As	Variant
+
+	Begins, ends, or cancels a drag operation.
+
+
+GetTabLeft function:
+	Return Type:	Single
+	Parameter(s):
+	    In	Required	Index	As	Variant
+
+	Returns the left position of a tab.
+
+
+GetTabSize function:
+	Return Type:	Single
+	Parameter(s):
+	    In	Required	Index	As	Variant
+
+	Returns the size of a tab (height or width depending on the TabOrientation setting). The other dimention is  provided by the TabHeight property.
+
+
+GetTabTop function:
+	Return Type:	Single
+	Parameter(s):
+	    In	Required	Index	As	Variant
+
+	Returns the top position of a tab.
+
+
+IsVisualStyleApplied function:
+	Return Type:	Boolean
+	No parameters.
+
+	Returns a boolean value indicating whether the visual styles are actually applied to the control or not.
+
+
+MoveTab method:
+	Parameter(s):
+	    In/Out	Required	CurrentIndex	As	Integer
+	    In/Out	Required	NewIndex	As	Integer
+
+	Moves a tab to another position.
+
+
+Refresh method:
+	No parameters.
+
+	Redraws the control.
+
+
+SetFocus method:
+	No parameters.
+
+	Moves the focus to this control.
+
+
+TDIGetTabIndexByTabNumber function:
+	Return Type:	Integer
+	Parameter(s):
+	    In	Required	nTabNumber	As	Long
+
+	When in TDI mode, it returns the Index of a tab given its number.
+
+
+TDIGetTabNumberByTabIndex function:
+	Return Type:	Long
+	Parameter(s):
+	    In	Required	Index	As	Integer
+
+	When in TDI mode, it returns the number of a tab given its Index.
+
+
+ZOrder method:
+	Parameter(s):
+	    In/Out	Optional	Position	As	Variant
+
+	Places the control at the front or back of the z-order within its graphical level.
+
+
+Events: 
+
+BeforeClick event:
+	Parameter(s):
+	    Info	CurrentTabSel	As	Integer
+	    Returns value	NewTabSel	As	Integer
+	    Returns value	Cancel	As	Boolean
+	Occurs when the current tab (TabSel) is about to change.
+	Use the BeforeClick event to validate the information on the old tab before actually generating a Click event that selects the new tab.
+	Setting the Cancel parameter to True allows you to prevent the change to the new tab selection.
+
+
+BeforeTabReorder event:
+	Parameter(s):
+	    Info	CurrentIndex	As	Integer
+	    Returns value	NewIndex	As	Integer
+	    Returns value	Cancel	As	Boolean
+	Occurs when before a tab is changed from one position to another. The action can be canceled using the Cancel parameter or the new position can be altered from the NewIndex parameter.
+
+
+ChangeControlBackColor event:
+	Parameter(s):
+	    Info	ControlName	As	String
+	    Info	ControlTypeName	As	String
+	    Returns value	Cancel	As	Boolean
+	When ChangeControlsBackColor property is set to True, allows you to determine individually which controls will have their background changed (or not).
+	This event is generated for each control on the current tab, before the tab is painted.
+	The ControlName parameter specifies the name of the control, to avoid changing a particular control BackColor, set the parameter Cancel to True.
+	The ControlTypeName parameter specifies the type of the control (for example "CommandButton" or "Label"), this allow you to handle a whole class of controls without writing each name.
+
+
+ChangeControlForeColor event:
+	Parameter(s):
+	    Info	ControlName	As	String
+	    Info	ControlTypeName	As	String
+	    Returns value	Cancel	As	Boolean
+	When ChangeControlsForeColor property is set to True, allows you to determine individually which controls will have their text color changed (or not).
+	This event is generated for each control on the current tab, before the tab is painted.
+	The ControlName parameter specifies the name of the control, to avoid changing a particular control ForeColor, set the parameter Cancel to True.
+	The ControlTypeName parameter specifies the type of the control (for example "CommandButton" or "Label"), this allow you to handle a whole class of controls without writing each name.
+
+
+Click event:
+	Parameter(s):
+	    Info	PreviousTab	As	Integer
+	Occurs when the current tab (TabSel) changes.
+
+
+DblClick event:
+	No parameters.
+	Occurs when the user presses and releases a mouse button and then presses and releases it again over the control.
+
+
+IconClick event:
+	Parameter(s):
+	    Info	nTab	As	Integer
+	    Returns value	ForwardClickToTab	As	Boolean
+	Occurs when the icon of the tab identified by the Index parameter is clicked (it doesn't work with pictures).
+
+
+IconMouseEnter event:
+	Parameter(s):
+	    Info	nTab	As	Integer
+	Occurs when the mouse enters hovering over the icon (not the picture) of the tab identified by the Index parameter.
+
+
+IconMouseLeave event:
+	Parameter(s):
+	    Info	nTab	As	Integer
+	Occurs when the mouse goes out after hovering over a tab icon (not picture).
+
+
+KeyDown event:
+	Parameter(s):
+	    Info	KeyCode	As	Integer
+	    Info	Shift	As	Integer
+	Occurs when the user presses a key while an control has the focus.
+
+
+KeyPress event:
+	Parameter(s):
+	    Info	KeyAscii	As	Integer
+	Occurs when the user presses and releases an ANSI key.
+
+
+KeyUp event:
+	Parameter(s):
+	    Info	KeyCode	As	Integer
+	    Info	Shift	As	Integer
+	Occurs when the user releases a key after pressing it while an control has the focus.
+
+
+MouseDown event:
+	Parameter(s):
+	    Info	Button	As	Integer
+	    Info	Shift	As	Integer
+	    Info	X	As	Single
+	    Info	Y	As	Single
+	Occurs when the user presses a mouse button being the mouse over the control.
+
+
+MouseMove event:
+	Parameter(s):
+	    Info	Button	As	Integer
+	    Info	Shift	As	Integer
+	    Info	X	As	Single
+	    Info	Y	As	Single
+	Occurs when the user moves the mouse over the control.
+
+
+MouseUp event:
+	Parameter(s):
+	    Info	Button	As	Integer
+	    Info	Shift	As	Integer
+	    Info	X	As	Single
+	    Info	Y	As	Single
+	Occurs when the user releases the mouse button after pressing it being the mouse over the control.
+
+
+OLECompleteDrag event:
+	Parameter(s):
+	    Returns value	Effect	As	Long
+	Occurs when a source component is dropped onto a target component, informing the source component that a drag action was either performed or canceled.
+
+
+OLEDragDrop event:
+	Parameter(s):
+	    Returns value	Data	As	DataObject
+	    Returns value	Effect	As	Long
+	    Returns value	Button	As	Integer
+	    Returns value	Shift	As	Integer
+	    Returns value	X	As	Single
+	    Returns value	Y	As	Single
+	Occurs when a source component is dropped onto a target component when the source component determines that a drop can occur.
+	This event occurs only if OLEDropMode is set to 1 (Manual).
+
+
+OLEDragOver event:
+	Parameter(s):
+	    Returns value	Data	As	DataObject
+	    Returns value	Effect	As	Long
+	    Returns value	Button	As	Integer
+	    Returns value	Shift	As	Integer
+	    Returns value	X	As	Single
+	    Returns value	Y	As	Single
+	    Returns value	State	As	Integer
+	Occurs when one component is dragged over another.
+
+
+OLEGiveFeedback event:
+	Parameter(s):
+	    Returns value	Effect	As	Long
+	    Returns value	DefaultCursors	As	Boolean
+	Occurs after every OLEDragOver event. OLEGiveFeedback allows the source component to provide visual feedback to the user, such as changing the mouse cursor to indicate what will happen if the user drops the object, or provide visual feedback on the selection (in the source component) to indicate what will happen.
+
+
+OLESetData event:
+	Parameter(s):
+	    Returns value	Data	As	DataObject
+	    Returns value	DataFormat	As	Integer
+	Occurs on a source component when a target component performs the GetData method on the source's DataObject object, but before the data for the specified format has been loaded.
+
+
+OLEStartDrag event:
+	Parameter(s):
+	    Returns value	Data	As	DataObject
+	    Returns value	AllowedEffects	As	Long
+	Occurs when a component's OLEDrag method is performed, or when a component initiates an OLE drag/drop operation when the OLEDragMode property is set to Automatic.
+
+
+Resize event:
+	No parameters.
+	Occurs when the control is first drawn or when its size changes.
+
+
+RowsChange event:
+	No parameters.
+	Occurs when the control is first drawn and when the Rows property changes its value.
+	The Rows property value can change its value when new tabs are dinamically added or upon changing some property settings, like TabWidthStyle or TabsPerRow (for some configurations). Also changing the Width of the control, tab captions or the Font setting may produce different row number and raise this event.
+	You can use this event along with TabBodyTop to properly set the Top (or use TabBodyLeft, depending on TabOrientation) of the contained controls.
+	But if AutoRelocateControls is set to True, that's is already done automaticaly.
+
+
+TabBodyResize event:
+	No parameters.
+	Occurs when the tab body changes its size.
+	The size and position of the tab body are referenced by the properties TabBodyLeft, TabBodyTop, TabBodyWidth and TabBodyHeight.
+	This event is a proper place to position the contained controls.
+
+
+TabMouseEnter event:
+	Parameter(s):
+	    Info	nTab	As	Integer
+	Occurs when the mouse pointer enters a tab, which is specified with the nTab parameter.
+
+
+TabMouseLeave event:
+	Parameter(s):
+	    Info	nTab	As	Integer
+	Occurs after the mouse pointer leaves a tab, which is specified in the nTab parameter.
+
+
+TabReordered event:
+	Parameter(s):
+	    Info	CurrentIndex	As	Integer
+	    Info	OldIndex	As	Integer
+	Occurs when a tab changed its position. 
+	It can be due to an user action (see CanReorderTabs property) or by code (see MoveTab method).
+
+
+TabRightClick event:
+	Parameter(s):
+	    Info	nTab	As	Integer
+	    Info	Shift	As	Integer
+	    Info	X	As	Single
+	    Info	Y	As	Single
+	Occurs when the user clicks with the mouse right button on a tab.
+	The tab is specified in the nTab parameter.
+	The Shift parameter indicates the state of  the SHIFT, CTRL, and ALT keys.
+	The X and Y parameters return a number that specifies the current position of the mouse pointer.
+
+
+TabSelChange event:
+	No parameters.
+	Occurs after the selected (or "current") tab has already changed.
+	For the events that occur before, see BeforeClick and Click.
+	This event is also generated when the control is first shown.
+
+
+TDIBeforeClosingTab event:
+	Parameter(s):
+	    Info	TabNumber	As	Long
+	    Info	IsLastTab	As	Variant
+	    Returns value	OpenNewOnLastClosed	As	Boolean
+	    Returns value	UnloadControls	As	Boolean
+	    Returns value	Cancel	As	Boolean
+	It occurs before closing a tab in TDI mode.
+
+
+TDIBeforeNewTab event:
+	Parameter(s):
+	    Info	TabType	As	NTTDINewTabTypeConstants
+	    Info	TabNumber	As	Long
+	    Returns value	TabCaption	As	String
+	    Returns value	LoadControls	As	Boolean
+	    Returns value	Cancel	As	Boolean
+	It occurs before opening a new tab in TDI mode.
+
+
+TDINewTabAdded event:
+	Parameter(s):
+	    Info	TabNumber	As	Long
+	It occurs after a new tab was opened in TDI mode.
+
+
+TDITabClosed event:
+	Parameter(s):
+	    Info	TabNumber	As	Long
+	    Info	IsLastTab	As	Variant
+	It occurs after a tab was closed in TDI mode.
+
+
+*IBSSubclass object*
+Methods: 
+
+MsgResponse function:
+	Return Type:	Long
+	Parameter(s):
+	    In	Required	hWnd	As	Long
+	    In	Required	iMsg	As	Long
+
+UnsubclassIt method:
+	No parameters.
+
+WindowProc function:
+	Return Type:	Long
+	Parameter(s):
+	    In	Required	hWnd	As	Long
+	    In	Required	iMsg	As	Long
+	    In/Out	Required	wParam	As	Long
+	    In/Out	Required	lParam	As	Long
+	    In/Out	Required	bConsume	As	Boolean
+
+	Raised whenever a message you have subclassed is sent.
+
+
+*NewTabTheme object*
+- "Themes" are a set of property settings stored together.
+They are mostly about appeaarance, but it can affect behavior also with some properties.
+
+Properties: 
+
+Custom property:
+	Type: Boolean (Read only)
+	Returns whether this theme is custom or built-in by default.
+
+
+Name property:
+	Type: String (Read only)
+	Returns the name of the theme.
+
+
+*NewTabThemes object*
+- Returns the colection of "Themes".
+Use the names of the themes to set one into the Theme property.
+
+Properties: 
+
+Count property:
+	Type: Long (Read only)
+	Returns the number of themes in the collection.
+
+
+Item property:
+	Type: NewTabTheme (Default property, read only)
+
+	Additional parameter(s):
+	    In	Required	IndexOrKey	As	Variant
+	Returns a NewTabTheme object.
+
+
+Methods: 
+
+Exists function:
+	Return Type:	Variant
+	Parameter(s):
+	    In	Required	nThemeName	As	String
+
+	Returns True if the theme exists in the collection.
+
+
+Remove method:
+	Parameter(s):
+	    In	Required	nThemeName	As	String
+
+	Removes a theme from the collection.
+
+
+Rename method:
+	Parameter(s):
+	    In	Required	nOldThemeName	As	String
+	    In	Required	nNewThemeName	As	String
+
+	Renames a theme.
+
+
+Events: 
+
+ThemeRemoved event:
+	No parameters.
+	Occurs after a theme has been removed.
+
+
+ThemeRenamed event:
+	No parameters.
+	Occurs after a theme has ben renamed.
+
+
+Constants
+
+NTAutoRelocateControlsConstants ENUMERATION
+
+	ntRelocateNever = 0
+	ntRelocateAlways = 1
+	ntRelocateOnTabOrientationChange = 2
+
+NTAutoYesNoConstants ENUMERATION
+
+	ntNo = 0
+	ntYes = 1
+	ntYNAuto = 2
+
+NTBackStyleConstants ENUMERATION
+
+	ntTransparent = 0
+	ntOpaque = 1
+	ntOpaqueTabSel = 2
+
+NTFlatBarPosition ENUMERATION
+
+	ntBarPositionTop = 0
+	ntBarPositionBottom = 1
+
+NTFlatBorderModeConstants ENUMERATION
+
+	ntBorderTabs = 0
+	ntBorderTabSel = 1
+
+NTHighlightModeConstants ENUMERATION
+
+	ntHLAuto = 0
+	ntHLNone = 1
+	ntHLGradient = 2
+	ntHLDoubleGradient = 3
+	ntHLPlain = 4
+	ntHLGradientLight = 10
+	ntHLDoubleGradientLight = 11
+	ntHLCaptionBold = 16
+	ntHLGradientAndCaptionBold = 18
+	ntHLDoubleGradientAndCaptionBold = 19
+	ntHLPlainAndCaptionBold = 20
+	ntHLGradientLightAndCaptionBold = 26
+	ntHLDoubleGradientLightAndCaptionBold = 27
+	ntHLCaptionUnderlined = 32
+	ntHLGradientAndCaptionUnderlined = 34
+	ntHLGradientLightAndCaptionUnderlined = 42
+	ntHLCaptionBoldAndUnderlined = 48
+	ntHLFlatBar = 64
+	ntHLFlatBarAndGradient = 66
+	ntHLFlatBarAndPlain = 68
+	ntHLFlatBarAndGradientLight = 74
+	ntHLFlatBarAndPlainLight = 76
+	ntHLFlatBarAndCaptionBold = 80
+	ntHLFlatBarGradientAndCaptionBold = 82
+	ntHLFlatBarPlainAndCaptionBold = 84
+	ntHLFlatBarGradientLightAndCaptionBold = 90
+	ntHLFlatBarAndCaptionUnderlined = 96
+	ntHLFlatBarAndPlainAndCaptionUnderlined = 100
+	ntHLFlatBarAndCaptionBoldUnderlined = 112
+	ntHLFlatBarPlainAndCaptionBoldUnderlined = 116
+	ntHLFlatBarWithGrip = 196
+	ntHLFlatBarWithGripAndPlain = 196
+	ntHLFlatBarWithGripAndGradient = 198
+	ntHLFlatBarWithGripAndGradientLight = 202
+	ntHLFlatBarWithGripAndCaptionBold = 208
+	ntHLFlatBarWithGripGradientAndCaptionBold = 210
+	ntHLFlatBarWithGripPlainAndCaptionBold = 212
+	ntHLFlatBarWithGripGradientLightAndCaptionBold = 218
+	ntHLFlatBarWithGripAndCaptionUnderlined = 224
+	ntHLFlatBarWithGripPlainAndCaptionUnderlined = 228
+	ntHLFlatBarWithGripAndCaptionBoldUnderlined = 240
+	ntHLFlatBarWithGripPlainAndCaptionBoldUnderlined = 244
+	ntHLExtraHeight = 256
+	ntHLGradientAndExtraHeight = 258
+	ntHLDoubleGradientAndExtraHeight = 259
+	ntHLPlainAndExtraHeight = 260
+	ntHLGradientLightAndExtraHeight = 266
+	ntHLDoubleGradientLightAndExtraHeight = 267
+	ntHLCaptionBoldAndExtraHeight = 272
+	ntHLGradientCaptionBoldAndExtraHeight = 274
+	ntHLDoubleGradientCaptionBoldAndExtraHeight = 275
+	ntHLPlainCaptionBoldAndExtraHeight = 276
+	ntHLGradientLightCaptionBoldAndExtraHeight = 282
+	ntHLDoubleGradientLightCaptionBoldAndExtraHeight = 283
+	ntHLFlatBarAndExtraHeight = 320
+	ntHLFlatBarGradientAndExtraHeight = 322
+	ntHLFlatBarPlainAndExtraHeight = 324
+	ntHLFlatBarGradientLightAndExtraHeight = 330
+	ntHLFlatBarCaptionBoldAndExtraHeight = 336
+	ntHLFlatBarGradientCaptionBoldAndExtraHeight = 338
+	ntHLFlatBarPlainCaptionBoldAndExtraHeight = 340
+	ntHLFlatBarGradientLightCaptionBoldAndExtraHeight = 346
+	ntHLFlatBarGradientLightCaptionBoldUnderlinedAndExtraHeight = 378
+	ntHLFlatBarWithGripAndExtraHeight = 448
+	ntHLFlatBarWithGripGradientAndExtraHeight = 450
+	ntHLFlatBarWithGripPlainAndExtraHeight = 452
+	ntHLFlatBarWithGripGradientLightAndExtraHeight = 458
+	ntHLFlatBarWithGripCaptionBoldAndExtraHeight = 464
+	ntHLFlatBarWithGripGradientCaptionBoldAndExtraHeight = 466
+	ntHLFlatBarWithGripPlainCaptionBoldAndExtraHeight = 468
+	ntHLFlatBarWithGripGradientLightCaptionBoldAndExtraHeight = 474
+	ntHLFlatBarWithGripGradientLightCaptionBoldUnderlinedAndExtraHeight = 506
+
+NTIconAlignmentConstants ENUMERATION
+
+	ntIconAlignBeforeCaption = 0
+	ntIconAlignCenteredBeforeCaption = 1
+	ntIconAlignAfterCaption = 2
+	ntIconAlignCenteredAfterCaption = 3
+	ntIconAlignStart = 4
+	ntIconAlignEnd = 5
+	ntIconAlignCenteredOnTab = 6
+	ntIconAlignAtTop = 7
+	ntIconAlignAtBottom = 8
+
+NTMousePointerConstants ENUMERATION
+
+	ssDefault = 0
+	ssArrow = 1
+	ssCross = 2
+	ssIBeam = 3
+	ssIcon = 4
+	ssSize = 5
+	ssSizeNESW = 6
+	ssSizeNS = 7
+	ssSizeNWSE = 8
+	ssSizeEW = 9
+	ssUpArrow = 10
+	ssHourglass = 11
+	ntNoDrop = 12
+	ssArrowHourglass = 13
+	ssArrowQuestion = 14
+	ssSizeAll = 15
+	ssCustom = 99
+
+NTOLEDropConstants ENUMERATION
+
+	ssOLEDropNone = 0
+	ssOLEDropManual = 1
+
+NTSeparationLineConstants ENUMERATION
+
+	ntLineNone = 0
+	ntLineLighter = 1
+	ntLineLight = 2
+	ntLineStrong = 3
+	ntLineStronger = 4
+
+NTStyleConstants ENUMERATION
+
+	ssStyleTabbedDialog = 0
+	ssStylePropertyPage = 1
+	ntStyleTabStrip = 2
+	ntStyleFlat = 3
+	ntStyleWindows = 4
+
+NTTabAppearanceConstants ENUMERATION
+
+	ntTAAuto = 0
+	ntTATabbedDialog = 1
+	ntTATabbedDialogRounded = 2
+	ntTAPropertyPage = 3
+	ntTAPropertyPageRounded = 4
+	ntTAFlat = 5
+
+NTTabOrientationConstants ENUMERATION
+
+	ssTabOrientationTop = 0
+	ssTabOrientationBottom = 1
+	ssTabOrientationLeft = 2
+	ssTabOrientationRight = 3
+
+NTTabTransitionConstants ENUMERATION
+
+	ntTransitionImmediate = 0
+	ntTransitionFaster = 1
+	ntTransitionFast = 2
+	ntTransitionMedium = 3
+	ntTransitionSlow = 4
+	ntTransitionSlower = 5
+
+NTTabWidthStyleConstants ENUMERATION
+
+	ntTWTabStripEmulation = 0
+	ntTWTabCaptionWidth = 1
+	ntTWFixed = 2
+	ntTWAuto = 3
+	ntTWStretchToFill = 4
+	ntTWTabCaptionWidthFillRows = 5
+
+NTTDINewTabTypeConstants ENUMERATION
+
+	ntDefaultTab = 0
+	ntNewTabByClickingIcon = 1
+	ntLastTabClosed = 2
+ÿ‚lNEWTABCTL REFERENCE
+
+Introduction:
+This control is a further development of SSTabEx project.
+It still keeps backward compatibility with SSTab (fully), and mostly with SSTabEx, although some properties have been changed.
+
+This new control introduces the "Flat" style and many related properties.
+It also introduces "Themes", that are a set of property settings stored together.
+Another thing new is the TDI mode. TDI stands for "Tabbed Document Interface", as an alternative to SDI and MDI.
+
+Other new features are:
+CanReorderTabs (property), for allowing tab dragging.
+Icons in tabs using icon fonts.
+
+*NewTab control*
+- Tabbed control for VB6.
+Backward compatible with SSTab (fully), and with SSTabEx (mostly).
+
+Properties: 
+
+AutoRelocateControls property:
+	Type: NTAutoRelocateControlsConstants
+	Returns or sets a value that determines if the contained controls will be automatically relocated when the tab body changes in size or position.
+
+	Values:
+	ntRelocateOnTabOrientationChange: The contained controls will be automatically relocated when TabOrientation changes.
+	ntRelocateAlways: The contained controls will be automatically relocated when TabOrientation changes and also when the tab space changes in height.
+	ntRelocateNever:  The contained controls will never be automatically relocated. Choose this value if you are relocating the controls by code in the Form_Resize or TabBodyResize events.
+
+
+AutoTabHeight property:
+	Type: Boolean
+	Returns or sets the a value that determines whether the tab height (and value of property TabHeight) is set automatically according to the font (and tab icons (or pictures, in case there are set icons or pictures). Note: it asumes one-liner captions.
+	If the property TabHeight is manually set, AutoTabHeight is then set to False.
+	For newly added controls, its default it True, but if you are updating from a previous version or an SSTab control, it will be set to False.
+
+
+BackColor property:
+	Type: Long
+	Returns or sets the background color. The background color is not the color of the tabs background (that color is handled by the BackColorTabs property, nor the color of the selected tab, hadled by BackColorTabSel property) but the color ouside the tabs.
+
+
+BackColorTabs property:
+	Type: Long
+	Returns or sets the background color of the tabs, except the active tab that is set by BackColorTabSel.
+	When the control is themed, this property value has no effect.
+
+
+BackColorTabSel property:
+	Type: Long
+	Returns or sets the color of the active tab, including the tab body (the space were the contained controls are located).
+	If ChangeControlsBackColor is True, changing this color will change also the BackColor of the contained controls.
+	When the control is themed, this property value has no effect.
+
+
+BackStyle property:
+	Type: NTBackStyleConstants
+	Returns or sets the a value that determines whether the background will be opaque or transparent.
+
+
+CanReorderTabs property:
+	Type: Boolean
+	Returns or sets a value that determines whether the user will be able to change tab positions by dragging them with the mouse.
+
+
+Caption property:
+	Type: String
+	Returns or sets the caption of the currently selected tab by the TabSel property.
+	Captions can have accelerators by adding "&" before the letter that will act as the accelerator.
+
+
+ChangeControlsBackColor property:
+	Type: Boolean
+	Returns or sets a value that determines if the background color of the contained controls will be changed according to the background color of the tabs (the BackColorTabSel property value).
+
+	If VisualStyles is set to True, the background of the controls are painted with the background of the themed tab body.
+	If ChangeControlsBackColor is False, the BackColor of the contained controls is left unchanged.
+	If ChangeControlsBackColor is True, and the control is not themed, changing the BackColorTabSel propery value will also change the BackColor of the contained controls, but only when their BackColor's has the same color as the previous BackColorTabSel setting.
+	If ChangeControlsBackColor is True, and the control is themed, only the controls that has the BackColor property value set to the same color of BackColorTabSel are changed.
+
+
+ChangeControlsForeColor property:
+	Type: Boolean
+	Returns or sets a value that determines if the text color of the contained controls will be changed according to the ForeColorTabSel property value.
+
+	If ChangeControlsForeColor is False, the ForeColor of the contained controls is left unchanged.
+	If ChangeControlsForeColor is True, and the control is not themed, changing the ForeColorTabSel propery value will also change the ForeColor of the contained controls, but only when their ForeColor's has the same color as the previous ForeColorTabSel setting.
+	If ChangeControlsBackColor is True, and the control is themed, only the controls that has the ForeColor property value set to the same color of ForeColorTabSel are changed.
+
+
+Container property:
+	Type: Object
+	Returns the control's container.
+
+
+ControlLeft property:
+	Type: Single
+
+	Additional parameter(s):
+	    In	Required	ControlName	As	String
+	Returns or sets the Left of a contained control.
+	The argument ControlName must be the name of a contained control.
+
+
+Controls property:
+	Type: ContainedControls (Read only)
+	Returns a collection of the controls that were added to the SSTabEx.
+
+	It only holds controls that are directly contained in the control, it does not include controls that are inside others controls. Also see the TabControls property.
+	It is not available at design time, and is read-only at run time.
+
+
+DragIcon property:
+	Type: Picture
+	Returns or sets the icon to be used as mouse pointer in a drag-and-drop operation.
+
+
+DragMode property:
+	Type: Integer
+	Returns or sets a value that determines whether manual or automatic drag mode is used for a drag-and-drop operation.
+
+
+Enabled property:
+	Type: Boolean
+	Returns or sets a value that determines whether a form or control can respond to user-generated events.
+
+
+EndOfTabs property:
+	Type: Single (Read only)
+	Returns a value that indicates where the last tab ends. Depending on the TabOrientation setting, it can be the rightmost tab (orientation top and bottom), the topmost tab (orientation left) or the bottommost tab (orientation right).
+
+
+FlatBarColorHighlight property:
+	Type: Long
+	Returns or sets the color of the bar when a tab is highlighted in flat style.
+
+
+FlatBarColorInactive property:
+	Type: Long
+	Returns or sets the color of the bar when a tab is inactive in flat style.
+
+
+FlatBarColorTabSel property:
+	Type: Long
+	Returns or sets the color of the bar when a tab is selected in flat style.
+
+
+FlatBarGripHeight property:
+	Type: Long
+	Returns or sets a value in pixels that determines the height of a grip for the highlight bar in the flat style. A negative value defines a notch instead.
+
+
+FlatBarHeight property:
+	Type: Long
+	Returns or sets the height in pixels of the bar in flat style.
+
+
+FlatBarPosition property:
+	Type: NTFlatBarPosition
+	Returns or sets the position of the bar in flat style. It can be at the top (ntBarPositionTop)  or at the bottom (ntBarPositionBottom).
+
+
+FlatBodySeparationLineColor property:
+	Type: Long
+	Returns or sets the color of the separation line between the tabs and the body in flat style.
+
+
+FlatBodySeparationLineHeight property:
+	Type: Long
+	Returns or sets the height in pixels of the separation line between the tabs and the body in flat style.
+
+
+FlatBorderColor property:
+	Type: Long
+	Returns or sets the color of the border in flat style.
+
+
+FlatBorderMode property:
+	Type: NTFlatBorderModeConstants
+	Returns or sets the way the border will be drawn in flat style.
+	It may be around the selected tab (ntBorderTabSel) or all the control (ntBorderTabs).
+
+
+FlatRoundnessBottom property:
+	Type: Long
+	Returns or sets the size in pixels of the roundness of the bottom corners.
+
+
+FlatRoundnessTabs property:
+	Type: Long
+	Returns or sets the size in pixels of the roundness of the tabs corners.
+
+
+FlatRoundnessTop property:
+	Type: Long
+	Returns or sets the size in pixels of the roundness of the top corners.
+
+
+FlatTabsSeparationLineColor property:
+	Type: Long
+	Returns or sets the color of the separation line between tabs in flat style.
+
+
+Font property:
+	Type: Font
+	Returns or sets a Font object correspondig to the font that will be used to display the tab captions.
+
+
+ForeColor property:
+	Type: Long
+	Returns or sets the color of the tab captions.
+
+
+ForeColorHighlighted property:
+	Type: Long
+	Returns/sets the color used to draw the captions of the inactive tabs when they are highlighted because the mouse is over them.
+
+
+ForeColorTabSel property:
+	Type: Long
+	Returns or sets the the caption color of the active tab.
+
+
+HandleHighContrastTheme property:
+	Type: Boolean
+	When True (default setting), the control handles the system changes to high contrast theme automatically by changing the colors of the control to system's high contrast colors.
+
+
+Height property:
+	Type: Single
+	Returns or sets the height of the control.
+
+
+HelpContextID property:
+	Type: Long
+	Returns or sets a string expression containing the context ID for a topic in a Help file.
+
+
+HighlightColor property:
+	Type: Long
+	Returns or sets the color used to highlight an inactive tab when the user hovers over it.
+
+
+HighlightColorTabSel property:
+	Type: Long
+	Returns or sets the color used to highlight the selected tab.
+
+
+HighlightEffect property:
+	Type: Boolean
+	Returns or sets a value that determines whether tabs will display a progressive effect when they are highlighted due to hovering over them.
+
+
+HighlightMode property:
+	Type: NTHighlightModeConstants
+	Returns or sets a value that determines if and how the tabs will appear highlighted when the mouse is over them.
+
+	This value consists in a group of flags that determine how to highlight a tab.
+
+	7 = Background type mask.
+	8 = Light background flag.
+	16 = CaptionBold flag.
+	32 = CaptionUnderlined flag.
+	64 = FlatBar flag.
+	128 = Grip for FlatBar flag. It needs FlatBar flag, so 192 = FlatBarWithGrip.
+	256 = ExtraHeight flag.
+
+	When the control is themed, this setting is mostly ignored, the only flags that has effect are CaptionBold and CaptionUnderlined.
+
+
+HighlightModeTabSel property:
+	Type: NTHighlightModeConstants
+	Returns or sets a value that determines if and how the selected tab will be highlighted.
+
+	This value consists in a group of flags that determine how to highlight a tab.
+
+	7 = Background type mask.
+	8 = Light background flag.
+	16 = CaptionBold flag.
+	32 = CaptionUnderlined flag.
+	64 = FlatBar flag.
+	128 = Grip for FlatBar flag. It needs FlatBar flag, so 192 = FlatBarWithGrip.
+	256 = ExtraHeight flag.
+
+	When the control is themed, this setting is mostly ignored, the only flags that has effect are CaptionBold and CaptionUnderlined.
+
+
+HighlightTabExtraHeight property:
+	Type: Single
+	Returns or sets a value that determines the extra height that a tab will have when it is highlighted. This value is in units of the container. It must be between 0 (zero) and twice the TabHeight property value.
+
+
+hWnd property:
+	Type: Long (Read only, not available at design time)
+	Returns the Windows handle of the control.
+
+
+IconAlignment property:
+	Type: NTIconAlignmentConstants
+	Returns or sets the alignment of the icon (or picture) with respect of the tab caption.
+
+
+IconCharHex property:
+	Type: String
+	Returns or sets a string representing the hexadecimal value of the character that will be used as the icon in the currently selected tab. If this property is set, anything in the picture properties is ignored.
+
+
+IconColor property:
+	Type: Long
+	Returns sets the color of the icon (it doesn't work with pictures, but with icons set with IconCharHex).
+
+
+IconColorMouseHover property:
+	Type: Long
+	Returns or sets the color that the icon will show when the mouse hovers it, for the non active tabs.
+
+	IconColorMouseHoverTabSel property
+	IconColorTabHighlighted property
+
+
+IconColorMouseHoverTabSel property:
+	Type: Long
+	Returns or sets the color that the icon will show when the mouse hovers it, for the active tab.
+
+	IconColorMouseHover property
+	IconColorTabHighlighted property
+
+
+IconColorTabHighlighted property:
+	Type: Long
+	Returns or sets the color used to draw the icon when the tab is highlighted (not the icon itself).
+
+
+IconColorTabSel property:
+	Type: Long
+	Returns or sets the color used to draw the icon when the tab is seleted.
+
+
+IconFont property:
+	Type: Font
+	Returns or sets the Font that will be used to draw the icon of the currently selected tab.
+	Each tab can have a different font for its icon.
+
+
+IconLeftOffset property:
+	Type: Long
+	Returns or sets the value in pixels of the offset for the left position when drawing the icon of the currently selected tab. It can be negative.
+
+
+IconTopOffset property:
+	Type: Long
+	Returns or sets the value in pixels of the offset for the top position when drawing the icon of the currently selected tab. It can be negative.
+
+
+Left property:
+	Type: Single
+	Returns or sets the distance between the internal left edge of the control and the left edge of its container.
+
+
+LeftOffsetToHide property:
+	Type: Long (Read only)
+	Returns the shift to the left in twips that the SStabEx is using to hide the controls in the non-active tabs.
+
+	With the original SSTab control that was fixed to 75000 twips, but now in hight DPI screen settings it can change to avoid overflow due to a Windows limitation.
+
+
+MaskColor property:
+	Type: Long
+	Returns or sets the color that will be transparent for the bitmaps that are in the TabPicture, TabPic16, TabPic20 and TabPic24 properties.
+
+
+MinSizeNeeded property:
+	Type: Single (Read only)
+	Returns the minimun Width (or Height, depending on the TabOpientation setting) of the control needed to show all the tabs in one row (without adding new rows).
+
+	When TabWidthStyle is set to other than ntTWTabCaptionWidth or ntTWTabCaptionWidthFillRows, it returns 0 (zero).
+
+
+MouseIcon property:
+	Type: Picture
+	Returns or sets the icon used as the mouse pointer when the MousePointer property is set to 99 (custom).
+
+
+MousePointer property:
+	Type: NTMousePointerConstants
+	Returns or sets the type of mouse pointer displayed when over the control.
+
+
+Name property:
+	Type: String (Read only)
+	Returns the name used in code to identify the control.
+
+
+Object property:
+	Type: Object (Read only)
+	Returns the control instance without the extender.
+
+
+OLEDropMode property:
+	Type: NTOLEDropConstants
+	Returns/sets how a target component handles drop operations.
+
+
+OLEDropOnOtherTabs property:
+	Type: Boolean
+	Returns or sets a value that determines if the user in a OLE drag operation will be able to drop over inactive tabs or just over the selected tab.
+
+
+Parent property:
+	Type: Object (Read only)
+	Returns the object in which the control is located.
+
+
+Pic16 property:
+	Type: Picture
+	Returns or sets a bitmap to display on the current tab, when the application is DPI aware.
+
+	Pic16 is used for 96 DPI, Pic20 for 120 DPI and Pic24 for 144 DPI. Others DPI setting are handled automatically.
+	The application need to have a manifest file to declare it as DPI aware.
+	When these pictures are set, the Picture property is ignored.
+	Use TabPic16, TabPic20 and TabPic24 properties to set or get the pictures of any tab at run time.
+
+
+Pic20 property:
+	Type: Picture
+	Returns or sets a bitmap to display on the current tab, when the application is DPI aware.
+
+	Pic16 is used for 96 DPI, Pic20 for 120 DPI and Pic24 for 144 DPI. Others DPI setting are handled automatically.
+	The application need to have a manifest file to declare it as DPI aware.
+	When these pictures are set, the Picture property is ignored.
+	Use TabPic16, TabPic20 and TabPic24 properties to set or get the pictures of any tab at run time.
+
+
+Pic24 property:
+	Type: Picture
+	Returns or sets a bitmap to display on the current tab, when the application is DPI aware.
+
+	Pic16 is used for 96 DPI, Pic20 for 120 DPI and Pic24 for 144 DPI. Others DPI setting are handled automatically.
+	The application need to have a manifest file to declare it as DPI aware.
+	When these pictures are set, the Picture property is ignored.
+	Use TabPic16, TabPic20 and TabPic24 properties to set or get the pictures of any tab at run time.
+
+
+Picture property:
+	Type: Picture
+	Returns or sets a bitmap or icon to display on the current tab. To get or set the picture of any tab at run time, use the TabPicture property.
+	If IconCharHex property value is set, anything in this Picture property or its companion Pic16, etc. is ignored.
+
+
+Redraw property:
+	Type: Boolean (Not available at design time)
+	Returns or sets a value that determines if the drawing of the control has to be updated with any change. Not available at design time.
+
+
+RightToLeft property:
+	Type: Boolean
+	Returns or sets a value that determines the text display direction and control visual appearance on a bidirectional system.
+
+
+Rows property:
+	Type: Integer (Default property, read only, not available at design time)
+	Returns the number of rows of tabs.
+
+	The Rows property value can change its value when new tabs are dinamically added or, when TabWidthStyle is set to ssTWSFixed or ssTWSNonJustified and TabsPerRow was changed, or TabWidthStyle is set to ssTWSJustified and the Width of the control changed, the tab captions changed or the Font setting has changed.
+	You can use the TabBodyResize event to properly set the position of the contained controls.
+	The RowsChange notifies of the change of this property.
+
+
+ShowDisabledState property:
+	Type: Boolean (Not available at design time)
+	Returns or sets a value that determines if the tabs color will be darkened when the control is disabled (Enabled = False).
+	If has no effect when the control is themed (VisualStyles = True).
+
+
+ShowFocusRect property:
+	Type: Boolean
+	Returns or sets a value that determines if the focus rectangle is visible on a tab when the tab gets the focus.
+
+
+ShowRowsInPerspective property:
+	Type: NTAutoYesNoConstants
+	Returns or sets a value that determines when the control has more that one row of tabs, if they will be drawn changing the horizontal position on each row.
+
+	If the value is ssYNAuto, the behavior will be determined by the Style property setting in this way: for ssStyleTabbedDialog and ssStylePropertyPage the rows will be drawn is perspective, and for ssStyleTabStrip without.
+
+
+SoftEdges property:
+	Type: Boolean
+	Returns or sets a value that determines if the edges will be displayed with less contrast: lighter and more colored.
+	With styles Flat and Windows it has no effect.
+
+
+Style property:
+	Type: NTStyleConstants
+	Returns or sets the style of the tabs.
+
+	For some other properties, it acts as a meta-property. It means that it sets at once certain features that can be set individually through other properties.
+	It performs internal settings for TabAppearance, TabWidthStyle, ShowRowsInPerspective, HighlightMode and HighlightModeTabSel as long as these properties are set to Auto.
+	The changes are internal, they are not reflected on these properties values (they remain set to Auto).
+
+	It also can set if the control will have Windows Styles (the Windows "theme" look) or alrernatively a Flat appearance that unlocks other properties.
+
+
+Tab property:
+	Type: Integer
+	Returns or sets the index of the current (""selected"" or ""active"") tab.
+
+
+TabAppearance property:
+	Type: NTTabAppearanceConstants
+	Returns or sets a value that determines the appearance of the tabs. When the control is themed, the theme defines the appearance.
+
+
+TabBodyHeight property:
+	Type: Single (Read only)
+	Returns the height of the "tab body". The tab body is the space available to place contained controls.
+	They return the value in Twips.
+
+
+TabBodyLeft property:
+	Type: Single (Read only)
+	Returns the left of the "tab body". The tab body is the space available to place contained controls.
+	They return the value in Twips.
+
+
+TabBodyTop property:
+	Type: Single (Read only)
+	Returns top of the "tab body". The tab body is the space available to place contained controls.
+	They return the value in Twips.
+
+
+TabBodyWidth property:
+	Type: Single (Read only)
+	Returns the width of the "tab body". The tab body is the space available to place contained controls.
+	They return the value in Twips.
+
+
+TabCaption property:
+	Type: String
+
+	Additional parameter(s):
+	    In	Required	Index	As	Integer
+	Returns or sets the caption of a tab identified by the Index parameter.
+	Captions can have accelerators by adding "&" before the letter that will act as the accelerator.
+
+
+TabControls property:
+	Type: Collection (Read only)
+
+	Additional parameter(s):
+	    In/Out	Required	nTab	As	Integer
+	    In/Out	Optional	GetChilds	As	Boolean
+	Returns a collection of the controls that are inside a tab. The tab must be identified by the nTab parameter.
+
+	The optional GetChilds parameter determines if only the controls that are directly contained in the SSTabEx will be returned, or also the controls contained into them. Its default value is True.
+
+	It is not available at design time, and is read-only at run time.
+
+
+TabData property:
+	Type: Long
+
+	Additional parameter(s):
+	    In	Required	Index	As	Integer
+	Used to store any data in Long format, similar to ListBox's ItemData. If the tabs are reordered, it will keep this data for this tab.
+
+
+TabEnabled property:
+	Type: Boolean
+
+	Additional parameter(s):
+	    In	Required	Index	As	Integer
+	Returns or sets a value that determines whether the tab identified by the Index argument enabled.
+
+
+TabHeight property:
+	Type: Single
+	Returns or sets the height of tabs.
+
+
+TabIconCharHex property:
+	Type: String
+
+	Additional parameter(s):
+	    In	Required	Index	As	Variant
+	Returns or sets a string representing the hexadecimal value of the character that will be used as the icon in the tab identified by the Index parameter. If this property is set, anything in the picture properties is ignored.
+
+
+TabIconFont property:
+	Type: Font
+
+	Additional parameter(s):
+	    In	Required	Index	As	Variant
+	Returns or sets the Font that will be used to draw the icon of the tab identified by the Index parameter.
+	Each tab can have a different font for its icon.
+
+
+TabIconLeftOffset property:
+	Type: Long
+
+	Additional parameter(s):
+	    In	Required	Index	As	Variant
+	Returns or sets the value in pixels of the offset for the left position when drawing the icon of the tab identified by the Index parameter. It can be negative.
+
+
+TabIconTopOffset property:
+	Type: Long
+
+	Additional parameter(s):
+	    In	Required	Index	As	Variant
+	Returns or sets the value in pixels of the offset for the top position when drawing the icon of the tab identified by the Index parameter. It can be negative.
+
+
+TabMaxWidth property:
+	Type: Single
+	Returns or sets the maximum width of each tab. If set to 0 (zero), it means no maximun.
+
+	When the TabWidthStyle property setting is ssTWSFixed and the TabMaxWidth property is set to 0 (zero), the control automatically sizes the tabs based on TabsPerRow property, to fit evenly across the control.
+	Unlike the original SSTab, this property is no longer ignored when Style property is set to ssStylePropertyPage.
+
+	If TabWidthStyle property setting is ntTWTabCaptionWidth, ntTWTabStripEmulation or ntTWTabCaptionWidthFillRows, It determines the maximun width that a tab can have, regardeless of the lenght of the caption.
+	When a tab caption doesn't fit in the available width, if WordWrap is set to True it will have an additional line, and if it is set to False it will cut the caption text and add an ellipsis.
+	In the case when TabWidthStyle setting is ntTWTabStripEmulation and it is needed more space than TabMaxWidth * Rows to fill all the rows space, then the tabs can have more width than the specified in the TabMaxWidth setting.
+
+
+TabMinWidth property:
+	Type: Single
+	Returns or sets the minimun width of each tab. If set to 0 (zero), it means no minimun.
+
+
+TabMousePointerHand property:
+	Type: Boolean
+	Returns or sets a value that determines if the mouse pointer over tabs will be the hand.
+
+
+TabOrientation property:
+	Type: NTTabOrientationConstants
+	Returns or sets a value that determines which side of the control the tabs will appear.
+
+
+TabPic16 property:
+	Type: Picture
+
+	Additional parameter(s):
+	    In	Required	Index	As	Variant
+	Returns or sets the bitmap to be displayed on the tab specified by the Index parameter, when the application is DPI aware.
+	TabPic16 is used for 96 DPI, TabPic20 for 120 DPI and TabPic24 for 144 DPI. Others DPI setting are handled automatically.
+	The application need to have a manifest file to declare it as DPI aware.
+	When these pictures are set, the TabPicture property is ignored.
+	They can be accessed at design time through a property page.
+
+
+TabPic20 property:
+	Type: Picture
+
+	Additional parameter(s):
+	    In	Required	Index	As	Variant
+	Returns or sets the bitmap to be displayed on the tab specified by the Index parameter, when the application is DPI aware.
+	TabPic16 is used for 96 DPI, TabPic20 for 120 DPI and TabPic24 for 144 DPI. Others DPI setting are handled automatically.
+	The application need to have a manifest file to declare it as DPI aware.
+	When these pictures are set, the TabPicture property is ignored.
+	They can be accessed at design time through a property page.
+
+
+TabPic24 property:
+	Type: Picture
+
+	Additional parameter(s):
+	    In	Required	Index	As	Variant
+	Returns or sets the bitmap to be displayed on the tab specified by the Index parameter, when the application is DPI aware.
+	TabPic16 is used for 96 DPI, TabPic20 for 120 DPI and TabPic24 for 144 DPI. Others DPI setting are handled automatically.
+	The application need to have a manifest file to declare it as DPI aware.
+	When these pictures are set, the TabPicture property is ignored.
+	They can be accessed at design time through a property page.
+
+
+TabPicture property:
+	Type: Picture
+
+	Additional parameter(s):
+	    In	Required	Index	As	Integer
+	Returns or sets the bitmap or icon to display on the tab specified by the Index argument.
+
+
+Tabs property:
+	Type: Integer
+	Returns or sets the total number of tabs.
+
+
+TabSel property:
+	Type: Integer
+	Returns or sets the current ("selected" or "active") tab.
+	It is an alias of Tab property.
+
+
+TabSeparation property:
+	Type: Integer
+	Returns or sets the number of pixels of separation between tabs. The value must be between 0 (zero) and 20.
+	When the control has Windows visual styles (Windows "theme"), values less than two pixels are ignored, since the themed tabs have two pixels of separation by design.
+
+
+TabsPerRow property:
+	Type: Integer
+	Returns or sets the number of tabs for each row.
+	If TabWidthStyle property setting is other than ntTWFixed or ntTWTabCaptionWidth, this setting has no effect. If TabWidthStyle property is set to Auto, it has effect only for styles ssStyleTabbedDialog and ssStylePropertyPage.
+
+
+TabTag property:
+	Type: String
+
+	Additional parameter(s):
+	    In	Required	Index	As	Integer
+	Similar to a Tag property, but for each tab. You can store any string there. If the tabs are reordered, it will keep this data for this tab.

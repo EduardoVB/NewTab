@@ -1,0 +1,3 @@
+VBGROUP 5.0
+Project=control-source\NewTabCtl.vbp
+StartupProject=test in source code\Test.vbp

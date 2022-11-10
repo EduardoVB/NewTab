@@ -1,0 +1,1501 @@
+VERSION 5.00
+Begin VB.PropertyPage pagNewTabGeneral 
+   AutoRedraw      =   -1  'True
+   Caption         =   "General"
+   ClientHeight    =   8712
+   ClientLeft      =   0
+   ClientTop       =   0
+   ClientWidth     =   6804
+   BeginProperty Font 
+      Name            =   "Tahoma"
+      Size            =   8.4
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
+   LockControls    =   -1  'True
+   PaletteMode     =   0  'Halftone
+   ScaleHeight     =   8712
+   ScaleWidth      =   6804
+   Begin VB.Timer tmrLoad 
+      Interval        =   1
+      Left            =   5280
+      Top             =   120
+   End
+   Begin VB.CheckBox chkChangeControlsForeColor 
+      Caption         =   "ChangeControlsBackColor"
+      Height          =   264
+      Left            =   4540
+      TabIndex        =   61
+      Top             =   7964
+      Width           =   2500
+   End
+   Begin VB.TextBox txtFlatBodySeparationLineHeight 
+      Height          =   300
+      Left            =   6162
+      TabIndex        =   49
+      Top             =   6526
+      Width           =   588
+   End
+   Begin VB.Timer tmrRedraw 
+      Interval        =   100
+      Left            =   6120
+      Top             =   120
+   End
+   Begin VB.TextBox txtFlatBarGripHeight 
+      Height          =   300
+      Left            =   6162
+      TabIndex        =   45
+      Top             =   6168
+      Width           =   588
+   End
+   Begin VB.ComboBox cboFlatBarPosition 
+      Height          =   300
+      ItemData        =   "pagNewTabGeneral.pgx":0000
+      Left            =   2330
+      List            =   "pagNewTabGeneral.pgx":0002
+      Style           =   2  'Dropdown List
+      TabIndex        =   23
+      Top             =   4030
+      Width           =   4420
+   End
+   Begin VB.TextBox txtFlatRoundnessBottom 
+      Height          =   300
+      Left            =   6162
+      TabIndex        =   33
+      Top             =   5088
+      Width           =   588
+   End
+   Begin VB.CheckBox chkCanReorderTabs 
+      Caption         =   "CanReorderTabs"
+      Height          =   264
+      Left            =   2330
+      TabIndex        =   63
+      Top             =   8326
+      Width           =   1700
+   End
+   Begin VB.TextBox txtFlatBarHeight 
+      Height          =   300
+      Left            =   6162
+      TabIndex        =   41
+      Top             =   5808
+      Width           =   588
+   End
+   Begin VB.ComboBox cboFlatBorderMode 
+      Height          =   300
+      ItemData        =   "pagNewTabGeneral.pgx":0004
+      Left            =   2330
+      List            =   "pagNewTabGeneral.pgx":0006
+      Style           =   2  'Dropdown List
+      TabIndex        =   21
+      Top             =   3670
+      Width           =   4420
+   End
+   Begin VB.ComboBox cboHighlightModeTabSel 
+      Height          =   300
+      ItemData        =   "pagNewTabGeneral.pgx":0008
+      Left            =   2320
+      List            =   "pagNewTabGeneral.pgx":000A
+      Style           =   2  'Dropdown List
+      TabIndex        =   13
+      Top             =   2230
+      Width           =   4420
+   End
+   Begin VB.CheckBox chkTabMousePointerHand 
+      Caption         =   "TabMousePointerHand"
+      Height          =   264
+      Left            =   120
+      TabIndex        =   53
+      Top             =   7246
+      Width           =   1940
+   End
+   Begin VB.TextBox txtFlatRoundnessTabs 
+      Height          =   300
+      Left            =   6162
+      TabIndex        =   37
+      Top             =   5448
+      Width           =   588
+   End
+   Begin VB.CheckBox chkOLEDropOnOtherTabs 
+      Caption         =   "OLEDropOnOtherTabs"
+      Height          =   264
+      Left            =   4540
+      TabIndex        =   55
+      Top             =   7246
+      Width           =   1900
+   End
+   Begin VB.ComboBox cboTabTransition 
+      Height          =   300
+      ItemData        =   "pagNewTabGeneral.pgx":000C
+      Left            =   2330
+      List            =   "pagNewTabGeneral.pgx":000E
+      Style           =   2  'Dropdown List
+      TabIndex        =   25
+      Top             =   4368
+      Width           =   4420
+   End
+   Begin VB.TextBox txtFlatRoundnessTop 
+      Height          =   300
+      Left            =   6162
+      TabIndex        =   29
+      Top             =   4728
+      Width           =   588
+   End
+   Begin VB.CheckBox chkAutoTabHeight 
+      Caption         =   "AutoTabHeight"
+      Height          =   264
+      Left            =   120
+      TabIndex        =   50
+      ToolTipText     =   "Height according to font (check that all tab captions are one-liner)"
+      Top             =   6886
+      Width           =   1740
+   End
+   Begin VB.ComboBox cboBackStyle 
+      Height          =   300
+      ItemData        =   "pagNewTabGeneral.pgx":0010
+      Left            =   2330
+      List            =   "pagNewTabGeneral.pgx":0012
+      Style           =   2  'Dropdown List
+      TabIndex        =   17
+      Top             =   2950
+      Width           =   4420
+   End
+   Begin VB.CheckBox chkWordWrap 
+      Caption         =   "WordWrap"
+      Height          =   264
+      Left            =   2330
+      TabIndex        =   60
+      Top             =   7966
+      Width           =   1500
+   End
+   Begin VB.CheckBox chkHandleHighContrastTheme 
+      Caption         =   "HandleHighContrastTheme"
+      Height          =   264
+      Left            =   4540
+      TabIndex        =   52
+      ToolTipText     =   "Press press left Alt + left Shift + Print Screen to switch to hight contrast theme on Windows"
+      Top             =   6886
+      Width           =   2500
+   End
+   Begin VB.ComboBox cboHighlightMode 
+      Height          =   300
+      ItemData        =   "pagNewTabGeneral.pgx":0014
+      Left            =   2320
+      List            =   "pagNewTabGeneral.pgx":0016
+      Style           =   2  'Dropdown List
+      TabIndex        =   11
+      Top             =   1870
+      Width           =   4420
+   End
+   Begin VB.CheckBox chkSoftEdges 
+      Caption         =   "SoftEdges"
+      Height          =   264
+      Left            =   2330
+      TabIndex        =   51
+      Top             =   6886
+      Width           =   1500
+   End
+   Begin VB.ComboBox cboAutoRelocateControls 
+      Height          =   300
+      ItemData        =   "pagNewTabGeneral.pgx":0018
+      Left            =   2330
+      List            =   "pagNewTabGeneral.pgx":001A
+      Style           =   2  'Dropdown List
+      TabIndex        =   19
+      Top             =   3310
+      Width           =   4420
+   End
+   Begin VB.CheckBox chkShowFocusRect 
+      Caption         =   "ShowFocusRect"
+      Height          =   264
+      Left            =   2330
+      TabIndex        =   57
+      Top             =   7606
+      Width           =   1740
+   End
+   Begin VB.CheckBox chkUseMaskColor 
+      Caption         =   "UseMaskColor"
+      Height          =   264
+      Left            =   120
+      TabIndex        =   59
+      Top             =   7966
+      Width           =   1500
+   End
+   Begin VB.CheckBox chkHighlightEffect 
+      Caption         =   "HighlightEffect"
+      Height          =   264
+      Left            =   120
+      TabIndex        =   62
+      Top             =   8324
+      Width           =   1740
+   End
+   Begin VB.CheckBox chkChangeControlsBackColor 
+      Caption         =   "ChangeControlsBackColor"
+      Height          =   264
+      Left            =   4540
+      TabIndex        =   58
+      Top             =   7604
+      Width           =   2500
+   End
+   Begin VB.CheckBox chkShowDisabledState 
+      Caption         =   "ShowDisabledState"
+      Height          =   264
+      Left            =   120
+      TabIndex        =   56
+      Top             =   7601
+      Width           =   1740
+   End
+   Begin VB.TextBox txtTabHeight 
+      Height          =   300
+      Left            =   2330
+      TabIndex        =   27
+      Top             =   4728
+      Width           =   588
+   End
+   Begin VB.ComboBox cboTabAppearance 
+      Height          =   300
+      ItemData        =   "pagNewTabGeneral.pgx":001C
+      Left            =   2320
+      List            =   "pagNewTabGeneral.pgx":001E
+      Style           =   2  'Dropdown List
+      TabIndex        =   5
+      Top             =   790
+      Width           =   4420
+   End
+   Begin VB.ComboBox cboShowRowsInPerspective 
+      Height          =   300
+      ItemData        =   "pagNewTabGeneral.pgx":0020
+      Left            =   2320
+      List            =   "pagNewTabGeneral.pgx":0022
+      Style           =   2  'Dropdown List
+      TabIndex        =   9
+      Top             =   1510
+      Width           =   4420
+   End
+   Begin VB.TextBox txtTabMinWidth 
+      Height          =   300
+      Left            =   2330
+      TabIndex        =   47
+      Top             =   6526
+      Width           =   588
+   End
+   Begin VB.TextBox txtTabMaxWidth 
+      Height          =   300
+      Left            =   2330
+      TabIndex        =   43
+      Top             =   6166
+      Width           =   588
+   End
+   Begin VB.TextBox txtHighlightTabExtraHeight 
+      Height          =   300
+      Left            =   2330
+      TabIndex        =   39
+      Top             =   5806
+      Width           =   588
+   End
+   Begin VB.TextBox txtTabSeparation 
+      Height          =   300
+      Left            =   2330
+      MaxLength       =   2
+      TabIndex        =   35
+      Top             =   5443
+      Width           =   588
+   End
+   Begin VB.CheckBox chkEnabled 
+      Caption         =   "Enabled"
+      Height          =   264
+      Left            =   2330
+      TabIndex        =   54
+      Top             =   7249
+      Width           =   1500
+   End
+   Begin VB.ComboBox cboTabWidthStyle 
+      Height          =   300
+      ItemData        =   "pagNewTabGeneral.pgx":0024
+      Left            =   2320
+      List            =   "pagNewTabGeneral.pgx":0026
+      Style           =   2  'Dropdown List
+      TabIndex        =   7
+      Top             =   1150
+      Width           =   4420
+   End
+   Begin VB.ComboBox cboStyle 
+      Height          =   300
+      ItemData        =   "pagNewTabGeneral.pgx":0028
+      Left            =   2330
+      List            =   "pagNewTabGeneral.pgx":002A
+      Style           =   2  'Dropdown List
+      TabIndex        =   3
+      Top             =   430
+      Width           =   4420
+   End
+   Begin VB.TextBox txtTabsPerRow 
+      Height          =   300
+      Left            =   2330
+      MaxLength       =   2
+      TabIndex        =   31
+      Top             =   5088
+      Width           =   588
+   End
+   Begin VB.ComboBox cboTabOrientation 
+      Height          =   300
+      ItemData        =   "pagNewTabGeneral.pgx":002C
+      Left            =   2330
+      List            =   "pagNewTabGeneral.pgx":002E
+      Style           =   2  'Dropdown List
+      TabIndex        =   15
+      Top             =   2590
+      Width           =   4420
+   End
+   Begin VB.TextBox txtTabs 
+      Height          =   300
+      Left            =   2330
+      MaxLength       =   3
+      TabIndex        =   1
+      Top             =   70
+      Width           =   588
+   End
+   Begin VB.Label lblFlatBodySeparationLineHeight 
+      Alignment       =   1  'Right Justify
+      Caption         =   "FlatBodySeparationLineHeight:"
+      Height          =   228
+      Left            =   3834
+      TabIndex        =   48
+      Top             =   6574
+      Width           =   2268
+   End
+   Begin VB.Label lblFlatBarGripHeight 
+      Alignment       =   1  'Right Justify
+      Caption         =   "FlatBarGripHeight:"
+      Height          =   228
+      Left            =   3832
+      TabIndex        =   44
+      Top             =   6216
+      Width           =   2270
+   End
+   Begin VB.Label lblFlatBarPosition 
+      Alignment       =   1  'Right Justify
+      Caption         =   "FlatBarPosition:"
+      Height          =   230
+      Left            =   0
+      TabIndex        =   22
+      Top             =   4040
+      Width           =   2270
+   End
+   Begin VB.Label lblFlatRoundnessBottom 
+      Alignment       =   1  'Right Justify
+      Caption         =   "FlatRoundnessBottom:"
+      Height          =   230
+      Left            =   3832
+      TabIndex        =   32
+      Top             =   5138
+      Width           =   2270
+   End
+   Begin VB.Label lblFlatBarHeight 
+      Alignment       =   1  'Right Justify
+      Caption         =   "FlatBarHeight:"
+      Height          =   228
+      Left            =   3832
+      TabIndex        =   40
+      Top             =   5856
+      Width           =   2270
+   End
+   Begin VB.Label lblFlatBorderMode 
+      Alignment       =   1  'Right Justify
+      Caption         =   "FlatBorderMode:"
+      Height          =   228
+      Left            =   0
+      TabIndex        =   20
+      Top             =   3682
+      Width           =   2270
+   End
+   Begin VB.Label lblHighlightModeTabSel 
+      Alignment       =   1  'Right Justify
+      Caption         =   "HightLightModeTabSel:"
+      Height          =   230
+      Left            =   0
+      TabIndex        =   12
+      Top             =   2280
+      Width           =   2270
+   End
+   Begin VB.Label lblFlatRoundnessTabs 
+      Alignment       =   1  'Right Justify
+      Caption         =   "FlatRoundnessTabs:"
+      Height          =   230
+      Left            =   3832
+      TabIndex        =   36
+      Top             =   5498
+      Width           =   2270
+   End
+   Begin VB.Label Label21 
+      Alignment       =   1  'Right Justify
+      Caption         =   "TabTransition:"
+      Height          =   228
+      Left            =   0
+      TabIndex        =   24
+      Top             =   4380
+      Width           =   2270
+   End
+   Begin VB.Label lblFlatRoundnessTop 
+      Alignment       =   1  'Right Justify
+      Caption         =   "FlatRoundnessTop:"
+      Height          =   230
+      Left            =   3832
+      TabIndex        =   28
+      Top             =   4780
+      Width           =   2270
+   End
+   Begin VB.Label Label14 
+      Alignment       =   1  'Right Justify
+      Caption         =   "BackStyle:"
+      Height          =   228
+      Left            =   0
+      TabIndex        =   16
+      Top             =   2992
+      Width           =   2270
+   End
+   Begin VB.Label lblHighlightMode 
+      Alignment       =   1  'Right Justify
+      Caption         =   "HightLightMode:"
+      Height          =   228
+      Left            =   0
+      TabIndex        =   10
+      Top             =   1906
+      Width           =   2270
+   End
+   Begin VB.Label Label18 
+      Alignment       =   1  'Right Justify
+      Caption         =   "AutoRelocateControls:"
+      Height          =   228
+      Left            =   0
+      TabIndex        =   18
+      Top             =   3316
+      Width           =   2270
+   End
+   Begin VB.Label lblTabHeight 
+      Alignment       =   1  'Right Justify
+      Caption         =   "TabHeight:"
+      Height          =   228
+      Left            =   0
+      TabIndex        =   26
+      Top             =   4770
+      Width           =   2270
+   End
+   Begin VB.Label lblTabAppearance 
+      Alignment       =   1  'Right Justify
+      Caption         =   "TabAppearance:"
+      Height          =   230
+      Left            =   0
+      TabIndex        =   4
+      Top             =   825
+      Width           =   2270
+   End
+   Begin VB.Label Label6 
+      Alignment       =   1  'Right Justify
+      Caption         =   "ShowRowsInPerspective:"
+      Height          =   230
+      Left            =   0
+      TabIndex        =   8
+      Top             =   1540
+      Width           =   2270
+   End
+   Begin VB.Label Label13 
+      Alignment       =   1  'Right Justify
+      Caption         =   "TabMinWidth:"
+      Height          =   228
+      Left            =   0
+      TabIndex        =   46
+      Top             =   6574
+      Width           =   2270
+   End
+   Begin VB.Label Label12 
+      Alignment       =   1  'Right Justify
+      Caption         =   "TabMaxWidth:"
+      Height          =   228
+      Left            =   0
+      TabIndex        =   42
+      Top             =   6214
+      Width           =   2270
+   End
+   Begin VB.Label Label10 
+      Alignment       =   1  'Right Justify
+      Caption         =   "HighlightTabExtraHeight:"
+      Height          =   228
+      Left            =   0
+      TabIndex        =   38
+      Top             =   5854
+      Width           =   2270
+   End
+   Begin VB.Label Label9 
+      Alignment       =   1  'Right Justify
+      Caption         =   "TabSeparation:"
+      Height          =   228
+      Left            =   0
+      TabIndex        =   34
+      Top             =   5494
+      Width           =   2270
+   End
+   Begin VB.Label Label7 
+      Alignment       =   1  'Right Justify
+      Caption         =   "TabWidthStyle:"
+      Height          =   225
+      Left            =   0
+      TabIndex        =   6
+      Top             =   1180
+      Width           =   2270
+   End
+   Begin VB.Label Label4 
+      Alignment       =   1  'Right Justify
+      Caption         =   "Style:"
+      Height          =   228
+      Left            =   0
+      TabIndex        =   2
+      Top             =   472
+      Width           =   2270
+   End
+   Begin VB.Label lblTabsPerRow 
+      Alignment       =   1  'Right Justify
+      Caption         =   "TabsPerRow:"
+      Height          =   228
+      Left            =   0
+      TabIndex        =   30
+      Top             =   5130
+      Width           =   2270
+   End
+   Begin VB.Label Label2 
+      Alignment       =   1  'Right Justify
+      Caption         =   "TabOrientation:"
+      Height          =   228
+      Left            =   0
+      TabIndex        =   14
+      Top             =   2632
+      Width           =   2270
+   End
+   Begin VB.Label Label1 
+      Alignment       =   1  'Right Justify
+      Caption         =   "Tabs:"
+      Height          =   228
+      Left            =   0
+      TabIndex        =   0
+      Top             =   112
+      Width           =   2270
+   End
+End
+Attribute VB_Name = "pagNewTabGeneral"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = True
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = True
+Option Explicit
+
+Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As Long, lprcUpdate As Any, ByVal hrgnUpdate As Long, ByVal fuRedraw As Long) As Long
+
+Private Const RDW_ALLCHILDREN = &H80
+Private Const RDW_INTERNALPAINT = &H2
+Private Const RDW_INVALIDATE = &H1
+Private Const RDW_UPDATENOW = &H100
+
+Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
+Private Const CB_SHOWDROPDOWN = &H14F
+
+Private mLoading As Boolean
+Private mTDIMode As Boolean
+
+Private Sub cboAutoRelocateControls_Click()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub cboFlatBarPosition_Click()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub cboTabTransition_Click()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub cboFlatBorderMode_Click()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub cboBackStyle_Click()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub cboTabOrientation_Click()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub cboShowRowsInPerspective_Click()
+    If Not mLoading Then Changed = True
+    cboShowRowsInPerspective.Tag = cboShowRowsInPerspective.ItemData(cboShowRowsInPerspective.ListIndex)
+End Sub
+
+Private Sub cboStyle_Click()
+    If Not mLoading Then Changed = True
+    LoadCustomizationOptions
+    SetTabsPerRowEnabledState
+    SetTabAppearanceEnabledState
+    SetHighlightModeEnabledState
+    chkShowDisabledState.Enabled = (cboStyle.ItemData(cboStyle.ListIndex) <> ntStyleWindows)
+    SetSoftEdgesEnabledState
+End Sub
+
+Private Sub SetTabAppearanceEnabledState()
+    cboTabAppearance.Enabled = (cboStyle.ItemData(cboStyle.ListIndex) <> ntStyleWindows)
+    lblTabAppearance.Enabled = cboTabAppearance.Enabled
+End Sub
+
+Private Sub SetHighlightModeEnabledState()
+    cboHighlightMode.Enabled = (cboStyle.ItemData(cboStyle.ListIndex) <> ntStyleWindows)
+    lblHighlightMode.Enabled = cboHighlightMode.Enabled
+    cboHighlightModeTabSel.Enabled = cboHighlightMode.Enabled
+    lblHighlightModeTabSel.Enabled = cboHighlightMode.Enabled
+    chkHighlightEffect.Enabled = cboHighlightMode.Enabled
+End Sub
+    
+Private Sub LoadCustomizationOptions()
+    Dim iStr As String
+    
+    cboShowRowsInPerspective.Clear
+    iStr = ntYNAuto & " - Automatic"
+    Select Case cboStyle.ItemData(cboStyle.ListIndex)
+        Case ssStyleTabbedDialog
+            iStr = iStr & " (ntYes)"
+        Case ssStylePropertyPage
+            iStr = iStr & " (ntYes)"
+        Case ntStyleTabStrip
+            iStr = iStr & " (ntNo)"
+        Case ntStyleFlat
+            iStr = iStr & " (ntNo)"
+        Case ntStyleWindows
+            iStr = iStr & " (ntNo)"
+    End Select
+    cboShowRowsInPerspective.AddItem iStr: cboShowRowsInPerspective.ItemData(cboShowRowsInPerspective.NewIndex) = ntYNAuto
+    cboShowRowsInPerspective.AddItem ntYes & " - Yes": cboShowRowsInPerspective.ItemData(cboShowRowsInPerspective.NewIndex) = ntYes
+    cboShowRowsInPerspective.AddItem ntNo & " - No": cboShowRowsInPerspective.ItemData(cboShowRowsInPerspective.NewIndex) = ntNo
+    SelectInComboByItemData cboShowRowsInPerspective, CLng(cboShowRowsInPerspective.Tag)
+    
+    cboTabWidthStyle.Clear
+    cboTabWidthStyle.AddItem ntTWTabStripEmulation & " - ntTWTabStripEmulation": cboTabWidthStyle.ItemData(cboTabWidthStyle.NewIndex) = ntTWTabStripEmulation
+    cboTabWidthStyle.AddItem ntTWTabCaptionWidth & " - ntTWTabCaptionWidth": cboTabWidthStyle.ItemData(cboTabWidthStyle.NewIndex) = ntTWTabCaptionWidth
+    cboTabWidthStyle.AddItem ntTWFixed & " - ntTWFixed": cboTabWidthStyle.ItemData(cboTabWidthStyle.NewIndex) = ntTWFixed
+    iStr = ntTWAuto & " - Automatic"
+    If mTDIMode Then
+        iStr = iStr & " (ntTWTabCaptionWidthFillRows)"
+    Else
+        Select Case cboStyle.ItemData(cboStyle.ListIndex)
+            Case ssStyleTabbedDialog
+                iStr = iStr & " (ntTWFixed)"
+            Case ssStylePropertyPage
+                iStr = iStr & " (ntTWTabCaptionWidth)"
+            Case ntStyleTabStrip
+                iStr = iStr & " (ntTWTabStripEmulation)"
+            Case ntStyleFlat
+                iStr = iStr & " (ntTWStretchToFill)"
+            Case ntStyleWindows
+                iStr = iStr & " (ntTWStretchToFill)"
+        End Select
+    End If
+    cboTabWidthStyle.AddItem iStr: cboTabWidthStyle.ItemData(cboTabWidthStyle.NewIndex) = ntTWAuto
+    cboTabWidthStyle.AddItem ntTWStretchToFill & " - ntTWStretchToFill": cboTabWidthStyle.ItemData(cboTabWidthStyle.NewIndex) = ntTWStretchToFill
+    cboTabWidthStyle.AddItem ntTWTabCaptionWidthFillRows & " - ntTWTabCaptionWidthFillRows": cboTabWidthStyle.ItemData(cboTabWidthStyle.NewIndex) = ntTWTabCaptionWidthFillRows
+    SelectInComboByItemData cboTabWidthStyle, CLng(cboTabWidthStyle.Tag)
+    
+    cboTabAppearance.Clear
+    iStr = ntTAAuto & " - Automatic"
+    Select Case cboStyle.ItemData(cboStyle.ListIndex)
+        Case ssStyleTabbedDialog
+            iStr = iStr & " (ntTATabbedDialog)"
+        Case ssStylePropertyPage
+            iStr = iStr & " (ntTAPropertyPage)"
+        Case ntStyleTabStrip
+            iStr = iStr & " (ntTAPropertyPage)"
+        Case ntStyleFlat
+            iStr = iStr & " (ntTAFlat)"
+        Case ntStyleWindows
+            iStr = iStr & " (not used with Style Windows)"
+    End Select
+    cboTabAppearance.AddItem iStr: cboTabAppearance.ItemData(cboTabAppearance.NewIndex) = ntTAAuto
+    cboTabAppearance.AddItem ntTATabbedDialog & " - ntTATabbedDialog": cboTabAppearance.ItemData(cboTabAppearance.NewIndex) = ntTATabbedDialog
+    cboTabAppearance.AddItem ntTATabbedDialogRounded & " - ntTATabbedDialogRounded": cboTabAppearance.ItemData(cboTabAppearance.NewIndex) = ntTATabbedDialogRounded
+    cboTabAppearance.AddItem ntTAPropertyPage & " - ntTAPropertyPage": cboTabAppearance.ItemData(cboTabAppearance.NewIndex) = ntTAPropertyPage
+    cboTabAppearance.AddItem ntTAPropertyPageRounded & " - ntTAPropertyPageRounded": cboTabAppearance.ItemData(cboTabAppearance.NewIndex) = ntTAPropertyPageRounded
+    cboTabAppearance.AddItem ntTAFlat & " - ntTAFlat": cboTabAppearance.ItemData(cboTabAppearance.NewIndex) = ntTAFlat
+    SelectInComboByItemData cboTabAppearance, CLng(cboTabAppearance.Tag)
+    
+    cboHighlightMode.Clear
+    iStr = ntHLAuto & " - Automatic"
+    If mTDIMode Then
+        iStr = iStr & " (ntHLPlainAndCaptionBold)"
+    Else
+        Select Case cboStyle.ItemData(cboStyle.ListIndex)
+            Case ntStyleFlat
+                iStr = iStr & " (ntHLFlatBarAndGradientLight)"
+            Case ssStyleTabbedDialog
+                iStr = iStr & " (ntHLNone)"
+            Case ntStyleWindows
+                iStr = iStr & " (ntHLNone)"
+            Case Else
+                iStr = iStr & " (ntHLDoubleGradient)"
+        End Select
+    End If
+    cboHighlightMode.AddItem iStr: cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLAuto
+    cboHighlightMode.AddItem ntHLNone & " - ntHLNone": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLNone
+    cboHighlightMode.AddItem ntHLGradient & " - ntHLGradient": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLGradient
+    cboHighlightMode.AddItem ntHLDoubleGradient & " - ntHLDoubleGradient": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLDoubleGradient
+    cboHighlightMode.AddItem ntHLPlain & " - ntHLPlain": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLPlain
+    cboHighlightMode.AddItem ntHLCaptionBold & " - ntHLCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLCaptionBold
+    cboHighlightMode.AddItem ntHLGradientAndCaptionBold & " - ntHLGradientAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLGradientAndCaptionBold
+    cboHighlightMode.AddItem ntHLDoubleGradientAndCaptionBold & " - ntHLDoubleGradientAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLDoubleGradientAndCaptionBold
+    cboHighlightMode.AddItem ntHLPlainAndCaptionBold & " - ntHLPlainAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLPlainAndCaptionBold
+    cboHighlightMode.AddItem ntHLGradientLight & " - ntHLGradientLight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLGradientLight
+    cboHighlightMode.AddItem ntHLDoubleGradientLight & " - ntHLDoubleGradientLight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLDoubleGradientLight
+    cboHighlightMode.AddItem ntHLGradientLightAndCaptionBold & " - ntHLGradientLightAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLGradientLightAndCaptionBold
+    cboHighlightMode.AddItem ntHLDoubleGradientLightAndCaptionBold & " - ntHLDoubleGradientLightAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLDoubleGradientLightAndCaptionBold
+    cboHighlightMode.AddItem ntHLCaptionUnderlined & " - ntHLCaptionUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLCaptionUnderlined
+    cboHighlightMode.AddItem ntHLGradientAndCaptionUnderlined & " - ntHLGradientAndCaptionUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLGradientAndCaptionUnderlined
+    cboHighlightMode.AddItem ntHLGradientLightAndCaptionUnderlined & " - ntHLGradientLightAndCaptionUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLGradientLightAndCaptionUnderlined
+    cboHighlightMode.AddItem ntHLCaptionBoldAndUnderlined & " - ntHLCaptionBoldAndUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLCaptionBoldAndUnderlined
+    cboHighlightMode.AddItem ntHLFlatBar & " - ntHLFlatBar": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBar
+    cboHighlightMode.AddItem ntHLFlatBarAndGradient & " - ntHLFlatBarAndGradient": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarAndGradient
+    cboHighlightMode.AddItem ntHLFlatBarAndPlain & " - ntHLFlatBarAndPlain": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarAndPlain
+    cboHighlightMode.AddItem ntHLFlatBarAndCaptionBold & " - ntHLFlatBarAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarAndCaptionBold
+    cboHighlightMode.AddItem ntHLFlatBarGradientAndCaptionBold & " - ntHLFlatBarGradientAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarGradientAndCaptionBold
+    cboHighlightMode.AddItem ntHLFlatBarPlainAndCaptionBold & " - ntHLFlatBarPlainAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarPlainAndCaptionBold
+    cboHighlightMode.AddItem ntHLFlatBarAndGradientLight & " - ntHLFlatBarAndGradientLight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarAndGradientLight
+    cboHighlightMode.AddItem ntHLFlatBarAndPlainLight & " - ntHLFlatBarAndPlainLight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarAndPlainLight
+    cboHighlightMode.AddItem ntHLFlatBarGradientLightAndCaptionBold & " - ntHLFlatBarGradientLightAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarGradientLightAndCaptionBold
+    cboHighlightMode.AddItem ntHLFlatBarAndCaptionUnderlined & " - ntHLFlatBarAndCaptionUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarAndCaptionUnderlined
+    cboHighlightMode.AddItem ntHLFlatBarAndPlainAndCaptionUnderlined & " - ntHLFlatBarAndPlainAndCaptionUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarAndPlainAndCaptionUnderlined
+    cboHighlightMode.AddItem ntHLFlatBarAndCaptionBoldUnderlined & " - ntHLFlatBarAndCaptionBoldUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarAndCaptionBoldUnderlined
+    cboHighlightMode.AddItem ntHLFlatBarPlainAndCaptionBoldUnderlined & " - ntHLFlatBarPlainAndCaptionBoldUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarPlainAndCaptionBoldUnderlined
+    cboHighlightMode.AddItem ntHLFlatBarWithGrip & " - ntHLFlatBarWithGrip": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGrip
+    cboHighlightMode.AddItem ntHLFlatBarWithGripAndGradient & " - ntHLFlatBarWithGripAndGradient": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripAndGradient
+    cboHighlightMode.AddItem ntHLFlatBarWithGripAndPlain & " - ntHLFlatBarWithGripAndPlain": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripAndPlain
+    cboHighlightMode.AddItem ntHLFlatBarWithGripAndCaptionBold & " - ntHLFlatBarWithGripAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripAndCaptionBold
+    cboHighlightMode.AddItem ntHLFlatBarWithGripGradientAndCaptionBold & " - ntHLFlatBarWithGripGradientAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripGradientAndCaptionBold
+    cboHighlightMode.AddItem ntHLFlatBarWithGripPlainAndCaptionBold & " - ntHLFlatBarWithGripPlainAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripPlainAndCaptionBold
+    cboHighlightMode.AddItem ntHLFlatBarWithGripAndGradientLight & " - ntHLFlatBarWithGripAndGradientLight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripAndGradientLight
+    cboHighlightMode.AddItem ntHLFlatBarWithGripGradientLightAndCaptionBold & " - ntHLFlatBarWithGripGradientLightAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripGradientLightAndCaptionBold
+    cboHighlightMode.AddItem ntHLFlatBarWithGripAndCaptionUnderlined & " - ntHLFlatBarWithGripAndCaptionUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripAndCaptionUnderlined
+    cboHighlightMode.AddItem ntHLFlatBarWithGripPlainAndCaptionUnderlined & " - ntHLFlatBarWithGripPlainAndCaptionUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripPlainAndCaptionUnderlined
+    cboHighlightMode.AddItem ntHLFlatBarWithGripAndCaptionBoldUnderlined & " - ntHLFlatBarWithGripAndCaptionBoldUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripAndCaptionBoldUnderlined
+    cboHighlightMode.AddItem ntHLFlatBarWithGripPlainAndCaptionBoldUnderlined & " - ntHLFlatBarWithGripPlainAndCaptionBoldUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripPlainAndCaptionBoldUnderlined
+    cboHighlightMode.AddItem ntHLExtraHeight & " - ntHLExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLExtraHeight
+    cboHighlightMode.AddItem ntHLGradientAndExtraHeight & " - ntHLGradientAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLGradientAndExtraHeight
+    cboHighlightMode.AddItem ntHLDoubleGradientAndExtraHeight & " - ntHLDoubleGradientAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLDoubleGradientAndExtraHeight
+    cboHighlightMode.AddItem ntHLDoubleGradientAndExtraHeight & " - ntHLDoubleGradientAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLDoubleGradientAndExtraHeight
+    cboHighlightMode.AddItem ntHLPlainAndExtraHeight & " - ntHLPlainAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLPlainAndExtraHeight
+    cboHighlightMode.AddItem ntHLCaptionBoldAndExtraHeight & " - ntHLCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLCaptionBoldAndExtraHeight
+    cboHighlightMode.AddItem ntHLGradientCaptionBoldAndExtraHeight & " - ntHLGradientCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLGradientCaptionBoldAndExtraHeight
+    cboHighlightMode.AddItem ntHLDoubleGradientCaptionBoldAndExtraHeight & " - ntHLDoubleGradientCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLDoubleGradientCaptionBoldAndExtraHeight
+    cboHighlightMode.AddItem ntHLPlainCaptionBoldAndExtraHeight & " - ntHLPlainCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLPlainCaptionBoldAndExtraHeight
+    cboHighlightMode.AddItem ntHLGradientLightAndExtraHeight & " - ntHLGradientLightAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLGradientLightAndExtraHeight
+    cboHighlightMode.AddItem ntHLDoubleGradientLightAndExtraHeight & " - ntHLDoubleGradientLightAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLDoubleGradientLightAndExtraHeight
+    cboHighlightMode.AddItem ntHLGradientLightCaptionBoldAndExtraHeight & " - ntHLGradientLightCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLGradientLightCaptionBoldAndExtraHeight
+    cboHighlightMode.AddItem ntHLDoubleGradientLightCaptionBoldAndExtraHeight & " - ntHLDoubleGradientLightCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLDoubleGradientLightCaptionBoldAndExtraHeight
+    cboHighlightMode.AddItem ntHLFlatBarAndExtraHeight & " - ntHLFlatBarAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarAndExtraHeight
+    cboHighlightMode.AddItem ntHLFlatBarGradientAndExtraHeight & " - ntHLFlatBarGradientAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarGradientAndExtraHeight
+    cboHighlightMode.AddItem ntHLFlatBarPlainAndExtraHeight & " - ntHLFlatBarPlainAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarPlainAndExtraHeight
+    cboHighlightMode.AddItem ntHLFlatBarPlainAndExtraHeight & " - ntHLFlatBarPlainAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarPlainAndExtraHeight
+    cboHighlightMode.AddItem ntHLFlatBarCaptionBoldAndExtraHeight & " - ntHLFlatBarCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarCaptionBoldAndExtraHeight
+    cboHighlightMode.AddItem ntHLFlatBarGradientCaptionBoldAndExtraHeight & " - ntHLFlatBarGradientCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarGradientCaptionBoldAndExtraHeight
+    cboHighlightMode.AddItem ntHLFlatBarPlainCaptionBoldAndExtraHeight & " - ntHLFlatBarPlainCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarPlainCaptionBoldAndExtraHeight
+    cboHighlightMode.AddItem ntHLFlatBarGradientLightAndExtraHeight & " - ntHLFlatBarGradientLightAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarGradientLightAndExtraHeight
+    cboHighlightMode.AddItem ntHLFlatBarGradientLightCaptionBoldAndExtraHeight & " - ntHLFlatBarGradientLightCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarGradientLightCaptionBoldAndExtraHeight
+    cboHighlightMode.AddItem ntHLFlatBarGradientLightCaptionBoldUnderlinedAndExtraHeight & " - ntHLFlatBarGradientLightCaptionBoldUnderlinedAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarGradientLightCaptionBoldUnderlinedAndExtraHeight
+    cboHighlightMode.AddItem ntHLFlatBarWithGripAndExtraHeight & " - ntHLFlatBarWithGripAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripAndExtraHeight
+    cboHighlightMode.AddItem ntHLFlatBarWithGripGradientAndExtraHeight & " - ntHLFlatBarWithGripGradientAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripGradientAndExtraHeight
+    cboHighlightMode.AddItem ntHLFlatBarWithGripPlainAndExtraHeight & " - ntHLFlatBarWithGripPlainAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripPlainAndExtraHeight
+    cboHighlightMode.AddItem ntHLFlatBarWithGripPlainAndExtraHeight & " - ntHLFlatBarWithGripPlainAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripPlainAndExtraHeight
+    cboHighlightMode.AddItem ntHLFlatBarWithGripCaptionBoldAndExtraHeight & " - ntHLFlatBarWithGripCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripCaptionBoldAndExtraHeight
+    cboHighlightMode.AddItem ntHLFlatBarWithGripGradientCaptionBoldAndExtraHeight & " - ntHLFlatBarWithGripGradientCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripGradientCaptionBoldAndExtraHeight
+    cboHighlightMode.AddItem ntHLFlatBarWithGripPlainCaptionBoldAndExtraHeight & " - ntHLFlatBarWithGripPlainCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripPlainCaptionBoldAndExtraHeight
+    cboHighlightMode.AddItem ntHLFlatBarWithGripGradientLightAndExtraHeight & " - ntHLFlatBarWithGripGradientLightAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripGradientLightAndExtraHeight
+    cboHighlightMode.AddItem ntHLFlatBarWithGripGradientLightCaptionBoldAndExtraHeight & " - ntHLFlatBarWithGripGradientLightCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripGradientLightCaptionBoldAndExtraHeight
+    cboHighlightMode.AddItem ntHLFlatBarWithGripGradientLightCaptionBoldUnderlinedAndExtraHeight & " - ntHLFlatBarWithGripGradientLightCaptionBoldUnderlinedAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripGradientLightCaptionBoldUnderlinedAndExtraHeight
+    SelectInComboByItemData cboHighlightMode, CLng(cboHighlightMode.Tag)
+    
+    cboHighlightModeTabSel.Clear
+    iStr = ntHLAuto & " - Automatic"
+    If mTDIMode Then
+        iStr = iStr & " (ntHLGradientAndCaptionBold)"
+    Else
+        Select Case cboStyle.ItemData(cboStyle.ListIndex)
+            Case ntStyleFlat
+                iStr = iStr & " (ntHLFlatBarAndGradientLight)"
+            Case ssStyleTabbedDialog
+                iStr = iStr & " (ntHLCaptionBold)"
+            Case ntStyleWindows
+                iStr = iStr & " (ntHLNone)"
+            Case Else
+                iStr = iStr & " (ntHLDoubleGradient)"
+        End Select
+    End If
+    cboHighlightModeTabSel.AddItem iStr: cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLAuto
+    cboHighlightModeTabSel.AddItem ntHLNone & " - ntHLNone": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLNone
+    cboHighlightModeTabSel.AddItem ntHLGradient & " - ntHLGradient": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLGradient
+    cboHighlightModeTabSel.AddItem ntHLDoubleGradient & " - ntHLDoubleGradient": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLDoubleGradient
+    cboHighlightModeTabSel.AddItem ntHLPlain & " - ntHLPlain": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLPlain
+    cboHighlightModeTabSel.AddItem ntHLCaptionBold & " - ntHLCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLCaptionBold
+    cboHighlightModeTabSel.AddItem ntHLGradientAndCaptionBold & " - ntHLGradientAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLGradientAndCaptionBold
+    cboHighlightModeTabSel.AddItem ntHLDoubleGradientAndCaptionBold & " - ntHLDoubleGradientAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLDoubleGradientAndCaptionBold
+    cboHighlightModeTabSel.AddItem ntHLPlainAndCaptionBold & " - ntHLPlainAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLPlainAndCaptionBold
+    cboHighlightModeTabSel.AddItem ntHLGradientLight & " - ntHLGradientLight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLGradientLight
+    cboHighlightModeTabSel.AddItem ntHLDoubleGradientLight & " - ntHLDoubleGradientLight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLDoubleGradientLight
+    cboHighlightModeTabSel.AddItem ntHLGradientLightAndCaptionBold & " - ntHLGradientLightAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLGradientLightAndCaptionBold
+    cboHighlightModeTabSel.AddItem ntHLDoubleGradientLightAndCaptionBold & " - ntHLDoubleGradientLightAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLDoubleGradientLightAndCaptionBold
+    cboHighlightModeTabSel.AddItem ntHLCaptionUnderlined & " - ntHLCaptionUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLCaptionUnderlined
+    cboHighlightModeTabSel.AddItem ntHLGradientAndCaptionUnderlined & " - ntHLGradientAndCaptionUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLGradientAndCaptionUnderlined
+    cboHighlightModeTabSel.AddItem ntHLGradientLightAndCaptionUnderlined & " - ntHLGradientLightAndCaptionUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLGradientLightAndCaptionUnderlined
+    cboHighlightModeTabSel.AddItem ntHLCaptionBoldAndUnderlined & " - ntHLCaptionBoldAndUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLCaptionBoldAndUnderlined
+    cboHighlightModeTabSel.AddItem ntHLFlatBar & " - ntHLFlatBar": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBar
+    cboHighlightModeTabSel.AddItem ntHLFlatBarAndGradient & " - ntHLFlatBarAndGradient": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarAndGradient
+    cboHighlightModeTabSel.AddItem ntHLFlatBarAndPlain & " - ntHLFlatBarAndPlain": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarAndPlain
+    cboHighlightModeTabSel.AddItem ntHLFlatBarAndCaptionBold & " - ntHLFlatBarAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarAndCaptionBold
+    cboHighlightModeTabSel.AddItem ntHLFlatBarGradientAndCaptionBold & " - ntHLFlatBarGradientAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarGradientAndCaptionBold
+    cboHighlightModeTabSel.AddItem ntHLFlatBarPlainAndCaptionBold & " - ntHLFlatBarPlainAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarPlainAndCaptionBold
+    cboHighlightModeTabSel.AddItem ntHLFlatBarAndGradientLight & " - ntHLFlatBarAndGradientLight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarAndGradientLight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarAndPlainLight & " - ntHLFlatBarAndPlainLight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarAndPlainLight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarGradientLightAndCaptionBold & " - ntHLFlatBarGradientLightAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarGradientLightAndCaptionBold
+    cboHighlightModeTabSel.AddItem ntHLFlatBarAndCaptionUnderlined & " - ntHLFlatBarAndCaptionUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarAndCaptionUnderlined
+    cboHighlightModeTabSel.AddItem ntHLFlatBarAndPlainAndCaptionUnderlined & " - ntHLFlatBarAndPlainAndCaptionUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarAndPlainAndCaptionUnderlined
+    cboHighlightModeTabSel.AddItem ntHLFlatBarAndCaptionBoldUnderlined & " - ntHLFlatBarAndCaptionBoldUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarAndCaptionBoldUnderlined
+    cboHighlightModeTabSel.AddItem ntHLFlatBarPlainAndCaptionBoldUnderlined & " - ntHLFlatBarPlainAndCaptionBoldUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarPlainAndCaptionBoldUnderlined
+    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGrip & " - ntHLFlatBarWithGrip": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGrip
+    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripAndGradient & " - ntHLFlatBarWithGripAndGradient": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripAndGradient
+    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripAndPlain & " - ntHLFlatBarWithGripAndPlain": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripAndPlain
+    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripAndCaptionBold & " - ntHLFlatBarWithGripAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripAndCaptionBold
+    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripGradientAndCaptionBold & " - ntHLFlatBarWithGripGradientAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripGradientAndCaptionBold
+    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripPlainAndCaptionBold & " - ntHLFlatBarWithGripPlainAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripPlainAndCaptionBold
+    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripAndGradientLight & " - ntHLFlatBarWithGripAndGradientLight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripAndGradientLight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripGradientLightAndCaptionBold & " - ntHLFlatBarWithGripGradientLightAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripGradientLightAndCaptionBold
+    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripAndCaptionUnderlined & " - ntHLFlatBarWithGripAndCaptionUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripAndCaptionUnderlined
+    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripPlainAndCaptionUnderlined & " - ntHLFlatBarWithGripPlainAndCaptionUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripPlainAndCaptionUnderlined
+    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripAndCaptionBoldUnderlined & " - ntHLFlatBarWithGripAndCaptionBoldUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripAndCaptionBoldUnderlined
+    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripPlainAndCaptionBoldUnderlined & " - ntHLFlatBarWithGripPlainAndCaptionBoldUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripPlainAndCaptionBoldUnderlined
+    cboHighlightModeTabSel.AddItem ntHLExtraHeight & " - ntHLExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLGradientAndExtraHeight & " - ntHLGradientAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLGradientAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLDoubleGradientAndExtraHeight & " - ntHLDoubleGradientAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLDoubleGradientAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLDoubleGradientAndExtraHeight & " - ntHLDoubleGradientAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLDoubleGradientAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLPlainAndExtraHeight & " - ntHLPlainAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLPlainAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLCaptionBoldAndExtraHeight & " - ntHLCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLCaptionBoldAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLGradientCaptionBoldAndExtraHeight & " - ntHLGradientCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLGradientCaptionBoldAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLDoubleGradientCaptionBoldAndExtraHeight & " - ntHLDoubleGradientCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLDoubleGradientCaptionBoldAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLPlainCaptionBoldAndExtraHeight & " - ntHLPlainCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLPlainCaptionBoldAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLGradientLightAndExtraHeight & " - ntHLGradientLightAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLGradientLightAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLDoubleGradientLightAndExtraHeight & " - ntHLDoubleGradientLightAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLDoubleGradientLightAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLGradientLightCaptionBoldAndExtraHeight & " - ntHLGradientLightCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLGradientLightCaptionBoldAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLDoubleGradientLightCaptionBoldAndExtraHeight & " - ntHLDoubleGradientLightCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLDoubleGradientLightCaptionBoldAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarAndExtraHeight & " - ntHLFlatBarAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarGradientAndExtraHeight & " - ntHLFlatBarGradientAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarGradientAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarPlainAndExtraHeight & " - ntHLFlatBarPlainAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarPlainAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarPlainAndExtraHeight & " - ntHLFlatBarPlainAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarPlainAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarCaptionBoldAndExtraHeight & " - ntHLFlatBarCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarCaptionBoldAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarGradientCaptionBoldAndExtraHeight & " - ntHLFlatBarGradientCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarGradientCaptionBoldAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarPlainCaptionBoldAndExtraHeight & " - ntHLFlatBarPlainCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarPlainCaptionBoldAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarGradientLightAndExtraHeight & " - ntHLFlatBarGradientLightAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarGradientLightAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarGradientLightCaptionBoldAndExtraHeight & " - ntHLFlatBarGradientLightCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarGradientLightCaptionBoldAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarGradientLightCaptionBoldUnderlinedAndExtraHeight & " - ntHLFlatBarGradientLightCaptionBoldUnderlinedAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarGradientLightCaptionBoldUnderlinedAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripAndExtraHeight & " - ntHLFlatBarWithGripAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripGradientAndExtraHeight & " - ntHLFlatBarWithGripGradientAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripGradientAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripPlainAndExtraHeight & " - ntHLFlatBarWithGripPlainAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripPlainAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripPlainAndExtraHeight & " - ntHLFlatBarWithGripPlainAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripPlainAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripCaptionBoldAndExtraHeight & " - ntHLFlatBarWithGripCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripCaptionBoldAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripGradientCaptionBoldAndExtraHeight & " - ntHLFlatBarWithGripGradientCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripGradientCaptionBoldAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripPlainCaptionBoldAndExtraHeight & " - ntHLFlatBarWithGripPlainCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripPlainCaptionBoldAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripGradientLightAndExtraHeight & " - ntHLFlatBarWithGripGradientLightAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripGradientLightAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripGradientLightCaptionBoldAndExtraHeight & " - ntHLFlatBarWithGripGradientLightCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripGradientLightCaptionBoldAndExtraHeight
+    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripGradientLightCaptionBoldUnderlinedAndExtraHeight & " - ntHLFlatBarWithGripGradientLightCaptionBoldUnderlinedAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripGradientLightCaptionBoldUnderlinedAndExtraHeight
+    SelectInComboByItemData cboHighlightModeTabSel, CLng(cboHighlightModeTabSel.Tag)
+End Sub
+
+Private Sub cboTabAppearance_Click()
+    If Not mLoading Then Changed = True
+    cboTabAppearance.Tag = cboTabAppearance.ItemData(cboTabAppearance.ListIndex)
+    SetFlatStyleRelatedPropertiesEnabledState
+    SetSoftEdgesEnabledState
+End Sub
+
+Private Sub SetSoftEdgesEnabledState()
+    If (cboStyle.ItemData(cboStyle.ListIndex) = ntStyleWindows) Then
+        chkSoftEdges.Enabled = False
+    Else
+        Select Case cboTabAppearance.ItemData(cboTabAppearance.ListIndex)
+            Case ntTATabbedDialog, ntTATabbedDialogRounded, ntTAPropertyPage, ntTAPropertyPageRounded
+                chkSoftEdges.Enabled = True
+            Case ntTAAuto
+                Select Case cboStyle.ItemData(cboStyle.ListIndex)
+                    Case ssStyleTabbedDialog, ssStylePropertyPage, ntStyleTabStrip
+                        chkSoftEdges.Enabled = True
+                    Case Else
+                        chkSoftEdges.Enabled = False
+                End Select
+            Case Else
+                chkSoftEdges.Enabled = False
+        End Select
+    End If
+End Sub
+
+Private Sub SetFlatStyleRelatedPropertiesEnabledState()
+    If (cboTabAppearance.ItemData(cboTabAppearance.ListIndex) = ntTAFlat) Then
+        txtFlatRoundnessTop.Enabled = True
+    ElseIf (cboTabAppearance.ItemData(cboTabAppearance.ListIndex) = ntTAAuto) And (cboStyle.ItemData(cboStyle.ListIndex) = ntStyleFlat) Then
+        txtFlatRoundnessTop.Enabled = True
+    Else
+        txtFlatRoundnessTop.Enabled = False
+    End If
+    txtFlatRoundnessBottom.Enabled = txtFlatRoundnessTop.Enabled
+    lblFlatRoundnessBottom.Enabled = txtFlatRoundnessTop.Enabled
+    lblFlatRoundnessTop.Enabled = txtFlatRoundnessTop.Enabled
+    txtFlatRoundnessTabs.Enabled = txtFlatRoundnessTop.Enabled
+    lblFlatRoundnessTabs.Enabled = txtFlatRoundnessTop.Enabled
+    txtFlatBarHeight.Enabled = txtFlatRoundnessTop.Enabled
+    lblFlatBarHeight.Enabled = txtFlatRoundnessTop.Enabled
+    cboFlatBorderMode.Enabled = txtFlatRoundnessTop.Enabled
+    lblFlatBorderMode.Enabled = txtFlatRoundnessTop.Enabled
+    cboFlatBarPosition.Enabled = txtFlatRoundnessTop.Enabled
+    lblFlatBarPosition.Enabled = txtFlatRoundnessTop.Enabled
+    txtFlatBarGripHeight.Enabled = txtFlatRoundnessTop.Enabled
+    lblFlatBarGripHeight.Enabled = txtFlatRoundnessTop.Enabled
+    txtFlatBodySeparationLineHeight.Enabled = txtFlatRoundnessTop.Enabled
+    lblFlatBodySeparationLineHeight.Enabled = txtFlatRoundnessTop.Enabled
+End Sub
+
+Private Sub cboHighlightMode_Click()
+    If Not mLoading Then Changed = True
+    cboHighlightMode.Tag = cboHighlightMode.ItemData(cboHighlightMode.ListIndex)
+End Sub
+
+Private Sub cboHighlightModeTabSel_Click()
+    If Not mLoading Then Changed = True
+    cboHighlightModeTabSel.Tag = cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.ListIndex)
+End Sub
+
+Private Sub cboTabWidthStyle_Click()
+    If Not mLoading Then Changed = True
+    cboTabWidthStyle.Tag = cboTabWidthStyle.ItemData(cboTabWidthStyle.ListIndex)
+    SetTabsPerRowEnabledState
+End Sub
+
+Private Sub SetTabsPerRowEnabledState()
+    Select Case cboTabWidthStyle.ItemData(cboTabWidthStyle.ListIndex)
+        Case ntTWFixed, ntTWTabCaptionWidth
+            txtTabsPerRow.Enabled = True
+        Case ntTWAuto
+            Select Case cboStyle.ItemData(cboStyle.ListIndex)
+                Case ssStyleTabbedDialog, ssStylePropertyPage
+                    txtTabsPerRow.Enabled = True
+                Case Else
+                    txtTabsPerRow.Enabled = False
+            End Select
+        Case Else
+            txtTabsPerRow.Enabled = False
+    End Select
+    lblTabsPerRow.Enabled = txtTabsPerRow.Enabled
+End Sub
+
+Private Sub chkAutoTabHeight_Click()
+    If Not mLoading Then Changed = True
+    txtTabHeight.Enabled = (chkAutoTabHeight.Value = vbUnchecked)
+    lblTabHeight.Enabled = txtTabHeight.Enabled
+End Sub
+
+Private Sub chkChangeControlsBackColor_Click()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub chkChangeControlsForeColor_Click()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub chkEnabled_Click()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub chkOLEDropOnOtherTabs_Click()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub chkTabMousePointerHand_Click()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub chkCanReorderTabs_Click()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub chkShowDisabledState_Click()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub chkShowFocusRect_Click()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub chkSoftEdges_Click()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub chkHandleHighContrastTheme_Click()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub chkHighlightEffect_Click()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub chkUseMaskColor_Click()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub chkWordWrap_Click()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub PropertyPage_ApplyChanges()
+    If Not ValidateInput Then
+        Changed = True
+        Exit Sub
+    End If
+    
+    Dim c As Long
+    
+    On Error Resume Next
+    SelectedControls(0).Redraw = False
+    If Not mTDIMode Then
+        SelectedControls(0).Tabs = Val(txtTabs.Text)
+    End If
+    SelectedControls(0).TabOrientation = cboTabOrientation.ItemData(cboTabOrientation.ListIndex)
+    SelectedControls(0).BackStyle = cboBackStyle.ItemData(cboBackStyle.ListIndex)
+    SelectedControls(0).TabsPerRow = Val(txtTabsPerRow.Text)
+    SelectedControls(0).Style = cboStyle.ItemData(cboStyle.ListIndex)
+    SelectedControls(0).ShowRowsInPerspective = cboShowRowsInPerspective.ItemData(cboShowRowsInPerspective.ListIndex)
+    SelectedControls(0).TabWidthStyle = cboTabWidthStyle.ItemData(cboTabWidthStyle.ListIndex)
+    SelectedControls(0).TabAppearance = cboTabAppearance.ItemData(cboTabAppearance.ListIndex)
+    SelectedControls(0).TabSeparation = Val(txtTabSeparation.Text)
+    SelectedControls(0).HighlightTabExtraHeight = CSng(txtHighlightTabExtraHeight.Text)
+    SelectedControls(0).TabMaxWidth = CSng(txtTabMaxWidth.Text)
+    SelectedControls(0).TabMinWidth = CSng(txtTabMinWidth.Text)
+    SelectedControls(0).WordWrap = CBool(chkWordWrap.Value)
+    SelectedControls(0).Enabled = CBool(chkEnabled.Value)
+    SelectedControls(0).UseMaskColor = CBool(chkUseMaskColor.Value)
+    SelectedControls(0).HighlightEffect = CBool(chkHighlightEffect.Value)
+    SelectedControls(0).ShowFocusRect = CBool(chkShowFocusRect.Value)
+    SelectedControls(0).ShowDisabledState = CBool(chkShowDisabledState.Value)
+    SelectedControls(0).ChangeControlsBackColor = CBool(chkChangeControlsBackColor.Value)
+    SelectedControls(0).ChangeControlsForeColor = CBool(chkChangeControlsForeColor.Value)
+    SelectedControls(0).AutoTabHeight = CBool(chkAutoTabHeight.Value)
+    SelectedControls(0).SoftEdges = CBool(chkSoftEdges.Value)
+    SelectedControls(0).HandleHighContrastTheme = CBool(chkHandleHighContrastTheme.Value)
+    SelectedControls(0).HighlightMode = cboHighlightMode.ItemData(cboHighlightMode.ListIndex)
+    SelectedControls(0).HighlightModeTabSel = cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.ListIndex)
+    SelectedControls(0).AutoRelocateControls = cboAutoRelocateControls.ItemData(cboAutoRelocateControls.ListIndex)
+    If Not SelectedControls(0).AutoTabHeight Then
+        SelectedControls(0).TabHeight = CSng(txtTabHeight.Text)
+    End If
+    SelectedControls(0).FlatRoundnessTop = CSng(txtFlatRoundnessTop.Text)
+    SelectedControls(0).FlatRoundnessBottom = CSng(txtFlatRoundnessBottom.Text)
+    SelectedControls(0).FlatRoundnessTabs = CSng(txtFlatRoundnessTabs.Text)
+    SelectedControls(0).TabTransition = cboTabTransition.ItemData(cboTabTransition.ListIndex)
+    SelectedControls(0).OLEDropOnOtherTabs = CBool(chkOLEDropOnOtherTabs.Value)
+    SelectedControls(0).TabMousePointerHand = CBool(chkTabMousePointerHand.Value)
+    SelectedControls(0).FlatBorderMode = cboFlatBorderMode.ItemData(cboFlatBorderMode.ListIndex)
+    SelectedControls(0).FlatBarHeight = CSng(txtFlatBarHeight.Text)
+    SelectedControls(0).FlatBarGripHeight = CSng(txtFlatBarGripHeight.Text)
+    SelectedControls(0).CanReorderTabs = CBool(chkCanReorderTabs.Value)
+    SelectedControls(0).FlatBarPosition = cboFlatBarPosition.ItemData(cboFlatBarPosition.ListIndex)
+    SelectedControls(0).FlatBodySeparationLineHeight = CSng(txtFlatBodySeparationLineHeight.Text)
+    SelectedControls(0).Redraw = True
+    On Error GoTo 0
+End Sub
+
+Private Function ValidateInput() As Boolean
+    Dim iSst As NewTab
+    Dim iValueSng As Single
+    Dim iValueInt As Single
+    
+    If Not ValidateTxtNumericInteger(txtTabs) Then Exit Function
+    If Not ValidateTxtNumericInteger(txtTabsPerRow) Then Exit Function
+    If Not ValidateTxtNumericInteger(txtTabSeparation) Then Exit Function
+    If Not ValidateTxtNumeric(txtHighlightTabExtraHeight) Then Exit Function
+    If txtTabHeight.Enabled Then If Not ValidateTxtNumeric(txtTabHeight) Then Exit Function
+    If Not ValidateTxtNumeric(txtTabMaxWidth) Then Exit Function
+    If Not ValidateTxtNumeric(txtTabMinWidth) Then Exit Function
+    If Not ValidateTxtNumericInteger(txtFlatRoundnessTop) Then Exit Function
+    If Not ValidateTxtNumericInteger(txtFlatRoundnessBottom) Then Exit Function
+    If Not ValidateTxtNumericInteger(txtFlatRoundnessTabs) Then Exit Function
+    If Not ValidateTxtNumericInteger(txtFlatBarHeight) Then Exit Function
+    If Not ValidateTxtNumericInteger(txtFlatBarGripHeight) Then Exit Function
+    If Not ValidateTxtNumericInteger(txtFlatBodySeparationLineHeight) Then Exit Function
+    
+    Set iSst = SelectedControls(0)
+    
+    iValueInt = Val(txtTabs.Text)
+    If (iValueInt < 1) Or (iValueInt > 250) Then
+        ShowInvalidTextBoxValue txtTabs
+        Exit Function
+    End If
+    
+    If txtTabHeight.Enabled Then
+        iValueSng = iSst.FromContainerSizeY(CSng(txtTabHeight.Text), vbHimetric)
+        If (iValueSng < 1) Or (iSst.pScaleY(iValueSng, vbHimetric, vbTwips) > IIf(iSst.UserControlHeight > 2000, iSst.UserControlHeight, 2000)) Then
+            ShowInvalidTextBoxValue txtTabHeight
+            Exit Function
+        End If
+    End If
+    
+    iValueInt = Val(txtTabsPerRow.Text)
+    If iValueInt < 1 Then
+        ShowInvalidTextBoxValue txtTabsPerRow
+        Exit Function
+    End If
+    
+    iValueInt = Val(txtTabSeparation.Text)
+    If iValueInt < 0 Or iValueInt > 20 Then
+        ShowInvalidTextBoxValue txtTabSeparation
+        Exit Function
+    End If
+    
+    iValueSng = CSng(txtHighlightTabExtraHeight.Text)
+    If iValueSng < 0 Then
+        ShowInvalidTextBoxValue txtHighlightTabExtraHeight
+        Exit Function
+    End If
+    
+    iValueSng = iSst.FromContainerSizeX(CSng(txtTabMaxWidth.Text), vbHimetric)
+    If ((iValueSng < iSst.pScaleX(10, vbPixels, vbHimetric)) And Not iValueSng = 0) Or (iSst.pScaleX(iValueSng, vbHimetric, vbTwips) > IIf(iSst.UserControlWidth > 3000, iSst.UserControlWidth, 3000)) Then
+        ShowInvalidTextBoxValue txtTabMaxWidth
+        Exit Function
+    End If
+    
+    iValueSng = iSst.FromContainerSizeX(CSng(txtTabMinWidth.Text), vbHimetric)
+    If (iValueSng < 0) Or (iSst.pScaleX(iValueSng, vbHimetric, vbTwips) > IIf(iSst.UserControlWidth > 3000, iSst.UserControlWidth, 3000)) Then
+        ShowInvalidTextBoxValue txtTabMinWidth
+        Exit Function
+    End If
+    
+    iValueInt = Val(txtFlatRoundnessTop.Text)
+    If iValueInt < 0 Or iValueInt > 100 Then
+        ShowInvalidTextBoxValue txtFlatRoundnessTop
+        Exit Function
+    End If
+    
+    iValueInt = Val(txtFlatRoundnessBottom.Text)
+    If iValueInt < 0 Or iValueInt > 100 Then
+        ShowInvalidTextBoxValue txtFlatRoundnessBottom
+        Exit Function
+    End If
+    
+    iValueInt = Val(txtFlatRoundnessTabs.Text)
+    If iValueInt < 0 Or iValueInt > 100 Then
+        ShowInvalidTextBoxValue txtFlatRoundnessTabs
+        Exit Function
+    End If
+    
+    iValueInt = Val(txtFlatBarHeight.Text)
+    If iValueInt < 0 Or iValueInt > 15 Then
+        ShowInvalidTextBoxValue txtFlatBarHeight
+        Exit Function
+    End If
+    
+    iValueInt = Val(txtFlatBarGripHeight.Text)
+    If iValueInt < -50 Or iValueInt > 50 Then
+        ShowInvalidTextBoxValue txtFlatBarGripHeight
+        Exit Function
+    End If
+    
+    iValueInt = Val(txtFlatBodySeparationLineHeight.Text)
+    If iValueInt < 0 Or iValueInt > 50 Then
+        ShowInvalidTextBoxValue txtFlatBodySeparationLineHeight
+        Exit Function
+    End If
+    
+    ValidateInput = True
+End Function
+
+Private Sub ShowInvalidTextBoxValue(nTextBox As TextBox)
+    MsgBox "Invalid property value.", vbExclamation
+    SetFocusTo nTextBox
+    DoEvents
+    nTextBox.SelStart = 0
+    nTextBox.SelLength = Len(nTextBox.Text)
+End Sub
+    
+Private Function ValidateTxtNumericInteger(nTextBox As TextBox) As Boolean
+    Dim iInvalid As Boolean
+    
+    If (Not IsNumeric(nTextBox.Text)) Then
+        iInvalid = True
+    End If
+    If Not iInvalid Then
+        If (CSng(nTextBox.Text) <> Val(nTextBox.Text)) Then
+            iInvalid = True
+        End If
+    End If
+    If iInvalid Then
+        ShowInvalidTextBoxValue nTextBox
+        Exit Function
+    End If
+    ValidateTxtNumericInteger = True
+End Function
+
+Private Function ValidateTxtNumeric(nTextBox As TextBox) As Boolean
+    If Not IsNumeric(nTextBox.Text) Then
+        MsgBox "Invalid property value.", vbExclamation
+        nTextBox.SelStart = 0
+        nTextBox.SelLength = Len(nTextBox.Text)
+        SetFocusTo nTextBox
+        Exit Function
+    End If
+    ValidateTxtNumeric = True
+End Function
+
+Private Sub SetFocusTo(nControl As Object)
+    On Error Resume Next
+    nControl.SetFocus
+End Sub
+
+Private Sub PropertyPage_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    If tmrLoad.Enabled Then tmrLoad_Timer
+End Sub
+
+Private Sub PropertyPage_SelectionChanged()
+    tmrLoad.Enabled = True
+End Sub
+
+Private Sub SelectInComboByItemData(nCombo As Control, nItemData As Long)
+    Dim c As Long
+    
+    For c = 0 To nCombo.ListCount - 1
+        If nCombo.ItemData(c) = nItemData Then
+            nCombo.ListIndex = c
+            Exit Sub
+        End If
+    Next c
+End Sub
+
+Private Sub tmrLoad_Timer()
+    tmrLoad.Enabled = False
+
+    Dim iCtl As NewTab
+    
+    'Debug.Print PropertyPage.Name & " Start: " & Round(Timer, 2)
+    mLoading = True
+    
+    If TypeName(SelectedControls(0)) <> "NewTab" Then Exit Sub
+    Set iCtl = SelectedControls(0)
+    SetControlTypeName TypeName(iCtl) 'for Themes module
+    
+    mTDIMode = iCtl.TDIMode
+    If mTDIMode Then
+        txtTabs.Enabled = False
+    End If
+    
+    cboTabOrientation.Clear
+    cboTabOrientation.AddItem ssTabOrientationTop & " - ssTabOrientationTop": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ssTabOrientationTop
+    cboTabOrientation.AddItem ssTabOrientationBottom & " - ssTabOrientationBottom": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ssTabOrientationBottom
+    cboTabOrientation.AddItem ssTabOrientationLeft & " - ssTabOrientationLeft": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ssTabOrientationLeft
+    cboTabOrientation.AddItem ssTabOrientationRight & " - ssTabOrientationRight": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ssTabOrientationRight
+    
+    cboBackStyle.Clear
+    cboBackStyle.AddItem ntTransparent & " - ntTransparent": cboBackStyle.ItemData(cboBackStyle.NewIndex) = ntTransparent
+    cboBackStyle.AddItem ntOpaque & " - ntOpaque": cboBackStyle.ItemData(cboBackStyle.NewIndex) = ntOpaque
+    cboBackStyle.AddItem ntOpaqueTabSel & " - ntOpaqueTabSel": cboBackStyle.ItemData(cboBackStyle.NewIndex) = ntOpaqueTabSel
+    
+    cboStyle.Clear
+    cboStyle.AddItem ssStyleTabbedDialog & " - ssStyleTabbedDialog": cboStyle.ItemData(cboStyle.NewIndex) = ssStyleTabbedDialog
+    cboStyle.AddItem ssStylePropertyPage & " - ssStylePropertyPage": cboStyle.ItemData(cboStyle.NewIndex) = ssStylePropertyPage
+    cboStyle.AddItem ntStyleTabStrip & " - ntStyleTabStrip": cboStyle.ItemData(cboStyle.NewIndex) = ntStyleTabStrip
+    cboStyle.AddItem ntStyleFlat & " - ntStyleFlat": cboStyle.ItemData(cboStyle.NewIndex) = ntStyleFlat
+    cboStyle.AddItem ntStyleWindows & " - ntStyleWindows": cboStyle.ItemData(cboStyle.NewIndex) = ntStyleWindows
+    
+    cboAutoRelocateControls.Clear
+    cboAutoRelocateControls.AddItem ntRelocateNever & " - ntRelocateNever": cboAutoRelocateControls.ItemData(cboAutoRelocateControls.NewIndex) = ntRelocateNever
+    cboAutoRelocateControls.AddItem ntRelocateAlways & " - ntRelocateAlways": cboAutoRelocateControls.ItemData(cboAutoRelocateControls.NewIndex) = ntRelocateAlways
+    cboAutoRelocateControls.AddItem ntRelocateOnTabOrientationChange & " - ntRelocateOnTabOrientationChange": cboAutoRelocateControls.ItemData(cboAutoRelocateControls.NewIndex) = ntRelocateOnTabOrientationChange
+    
+    cboTabTransition.Clear
+    cboTabTransition.AddItem ntTransitionImmediate & " - ntTransitionImmediate": cboTabTransition.ItemData(cboTabTransition.NewIndex) = ntTransitionImmediate
+    cboTabTransition.AddItem ntTransitionFaster & " - ntTransitionFaster": cboTabTransition.ItemData(cboTabTransition.NewIndex) = ntTransitionFaster
+    cboTabTransition.AddItem ntTransitionFast & " - ntTransitionFast": cboTabTransition.ItemData(cboTabTransition.NewIndex) = ntTransitionFast
+    cboTabTransition.AddItem ntTransitionMedium & " - ntTransitionMedium": cboTabTransition.ItemData(cboTabTransition.NewIndex) = ntTransitionMedium
+    cboTabTransition.AddItem ntTransitionSlow & " - ntTransitionSlow": cboTabTransition.ItemData(cboTabTransition.NewIndex) = ntTransitionSlow
+    cboTabTransition.AddItem ntTransitionSlower & " - ntTransitionSlower": cboTabTransition.ItemData(cboTabTransition.NewIndex) = ntTransitionSlower
+    
+    cboFlatBorderMode.Clear
+    cboFlatBorderMode.AddItem ntBorderTabs & " - ntBorderTabs": cboFlatBorderMode.ItemData(cboFlatBorderMode.NewIndex) = ntBorderTabs
+    cboFlatBorderMode.AddItem ntBorderTabSel & " - ntBorderTabSel": cboFlatBorderMode.ItemData(cboFlatBorderMode.NewIndex) = ntBorderTabSel
+    
+    cboFlatBarPosition.Clear
+    cboFlatBarPosition.AddItem ntBarPositionTop & " - ntBarPositionTop": cboFlatBarPosition.ItemData(cboFlatBarPosition.NewIndex) = ntBarPositionTop
+    cboFlatBarPosition.AddItem ntBarPositionBottom & " - ntBarPositionBottom": cboFlatBarPosition.ItemData(cboFlatBarPosition.NewIndex) = ntBarPositionBottom
+    
+    txtTabs.Text = iCtl.Tabs
+    SelectInComboByItemData cboTabOrientation, iCtl.TabOrientation
+    SelectInComboByItemData cboBackStyle, iCtl.BackStyle
+    txtTabsPerRow.Text = iCtl.TabsPerRow
+    
+    cboTabAppearance.Tag = iCtl.TabAppearance
+    cboTabWidthStyle.Tag = iCtl.TabWidthStyle
+    cboShowRowsInPerspective.Tag = iCtl.ShowRowsInPerspective
+    cboHighlightMode.Tag = iCtl.HighlightMode
+    cboHighlightModeTabSel.Tag = iCtl.HighlightModeTabSel
+    
+    SelectInComboByItemData cboStyle, iCtl.Style
+    
+    txtTabSeparation.Text = iCtl.TabSeparation
+    txtHighlightTabExtraHeight.Text = iCtl.HighlightTabExtraHeight
+    txtTabMaxWidth.Text = iCtl.TabMaxWidth
+    txtTabMinWidth.Text = iCtl.TabMinWidth
+    chkWordWrap.Value = IIf(iCtl.WordWrap, 1, 0)
+    chkEnabled.Value = IIf(iCtl.Enabled, 1, 0)
+    chkUseMaskColor.Value = IIf(iCtl.UseMaskColor, 1, 0)
+    chkHighlightEffect.Value = IIf(iCtl.HighlightEffect, 1, 0)
+    chkShowFocusRect.Value = IIf(iCtl.ShowFocusRect, 1, 0)
+    chkShowDisabledState.Value = IIf(iCtl.ShowDisabledState, 1, 0)
+    chkChangeControlsBackColor.Value = IIf(iCtl.ChangeControlsBackColor, 1, 0)
+    chkChangeControlsForeColor.Value = IIf(iCtl.ChangeControlsForeColor, 1, 0)
+    chkAutoTabHeight.Value = IIf(iCtl.AutoTabHeight, 1, 0)
+    chkSoftEdges.Value = IIf(iCtl.SoftEdges, 1, 0)
+    chkHandleHighContrastTheme.Value = IIf(iCtl.HandleHighContrastTheme, 1, 0)
+    SelectInComboByItemData cboHighlightMode, iCtl.HighlightMode
+    SelectInComboByItemData cboHighlightModeTabSel, iCtl.HighlightModeTabSel
+    SelectInComboByItemData cboAutoRelocateControls, iCtl.AutoRelocateControls
+    txtTabHeight.Text = iCtl.TabHeight
+    txtFlatRoundnessTop.Text = iCtl.FlatRoundnessTop
+    txtFlatRoundnessBottom.Text = iCtl.FlatRoundnessBottom
+    txtFlatRoundnessTabs.Text = iCtl.FlatRoundnessTabs
+    SelectInComboByItemData cboTabTransition, iCtl.TabTransition
+    chkOLEDropOnOtherTabs.Value = IIf(iCtl.OLEDropOnOtherTabs, 1, 0)
+    chkTabMousePointerHand.Value = IIf(iCtl.TabMousePointerHand, 1, 0)
+    SelectInComboByItemData cboFlatBorderMode, iCtl.FlatBorderMode
+    txtFlatBarHeight.Text = iCtl.FlatBarHeight
+    txtFlatBarGripHeight.Text = iCtl.FlatBarGripHeight
+    chkCanReorderTabs.Value = IIf(iCtl.CanReorderTabs, 1, 0)
+    SelectInComboByItemData cboFlatBarPosition, iCtl.FlatBarPosition
+    txtFlatBodySeparationLineHeight.Text = iCtl.FlatBodySeparationLineHeight
+    
+    mLoading = False
+    'Debug.Print PropertyPage.Name & " End: " & Round(Timer, 2)
+
+End Sub
+
+Private Sub tmrRedraw_Timer()
+    tmrRedraw.Enabled = False
+    RedrawWindow PropertyPage.hWnd, ByVal 0&, 0&, RDW_INVALIDATE Or RDW_ALLCHILDREN
+End Sub
+
+Private Sub txtTabHeight_Change()
+    If Not mLoading Then
+        Changed = True
+        chkAutoTabHeight.Value = 0
+    End If
+End Sub
+
+Private Sub txtTabHeight_GotFocus()
+    EnterTxt txtTabHeight
+End Sub
+
+Private Sub txtTabMaxWidth_Change()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub txtTabMaxWidth_GotFocus()
+    EnterTxt txtTabMaxWidth
+End Sub
+
+Private Sub txtTabMinWidth_Change()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub txtFlatRoundnessTop_Change()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub txtFlatRoundnessBottom_Change()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub txtFlatRoundnessTabs_Change()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub txtFlatBarHeight_Change()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub txtFlatBarGripHeight_Change()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub txtFlatBodySeparationLineHeight_Change()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub txtTabMinWidth_GotFocus()
+    EnterTxt txtTabMinWidth
+End Sub
+
+Private Sub txtFlatRoundnessTop_GotFocus()
+    EnterTxt txtFlatRoundnessTop
+End Sub
+
+Private Sub txtFlatRoundnessBottom_GotFocus()
+    EnterTxt txtFlatRoundnessBottom
+End Sub
+
+Private Sub txtFlatRoundnessTabs_GotFocus()
+    EnterTxt txtFlatRoundnessTabs
+End Sub
+
+Private Sub txtFlatBarHeight_GotFocus()
+    EnterTxt txtFlatBarHeight
+End Sub
+
+Private Sub txtFlatBarGripHeight_GotFocus()
+    EnterTxt txtFlatBarGripHeight
+End Sub
+
+Private Sub txtFlatBodySeparationLineHeight_GotFocus()
+    EnterTxt txtFlatBodySeparationLineHeight
+End Sub
+
+Private Sub txtTabs_Change()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub txtTabs_GotFocus()
+    EnterTxt txtTabs
+End Sub
+
+Private Sub txtHighlightTabExtraHeight_Change()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub txtHighlightTabExtraHeight_GotFocus()
+    EnterTxt txtHighlightTabExtraHeight
+End Sub
+
+Private Sub txtTabSeparation_Change()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub txtTabSeparation_GotFocus()
+    EnterTxt txtTabSeparation
+End Sub
+
+Private Sub txtTabsPerRow_Change()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub EnterTxt(nTextBox As Control)
+    'nTextBox.SelStart = Len(nTextBox.Text)
+End Sub
+    
+Private Sub txtTabsPerRow_GotFocus()
+    EnterTxt txtTabsPerRow
+End Sub
+

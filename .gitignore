@@ -1,0 +1,7 @@
+
+*.oca
+*.lib
+*.exp
+*.log
+*.lnk
+/docs/Documenter
