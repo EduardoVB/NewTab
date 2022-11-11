@@ -510,6 +510,13 @@ Private Enum NTHighlightIntensityConstants
     ntHighlightIntensityLight = 1
 End Enum
 
+Private Enum NTCornerPositionConstants
+    ntCornerTopLeft = 0
+    ntCornerTopRight = 1
+    ntCornerBottomLeft = 2
+    ntCornerBottomRight = 3
+End Enum
+
 ' Public Enums
 Public Enum NTTabOrientationConstants
     ssTabOrientationTop = 0
@@ -6986,7 +6993,7 @@ Private Sub DrawTab(nTab As Long)
                     If iFlatRightRoundness > iBottomShift Then iBottomShift = iFlatRightRoundness
                     If iTabData.RightTab Then
                         If Abs(mTabBodyRect.Right - iTabData.TabRect.Right) > 5 Then
-                            iExtI = -2
+                            iExtI = -5
                             iBottomShift = 11
                         End If
                     End If
@@ -7308,14 +7315,7 @@ Private Sub DrawTab(nTab As Long)
                         ' draw rounded top-right corner
                         iLineColor = IIf((mFlatBorderMode = ntBorderTabs) Or iActive, iFlatBorderColor, iFlatTabsSeparationLineColor)
                         If iLineColor <> mBackColorTabs2 Then
-                            For iX = .Right + iRightShift To .Right + iRightShift - iFlatRightRoundness Step -1
-                                For iY = .Top + iTopOffset To .Top + iTopOffset + iFlatRightRoundness
-                                    iDistance = Sqr((iFlatRightRoundness - (iX - (.Right + iRightShift) + iFlatRightRoundness * 2)) ^ 2 + (iFlatRightRoundness - (iY - (.Top + iTopOffset))) ^ 2) - iFlatRightRoundness
-                                    If (Abs(iDistance) < 1) Then
-                                        SetPixelV picDraw.hDC, iX, iY, MixColors(iLineColor, GetPixel(picDraw.hDC, iX, iY), (1 - Abs(iDistance)) * 100)
-                                    End If
-                                Next
-                            Next
+                            DrawRoundedCorner ntCornerTopRight, .Right + iRightShift, .Top + iTopOffset, iFlatRightRoundness, iLineColor
                         End If
                     End If
                 End If
@@ -7366,14 +7366,7 @@ Private Sub DrawTab(nTab As Long)
                     If (iFlatLeftRoundness > 0) Then
                         iLineColor = IIf((mFlatBorderMode = ntBorderTabs) Or (iActive And (mFlatBorderMode = ntBorderTabSel)), iFlatBorderColor, iFlatTabsSeparationLineColor)
                         If iLineColor <> mBackColorTabs2 Then
-                            For iX = .Left + iLeftOffset To .Left + iLeftOffset + iFlatLeftRoundness
-                                For iY = .Top + iTopOffset To .Top + iTopOffset + iFlatLeftRoundness
-                                    iDistance = Sqr((iFlatLeftRoundness - ((.Left + iLeftOffset - iX) + iFlatLeftRoundness * 2)) ^ 2 + (iFlatLeftRoundness - (iY - (.Top + iTopOffset))) ^ 2) - iFlatLeftRoundness
-                                    If (Abs(iDistance) < 1) Then
-                                        SetPixelV picDraw.hDC, iX, iY, MixColors(iLineColor, GetPixel(picDraw.hDC, iX, iY), (1 - Abs(iDistance)) * 100)
-                                    End If
-                                Next
-                            Next
+                            DrawRoundedCorner ntCornerTopLeft, .Left + iLeftOffset, .Top + iTopOffset, iFlatLeftRoundness, iLineColor
                         End If
                     End If
                 End If
@@ -7485,14 +7478,7 @@ Private Sub DrawInactiveTabBodyPart(nLeft As Long, nTop As Long, ByVal nWidth As
                     If ((nLeft + nWidth) - mRightMostTabsRightPos(nRowPos)) > mFlatRoundnessTopDPIScaled Then
                         iLineColor = iFlatBorderColor
                         If iLineColor <> mBackColorTabs2 Then
-                            For iX = nLeft + 1 + nWidth To nLeft + nWidth - mFlatRoundnessTopDPIScaled Step -1
-                                For iY = nTop To nTop + mFlatRoundnessTopDPIScaled
-                                    iDistance = Sqr((mFlatRoundnessTopDPIScaled - (iX - (nLeft + nWidth) + mFlatRoundnessTopDPIScaled * 2)) ^ 2 + (mFlatRoundnessTopDPIScaled - (iY - nTop)) ^ 2) - mFlatRoundnessTopDPIScaled
-                                    If (Abs(iDistance) < 1) Then
-                                        SetPixelV picDraw.hDC, iX, iY, MixColors(iLineColor, GetPixel(picDraw.hDC, iX, iY), (1 - Abs(iDistance)) * 100)
-                                    End If
-                                Next
-                            Next
+                            DrawRoundedCorner ntCornerTopRight, nLeft + nWidth, nTop, mFlatRoundnessTopDPIScaled, iLineColor
                         End If
                     End If
                 End If
@@ -7524,14 +7510,7 @@ Private Sub DrawInactiveTabBodyPart(nLeft As Long, nTop As Long, ByVal nWidth As
             If mFlatRoundnessTopDPIScaled > 0 Then
                 iLineColor = iFlatBorderColor ' m3DDKShadow
                 ' botom-right corner
-                For iX = (nLeft + nWidth + 1) - 1 To (nLeft + nWidth + 1) - mFlatRoundnessTop2 - 1 Step -1
-                    For iY = (nTop + nHeight + 1) - 1 To (nTop + nHeight + 1) - mFlatRoundnessTop2 - 1 Step -1
-                        iDistance = Sqr(((nLeft + nWidth + 1) - 1 - iX - mFlatRoundnessTop2) ^ 2 + (mFlatRoundnessTop2 - ((nTop + nHeight + 1) - 1 - iY)) ^ 2) - mFlatRoundnessTop2
-                        If (Abs(iDistance) < 1) Then
-                            SetPixelV picDraw.hDC, iX, iY, MixColors(iLineColor, GetPixel(picDraw.hDC, iX, iY), (1 - Abs(iDistance)) * 100)
-                        End If
-                    Next
-                Next
+                DrawRoundedCorner ntCornerBottomRight, nLeft + nWidth, nTop + nHeight, mFlatRoundnessTop2, iLineColor
             End If
         End If
     End If
@@ -7650,38 +7629,17 @@ Private Sub DrawBody(nScaleHeight As Long)
                     Else
                         iLineColor = iFlatBorderColor
                     End If
-                    For iX = mTabBodyWidth - 1 To mTabBodyWidth - mFlatRoundnessTopDPIScaled - 1 Step -1
-                        For iY = mTabBodyStart To mTabBodyStart + mFlatRoundnessTopDPIScaled
-                            iDistance = Sqr((mFlatRoundnessTopDPIScaled - (iX - mTabBodyWidth + 1 + mFlatRoundnessTopDPIScaled * 2)) ^ 2 + (mFlatRoundnessTopDPIScaled - (iY - mTabBodyStart)) ^ 2) - mFlatRoundnessTopDPIScaled
-                            If (Abs(iDistance) < 1) Then
-                                SetPixelV picDraw.hDC, iX, iY, MixColors(iLineColor, GetPixel(picDraw.hDC, iX, iY), (1 - Abs(iDistance)) * 100)
-                            End If
-                        Next
-                    Next
+                    DrawRoundedCorner ntCornerTopRight, mTabBodyWidth - 1, mTabBodyStart, mFlatRoundnessTopDPIScaled, iLineColor
                 End If
             End If
             
             If mFlatRoundnessBottomDPIScaled > 0 Then
                 iLineColor = iFlatBorderColor
                 ' botom-left corner
-                For iX = 0 To mFlatRoundnessBottomDPIScaled
-                    For iY = nScaleHeight - 1 To nScaleHeight - mFlatRoundnessBottomDPIScaled - 1 Step -1
-                        iDistance = Sqr((mFlatRoundnessBottomDPIScaled + iX - mFlatRoundnessBottomDPIScaled * 2) ^ 2 + (mFlatRoundnessBottomDPIScaled - (nScaleHeight - 1 - iY)) ^ 2) - mFlatRoundnessBottomDPIScaled
-                        If (Abs(iDistance) < 1) Then
-                            SetPixelV picDraw.hDC, iX, iY, MixColors(iLineColor, GetPixel(picDraw.hDC, iX, iY), (1 - Abs(iDistance)) * 100)
-                        End If
-                    Next
-                Next
+                DrawRoundedCorner ntCornerBottomLeft, 0, nScaleHeight - 1, mFlatRoundnessBottomDPIScaled, iLineColor
                 
                 ' botom-right corner
-                For iX = mTabBodyWidth - 1 To mTabBodyWidth - mFlatRoundnessBottomDPIScaled - 1 Step -1
-                    For iY = nScaleHeight - 1 To nScaleHeight - mFlatRoundnessBottomDPIScaled - 1 Step -1
-                        iDistance = Sqr((mTabBodyWidth - 1 - iX - mFlatRoundnessBottomDPIScaled) ^ 2 + (mFlatRoundnessBottomDPIScaled - (nScaleHeight - 1 - iY)) ^ 2) - mFlatRoundnessBottomDPIScaled
-                        If (Abs(iDistance) < 1) Then
-                            SetPixelV picDraw.hDC, iX, iY, MixColors(iLineColor, GetPixel(picDraw.hDC, iX, iY), (1 - Abs(iDistance)) * 100)
-                        End If
-                    Next
-                Next
+                DrawRoundedCorner ntCornerBottomRight, mTabBodyWidth - 1, nScaleHeight - 1, mFlatRoundnessBottomDPIScaled, iLineColor
             End If
         Else
             ' top line
@@ -8535,6 +8493,50 @@ Private Sub FillCurvedGradient2(ByVal nLeft As Long, ByVal nTop As Long, ByVal n
             If sngRed < 0 Then sngRed = 0
             If sngGreen < 0 Then sngGreen = 0
             If sngBlue < 0 Then sngBlue = 0
+        Next
+    End If
+End Sub
+
+Private Sub DrawRoundedCorner(ByVal nCorner As NTCornerPositionConstants, ByVal nX As Long, ByVal nY As Long, ByVal nRoundness As Long, ByVal nColor As Long)
+    Dim iX As Long
+    Dim iY As Long
+    Dim iDistance As Single
+    
+    If nCorner = ntCornerTopRight Then
+        For iX = nX To nX - nRoundness Step -1
+            For iY = nY To nY + nRoundness
+                iDistance = Sqr((nRoundness - (iX - nX + nRoundness * 2)) ^ 2 + (nRoundness - (iY - (nY))) ^ 2) - nRoundness
+                If (Abs(iDistance) < 1) Then
+                    SetPixelV picDraw.hDC, iX, iY, MixColors(nColor, GetPixel(picDraw.hDC, iX, iY), (1 - Abs(iDistance)) * 100)
+                End If
+            Next
+        Next
+    ElseIf nCorner = ntCornerTopLeft Then
+        For iX = nX To nX + nRoundness
+            For iY = nY To nY + nRoundness
+                iDistance = Sqr((nRoundness - ((nX - iX) + nRoundness * 2)) ^ 2 + (nRoundness - (iY - (nY))) ^ 2) - nRoundness
+                If (Abs(iDistance) < 1) Then
+                    SetPixelV picDraw.hDC, iX, iY, MixColors(nColor, GetPixel(picDraw.hDC, iX, iY), (1 - Abs(iDistance)) * 100)
+                End If
+            Next
+        Next
+    ElseIf nCorner = ntCornerBottomRight Then
+        For iX = nX To nX - nRoundness Step -1
+            For iY = nY To nY - nRoundness Step -1
+                iDistance = Sqr((nX - iX - nRoundness) ^ 2 + (nRoundness - (nY - iY)) ^ 2) - nRoundness
+                If (Abs(iDistance) < 1) Then
+                    SetPixelV picDraw.hDC, iX, iY, MixColors(nColor, GetPixel(picDraw.hDC, iX, iY), (1 - Abs(iDistance)) * 100)
+                End If
+            Next
+        Next
+    ElseIf nCorner = ntCornerBottomLeft Then
+        For iX = nX To nX + nRoundness
+            For iY = nY To nY - nRoundness Step -1
+                iDistance = Sqr((nRoundness - (nX - iX) - nRoundness * 2) ^ 2 + (nRoundness - (nY - iY)) ^ 2) - nRoundness
+                If (Abs(iDistance) < 1) Then
+                    SetPixelV picDraw.hDC, iX, iY, MixColors(nColor, GetPixel(picDraw.hDC, iX, iY), (1 - Abs(iDistance)) * 100)
+                End If
+            Next
         Next
     End If
 End Sub
