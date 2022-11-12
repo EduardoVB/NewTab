@@ -1,1 +1,2 @@
+2022-11-12 Added middle click handling to tabs in TDIMode.
 2022-11-10 Initial release.
