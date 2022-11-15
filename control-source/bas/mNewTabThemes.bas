@@ -46,6 +46,8 @@ Private Const cThemeString_Buttons6                      As String = "BackColorT
 Private Const cThemeString_Buttons7                      As String = "BackColorTabSel=-2147483633|BackColorTabs=10646340|ChangeControlsForeColor=0|FlatBarColorHighlight=4228799|FlatBarColorInactive=10646340|FlatBarColorTabSel=10646340|FlatBarPosition=1|FlatBodySeparationLineColor=7434609|FlatBodySeparationLineHeight=0|FlatBorderColor=-2147483633|FlatRoundnessBottom=0|FlatRoundnessTop=0|FlatTabsSeparationLineColor=7434609|ForeColor=16777215|ForeColorHighlighted=16777215|ForeColorTabSel=0|HighlightColor=10646340|HighlightColorTabSel=-2147483633|HighlightMode=196|HighlightModeTabSel=196|IconColor=16777215|IconColorTabHighlighted=16777215|IconColorTabSel=0|Style=3|TabMousePointerHand=-1|TabSeparation=8"
 Private Const cThemeString_WebLinks                      As String = "BackColorTabs=16250871|FlatBarColorHighlight=16250871|FlatBarColorInactive=16250871|FlatBarColorTabSel=16731706|FlatBarHeight=4|FlatBarPosition=1|FlatBodySeparationLineColor=14869218|FlatBorderColor=16250871|FlatRoundnessBottom=0|FlatRoundnessTop=0|FlatTabsSeparationLineColor=16250871|ForeColorHighlighted=16731706|ForeColorTabSel=16777215|HighlightColor=16477710|HighlightColorTabSel=16477710|HighlightMode=32|HighlightModeTabSel=20|IconColorTabHighlighted=16731706|IconColorTabSel=16777215|Style=3|TabMousePointerHand=-1"
 Private Const cThemeString_WebLinks2                     As String = "BackColorTabs=16250871|FlatBarColorHighlight=16250871|FlatBarColorInactive=16250871|FlatBarColorTabSel=16731706|FlatBarHeight=4|FlatBarPosition=1|FlatBodySeparationLineColor=14869218|FlatBorderColor=16731706|FlatBorderMode=1|FlatRoundnessTabs=8|FlatTabsSeparationLineColor=16250871|ForeColorHighlighted=16731706|ForeColorTabSel=16777215|HighlightColor=16477710|HighlightColorTabSel=16477710|HighlightMode=16|HighlightModeTabSel=20|IconColorTabHighlighted=16731706|IconColorTabSel=16777215|Style=3|TabMousePointerHand=-1"
+Private Const cThemeString_AnotherButtonLight            As String = "BackColor=16250871|BackColorTabSel=16250871|BackColorTabs=16250871|FlatBarColorTabSel=16546371|FlatBarHeight=0|FlatBodySeparationLineColor=16777215|FlatBodySeparationLineHeight=0|FlatBorderColor=16777215|FlatBorderMode=1|FlatRoundnessBottom=0|FlatRoundnessTabs=4|FlatRoundnessTop=0|FlatTabBoderColorHighlight=8603431|FlatTabBoderColorTabSel=15492185|FlatTabsSeparationLineColor=16777215|ForeColor=0|ForeColorHighlighted=0|ForeColorTabSel=0|HighlightColor=15461355|HighlightMode=12|HighlightModeTabSel=512|IconColor=0|IconColorTabHighlighted=0|IconColorTabSel=0|Style=3|TabMousePointerHand=-1"
+Private Const cThemeString_AnotherButtonDark             As String = "BackColor=3476744|BackColorTabSel=592137|BackColorTabs=3476744|FlatBarColorTabSel=12335619|FlatBarHeight=0|FlatBodySeparationLineHeight=0|FlatBorderColor=3476744|FlatBorderMode=1|FlatRoundnessBottom=0|FlatRoundnessTabs=4|FlatRoundnessTop=0|FlatTabBoderColorHighlight=14195837|FlatTabBoderColorTabSel=14195837|FlatTabsSeparationLineColor=3476744|ForeColor=16777215|ForeColorHighlighted=16777215|ForeColorTabSel=16777215|HighlightColor=4210752|HighlightMode=12|HighlightModeTabSel=512|IconColor=16777215|IconColorTabHighlighted=16777215|IconColorTabSel=16777215|Style=3|TabMousePointerHand=-1"
 
 Private Function ClientProjectFolder() As String
     Dim iInIDE As Boolean
@@ -292,6 +294,8 @@ Public Sub CopyControlProperties(nCtlSrc As NewTab, nCtlDest As NewTab)
     nCtlDest.ForeColor = nCtlSrc.ForeColor
     nCtlDest.ForeColorTabSel = nCtlSrc.ForeColorTabSel
     nCtlDest.ForeColorHighlighted = nCtlSrc.ForeColorHighlighted
+    nCtlDest.FlatTabBoderColorHighlight = nCtlSrc.FlatTabBoderColorHighlight
+    nCtlDest.FlatTabBoderColorTabSel = nCtlSrc.FlatTabBoderColorTabSel
     nCtlDest.IconColor = nCtlSrc.IconColor
     nCtlDest.IconColorTabSel = nCtlSrc.IconColorTabSel
     nCtlDest.IconColorTabHighlighted = nCtlSrc.IconColorTabHighlighted
@@ -439,6 +443,8 @@ Public Sub ApplyThemeToControl(ByRef nThemeData As Collection, nCtl As NewTab, n
     If PropertyExists("ForeColor") Then nCtl.ForeColor = GetPropertyValue("ForeColor")
     If PropertyExists("ForeColorTabSel") Then nCtl.ForeColorTabSel = GetPropertyValue("ForeColorTabSel")
     If PropertyExists("ForeColorHighlighted") Then nCtl.ForeColorHighlighted = GetPropertyValue("ForeColorHighlighted")
+    If PropertyExists("FlatTabBoderColorHighlight") Then nCtl.FlatTabBoderColorHighlight = GetPropertyValue("FlatTabBoderColorHighlight")
+    If PropertyExists("FlatTabBoderColorTabSel") Then nCtl.FlatTabBoderColorTabSel = GetPropertyValue("FlatTabBoderColorTabSel")
     If PropertyExists("IconColor") Then nCtl.IconColor = GetPropertyValue("IconColor")
     If PropertyExists("IconColorTabSel") Then nCtl.IconColorTabSel = GetPropertyValue("IconColorTabSel")
     If PropertyExists("IconColorTabHighlighted") Then nCtl.IconColorTabHighlighted = GetPropertyValue("IconColorTabHighlighted")
@@ -745,6 +751,20 @@ Public Function GetThemeStringFromControl(nCtl As NewTab, nAmbientBackColor As L
             AddPropStrToArray iPropsStr, c, "ForeColorHighlighted", nCtl.ForeColorHighlighted
         End If
     End If
+    If nCtl.FlatTabBoderColorHighlight <> nAmbientForeColor Then
+        If iTakeAmbientColors And ((nCtl.FlatTabBoderColorHighlight = nAmbientForeColor) Or (nCtl.FlatTabBoderColorHighlight = vbButtonText)) Then
+            AddPropStrToArray iPropsStr, c, "FlatTabBoderColorHighlight", "F"
+        Else
+            AddPropStrToArray iPropsStr, c, "FlatTabBoderColorHighlight", nCtl.FlatTabBoderColorHighlight
+        End If
+    End If
+    If nCtl.FlatTabBoderColorTabSel <> nAmbientForeColor Then
+        If iTakeAmbientColors And ((nCtl.FlatTabBoderColorTabSel = nAmbientForeColor) Or (nCtl.FlatTabBoderColorTabSel = vbButtonText)) Then
+            AddPropStrToArray iPropsStr, c, "FlatTabBoderColorTabSel", "F"
+        Else
+            AddPropStrToArray iPropsStr, c, "FlatTabBoderColorTabSel", nCtl.FlatTabBoderColorTabSel
+        End If
+    End If
     If nCtl.IconColor <> nAmbientForeColor Then
         If Not iTakeAmbientColors Then
             AddPropStrToArray iPropsStr, c, "IconColor", nCtl.IconColor
@@ -933,7 +953,8 @@ Private Sub LoadDefaultThemes()
     AddDefaultTheme "Buttons 7", cThemeString_Buttons7
     AddDefaultTheme "Web Links", cThemeString_WebLinks
     AddDefaultTheme "Web Links 2", cThemeString_WebLinks2
-    
+    AddDefaultTheme "Another Button Light", cThemeString_AnotherButtonLight
+    AddDefaultTheme "Another Button Dark", cThemeString_AnotherButtonDark
 End Sub
 
 Private Sub AddDefaultTheme(nName As String, nThemeString As String)

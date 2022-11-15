@@ -511,7 +511,7 @@ Private Enum NTHighlightIntensityConstants
 End Enum
 
 Private Enum NTCornerPositionConstants
-    ntCornerTopLeft = 0
+    ntCornerTopleft = 0
     ntCornerTopRight = 1
     ntCornerBottomLeft = 2
     ntCornerBottomRight = 3
@@ -623,93 +623,22 @@ Public Enum NTTabTransitionConstants
     ntTransitionSlower = 5
 End Enum
 
-Public Enum NTHighlightModeConstants
+Public Enum NTHighlightModeFlagsConstants
     ntHLAuto = 0
     ntHLNone = 1
-    ntHLGradient = 2
-    ntHLDoubleGradient = 3
-    ntHLPlain = 4
-    ntHLGradientLight = 10
-    ntHLDoubleGradientLight = 11
+    ntHLBackgroundGradient = 2
+    ntHLBackgroundDoubleGradient = 3
+    ntHLBackgroundPlain = 4
+    ntHLBackgroundTypeFilter = 7
+    ntHLBackgroundLight = 8
     ntHLCaptionBold = 16
-    ntHLGradientAndCaptionBold = 18
-    ntHLDoubleGradientAndCaptionBold = 19
-    ntHLPlainAndCaptionBold = 20
-    ntHLGradientLightAndCaptionBold = 26
-    ntHLDoubleGradientLightAndCaptionBold = 27
     ntHLCaptionUnderlined = 32 '*
-    ntHLGradientAndCaptionUnderlined = 34 '*
-    ntHLGradientLightAndCaptionUnderlined = 42 '*
-    ntHLCaptionBoldAndUnderlined = 48
     ntHLFlatBar = 64
-    ntHLFlatBarAndGradient = 66
-    ntHLFlatBarAndPlain = 68
-    ntHLFlatBarAndGradientLight = 74
-    ntHLFlatBarAndPlainLight = 76
-    ntHLFlatBarAndCaptionBold = 80
-    ntHLFlatBarGradientAndCaptionBold = 82
-    ntHLFlatBarPlainAndCaptionBold = 84
-    ntHLFlatBarGradientLightAndCaptionBold = 90
-    ntHLFlatBarAndCaptionUnderlined = 96 '*
-    ntHLFlatBarAndPlainAndCaptionUnderlined = 100 '*
-    ntHLFlatBarAndCaptionBoldUnderlined = 112 '*
-    ntHLFlatBarPlainAndCaptionBoldUnderlined = 116 '*
-    'ntHLFlatBarGrip = 128
+    ntHLFlatBarGrip = 128
     ntHLFlatBarWithGrip = 196
-    ntHLFlatBarWithGripAndGradient = 198 '66
-    ntHLFlatBarWithGripAndPlain = 196 '68
-    ntHLFlatBarWithGripAndGradientLight = 202 '74
-    ntHLFlatBarWithGripAndCaptionBold = 208 '80
-    ntHLFlatBarWithGripGradientAndCaptionBold = 210 '82
-    ntHLFlatBarWithGripPlainAndCaptionBold = 212 ' 84
-    ntHLFlatBarWithGripGradientLightAndCaptionBold = 218 '90
-    ntHLFlatBarWithGripAndCaptionUnderlined = 224 ' 96 '*
-    ntHLFlatBarWithGripPlainAndCaptionUnderlined = 228 ' 100 '*
-    ntHLFlatBarWithGripAndCaptionBoldUnderlined = 240 ' 112 '*
-    ntHLFlatBarWithGripPlainAndCaptionBoldUnderlined = 244 ' 116 '*
     ntHLExtraHeight = 256
-    ntHLGradientAndExtraHeight = 258 '130
-    ntHLDoubleGradientAndExtraHeight = 259 '131
-    ntHLPlainAndExtraHeight = 260 '132
-    ntHLGradientLightAndExtraHeight = 266 '138
-    ntHLDoubleGradientLightAndExtraHeight = 267 '139
-    ntHLCaptionBoldAndExtraHeight = 272 '144
-    ntHLGradientCaptionBoldAndExtraHeight = 274 '146
-    ntHLDoubleGradientCaptionBoldAndExtraHeight = 275 '147
-    ntHLPlainCaptionBoldAndExtraHeight = 276 '148
-    ntHLGradientLightCaptionBoldAndExtraHeight = 282 '154
-    ntHLDoubleGradientLightCaptionBoldAndExtraHeight = 283 '155
-    ntHLFlatBarAndExtraHeight = 320 '192
-    ntHLFlatBarGradientAndExtraHeight = 322 '194
-    ntHLFlatBarPlainAndExtraHeight = 324 ' 196
-    ntHLFlatBarGradientLightAndExtraHeight = 330 '202
-    ntHLFlatBarCaptionBoldAndExtraHeight = 336 ' 208
-    ntHLFlatBarGradientCaptionBoldAndExtraHeight = 338 '210
-    ntHLFlatBarPlainCaptionBoldAndExtraHeight = 340 '212
-    ntHLFlatBarGradientLightCaptionBoldAndExtraHeight = 346 ' 218
-    ntHLFlatBarGradientLightCaptionBoldUnderlinedAndExtraHeight = 378 '250
-    ntHLFlatBarWithGripAndExtraHeight = 448 '320 '192
-    ntHLFlatBarWithGripGradientAndExtraHeight = 450 '322 '194
-    ntHLFlatBarWithGripPlainAndExtraHeight = 452 '324 ' 196
-    ntHLFlatBarWithGripGradientLightAndExtraHeight = 458 '330 '202
-    ntHLFlatBarWithGripCaptionBoldAndExtraHeight = 464 '336 ' 208
-    ntHLFlatBarWithGripGradientCaptionBoldAndExtraHeight = 466 '338 '210
-    ntHLFlatBarWithGripPlainCaptionBoldAndExtraHeight = 468 '340 '212
-    ntHLFlatBarWithGripGradientLightCaptionBoldAndExtraHeight = 474 '346 ' 218
-    ntHLFlatBarWithGripGradientLightCaptionBoldUnderlinedAndExtraHeight = 506 '378 '250
-
-    '2    Gradient
-    '3    DoubleGradient
-    '4    Plain
-    
-    '8    Light
-    
-    '16   CaptionBold
-    '32   CaptionUnderlined
-    '64   FlatBar
-    '128  FlatBarGrip
-    '256  ExtraHeight
-    
+    ntHLFlatDrawBorder = 512
+    ntHLAllFlags = 1023
 End Enum
 
 Public Enum NTFlatBorderModeConstants
@@ -890,6 +819,8 @@ Private mFlatBarColorInactive As Long
 Private mFlatTabsSeparationLineColor As Long
 Private mFlatBodySeparationLineColor As Long
 Private mFlatBorderColor As Long
+Private mFlatTabBoderColorHighlight As Long
+Private mFlatTabBoderColorTabSel As Long
 
 Private mMaskColor As Long
 Private mUseMaskColor As Boolean
@@ -920,8 +851,8 @@ Private mFlatRoundnessTop As Long
 Private mFlatRoundnessBottom As Long
 Private mFlatRoundnessTabs As Long
 Private mTabMousePointerHand As Boolean
-Private mHighlightMode As NTHighlightModeConstants
-Private mHighlightModeTabSel As NTHighlightModeConstants
+Private mHighlightMode As Long
+Private mHighlightModeTabSel As Long
 Private mFlatBorderMode As NTFlatBorderModeConstants
 Private mFlatBarHeight As Long
 Private mFlatBarGripHeight As Long
@@ -1017,6 +948,8 @@ Private mHighlightFlatBarTabSel As Boolean
 Private mHighlightFlatBarWithGripTabSel As Boolean
 Private mHighlightAddExtraHeight As Boolean
 Private mHighlightAddExtraHeightTabSel As Boolean
+Private mHighlightFlatDrawBorder As Boolean
+Private mHighlightFlatDrawBorderTabSel As Boolean
 Private mTabSelFontBold As NTAutoYesNoConstants
 Private mHighlightCaptionBold As Boolean
 Private mHighlightCaptionBoldTabSel As Boolean
@@ -1055,6 +988,8 @@ Private mFlatRoundnessTabsDPIScaled As Long
 Private mTabSeparationDPIScaled As Long
 Private mTabIconDistanceToCaptionDPIScaled As Long
 Private mIconClickExtendDPIScaled As Long
+Private mMovingATab As Boolean
+Private mPreviousTabBeforeDragging As Integer
 
 Private mBackColorTabs_SavedWhileVisualStyles As Long
 Private mBackColorTabSel_SavedWhileVisualStyles As Long
@@ -1071,6 +1006,8 @@ Private mHandleHighContrastTheme_OrigIconColorTabSel As Long
 Private mHandleHighContrastTheme_OrigIconColorMouseHover As Long
 Private mHandleHighContrastTheme_OrigIconColorMouseHoverTabSel As Long
 Private mHandleHighContrastTheme_OrigIconColorTabHighlighted As Long
+Private mHandleHighContrastTheme_OrigFlatTabBoderColorHighlight As Long
+Private mHandleHighContrastTheme_OrigFlatTabBoderColorTabSel As Long
 
 Private mBackColorTabSel_IsAutomatic As Boolean
 Private mFlatBarColorHighlight_IsAutomatic As Boolean
@@ -1353,6 +1290,12 @@ Public Property Let ForeColor(ByVal nValue As OLE_COLOR)
             If IconColor = iPrev Then
                 IconColor = nValue
             End If
+            If FlatTabBoderColorHighlight = iPrev Then
+                FlatTabBoderColorHighlight = nValue
+            End If
+            If FlatTabBoderColorTabSel = iPrev Then
+                FlatTabBoderColorTabSel = nValue
+            End If
             DrawDelayed
         End If
     End If
@@ -1394,8 +1337,6 @@ End Property
 
 
 Public Property Get ForeColorHighlighted() As OLE_COLOR
-Attribute ForeColorHighlighted.VB_Description = "Returns/sets the color used to draw the captions of tabs when the are highlighted. "
-Attribute ForeColorHighlighted.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
         ForeColorHighlighted = mHandleHighContrastTheme_OrigForeColorHighlighted
     Else
@@ -1414,6 +1355,48 @@ Public Property Let ForeColorHighlighted(ByVal nValue As OLE_COLOR)
             mForeColorHighlighted = nValue
             SetPropertyChanged "ForeColorHighlighted"
             'DrawDelayed
+        End If
+    End If
+End Property
+
+
+Public Property Get FlatTabBoderColorHighlight() As OLE_COLOR
+    If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
+        FlatTabBoderColorHighlight = mHandleHighContrastTheme_OrigFlatTabBoderColorHighlight
+    Else
+        FlatTabBoderColorHighlight = mFlatTabBoderColorHighlight
+    End If
+End Property
+
+Public Property Let FlatTabBoderColorHighlight(ByVal nValue As OLE_COLOR)
+    If nValue <> mFlatTabBoderColorHighlight Then
+        If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
+            mHandleHighContrastTheme_OrigFlatTabBoderColorHighlight = nValue
+        Else
+            mFlatTabBoderColorHighlight = nValue
+            SetPropertyChanged "FlatTabBoderColorHighlight"
+            'DrawDelayed
+        End If
+    End If
+End Property
+
+
+Public Property Get FlatTabBoderColorTabSel() As OLE_COLOR
+    If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
+        FlatTabBoderColorTabSel = mHandleHighContrastTheme_OrigFlatTabBoderColorTabSel
+    Else
+        FlatTabBoderColorTabSel = mFlatTabBoderColorTabSel
+    End If
+End Property
+
+Public Property Let FlatTabBoderColorTabSel(ByVal nValue As OLE_COLOR)
+    If nValue <> mFlatTabBoderColorTabSel Then
+        If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
+            mHandleHighContrastTheme_OrigFlatTabBoderColorTabSel = nValue
+        Else
+            mFlatTabBoderColorTabSel = nValue
+            SetPropertyChanged "FlatTabBoderColorTabSel"
+            DrawDelayed
         End If
     End If
 End Property
@@ -1590,7 +1573,9 @@ Public Property Let TabSel(ByVal nValue As Integer)
         End If
         If (Not iCancel) And (nValue <> mTabSel) Then
             mChangingTabSel = True
+            If Not mMovingATab Then
             If mTabTransition <> ntTransitionImmediate Then ShowPicCover
+            End If
             iPrev = mTabSel
             mTabSel = nValue
             SetPropertyChanged "TabSel"
@@ -3107,18 +3092,18 @@ Public Property Let FlatRoundnessTabs(ByVal nValue As Long)
 End Property
 
 
-Public Property Get HighlightMode() As NTHighlightModeConstants
+Public Property Get HighlightMode() As Long
 Attribute HighlightMode.VB_Description = "Returns/sets the mode that the inactive tabs are highlighted when the mouse hovers over them."
-Attribute HighlightMode.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute HighlightMode.VB_ProcData.VB_Invoke_Property = "pagHighlightMode;Apariencia"
     HighlightMode = mHighlightMode
 End Property
 
-Public Property Let HighlightMode(ByVal nValue As NTHighlightModeConstants)
+Public Property Let HighlightMode(ByVal nValue As Long)
     If nValue <> mHighlightMode Then
-        If (nValue < ntHLAuto) Or (nValue > &H1FF&) Then
-            RaiseError 380, TypeName(Me) ' invalid property value
-            Exit Property
-        End If
+'        If (nValue < ntHLAuto) Or (nValue > ntHLAllFlags) Then
+'            RaiseError 380, TypeName(Me) ' invalid property value
+'            Exit Property
+'        End If
         mHighlightMode = nValue
         mSetAutoTabHeightPending = True
         SetPropertyChanged "HighlightMode"
@@ -3128,18 +3113,18 @@ Public Property Let HighlightMode(ByVal nValue As NTHighlightModeConstants)
 End Property
 
 
-Public Property Get HighlightModeTabSel() As NTHighlightModeConstants
+Public Property Get HighlightModeTabSel() As Long
 Attribute HighlightModeTabSel.VB_Description = "Returns/sets the mode that the selected tab is highlighted (it is always highlighted)."
-Attribute HighlightModeTabSel.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute HighlightModeTabSel.VB_ProcData.VB_Invoke_Property = "pagHighlightMode;Apariencia"
     HighlightModeTabSel = mHighlightModeTabSel
 End Property
 
-Public Property Let HighlightModeTabSel(ByVal nValue As NTHighlightModeConstants)
+Public Property Let HighlightModeTabSel(ByVal nValue As Long)
     If nValue <> mHighlightModeTabSel Then
-        If (nValue < ntHLAuto) Or (nValue > &H1FF&) Then
-            RaiseError 380, TypeName(Me) ' invalid property value
-            Exit Property
-        End If
+'        If (nValue < ntHLAuto) Or (nValue > ntHLAllFlags) Then
+'            RaiseError 380, TypeName(Me) ' invalid property value
+'            Exit Property
+'        End If
         mHighlightModeTabSel = nValue
         mSetAutoTabHeightPending = True
         SetPropertyChanged "HighlightModeTabSel"
@@ -3970,8 +3955,10 @@ Private Sub UserControl_AmbientChanged(PropertyName As String)
         SetPropertyChanged "HighlightTabExtraHeight"
     ElseIf PropertyName = "BackColor" Then
         If mBackColorIsFromAmbient Then BackColor = Ambient.BackColor
-        If mBackColorTabsIsFromAmbient Then BackColorTabs = Ambient.BackColor
-        If mBackColorTabSel_IsAutomatic Then BackColorTabSel = BackColorTabs
+        If mBackColorTabsIsFromAmbient Then
+            BackColorTabs = Ambient.BackColor
+            If mBackColorTabSel_IsAutomatic Then BackColorTabSel = BackColorTabs
+        End If
     ElseIf PropertyName = "ForeColor" Then
         If mForeColorIsFromAmbient Then ForeColor = Ambient.ForeColor
         If mIconColorIsFromAmbient Then IconColor = Ambient.ForeColor
@@ -4129,6 +4116,8 @@ Friend Sub SetDefaultPropertyValues()
     mForeColor = Ambient.ForeColor: PropertyChanged "ForeColor"
     mForeColorTabSel = Ambient.ForeColor: PropertyChanged "ForeColorTabSel"
     mForeColorHighlighted = Ambient.ForeColor: PropertyChanged "ForeColorHighlighted"
+    mFlatTabBoderColorHighlight = Ambient.ForeColor: PropertyChanged "FlatTabBoderColorHighlight"
+    mFlatTabBoderColorTabSel = Ambient.ForeColor: PropertyChanged "FlatTabBoderColorTabSel"
     mBackColorTabs = Ambient.BackColor: PropertyChanged "BackColorTabs"
     mIconColorTabSel = Ambient.ForeColor: PropertyChanged "IconColorTabSel"
     mIconColorTabHighlighted = Ambient.ForeColor: PropertyChanged "IconColorTabHighlighted"
@@ -4362,6 +4351,15 @@ Exit_Sub:
 End Sub
 
 Private Sub UserControl_KeyPress(KeyAscii As Integer)
+    If mDraggingATab Then
+        If KeyAscii = vbKeyEscape Then
+            If mPreviousTabBeforeDragging <> mTabSel Then
+                MoveTab mTabSel, mPreviousTabBeforeDragging
+            End If
+            DraggingATab = False
+            Draw
+        End If
+    End If
     RaiseEvent KeyPress(KeyAscii)
 End Sub
 
@@ -4485,6 +4483,7 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
     Dim iCol As Long
     Dim iMouseOverIcon_Tab_Prev As Long
     Dim iBool As Boolean
+    Dim i As Integer
     
     If mTDIAddingNewTab Then Exit Sub
     
@@ -4547,6 +4546,26 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
                         mMouseY2 = 0
                     End If
                     DraggingATab = (Not mChangingTabSel) And ((mMouseX <> 0 And mMouseX2 <> 0) Or (mMouseY <> 0 And mMouseY2 <> 0))
+                    
+                    If mRows = 1 Then
+                        If DraggingATab Then
+                            i = GetTabAtDropPoint
+                            If i > -1 Then
+                                If mTDIMode Then
+                                    If i = mTabs - 1 Then
+                                        i = i - 1
+                                    End If
+                                End If
+                                If mTabSel <> i Then
+                                    If (mTabSel > -1) And (i > -1) Then
+                                        mMouseX = mMouseX - mTabData(mTabSel).TabRect.Left + mTabData(i).TabRect.Left
+                                        mMouseY = mMouseY - mTabData(mTabSel).TabRect.Top + mTabData(i).TabRect.Top
+                                        MoveTab mTabSel, i
+                                    End If
+                                End If
+                            End If
+                        End If
+                    End If
                 End If
             End If
         End If
@@ -4713,21 +4732,26 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single
     End If
     If mCanReorderTabs Then
         If DraggingATab Then
-            If Not tmrCheckTabDrag.Enabled Then
-                tmrCheckTabDrag.Enabled = False
-                i = GetTabAtDropPoint
-                If i > -1 Then
-                    If mTDIMode Then
-                        If i = mTabs - 1 Then
-                            i = i - 1
-                        End If
-                    End If
-                    If (mTabSel > -1) And (i > -1) Then
-                        MoveTab mTabSel, i
-                    End If
-                End If
+            If mRows = 1 Then
                 DraggingATab = False
                 Draw
+            Else
+                If Not tmrCheckTabDrag.Enabled Then
+                    tmrCheckTabDrag.Enabled = False
+                    i = GetTabAtDropPoint
+                    If i > -1 Then
+                        If mTDIMode Then
+                            If i = mTabs - 1 Then
+                                i = i - 1
+                            End If
+                        End If
+                        If (mTabSel > -1) And (i > -1) Then
+                            MoveTab mTabSel, i
+                        End If
+                    End If
+                    DraggingATab = False
+                    Draw
+                End If
             End If
         End If
         tmrCheckTabDrag.Enabled = False
@@ -4735,7 +4759,7 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single
     mTabChangedFromAnotherRow = False
 End Sub
 
-Private Function GetTabAtDropPoint()
+Private Function GetTabAtDropPoint() As Integer
     Dim c As Long
     Dim X As Single
     Dim Y  As Single
@@ -4750,13 +4774,6 @@ Private Function GetTabAtDropPoint()
                     If mTabData(c).TabRect.Top <= Y Then
                         If mTabData(c).TabRect.Bottom >= Y Then
                             GetTabAtDropPoint = c
-                            If mTabData(c).RightTab Then
-                                If X <= (mTabData(c).TabRect.Left + (mTabData(c).TabRect.Right - mTabData(c).TabRect.Left) / 2) Then
-                                    GetTabAtDropPoint = GetTabAtDropPoint - 1
-                                End If
-                            Else
-                                If GetTabAtDropPoint > mTabSel + 1 Then GetTabAtDropPoint = GetTabAtDropPoint - 1
-                            End If
                             Exit Function
                         End If
                     End If
@@ -4849,6 +4866,8 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     mForeColor = PropBag.ReadProperty("ForeColor", Ambient.ForeColor)
     mForeColorTabSel = PropBag.ReadProperty("ForeColorTabSel", mForeColor)
     mForeColorHighlighted = PropBag.ReadProperty("ForeColorHighlighted", mForeColor)
+    mFlatTabBoderColorHighlight = PropBag.ReadProperty("FlatTabBoderColorHighlight", mForeColor)
+    mFlatTabBoderColorTabSel = PropBag.ReadProperty("FlatTabBoderColorTabSel", mForeColor)
     If mForeColor = Ambient.ForeColor Then mForeColorIsFromAmbient = True
     Set mFont = PropBag.ReadProperty("Font", Ambient.Font)
     mEnabled = PropBag.ReadProperty("Enabled", True)
@@ -4903,6 +4922,8 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
             mForeColor = vbButtonText
             mForeColorTabSel = vbButtonText
             mForeColorHighlighted = vbButtonText
+            mFlatTabBoderColorHighlight = vbButtonText
+            mFlatTabBoderColorTabSel = vbButtonText
         End If
         iUpgradingFromSSTab = True
     ElseIf PropBag.ReadProperty("Themed", cPropDef_Style = ntStyleWindows) Then
@@ -5366,6 +5387,8 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     PropBag.WriteProperty "ForeColor", mForeColor, Ambient.ForeColor
     PropBag.WriteProperty "ForeColorTabSel", mForeColorTabSel, mForeColor
     PropBag.WriteProperty "ForeColorHighlighted", mForeColorHighlighted, mForeColor
+    PropBag.WriteProperty "FlatTabBoderColorHighlight", mFlatTabBoderColorHighlight, mForeColor
+    PropBag.WriteProperty "FlatTabBoderColorTabSel", mFlatTabBoderColorTabSel, mForeColor
     PropBag.WriteProperty "Font", mFont, Ambient.Font
     PropBag.WriteProperty "Enabled", mEnabled, True
     PropBag.WriteProperty "TabsPerRow", mTabsPerRow, cPropDef_TabsPerRow
@@ -6661,9 +6684,9 @@ End Sub
 Private Sub DrawTab(nTab As Long)
     Dim iCurv As Long
     Dim iLeftOffset As Long
-    Dim iRightShift As Long
+    Dim iRightOffset As Long
     Dim iTopOffset As Long
-    Dim iBottomShift As Long
+    Dim iBottomOffset As Long
     Dim iHighlighted As Boolean
     Dim iTabData As T_TabData
     Dim iExtI As Long
@@ -6706,16 +6729,10 @@ Private Sub DrawTab(nTab As Long)
         If mBackStyle <> ntOpaque Then iHighlightColor = iHighlightColor Xor 65538
         iHighlightGradient = mHighlightGradientTabSel
         If DraggingATab Then
-            Static sMovingTab As Boolean
-            If Not sMovingTab Then
-                sMovingTab = True
-                DrawTab nTab
-                sMovingTab = False
-                iTabData.TabRect.Left = iTabData.TabRect.Left + mMouseX2 - mMouseX
-                iTabData.TabRect.Right = iTabData.TabRect.Right + mMouseX2 - mMouseX
-                iTabData.TabRect.Top = iTabData.TabRect.Top + mMouseY2 - mMouseY
-                iTabData.TabRect.Bottom = iTabData.TabRect.Bottom + mMouseY2 - mMouseY
-            End If
+            iTabData.TabRect.Left = iTabData.TabRect.Left + mMouseX2 - mMouseX
+            iTabData.TabRect.Right = iTabData.TabRect.Right + mMouseX2 - mMouseX
+            iTabData.TabRect.Top = iTabData.TabRect.Top + mMouseY2 - mMouseY
+            iTabData.TabRect.Bottom = iTabData.TabRect.Bottom + mMouseY2 - mMouseY
         End If
     Else
         iHighlighted = mAmbientUserMode And ((mHighlightGradient <> ntGradientNone) Or mAppearanceIsFlat Or mControlIsThemed) And iTabData.Hovered And (mEnabled Or (Not mAmbientUserMode)) And iTabData.Enabled
@@ -6728,7 +6745,6 @@ Private Sub DrawTab(nTab As Long)
         i3DShadow = m3DShadow
         i3DHighlight = m3DHighlight
         iHighlightColor = mGlowColor
-        'If iHighlightColor = &H345C72 Then Stop
         iHighlightGradient = mHighlightGradient
     End If
     iBackColorTabs3 = mBackColorTabSel2
@@ -6752,23 +6768,8 @@ Private Sub DrawTab(nTab As Long)
         Const cEpsilon As Single = 0.499
         Dim iFlatBarTopSet As Boolean
         Dim iFlatBarPosition As NTFlatBarPosition
-        
-        If iTabData.LeftTab Then
-            iFlatLeftRoundness = mFlatRoundnessTop2
-            If mFlatRoundnessTabs2 > iFlatLeftRoundness Then
-                iFlatLeftRoundness = mFlatRoundnessTabs2
-            End If
-        Else
-            iFlatLeftRoundness = mFlatRoundnessTabs2
-        End If
-        If iTabData.RightTab Then
-            iFlatRightRoundness = mFlatRoundnessTop2
-            If mFlatRoundnessTabs2 > iFlatRightRoundness Then
-                iFlatRightRoundness = mFlatRoundnessTabs2
-            End If
-        Else
-            iFlatRightRoundness = mFlatRoundnessTabs2
-        End If
+        Dim iHighlightFlatDrawBorder As Boolean
+        Dim iHighlightFlatDrawBorder_Color As Long
         
         iFlatTabsSeparationLineColor = TranslatedColor(mFlatTabsSeparationLineColor)
         iFlatBorderColor = TranslatedColor(mFlatBorderColor)
@@ -6791,7 +6792,7 @@ Private Sub DrawTab(nTab As Long)
                 End If
             Else
                 iFlatBarTopHeight = 1
-                If (iHighlightGradient <> ntGradientNone) Then
+                If (iHighlightGradient <> ntGradientNone) And (mFlatBarHeight > 0) Then
                     iFlatBarTopColor = mFlatBarGlowColor
                 Else
                     iFlatBarTopColor = iFlatTabsSeparationLineColor
@@ -6837,12 +6838,42 @@ Private Sub DrawTab(nTab As Long)
                 iFlatBarTopColor = iFlatBorderColor '  iHighlightColor
             End If
         End If
+        
+        
+        If iActive Then
+            If mHighlightFlatDrawBorderTabSel Then
+                iHighlightFlatDrawBorder = True
+                iHighlightFlatDrawBorder_Color = TranslatedColor(mFlatTabBoderColorTabSel)
+                iFlatBarTopColor = iHighlightFlatDrawBorder_Color
+            End If
+        Else
+            If mHighlightFlatDrawBorder And iHighlighted Then
+                iHighlightFlatDrawBorder = True
+                iHighlightFlatDrawBorder_Color = TranslatedColor(mFlatTabBoderColorHighlight)
+                iFlatBarTopColor = iHighlightFlatDrawBorder_Color
+            End If
+        End If
+        If iTabData.LeftTab And (Not iHighlightFlatDrawBorder) Then
+            iFlatLeftRoundness = mFlatRoundnessTop2
+            If mFlatRoundnessTabs2 > iFlatLeftRoundness Then
+                iFlatLeftRoundness = mFlatRoundnessTabs2
+            End If
+        Else
+            iFlatLeftRoundness = mFlatRoundnessTabs2
+        End If
+        If iTabData.RightTab And (Not iHighlightFlatDrawBorder) Then
+            iFlatRightRoundness = mFlatRoundnessTop2
+            If mFlatRoundnessTabs2 > iFlatRightRoundness Then
+                iFlatRightRoundness = mFlatRoundnessTabs2
+            End If
+        Else
+            iFlatRightRoundness = mFlatRoundnessTabs2
+        End If
         If iTabData.LeftTab Then
             iFlatLeftLineColor = IIf((mFlatBorderMode = ntBorderTabs) Or iActive, iFlatBorderColor, iFlatTabsSeparationLineColor) ' IIf(mFlatBorderMode = ntBorderTabs, iFlatBorderColor, iFlatTabsSeparationLineColor)
         Else
             iFlatLeftLineColor = IIf((mFlatBorderMode = ntBorderTabSel) And iActive Or (mFlatBorderMode = ntBorderTabs) And (mTabSeparationDPIScaled > 0), iFlatBorderColor, iFlatTabsSeparationLineColor)
         End If
-        
         If iTabData.RightTab Then
             If (iTabData.RowPos = mRows - 1) Then
                 iFlatRightLineColor = IIf((mFlatBorderMode = ntBorderTabs) Or iActive Or (mFlatBorderMode = ntBorderTabs) And (mTabSeparationDPIScaled > 0), iFlatBorderColor, iFlatTabsSeparationLineColor)
@@ -6935,9 +6966,9 @@ Private Sub DrawTab(nTab As Long)
                 If mAppearanceIsPP Then
                     iExtI = 2
                     iLeftOffset = 1
-                    iRightShift = 1
+                    iRightOffset = 1
                     iTopOffset = 0
-                    iBottomShift = 1
+                    iBottomOffset = 1
                     If iRoundedTabs Then
                         iCurv = 3
                     Else
@@ -6945,18 +6976,18 @@ Private Sub DrawTab(nTab As Long)
                     End If
                 ElseIf mAppearanceIsFlat Then
                     'iExtI = 1
-                    iBottomShift = 3
-                    'iRightShift = -1 'iLeftOffset = -1
+                    iBottomOffset = 3
+                    'iRightOffset = -1 'iLeftOffset = -1
                     'iLeftOffset = -3
-                    'iRightShift = 2
-                    ' iRightShift = -1
+                    'iRightOffset = 2
+                    ' iRightOffset = -1
                     'iLeftOffset = -2
                     If iTabData.LeftTab Then
                         iLeftOffset = -2
 '                    Else
 '                        iLeftOffset = -1
                     End If
-                    'iRightShift = -1
+                    'iRightOffset = -1
                 Else
                     iExtI = 1
                     If iRoundedTabs Then
@@ -6965,12 +6996,12 @@ Private Sub DrawTab(nTab As Long)
                         iLeftOffset = 0
                     End If
 '                    If mAppearanceIsFlat Then
-'                        iRightShift = -1
+'                        iRightOffset = -1
 '                    Else
-                    iRightShift = 0
+                    iRightOffset = 0
 '                    End If
                     iTopOffset = 0
-                    iBottomShift = 2
+                    iBottomOffset = 2
                     iCurv = 4
                 End If
             Else
@@ -6978,9 +7009,9 @@ Private Sub DrawTab(nTab As Long)
                 iExtI = 6
                 If mAppearanceIsPP Then
                     iLeftOffset = 0
-                    iRightShift = 0
+                    iRightOffset = 0
                     iTopOffset = 0 '2
-                    iBottomShift = 5
+                    iBottomOffset = 5
                     If iRoundedTabs Then
                         iCurv = 3
                     Else
@@ -6988,19 +7019,19 @@ Private Sub DrawTab(nTab As Long)
                     End If
                 ElseIf mAppearanceIsFlat Then
                     '
-                    'iRightShift = -1
+                    'iRightOffset = -1
                     'iLeftOffset = -2
-                    iBottomShift = 6
-                    'iRightShift = 0 '-1
+                    iBottomOffset = 6
+                    'iRightOffset = 0 '-1
                     If iTabData.LeftTab Then
                         iLeftOffset = -2
                     End If
-                    If iFlatLeftRoundness > iBottomShift Then iBottomShift = iFlatLeftRoundness
-                    If iFlatRightRoundness > iBottomShift Then iBottomShift = iFlatRightRoundness
+                    If iFlatLeftRoundness > iBottomOffset Then iBottomOffset = iFlatLeftRoundness
+                    If iFlatRightRoundness > iBottomOffset Then iBottomOffset = iFlatRightRoundness
                     If iTabData.RightTab Then
                         If Abs(mTabBodyRect.Right - iTabData.TabRect.Right) > 5 Then
                             iExtI = -5
-                            iBottomShift = 11
+                            iBottomOffset = 11
                         End If
                     End If
                 Else
@@ -7010,8 +7041,8 @@ Private Sub DrawTab(nTab As Long)
                         iLeftOffset = 0
                     End If
                     iTopOffset = 0
-                    iRightShift = -1
-                    iBottomShift = 6
+                    iRightOffset = -1
+                    iBottomOffset = 6
                     iCurv = 3
                 End If
             End If
@@ -7020,36 +7051,52 @@ Private Sub DrawTab(nTab As Long)
             If mAppearanceIsFlat Then
                 If iHighlighted Then
                     If iHighlightGradient = ntGradientSimple Then
-                        Call FillCurvedGradient2(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightShift + IIf(iTabData.RightTab, 1, 0), (.Bottom), iHighlightColor, iBackColorTabs2, iFlatLeftRoundness, iFlatRightRoundness)
-                        Call FillCurvedGradient2(.Left + iLeftOffset, .Bottom, .Right + iRightShift + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomShift), iBackColorTabs2, iBackColorTabs2, 0, 0)
+                        Call FillCurvedGradient2(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom), iHighlightColor, iBackColorTabs2, iFlatLeftRoundness, iFlatRightRoundness)
+                        If iHighlightFlatDrawBorder Then
+                            Call FillCurvedGradient2(.Left + iLeftOffset, .Bottom, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + 1), iBackColorTabs2, iBackColorTabs2, 0, 0, iFlatLeftRoundness, iFlatRightRoundness)
+                        Else
+                            Call FillCurvedGradient2(.Left + iLeftOffset, .Bottom, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iBackColorTabs2, iBackColorTabs2, 0, 0)
+                        End If
                     ElseIf iHighlightGradient = ntGradientDouble Then
-                        Call FillCurvedGradient2(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightShift, (.Bottom + .Top + iTopOffset) / 2 + 2, iBackColorTabs2, iHighlightColor, iFlatLeftRoundness, iFlatRightRoundness)
-                        Call FillCurvedGradient2(.Left + iLeftOffset, (.Bottom + .Top + iTopOffset) / 2, .Right + iRightShift, .Bottom, iHighlightColor, iBackColorTabs2, 0, 0)
-                        Call FillCurvedGradient2(.Left + iLeftOffset, .Bottom, .Right + iRightShift, .Bottom + iBottomShift, iBackColorTabs2, iBackColorTabs2, 0, 0)
+                        Call FillCurvedGradient2(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset, (.Bottom + .Top + iTopOffset) / 2 + 2, iBackColorTabs2, iHighlightColor, iFlatLeftRoundness, iFlatRightRoundness)
+                        Call FillCurvedGradient2(.Left + iLeftOffset, (.Bottom + .Top + iTopOffset) / 2, .Right + iRightOffset, .Bottom, iHighlightColor, iBackColorTabs2, 0, 0)
+                        If iHighlightFlatDrawBorder Then
+                            Call FillCurvedGradient2(.Left + iLeftOffset, .Bottom, .Right + iRightOffset, .Bottom + 1, iBackColorTabs2, iBackColorTabs2, 0, 0, iFlatLeftRoundness, iFlatRightRoundness)
+                        Else
+                            Call FillCurvedGradient2(.Left + iLeftOffset, .Bottom, .Right + iRightOffset, .Bottom + iBottomOffset, iBackColorTabs2, iBackColorTabs2, 0, 0)
+                        End If
                     ElseIf iHighlightGradient = ntGradientPlain Then
-                        Call FillCurvedGradient2(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightShift + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomShift), iHighlightColor, iHighlightColor, iFlatLeftRoundness, iFlatRightRoundness)
+                        If iHighlightFlatDrawBorder Then
+                            Call FillCurvedGradient2(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + 1), iHighlightColor, iHighlightColor, iFlatLeftRoundness, iFlatRightRoundness, iFlatLeftRoundness, iFlatRightRoundness)
+                        Else
+                            Call FillCurvedGradient2(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iHighlightColor, iHighlightColor, iFlatLeftRoundness, iFlatRightRoundness)
+                        End If
                     ElseIf iHighlightGradient = ntGradientNone Then
-                        Call FillCurvedGradient2(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightShift + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomShift), iBackColorTabs2, iBackColorTabs2, iFlatLeftRoundness, iFlatRightRoundness)
+                        Call FillCurvedGradient2(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iBackColorTabs2, iBackColorTabs2, iFlatLeftRoundness, iFlatRightRoundness)
                     End If
                 Else
-                    Call FillCurvedGradient2(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightShift, .Bottom + iBottomShift, iBackColorTabs2, iBackColorTabs2, iFlatLeftRoundness, iFlatRightRoundness)
+                    If iHighlightFlatDrawBorder Then
+                        Call FillCurvedGradient2(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset, .Bottom + 1, iBackColorTabs2, iBackColorTabs2, iFlatLeftRoundness, iFlatRightRoundness, iFlatLeftRoundness, iFlatRightRoundness)
+                    Else
+                        Call FillCurvedGradient2(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset, .Bottom + iBottomOffset, iBackColorTabs2, iBackColorTabs2, iFlatLeftRoundness, iFlatRightRoundness)
+                    End If
                 End If
             Else
                 If iHighlighted Then
                     If iHighlightGradient = ntGradientSimple Then
-                        Call FillCurvedGradient(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightShift + IIf(iTabData.RightTab, 1, 0), (.Bottom), iHighlightColor, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
-                        Call FillCurvedGradient(.Left + iLeftOffset, .Bottom, .Right + iRightShift + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomShift), iBackColorTabs2, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
+                        Call FillCurvedGradient(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom), iHighlightColor, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
+                        Call FillCurvedGradient(.Left + iLeftOffset, .Bottom, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iBackColorTabs2, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
                     ElseIf iHighlightGradient = ntGradientDouble Then
-                        Call FillCurvedGradient(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightShift, (.Bottom + .Top + iTopOffset) / 2 + 2, iBackColorTabs2, iHighlightColor, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
-                        Call FillCurvedGradient(.Left + iLeftOffset, (.Bottom + .Top + iTopOffset) / 2, .Right + iRightShift, .Bottom, iHighlightColor, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
-                        Call FillCurvedGradient(.Left + iLeftOffset, .Bottom, .Right + iRightShift, .Bottom + iBottomShift, iBackColorTabs2, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
+                        Call FillCurvedGradient(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset, (.Bottom + .Top + iTopOffset) / 2 + 2, iBackColorTabs2, iHighlightColor, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
+                        Call FillCurvedGradient(.Left + iLeftOffset, (.Bottom + .Top + iTopOffset) / 2, .Right + iRightOffset, .Bottom, iHighlightColor, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
+                        Call FillCurvedGradient(.Left + iLeftOffset, .Bottom, .Right + iRightOffset, .Bottom + iBottomOffset, iBackColorTabs2, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
                     ElseIf iHighlightGradient = ntGradientPlain Then
-                        Call FillCurvedGradient(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightShift + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomShift), iHighlightColor, iHighlightColor, iCurv, True, True)
+                        Call FillCurvedGradient(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iHighlightColor, iHighlightColor, iCurv, True, True)
                     ElseIf iHighlightGradient = ntGradientNone Then
-                        Call FillCurvedGradient(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightShift + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomShift), iBackColorTabs2, iBackColorTabs2, iCurv, True, True)
+                        Call FillCurvedGradient(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iBackColorTabs2, iBackColorTabs2, iCurv, True, True)
                     End If
                 Else
-                    Call FillCurvedGradient(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightShift, .Bottom + iBottomShift, iBackColorTabs2, iBackColorTabs2, iCurv, True, True)
+                    Call FillCurvedGradient(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset, .Bottom + iBottomOffset, iBackColorTabs2, iBackColorTabs2, iCurv, True, True)
                 End If
             End If
             
@@ -7068,9 +7115,8 @@ Private Sub DrawTab(nTab As Long)
                     End If
                 End If
             ElseIf mAppearanceIsFlat Then
-             '   If iActive Then Stop
                 If (iFlatBarTopHeight > 0) Then
-                    FillCurvedGradient2 .Left + iLeftOffset, .Top + iTopOffset, .Right + iRightShift, .Top + iTopOffset + iFlatBarTopHeight, iFlatBarTopColor, iFlatBarTopColor, iFlatLeftRoundness, iFlatRightRoundness
+                    FillCurvedGradient2 .Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset, .Top + iTopOffset + iFlatBarTopHeight, iFlatBarTopColor, iFlatBarTopColor, iFlatLeftRoundness, iFlatRightRoundness
                     If iHighlighted And (iFlatBarTopHeight > 1) Then
                         If IIf(iActive, mHighlightFlatBarWithGripTabSel, mHighlightFlatBarWithGrip) Then
                             Dim iTriangle(2) As POINTAPI
@@ -7121,7 +7167,7 @@ Private Sub DrawTab(nTab As Long)
                     End If
                     iColor = TranslatedColor(iColor)
                     
-                    FillCurvedGradient2 .Left + iLeftOffset, .Bottom - mFlatBarHeightDPIScaled + 3, .Right + iRightShift, .Bottom + 3, iColor, iColor, 0, 0
+                    FillCurvedGradient2 .Left + iLeftOffset, .Bottom - mFlatBarHeightDPIScaled + 3, .Right + iRightOffset, .Bottom + 3, iColor, iColor, 0, 0
                     If IIf(iActive, mHighlightFlatBarWithGripTabSel, mHighlightFlatBarWithGrip) Then
                         If mFlatBarGripHeightDPIScaled > 0 Then
                             ' top point
@@ -7216,8 +7262,10 @@ Private Sub DrawTab(nTab As Long)
                 End If
             ElseIf mAppearanceIsFlat Then
         '        If iFlatRightLineColor <> mBackColorTabs2 Then
-                If Not ((iFlatRightLineColor = mBackColorTabs2) And iTabData.RightTab And (iFlatRightRoundness > 0)) Then
-                    picDraw.Line (.Right, .Top + iTopOffset + iFlatRightRoundness)-(.Right, .Bottom + iBottomShift + iExtI), iFlatRightLineColor 'IIf(iActive And (mFlatBorderMode = ntBorderTabSel), iFlatBorderColor, iFlatTabsSeparationLineColor)
+                If iHighlightFlatDrawBorder Then
+                    picDraw.Line (.Right, .Top + iTopOffset + iFlatRightRoundness)-(.Right, .Bottom - iFlatRightRoundness + 1), iHighlightFlatDrawBorder_Color
+                ElseIf Not ((iFlatRightLineColor = mBackColorTabs2) And iTabData.RightTab And (iFlatRightRoundness > 0)) Then
+                    picDraw.Line (.Right, .Top + iTopOffset + iFlatRightRoundness)-(.Right, .Bottom + iBottomOffset + iExtI), iFlatRightLineColor
                 End If
         '        End If
             Else
@@ -7255,8 +7303,10 @@ Private Sub DrawTab(nTab As Long)
                     End If
                 End If
             ElseIf mAppearanceIsFlat Then
-                If iFlatLeftLineColor <> mBackColorTabs2 Then
-                    picDraw.Line (.Left + iLeftOffset, .Top + iTopOffset + iFlatLeftRoundness)-(.Left + iLeftOffset, .Bottom + iBottomShift + iExtI), iFlatLeftLineColor
+                If iHighlightFlatDrawBorder Then
+                    picDraw.Line (.Left + iLeftOffset, .Top + iTopOffset + iFlatLeftRoundness)-(.Left + iLeftOffset, .Bottom - iFlatLeftRoundness + 1), iHighlightFlatDrawBorder_Color
+                ElseIf iFlatLeftLineColor <> mBackColorTabs2 Then
+                    picDraw.Line (.Left + iLeftOffset, .Top + iTopOffset + iFlatLeftRoundness)-(.Left + iLeftOffset, .Bottom + iBottomOffset + iExtI), iFlatLeftLineColor
                 End If
             Else
                 If iRoundedTabs Then
@@ -7319,9 +7369,13 @@ Private Sub DrawTab(nTab As Long)
                 If iRoundedTabs Then
                     If (iFlatRightRoundness > 0) Then
                         ' draw rounded top-right corner
-                        iLineColor = IIf((mFlatBorderMode = ntBorderTabs) Or iActive, iFlatBorderColor, iFlatTabsSeparationLineColor)
+                        If iHighlightFlatDrawBorder Then
+                            iLineColor = iHighlightFlatDrawBorder_Color
+                        Else
+                            iLineColor = IIf((mFlatBorderMode = ntBorderTabs) Or iActive, iFlatBorderColor, iFlatTabsSeparationLineColor)
+                        End If
                         If iLineColor <> mBackColorTabs2 Then
-                            DrawRoundedCorner ntCornerTopRight, .Right + iRightShift, .Top + iTopOffset, iFlatRightRoundness, iLineColor
+                            DrawRoundedCorner ntCornerTopRight, .Right + iRightOffset, .Top + iTopOffset, iFlatRightRoundness, iLineColor
                         End If
                     End If
                 End If
@@ -7370,9 +7424,13 @@ Private Sub DrawTab(nTab As Long)
             ElseIf mAppearanceIsFlat Then
                 If iRoundedTabs Then
                     If (iFlatLeftRoundness > 0) Then
-                        iLineColor = IIf((mFlatBorderMode = ntBorderTabs) Or (iActive And (mFlatBorderMode = ntBorderTabSel)), iFlatBorderColor, iFlatTabsSeparationLineColor)
+                        If iHighlightFlatDrawBorder Then
+                            iLineColor = iHighlightFlatDrawBorder_Color
+                        Else
+                            iLineColor = IIf((mFlatBorderMode = ntBorderTabs) Or (iActive And (mFlatBorderMode = ntBorderTabSel)), iFlatBorderColor, iFlatTabsSeparationLineColor)
+                        End If
                         If iLineColor <> mBackColorTabs2 Then
-                            DrawRoundedCorner ntCornerTopLeft, .Left + iLeftOffset, .Top + iTopOffset, iFlatLeftRoundness, iLineColor
+                            DrawRoundedCorner ntCornerTopleft, .Left + iLeftOffset, .Top + iTopOffset, iFlatLeftRoundness, iLineColor
                         End If
                     End If
                 End If
@@ -7397,6 +7455,19 @@ Private Sub DrawTab(nTab As Long)
                         picDraw.Line (.Left + iLeftOffset + 2, .Top + 4)-(.Left + iLeftOffset + 4, .Top + 2), i3DHighlightH
                     Else
                         picDraw.Line (.Left + iLeftOffset, .Top + 4)-(.Left + iLeftOffset + 3, .Top + 1), i3DHighlightH
+                    End If
+                End If
+            End If
+            
+            ' Bottom line
+            If mAppearanceIsFlat Then
+                If iHighlightFlatDrawBorder Then
+                    picDraw.Line (.Left + iLeftOffset + iFlatLeftRoundness, .Bottom + 1)-(.Right + iRightOffset - iFlatRightRoundness, .Bottom + 1), iHighlightFlatDrawBorder_Color
+                    If (iFlatRightRoundness > 0) Then
+                        DrawRoundedCorner ntCornerBottomRight, .Right + iRightOffset, .Bottom + 1, iFlatRightRoundness, iHighlightFlatDrawBorder_Color
+                    End If
+                    If (iFlatLeftRoundness > 0) Then
+                        DrawRoundedCorner ntCornerBottomLeft, .Left + iLeftOffset, .Bottom + 1, iFlatLeftRoundness, iHighlightFlatDrawBorder_Color
                     End If
                 End If
             End If
@@ -7549,7 +7620,7 @@ Private Sub DrawBody(nScaleHeight As Long)
             iColor = iColor Xor 1
         End If
         If mAppearanceIsFlat Then
-            FillCurvedGradient2 0, mTabBodyStart + iLng, mTabBodyWidth - 1, nScaleHeight - 1, iColor, iColor, 0, IIf(((mTabBodyWidth - mTabData(mTabSel).TabRect.Right) > 3) And ((mFlatBorderMode = ntBorderTabSel) Or ((mTabBodyWidth - mRightMostTabsRightPos(mRows - 1)) > 3)), mFlatRoundnessTopDPIScaled, 0), mFlatRoundnessBottomDPIScaled, mFlatRoundnessBottomDPIScaled
+            FillCurvedGradient2 0, mTabBodyStart + iLng, mTabBodyWidth - 1, nScaleHeight - 1, iColor, iColor, IIf((mFlatBorderMode = ntBorderTabSel) And mHighlightFlatDrawBorderTabSel And (mFlatRoundnessTopDPIScaled > 0) And (mFlatBodySeparationLineHeight = 1), mFlatRoundnessTopDPIScaled, 0), IIf(((mTabBodyWidth - mTabData(mTabSel).TabRect.Right) > 3) And ((mFlatBorderMode = ntBorderTabSel) Or ((mTabBodyWidth - mRightMostTabsRightPos(mRows - 1)) > 3)), mFlatRoundnessTopDPIScaled, 0), mFlatRoundnessBottomDPIScaled, mFlatRoundnessBottomDPIScaled
         Else
             picDraw.Line (0, mTabBodyStart + iLng)-(mTabBodyWidth - 1, nScaleHeight - 1), iColor, BF
         End If
@@ -7611,27 +7682,34 @@ Private Sub DrawBody(nScaleHeight As Long)
             ' top line
             If (iFlatBodySeparationLineColor <> mBackColorTabs2) Then
                 If mFlatBodySeparationLineHeight = 1 Then
-                    picDraw.Line (0, mTabBodyStart)-(mTabBodyWidth - 1 - IIf(mFlatBorderMode = ntBorderTabSel, mFlatRoundnessTopDPIScaled, 0), mTabBodyStart), iFlatBodySeparationLineColor
+                    picDraw.Line (IIf((mFlatBorderMode = ntBorderTabSel) And mHighlightFlatDrawBorderTabSel, mFlatRoundnessTopDPIScaled, 0), mTabBodyStart)-(mTabBodyWidth - 1 - IIf(mFlatBorderMode = ntBorderTabSel, mFlatRoundnessTopDPIScaled, 0), mTabBodyStart), iFlatBodySeparationLineColor
                 ElseIf mFlatBodySeparationLineHeight > 1 Then
                     picDraw.Line (0, mTabBodyStart + 1)-(mTabBodyWidth - 2, mTabBodyStart + mFlatBodySeparationLineHeightDPIScaled), iFlatBodySeparationLineColor, BF
                 End If
             End If
             
             ' left line
-            picDraw.Line (0, mTabBodyStart)-(0, nScaleHeight - 1 - mFlatRoundnessBottomDPIScaled), iFlatBorderColor
+            picDraw.Line (0, mTabBodyStart + IIf((mFlatBorderMode = ntBorderTabSel) And mHighlightFlatDrawBorderTabSel And (mFlatBodySeparationLineHeight = 1), mFlatRoundnessTopDPIScaled, 0))-(0, nScaleHeight - 1 - mFlatRoundnessBottomDPIScaled), iFlatBorderColor
             ' right line
             picDraw.Line (mTabBodyWidth - 1, mTabBodyStart + IIf(((mTabBodyWidth - mTabData(mTabSel).TabRect.Right) > 3) And (mFlatBodySeparationLineHeight = 1), mFlatRoundnessTopDPIScaled, 0))-(mTabBodyWidth - 1, nScaleHeight - 1 - mFlatRoundnessBottomDPIScaled), iFlatBorderColor
             ' bottom line
             picDraw.Line (mFlatRoundnessBottomDPIScaled, nScaleHeight - 1)-(mTabBodyWidth - mFlatRoundnessBottomDPIScaled, nScaleHeight - 1), iFlatBorderColor
             
+            If (mFlatBorderMode = ntBorderTabSel) And mHighlightFlatDrawBorderTabSel Then
+                ' top-left corner
+                If (mFlatRoundnessTopDPIScaled > 0) And (mFlatBodySeparationLineHeight = 1) Then
+                    DrawRoundedCorner ntCornerTopleft, 0, mTabBodyStart, mFlatRoundnessTopDPIScaled, iFlatBorderColor
+                End If
+            End If
+            
             If (mTabBodyWidth - mRightMostTabsRightPos(mRows - 1)) > 3 Then
                 picDraw.Line (mRightMostTabsRightPos(mRows - 1), mTabBodyStart)-(mTabBodyWidth - 1 - mFlatRoundnessTopDPIScaled, mTabBodyStart), iFlatBorderColor  ' iFlatBodySeparationLineColor
             End If
             If ((mTabBodyWidth - mTabData(mTabSel).TabRect.Right) > 3) And ((mFlatBorderMode = ntBorderTabSel) Or ((mTabBodyWidth - mRightMostTabsRightPos(mRows - 1)) > 3)) Then
-                ' top-right
+                ' top-right corner
                 If (mFlatRoundnessTopDPIScaled > 0) And (mFlatBodySeparationLineHeight = 1) Then
                     If ((mTabBodyWidth - mTabData(mTabSel).TabRect.Right) > 3) And mFlatBorderMode = ntBorderTabSel Then
-                        iLineColor = iFlatBodySeparationLineColor  ' iFlatBorderColor
+                        iLineColor = iFlatBodySeparationLineColor
                     Else
                         iLineColor = iFlatBorderColor
                     End If
@@ -8517,7 +8595,7 @@ Private Sub DrawRoundedCorner(ByVal nCorner As NTCornerPositionConstants, ByVal 
                 End If
             Next
         Next
-    ElseIf nCorner = ntCornerTopLeft Then
+    ElseIf nCorner = ntCornerTopleft Then
         For iX = nX To nX + nRoundness
             For iY = nY To nY + nRoundness
                 iDistance = Sqr((nRoundness - ((nX - iX) + nRoundness * 2)) ^ 2 + (nRoundness - (iY - (nY))) ^ 2) - nRoundness
@@ -11489,6 +11567,8 @@ Private Sub CheckHighContrastTheme()
             mHandleHighContrastTheme_OrigBackColorTabs = BackColorTabs
             mHandleHighContrastTheme_OrigForeColorTabSel = ForeColorTabSel
             mHandleHighContrastTheme_OrigForeColorHighlighted = ForeColorHighlighted
+            mHandleHighContrastTheme_OrigFlatTabBoderColorHighlight = FlatTabBoderColorHighlight
+            mHandleHighContrastTheme_OrigFlatTabBoderColorTabSel = FlatTabBoderColorTabSel
             mHandleHighContrastTheme_OrigBackColorTabSel = BackColorTabSel
             mHandleHighContrastTheme_OrigIconColor = IconColor
             mHandleHighContrastTheme_OrigIconColorTabSel = IconColorTabSel
@@ -11499,6 +11579,8 @@ Private Sub CheckHighContrastTheme()
             BackColorTabs = vbButtonFace
             ForeColorTabSel = vbButtonText
             ForeColorHighlighted = vbButtonText
+            FlatTabBoderColorHighlight = vbButtonText
+            FlatTabBoderColorTabSel = vbButtonText
             mChangingHighContrastTheme = True
             BackColorTabSel = vbButtonFace
             mChangingHighContrastTheme = False
@@ -11513,6 +11595,8 @@ Private Sub CheckHighContrastTheme()
             BackColorTabs = mHandleHighContrastTheme_OrigBackColorTabs
             ForeColorTabSel = mHandleHighContrastTheme_OrigForeColorTabSel
             ForeColorHighlighted = mHandleHighContrastTheme_OrigForeColorHighlighted
+            FlatTabBoderColorHighlight = mHandleHighContrastTheme_OrigFlatTabBoderColorHighlight
+            FlatTabBoderColorTabSel = mHandleHighContrastTheme_OrigFlatTabBoderColorTabSel
             If mBackColorTabSel_IsAutomatic Then
                 BackColorTabSel = BackColorTabs
             Else
@@ -12230,31 +12314,28 @@ Private Function ChrU(ByVal nCharCodeU As Long) As String
 End Function
 
 Private Sub SetHighlightMode()
-    Dim iHighlightMode As NTHighlightModeConstants
-    Dim iHighlightModeTabSel As NTHighlightModeConstants
-    Const cGradientModeMask As Long = 7
-    Const cLightFlag As Long = 8
-    Const cFlatBarGrip As Long = 128
+    Dim iHighlightMode As NTHighlightModeFlagsConstants
+    Dim iHighlightModeTabSel As NTHighlightModeFlagsConstants
     
     iHighlightMode = mHighlightMode
     If iHighlightMode = ntHLAuto Then
         If mTDIMode Then
-            iHighlightMode = ntHLPlainAndCaptionBold
+            iHighlightMode = (ntHLBackgroundPlain Or ntHLCaptionBold)
         ElseIf mStyle = ntStyleFlat Then
-            iHighlightMode = ntHLFlatBarAndGradientLight
+            iHighlightMode = (ntHLBackgroundGradient Or ntHLBackgroundLight Or ntHLFlatBar)
         ElseIf mStyle = ntStyleWindows Then
             iHighlightMode = ntHLNone
         ElseIf mStyle = ssStyleTabbedDialog Then
             iHighlightMode = ntHLNone
         Else
-            iHighlightMode = ntHLDoubleGradient
+            iHighlightMode = ntHLBackgroundDoubleGradient
         End If
     End If
-    If (iHighlightMode And cGradientModeMask) = ntHLDoubleGradient Then
+    If (iHighlightMode And ntHLBackgroundTypeFilter) = ntHLBackgroundDoubleGradient Then
         mHighlightGradient = ntGradientDouble
-    ElseIf (iHighlightMode And cGradientModeMask) = ntHLGradient Then
+    ElseIf (iHighlightMode And ntHLBackgroundTypeFilter) = ntHLBackgroundGradient Then
         mHighlightGradient = ntGradientSimple
-    ElseIf (iHighlightMode And cGradientModeMask) = ntHLPlain Then
+    ElseIf (iHighlightMode And ntHLBackgroundTypeFilter) = ntHLBackgroundPlain Then
         mHighlightGradient = ntGradientPlain
     Else
         mHighlightGradient = ntGradientNone
@@ -12262,35 +12343,36 @@ Private Sub SetHighlightMode()
     
     mHighlightCaptionBold = (iHighlightMode <> ntHLNone) And ((iHighlightMode And ntHLCaptionBold) = ntHLCaptionBold)
     mHighlightCaptionUnderlined = (iHighlightMode <> ntHLNone) And ((iHighlightMode And ntHLCaptionUnderlined) = ntHLCaptionUnderlined)
-    If (iHighlightMode <> ntHLNone) And ((iHighlightMode And cLightFlag) = cLightFlag) Then
+    If (iHighlightMode <> ntHLNone) And ((iHighlightMode And ntHLBackgroundLight) = ntHLBackgroundLight) Then
         mHighlightIntensity = ntHighlightIntensityLight
     Else
         mHighlightIntensity = ntHighlightIntensityStrong
     End If
     mHighlightFlatBar = (iHighlightMode <> ntHLNone) And ((iHighlightMode And ntHLFlatBar) = ntHLFlatBar)
-    mHighlightFlatBarWithGrip = mHighlightFlatBar And ((iHighlightMode And cFlatBarGrip) = cFlatBarGrip)
+    mHighlightFlatBarWithGrip = mHighlightFlatBar And ((iHighlightMode And ntHLFlatBarGrip) = ntHLFlatBarGrip)
     mHighlightAddExtraHeight = (iHighlightMode <> ntHLNone) And ((iHighlightMode And ntHLExtraHeight) = ntHLExtraHeight)
+    mHighlightFlatDrawBorder = (iHighlightMode <> ntHLNone) And ((iHighlightMode And ntHLFlatDrawBorder) = ntHLFlatDrawBorder)
     
     iHighlightModeTabSel = mHighlightModeTabSel
     If iHighlightModeTabSel = ntHLAuto Then
         If mTDIMode Then
-            iHighlightModeTabSel = ntHLGradientAndCaptionBold
+            iHighlightModeTabSel = (ntHLBackgroundPlain Or ntHLBackgroundLight)
         ElseIf mStyle = ntStyleFlat Then
-            iHighlightModeTabSel = ntHLFlatBarAndGradientLight
+            iHighlightModeTabSel = (ntHLBackgroundGradient Or ntHLBackgroundLight Or ntHLFlatBar)
         ElseIf mStyle = ntStyleWindows Then
             iHighlightModeTabSel = ntHLNone
         ElseIf mStyle = ssStyleTabbedDialog Then
             iHighlightModeTabSel = ntHLCaptionBold
         Else
-            iHighlightModeTabSel = ntHLDoubleGradient
+            iHighlightModeTabSel = ntHLBackgroundDoubleGradient
         End If
     End If
     
-    If (iHighlightModeTabSel And cGradientModeMask) = ntHLDoubleGradient Then
+    If (iHighlightModeTabSel And ntHLBackgroundTypeFilter) = ntHLBackgroundDoubleGradient Then
         mHighlightGradientTabSel = ntGradientDouble
-    ElseIf (iHighlightModeTabSel And cGradientModeMask) = ntHLGradient Then
+    ElseIf (iHighlightModeTabSel And ntHLBackgroundTypeFilter) = ntHLBackgroundGradient Then
         mHighlightGradientTabSel = ntGradientSimple
-    ElseIf (iHighlightModeTabSel And cGradientModeMask) = ntHLPlain Then
+    ElseIf (iHighlightModeTabSel And ntHLBackgroundTypeFilter) = ntHLBackgroundPlain Then
         mHighlightGradientTabSel = ntGradientPlain
     Else
         mHighlightGradientTabSel = ntGradientNone
@@ -12298,14 +12380,15 @@ Private Sub SetHighlightMode()
     
     mHighlightCaptionBoldTabSel = (iHighlightModeTabSel <> ntHLNone) And ((iHighlightModeTabSel And ntHLCaptionBold) = ntHLCaptionBold)
     mHighlightCaptionUnderlinedTabSel = (iHighlightModeTabSel <> ntHLNone) And ((iHighlightModeTabSel And ntHLCaptionUnderlined) = ntHLCaptionUnderlined)
-    If (iHighlightModeTabSel <> ntHLNone) And ((iHighlightModeTabSel And cLightFlag) = cLightFlag) Then
+    If (iHighlightModeTabSel <> ntHLNone) And ((iHighlightModeTabSel And ntHLBackgroundLight) = ntHLBackgroundLight) Then
         mHighlightIntensityTabSel = ntHighlightIntensityLight
     Else
         mHighlightIntensityTabSel = ntHighlightIntensityStrong
     End If
     mHighlightFlatBarTabSel = (iHighlightModeTabSel <> ntHLNone) And ((iHighlightModeTabSel And ntHLFlatBar) = ntHLFlatBar)
-    mHighlightFlatBarWithGripTabSel = mHighlightFlatBarTabSel And ((iHighlightModeTabSel And cFlatBarGrip) = cFlatBarGrip)
+    mHighlightFlatBarWithGripTabSel = mHighlightFlatBarTabSel And ((iHighlightModeTabSel And ntHLFlatBarGrip) = ntHLFlatBarGrip)
     mHighlightAddExtraHeightTabSel = (iHighlightModeTabSel <> ntHLNone) And ((iHighlightModeTabSel And ntHLExtraHeight) = ntHLExtraHeight)
+    mHighlightFlatDrawBorderTabSel = (iHighlightModeTabSel <> ntHLNone) And ((iHighlightModeTabSel And ntHLFlatDrawBorder) = ntHLFlatDrawBorder)
     
     If mHighlightIntensityTabSel = ntHighlightIntensityStrong Then
         mGlowColor_Sel = mGlowColor_Sel_Bk
@@ -12367,6 +12450,7 @@ Attribute MoveTab.VB_Description = "Moves a tab to another position."
     Dim c As Long
     Dim iCurTab As Boolean
     Dim iPrev As Integer
+    Dim iRedraw As Boolean
     
     If NewIndex = CurrentIndex Then Exit Sub
     If (CurrentIndex < 0) Or (CurrentIndex > (mTabs - 1)) Or (NewIndex < 0) Or (NewIndex > (mTabs - 1)) Then
@@ -12378,6 +12462,9 @@ Attribute MoveTab.VB_Description = "Moves a tab to another position."
     If NewIndex = CurrentIndex Then Exit Sub
     If iCanceled Then Exit Sub
     
+    mMovingATab = True
+    iRedraw = Redraw
+    Redraw = False
     iCurTab = (CurrentIndex = mTabSel)
     
     iTempTabData = mTabData(CurrentIndex)
@@ -12394,7 +12481,7 @@ Attribute MoveTab.VB_Description = "Moves a tab to another position."
     End If
     If iCurTab Then
         mTabSel = -1
-        SetVisibleControls mTabSel
+        'SetVisibleControls mTabSel
         TabSel = NewIndex
         Draw
     Else
@@ -12411,7 +12498,9 @@ Attribute MoveTab.VB_Description = "Moves a tab to another position."
         Draw
     End If
     RecreateTabIconFontsEventHandler
+    Redraw = iRedraw
     RaiseEvent TabReordered(NewIndex, CurrentIndex)
+    mMovingATab = False
 End Sub
 
 Private Sub RecreateTabIconFontsEventHandler()
@@ -12443,8 +12532,12 @@ Private Property Let DraggingATab(nValue As Boolean)
     Dim iRc As RECT
     Dim iPt As POINTAPI
     
+    If mMovingATab Then Exit Property
+    If nValue = mDraggingATab Then Exit Property
+    
     mDraggingATab = nValue And (mTabSel > -1)
     If mDraggingATab Then
+        mPreviousTabBeforeDragging = mTabSel
         ClientToScreen mUserControlHwnd, iPt
         
         iRc.Left = iPt.X
@@ -12453,7 +12546,7 @@ Private Property Let DraggingATab(nValue As Boolean)
         iRc.Bottom = mTabBodyRect.Top + iPt.Y + mMouseY - mTabData(mTabSel).TabRect.Bottom
         
         tmrTabDragging.Enabled = True
-        'If Not mInIDE Then ClipCursor iRC
+        'If Not mInIDE Then ClipCursor iRc
         ClipCursor iRc
     Else
         mMouseX = 0

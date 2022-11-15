@@ -1,0 +1,361 @@
+VERSION 5.00
+Begin VB.PropertyPage pagHighlightMode 
+   BackColor       =   &H80000005&
+   Caption         =   "Property"
+   ClientHeight    =   4476
+   ClientLeft      =   0
+   ClientTop       =   0
+   ClientWidth     =   4416
+   BeginProperty Font 
+      Name            =   "Segoe UI"
+      Size            =   9
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
+   PaletteMode     =   0  'Halftone
+   ScaleHeight     =   4476
+   ScaleWidth      =   4416
+   Begin VB.Timer tmrLoad 
+      Enabled         =   0   'False
+      Interval        =   1
+      Left            =   240
+      Top             =   360
+   End
+   Begin VB.PictureBox picHighlightDropDown 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      Height          =   4092
+      Left            =   0
+      ScaleHeight     =   4092
+      ScaleWidth      =   4416
+      TabIndex        =   0
+      TabStop         =   0   'False
+      Top             =   360
+      Width           =   4420
+      Begin VB.CheckBox chkBackground 
+         BackColor       =   &H80000005&
+         Caption         =   "Background"
+         Height          =   252
+         Left            =   120
+         TabIndex        =   11
+         Top             =   480
+         Width           =   4212
+      End
+      Begin VB.CheckBox chkBackgroundGradient 
+         BackColor       =   &H80000005&
+         Caption         =   "Width gradient"
+         Enabled         =   0   'False
+         Height          =   252
+         Left            =   360
+         TabIndex        =   10
+         Top             =   840
+         Width           =   3900
+      End
+      Begin VB.CheckBox chkBackgroundGradientDouble 
+         BackColor       =   &H80000005&
+         Caption         =   "Double (change at the middle)"
+         Enabled         =   0   'False
+         Height          =   252
+         Left            =   600
+         TabIndex        =   9
+         Top             =   1200
+         Width           =   3600
+      End
+      Begin VB.CheckBox chkBackgroundLight 
+         BackColor       =   &H80000005&
+         Caption         =   "Light"
+         Enabled         =   0   'False
+         Height          =   252
+         Left            =   360
+         TabIndex        =   8
+         Top             =   1560
+         Width           =   3900
+      End
+      Begin VB.CheckBox chkCaptionBold 
+         BackColor       =   &H80000005&
+         Caption         =   "CaptionBold"
+         Height          =   252
+         Left            =   120
+         TabIndex        =   7
+         Top             =   1920
+         Width           =   4212
+      End
+      Begin VB.CheckBox chkCaptionUnderlined 
+         BackColor       =   &H80000005&
+         Caption         =   "CaptionUnderlined"
+         Height          =   252
+         Left            =   120
+         TabIndex        =   6
+         Top             =   2280
+         Width           =   4212
+      End
+      Begin VB.CheckBox chkFlatBar 
+         BackColor       =   &H80000005&
+         Caption         =   "FlatBar"
+         Height          =   252
+         Left            =   120
+         TabIndex        =   5
+         Top             =   2640
+         Width           =   4212
+      End
+      Begin VB.CheckBox chkFlatBarGrip 
+         BackColor       =   &H80000005&
+         Caption         =   "With grip"
+         Enabled         =   0   'False
+         Height          =   252
+         Left            =   360
+         TabIndex        =   4
+         Top             =   3000
+         Width           =   3900
+      End
+      Begin VB.CheckBox chkExtraHeight 
+         BackColor       =   &H80000005&
+         Caption         =   "ExtraHeight"
+         Height          =   252
+         Left            =   120
+         TabIndex        =   3
+         Top             =   3360
+         Width           =   4212
+      End
+      Begin VB.CheckBox chkFlatDrawBorder 
+         BackColor       =   &H80000005&
+         Caption         =   "FlatDrawBorder"
+         Height          =   252
+         Left            =   120
+         TabIndex        =   2
+         Top             =   3720
+         Width           =   4212
+      End
+      Begin VB.CheckBox chkHighlightAuto 
+         BackColor       =   &H80000005&
+         Caption         =   "Auto"
+         Height          =   252
+         Left            =   120
+         TabIndex        =   1
+         Top             =   120
+         Width           =   4212
+      End
+   End
+   Begin VB.Label lblProperyName 
+      BackStyle       =   0  'Transparent
+      BeginProperty Font 
+         Name            =   "Segoe UI"
+         Size            =   9
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   252
+      Left            =   0
+      TabIndex        =   12
+      Top             =   120
+      Width           =   3612
+   End
+End
+Attribute VB_Name = "pagHighlightMode"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = True
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = True
+Option Explicit
+
+Private Declare Function DefWindowProc Lib "user32" Alias "DefWindowProcW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+
+Private mPropertyName As String
+Private mPropertyValue As Long
+
+Private Sub chkBackgroundGradientDouble_Click()
+    Changed = True
+End Sub
+
+Private Sub chkBackgroundLight_Click()
+    Changed = True
+End Sub
+
+Private Sub chkCaptionBold_Click()
+    Changed = True
+End Sub
+
+Private Sub chkCaptionUnderlined_Click()
+    Changed = True
+End Sub
+
+Private Sub chkExtraHeight_Click()
+    Changed = True
+End Sub
+
+Private Sub chkFlatBarGrip_Click()
+    Changed = True
+End Sub
+
+Private Sub chkFlatDrawBorder_Click()
+    Changed = True
+End Sub
+
+Private Sub PropertyPage_ApplyChanges()
+    Dim iCtl As NewTab
+    
+    PropertyPage.Changed = False
+    SetVariables
+    
+    Set iCtl = SelectedControls(0)
+    If mPropertyName = "HighlightMode" Then
+        iCtl.HighlightMode = mPropertyValue
+    ElseIf mPropertyName = "HighlightModeTabSel" Then
+        iCtl.HighlightModeTabSel = mPropertyValue
+    End If
+    PropertyPage.Changed = False
+End Sub
+
+Private Sub PropertyPage_EditProperty(PropertyName As String)
+    mPropertyName = PropertyName
+    tmrLoad.Enabled = True
+    picHighlightDropDown.Move (PropertyPage.ScaleWidth - picHighlightDropDown.Width) / 2
+    lblProperyName.Left = 120
+End Sub
+
+Private Sub LoadHighlightDropDown(ByVal nFlags As NTHighlightModeFlagsConstants)
+    If nFlags = ntHLAuto Then
+        chkHighlightAuto.Value = vbChecked
+        chkBackground.Value = vbUnchecked
+        chkBackgroundGradient.Value = vbUnchecked
+        chkBackgroundGradientDouble.Value = vbUnchecked
+        chkBackgroundLight.Value = vbUnchecked
+        chkCaptionBold.Value = vbUnchecked
+        chkCaptionUnderlined.Value = vbUnchecked
+        chkFlatBar.Value = vbUnchecked
+        chkFlatBarGrip.Value = vbUnchecked
+        chkExtraHeight.Value = vbUnchecked
+        chkFlatDrawBorder.Value = vbUnchecked
+    ElseIf nFlags = ntHLNone Then
+        chkHighlightAuto.Value = vbUnchecked
+        chkBackground.Value = vbUnchecked
+        chkBackgroundGradient.Value = vbUnchecked
+        chkBackgroundGradientDouble.Value = vbUnchecked
+        chkBackgroundLight.Value = vbUnchecked
+        chkCaptionBold.Value = vbUnchecked
+        chkCaptionUnderlined.Value = vbUnchecked
+        chkFlatBar.Value = vbUnchecked
+        chkFlatBarGrip.Value = vbUnchecked
+        chkExtraHeight.Value = vbUnchecked
+        chkFlatDrawBorder.Value = vbUnchecked
+    Else
+        chkHighlightAuto.Value = vbUnchecked
+        chkBackground.Value = CLng((nFlags And ntHLBackgroundTypeFilter) <> 0) * -1
+        If chkBackground.Value Then
+            chkBackgroundGradient.Value = CLng((nFlags And ntHLBackgroundGradient) <> 0) * -1
+            If chkBackgroundGradient.Value Then
+                chkBackgroundGradientDouble.Value = CLng((nFlags And ntHLBackgroundDoubleGradient) = ntHLBackgroundDoubleGradient) * -1
+            End If
+            chkBackgroundLight.Value = CLng((nFlags And ntHLBackgroundLight) <> 0) * -1
+        End If
+        chkCaptionBold.Value = CLng((nFlags And ntHLCaptionBold) <> 0) * -1
+        chkCaptionUnderlined.Value = CLng((nFlags And ntHLCaptionUnderlined) <> 0) * -1
+        chkFlatBar.Value = CLng((nFlags And ntHLFlatBar) <> 0) * -1
+        If chkFlatBar.Value Then
+            chkFlatBarGrip.Value = CLng((nFlags And ntHLFlatBarGrip) <> 0) * -1
+        End If
+        chkExtraHeight.Value = CLng((nFlags And ntHLExtraHeight) <> 0) * -1
+        chkFlatDrawBorder.Value = CLng((nFlags And ntHLFlatDrawBorder) <> 0) * -1
+    End If
+End Sub
+
+Private Sub SetVariables()
+    Dim iValue As NTHighlightModeFlagsConstants
+    
+    If chkHighlightAuto.Value = vbChecked Then
+        iValue = ntHLAuto
+    Else
+        If chkBackground.Value = vbChecked Then
+            If chkBackgroundGradient.Value = vbChecked Then
+                If chkBackgroundGradientDouble.Value = vbChecked Then
+                    iValue = ntHLBackgroundDoubleGradient
+                Else
+                    iValue = ntHLBackgroundGradient
+                End If
+            Else
+                iValue = ntHLBackgroundPlain
+            End If
+            If chkBackgroundLight.Value = vbChecked Then
+                iValue = iValue Or ntHLBackgroundLight
+            End If
+        End If
+        If chkCaptionBold.Value = vbChecked Then
+            iValue = iValue Or ntHLCaptionBold
+        End If
+        If chkCaptionUnderlined.Value = vbChecked Then
+            iValue = iValue Or ntHLCaptionUnderlined
+        End If
+        If chkFlatBar.Value = vbChecked Then
+            iValue = iValue Or ntHLFlatBar
+            If chkFlatBarGrip.Value = vbChecked Then
+                iValue = iValue Or ntHLFlatBarGrip
+            End If
+        End If
+        If chkExtraHeight.Value = vbChecked Then
+            iValue = iValue Or ntHLExtraHeight
+        End If
+        If chkFlatDrawBorder.Value = vbChecked Then
+            iValue = iValue Or ntHLFlatDrawBorder
+        End If
+        If iValue = ntHLAuto Then iValue = ntHLNone
+    End If
+    
+    If mPropertyValue <> iValue Then
+        mPropertyValue = iValue
+        Changed = True
+    End If
+End Sub
+
+Private Sub tmrLoad_Timer()
+    Dim iCtl As NewTab
+    
+    tmrLoad.Enabled = False
+    Set iCtl = SelectedControls(0)
+    If mPropertyName = "HighlightMode" Then
+        mPropertyValue = iCtl.HighlightMode
+    ElseIf mPropertyName = "HighlightModeTabSel" Then
+        mPropertyValue = iCtl.HighlightModeTabSel
+    End If
+    LoadHighlightDropDown mPropertyValue
+    lblProperyName.Caption = mPropertyName & ":"
+    PropertyPage.Refresh
+    Changed = False
+End Sub
+
+
+Private Sub chkFlatBar_Click()
+    chkFlatBarGrip.Enabled = (chkFlatBar.Value = vbChecked) And (chkHighlightAuto.Value <> vbChecked)
+    Changed = True
+End Sub
+
+Private Sub chkHighlightAuto_Click()
+    chkBackground.Enabled = (chkHighlightAuto.Value <> vbChecked)
+    chkBackground_Click
+    chkCaptionBold.Enabled = chkBackground.Enabled
+    chkCaptionUnderlined.Enabled = chkBackground.Enabled
+    chkFlatBar.Enabled = chkBackground.Enabled
+    chkFlatBar_Click
+    chkExtraHeight.Enabled = chkBackground.Enabled
+    chkFlatDrawBorder.Enabled = chkBackground.Enabled
+    Changed = True
+End Sub
+
+Private Sub chkBackground_Click()
+    chkBackgroundGradient.Enabled = (chkBackground.Value = vbChecked) And (chkHighlightAuto.Value <> vbChecked)
+    chkBackgroundLight.Enabled = (chkBackground.Value = vbChecked) And (chkHighlightAuto.Value <> vbChecked)
+    chkBackgroundGradientDouble.Enabled = (chkBackground.Value = vbChecked) And (chkBackgroundGradient.Value = vbChecked) And (chkHighlightAuto.Value <> vbChecked)
+    Changed = True
+End Sub
+
+Private Sub chkBackgroundGradient_Click()
+    chkBackgroundGradientDouble.Enabled = (chkBackground.Value = vbChecked) And (chkBackgroundGradient.Value = vbChecked)
+    Changed = True
+End Sub
+

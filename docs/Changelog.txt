@@ -1,2 +1,6 @@
+2022-11-15 Ole OCX version changed to 2 because binary compatibility was broken.
+2022-11-15 Added two new default themes.
+2022-11-15 Changed HighlightMode and HighlightModeTabSel properties type from an Enum to a Long using flags. Added the FlatDrawBorder flag, and two related color properties: FlatTabBorderColorHighlight and FlatTabBorderColorTabSel.
+2022-11-14 Improvements in tab dragging (changing tab position when CanReorderTabs = True).
 2022-11-12 Added middle click handling to tabs in TDIMode.
 2022-11-10 Initial release.

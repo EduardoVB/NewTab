@@ -19,6 +19,128 @@ Begin VB.PropertyPage pagNewTabGeneral
    PaletteMode     =   0  'Halftone
    ScaleHeight     =   8712
    ScaleWidth      =   6804
+   Begin VB.Timer tmrPicDropped 
+      Enabled         =   0   'False
+      Interval        =   1
+      Left            =   4680
+      Top             =   120
+   End
+   Begin VB.PictureBox picHighlightDropDown 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      Height          =   4092
+      Left            =   6840
+      ScaleHeight     =   4068
+      ScaleWidth      =   4392
+      TabIndex        =   64
+      TabStop         =   0   'False
+      Top             =   2160
+      Visible         =   0   'False
+      Width           =   4420
+      Begin VB.CheckBox chkHighlightAuto 
+         BackColor       =   &H80000005&
+         Caption         =   "Auto"
+         Height          =   252
+         Left            =   120
+         TabIndex        =   65
+         Top             =   120
+         Width           =   4212
+      End
+      Begin VB.CheckBox chkFlatDrawBorder 
+         BackColor       =   &H80000005&
+         Caption         =   "FlatDrawBorder"
+         Height          =   252
+         Left            =   120
+         TabIndex        =   75
+         Top             =   3720
+         Width           =   4212
+      End
+      Begin VB.CheckBox chkExtraHeight 
+         BackColor       =   &H80000005&
+         Caption         =   "ExtraHeight"
+         Height          =   252
+         Left            =   120
+         TabIndex        =   74
+         Top             =   3360
+         Width           =   4212
+      End
+      Begin VB.CheckBox chkFlatBarGrip 
+         BackColor       =   &H80000005&
+         Caption         =   "With grip"
+         Enabled         =   0   'False
+         Height          =   252
+         Left            =   360
+         TabIndex        =   73
+         Top             =   3000
+         Width           =   3900
+      End
+      Begin VB.CheckBox chkFlatBar 
+         BackColor       =   &H80000005&
+         Caption         =   "FlatBar"
+         Height          =   252
+         Left            =   120
+         TabIndex        =   72
+         Top             =   2640
+         Width           =   4212
+      End
+      Begin VB.CheckBox chkCaptionUnderlined 
+         BackColor       =   &H80000005&
+         Caption         =   "CaptionUnderlined"
+         Height          =   252
+         Left            =   120
+         TabIndex        =   71
+         Top             =   2280
+         Width           =   4212
+      End
+      Begin VB.CheckBox chkCaptionBold 
+         BackColor       =   &H80000005&
+         Caption         =   "CaptionBold"
+         Height          =   252
+         Left            =   120
+         TabIndex        =   70
+         Top             =   1920
+         Width           =   4212
+      End
+      Begin VB.CheckBox chkBackgroundLight 
+         BackColor       =   &H80000005&
+         Caption         =   "Light"
+         Enabled         =   0   'False
+         Height          =   252
+         Left            =   360
+         TabIndex        =   69
+         Top             =   1560
+         Width           =   3900
+      End
+      Begin VB.CheckBox chkBackgroundGradientDouble 
+         BackColor       =   &H80000005&
+         Caption         =   "Double (change at the middle)"
+         Enabled         =   0   'False
+         Height          =   252
+         Left            =   600
+         TabIndex        =   68
+         Top             =   1200
+         Width           =   3600
+      End
+      Begin VB.CheckBox chkBackgroundGradient 
+         BackColor       =   &H80000005&
+         Caption         =   "Width gradient"
+         Enabled         =   0   'False
+         Height          =   252
+         Left            =   360
+         TabIndex        =   67
+         Top             =   840
+         Width           =   3900
+      End
+      Begin VB.CheckBox chkBackground 
+         BackColor       =   &H80000005&
+         Caption         =   "Background"
+         Height          =   252
+         Left            =   120
+         TabIndex        =   66
+         Top             =   480
+         Width           =   4212
+      End
+   End
    Begin VB.Timer tmrLoad 
       Interval        =   1
       Left            =   5280
@@ -590,6 +712,42 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
 Option Explicit
 
+Private Enum NTMouseButtonsConstants
+    bsMBLeft = 1&
+    bsMBRight = 2&
+End Enum
+
+Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
+Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
+Private Const VK_LBUTTON = &H1
+Private Const VK_RBUTTON = &H2
+Private Const SM_SWAPBUTTON = 23&
+
+Private Type POINTAPI
+    X As Long
+    Y As Long
+End Type
+
+Private Type RECT
+    Left As Long
+    Top As Long
+    Right As Long
+    Bottom As Long
+End Type
+
+Private Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
+Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, lpRect As RECT) As Long
+
+Private Enum NTHighlightDropDownControlConstants
+    ntHighlightMode = 0
+    ntHighlightModeTabSel = 1
+End Enum
+
+Private Declare Function SetCapture Lib "user32.dll" (ByVal hWnd As Long) As Long
+Private Declare Function ReleaseCapture Lib "user32.dll" () As Long
+Private Declare Function GetCapture Lib "user32" () As Long
+
+Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As Long, lprcUpdate As Any, ByVal hrgnUpdate As Long, ByVal fuRedraw As Long) As Long
 
 Private Const RDW_ALLCHILDREN = &H80
@@ -602,6 +760,10 @@ Private Const CB_SHOWDROPDOWN = &H14F
 
 Private mLoading As Boolean
 Private mTDIMode As Boolean
+Private mHighlightMode As Long
+Private mHighlightModeTabSel As Long
+Private mControlHighlightModeDropDown As NTHighlightDropDownControlConstants
+Private mLoadingHighlightDropDown As Boolean
 
 Private Sub cboAutoRelocateControls_Click()
     If Not mLoading Then Changed = True
@@ -609,6 +771,216 @@ End Sub
 
 Private Sub cboFlatBarPosition_Click()
     If Not mLoading Then Changed = True
+End Sub
+
+Private Sub cboHighlightMode_DropDown()
+    Dim iShow As Boolean
+    
+    cboHighlightMode.Visible = False
+    cboHighlightMode.Visible = True
+    
+    If picHighlightDropDown.Visible Then
+        HighlightDropUp
+        If mControlHighlightModeDropDown <> ntHighlightMode Then
+            iShow = True
+        End If
+    Else
+        iShow = True
+    End If
+    If iShow Then
+        ShowHighlightModeDropDown ntHighlightMode
+    End If
+End Sub
+
+Private Sub ShowHighlightModeDropDown(nControl As NTHighlightDropDownControlConstants)
+    Dim iCombo As Object
+    
+    mControlHighlightModeDropDown = nControl
+    If mControlHighlightModeDropDown = ntHighlightMode Then
+        LoadHighlightDropDown mHighlightMode
+        Set iCombo = cboHighlightMode
+    Else
+        LoadHighlightDropDown mHighlightModeTabSel
+        Set iCombo = cboHighlightModeTabSel
+    End If
+    picHighlightDropDown.Move cboHighlightMode.Left, iCombo.Top + iCombo.Height
+    picHighlightDropDown.Visible = True
+    picHighlightDropDown.ZOrder
+    tmrPicDropped.Enabled = True
+End Sub
+
+Private Sub LoadHighlightDropDown(ByVal nFlags As NTHighlightModeFlagsConstants)
+    mLoadingHighlightDropDown = True
+    If nFlags = ntHLAuto Then
+        chkHighlightAuto.Value = vbChecked
+        chkBackground.Value = vbUnchecked
+        chkBackgroundGradient.Value = vbUnchecked
+        chkBackgroundGradientDouble.Value = vbUnchecked
+        chkBackgroundLight.Value = vbUnchecked
+        chkCaptionBold.Value = vbUnchecked
+        chkCaptionUnderlined.Value = vbUnchecked
+        chkFlatBar.Value = vbUnchecked
+        chkFlatBarGrip.Value = vbUnchecked
+        chkExtraHeight.Value = vbUnchecked
+        chkFlatDrawBorder.Value = vbUnchecked
+    ElseIf nFlags = ntHLNone Then
+        chkHighlightAuto.Value = vbUnchecked
+        chkBackground.Value = vbUnchecked
+        chkBackgroundGradient.Value = vbUnchecked
+        chkBackgroundGradientDouble.Value = vbUnchecked
+        chkBackgroundLight.Value = vbUnchecked
+        chkCaptionBold.Value = vbUnchecked
+        chkCaptionUnderlined.Value = vbUnchecked
+        chkFlatBar.Value = vbUnchecked
+        chkFlatBarGrip.Value = vbUnchecked
+        chkExtraHeight.Value = vbUnchecked
+        chkFlatDrawBorder.Value = vbUnchecked
+    Else
+        chkHighlightAuto.Value = vbUnchecked
+        chkBackground.Value = CLng((nFlags And ntHLBackgroundTypeFilter) <> 0) * -1
+        If chkBackground.Value Then
+            chkBackgroundGradient.Value = CLng((nFlags And ntHLBackgroundGradient) <> 0) * -1
+            If chkBackgroundGradient.Value Then
+                chkBackgroundGradientDouble.Value = CLng((nFlags And ntHLBackgroundDoubleGradient) = ntHLBackgroundDoubleGradient) * -1
+            End If
+            chkBackgroundLight.Value = CLng((nFlags And ntHLBackgroundLight) <> 0) * -1
+        End If
+        chkCaptionBold.Value = CLng((nFlags And ntHLCaptionBold) <> 0) * -1
+        chkCaptionUnderlined.Value = CLng((nFlags And ntHLCaptionUnderlined) <> 0) * -1
+        chkFlatBar.Value = CLng((nFlags And ntHLFlatBar) <> 0) * -1
+        If chkFlatBar.Value Then
+            chkFlatBarGrip.Value = CLng((nFlags And ntHLFlatBarGrip) <> 0) * -1
+        End If
+        chkExtraHeight.Value = CLng((nFlags And ntHLExtraHeight) <> 0) * -1
+        chkFlatDrawBorder.Value = CLng((nFlags And ntHLFlatDrawBorder) <> 0) * -1
+    End If
+    mLoadingHighlightDropDown = False
+End Sub
+
+Private Sub SetVariablesFromPicHighlightDropDown()
+    Dim iValue As NTHighlightModeFlagsConstants
+    
+    If chkHighlightAuto.Value = vbChecked Then
+        iValue = ntHLAuto
+    Else
+        If chkBackground.Value = vbChecked Then
+            If chkBackgroundGradient.Value = vbChecked Then
+                If chkBackgroundGradientDouble.Value = vbChecked Then
+                    iValue = ntHLBackgroundDoubleGradient
+                Else
+                    iValue = ntHLBackgroundGradient
+                End If
+            Else
+                iValue = ntHLBackgroundPlain
+            End If
+            If chkBackgroundLight.Value = vbChecked Then
+                iValue = iValue Or ntHLBackgroundLight
+            End If
+        End If
+        If chkCaptionBold.Value = vbChecked Then
+            iValue = iValue Or ntHLCaptionBold
+        End If
+        If chkCaptionUnderlined.Value = vbChecked Then
+            iValue = iValue Or ntHLCaptionUnderlined
+        End If
+        If chkFlatBar.Value = vbChecked Then
+            iValue = iValue Or ntHLFlatBar
+            If chkFlatBarGrip.Value = vbChecked Then
+                iValue = iValue Or ntHLFlatBarGrip
+            End If
+        End If
+        If chkExtraHeight.Value = vbChecked Then
+            iValue = iValue Or ntHLExtraHeight
+        End If
+        If chkFlatDrawBorder.Value = vbChecked Then
+            iValue = iValue Or ntHLFlatDrawBorder
+        End If
+        If iValue = ntHLAuto Then iValue = ntHLNone
+    End If
+    
+    If mControlHighlightModeDropDown = ntHighlightMode Then
+        If mHighlightMode <> iValue Then
+            mHighlightMode = iValue
+            Changed = True
+            SetHLComboText cboHighlightMode, mHighlightMode
+        End If
+    Else
+        If mHighlightModeTabSel <> iValue Then
+            mHighlightModeTabSel = iValue
+            Changed = True
+            SetHLComboText cboHighlightModeTabSel, mHighlightModeTabSel
+        End If
+    End If
+End Sub
+
+Private Sub SetHLComboText(nCombo As Object, nValue As NTHighlightModeFlagsConstants)
+    Dim iStr As String
+    
+    If nValue = ntHLAuto Then
+        iStr = "[Auto]"
+    ElseIf nValue = ntHLNone Then
+        iStr = "None"
+    Else
+        If (nValue And ntHLBackgroundTypeFilter) <> 0 Then
+            Select Case nValue And ntHLBackgroundTypeFilter
+                Case ntHLBackgroundGradient
+                    iStr = "BackgroundGradient"
+                Case ntHLBackgroundDoubleGradient
+                    iStr = "BackgroundDoubleGradient"
+                Case ntHLBackgroundPlain
+                    iStr = "BackgroundPlain"
+            End Select
+            If (nValue And ntHLBackgroundLight) <> 0 Then
+                iStr = iStr & " Light"
+            End If
+        End If
+        If (nValue And ntHLCaptionBold) <> 0 Then
+            If iStr <> "" Then iStr = iStr & "+"
+            iStr = iStr & "CaptionBold"
+        End If
+        If (nValue And ntHLCaptionUnderlined) <> 0 Then
+            If iStr <> "" Then iStr = iStr & "+"
+            iStr = iStr & "CaptionUnderlined"
+        End If
+        If (nValue And ntHLFlatBar) <> 0 Then
+            If iStr <> "" Then iStr = iStr & "+"
+            iStr = iStr & "FlatBar"
+            If (nValue And ntHLFlatBarGrip) <> 0 Then
+                iStr = iStr & " with Grip"
+            End If
+        End If
+        If (nValue And ntHLExtraHeight) <> 0 Then
+            If iStr <> "" Then iStr = iStr & "+"
+            iStr = iStr & "ExtraHeight"
+        End If
+        If (nValue And ntHLFlatDrawBorder) <> 0 Then
+            If iStr <> "" Then iStr = iStr & "+"
+            iStr = iStr & "FlatDrawBorder"
+        End If
+    End If
+    
+    nCombo.Clear
+    nCombo.AddItem iStr
+    nCombo.ListIndex = 0
+End Sub
+
+Private Sub cboHighlightModeTabSel_DropDown()
+    Dim iShow As Boolean
+    
+    cboHighlightModeTabSel.Visible = False
+    cboHighlightModeTabSel.Visible = True
+    
+    If picHighlightDropDown.Visible Then
+        HighlightDropUp
+        If mControlHighlightModeDropDown <> ntHighlightModeTabSel Then
+            iShow = True
+        End If
+    Else
+        iShow = True
+    End If
+    If iShow Then
+        ShowHighlightModeDropDown ntHighlightModeTabSel
+    End If
 End Sub
 
 Private Sub cboTabTransition_Click()
@@ -724,192 +1096,6 @@ Private Sub LoadCustomizationOptions()
     cboTabAppearance.AddItem ntTAPropertyPageRounded & " - ntTAPropertyPageRounded": cboTabAppearance.ItemData(cboTabAppearance.NewIndex) = ntTAPropertyPageRounded
     cboTabAppearance.AddItem ntTAFlat & " - ntTAFlat": cboTabAppearance.ItemData(cboTabAppearance.NewIndex) = ntTAFlat
     SelectInComboByItemData cboTabAppearance, CLng(cboTabAppearance.Tag)
-    
-    cboHighlightMode.Clear
-    iStr = ntHLAuto & " - Automatic"
-    If mTDIMode Then
-        iStr = iStr & " (ntHLPlainAndCaptionBold)"
-    Else
-        Select Case cboStyle.ItemData(cboStyle.ListIndex)
-            Case ntStyleFlat
-                iStr = iStr & " (ntHLFlatBarAndGradientLight)"
-            Case ssStyleTabbedDialog
-                iStr = iStr & " (ntHLNone)"
-            Case ntStyleWindows
-                iStr = iStr & " (ntHLNone)"
-            Case Else
-                iStr = iStr & " (ntHLDoubleGradient)"
-        End Select
-    End If
-    cboHighlightMode.AddItem iStr: cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLAuto
-    cboHighlightMode.AddItem ntHLNone & " - ntHLNone": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLNone
-    cboHighlightMode.AddItem ntHLGradient & " - ntHLGradient": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLGradient
-    cboHighlightMode.AddItem ntHLDoubleGradient & " - ntHLDoubleGradient": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLDoubleGradient
-    cboHighlightMode.AddItem ntHLPlain & " - ntHLPlain": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLPlain
-    cboHighlightMode.AddItem ntHLCaptionBold & " - ntHLCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLCaptionBold
-    cboHighlightMode.AddItem ntHLGradientAndCaptionBold & " - ntHLGradientAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLGradientAndCaptionBold
-    cboHighlightMode.AddItem ntHLDoubleGradientAndCaptionBold & " - ntHLDoubleGradientAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLDoubleGradientAndCaptionBold
-    cboHighlightMode.AddItem ntHLPlainAndCaptionBold & " - ntHLPlainAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLPlainAndCaptionBold
-    cboHighlightMode.AddItem ntHLGradientLight & " - ntHLGradientLight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLGradientLight
-    cboHighlightMode.AddItem ntHLDoubleGradientLight & " - ntHLDoubleGradientLight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLDoubleGradientLight
-    cboHighlightMode.AddItem ntHLGradientLightAndCaptionBold & " - ntHLGradientLightAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLGradientLightAndCaptionBold
-    cboHighlightMode.AddItem ntHLDoubleGradientLightAndCaptionBold & " - ntHLDoubleGradientLightAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLDoubleGradientLightAndCaptionBold
-    cboHighlightMode.AddItem ntHLCaptionUnderlined & " - ntHLCaptionUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLCaptionUnderlined
-    cboHighlightMode.AddItem ntHLGradientAndCaptionUnderlined & " - ntHLGradientAndCaptionUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLGradientAndCaptionUnderlined
-    cboHighlightMode.AddItem ntHLGradientLightAndCaptionUnderlined & " - ntHLGradientLightAndCaptionUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLGradientLightAndCaptionUnderlined
-    cboHighlightMode.AddItem ntHLCaptionBoldAndUnderlined & " - ntHLCaptionBoldAndUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLCaptionBoldAndUnderlined
-    cboHighlightMode.AddItem ntHLFlatBar & " - ntHLFlatBar": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBar
-    cboHighlightMode.AddItem ntHLFlatBarAndGradient & " - ntHLFlatBarAndGradient": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarAndGradient
-    cboHighlightMode.AddItem ntHLFlatBarAndPlain & " - ntHLFlatBarAndPlain": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarAndPlain
-    cboHighlightMode.AddItem ntHLFlatBarAndCaptionBold & " - ntHLFlatBarAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarAndCaptionBold
-    cboHighlightMode.AddItem ntHLFlatBarGradientAndCaptionBold & " - ntHLFlatBarGradientAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarGradientAndCaptionBold
-    cboHighlightMode.AddItem ntHLFlatBarPlainAndCaptionBold & " - ntHLFlatBarPlainAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarPlainAndCaptionBold
-    cboHighlightMode.AddItem ntHLFlatBarAndGradientLight & " - ntHLFlatBarAndGradientLight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarAndGradientLight
-    cboHighlightMode.AddItem ntHLFlatBarAndPlainLight & " - ntHLFlatBarAndPlainLight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarAndPlainLight
-    cboHighlightMode.AddItem ntHLFlatBarGradientLightAndCaptionBold & " - ntHLFlatBarGradientLightAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarGradientLightAndCaptionBold
-    cboHighlightMode.AddItem ntHLFlatBarAndCaptionUnderlined & " - ntHLFlatBarAndCaptionUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarAndCaptionUnderlined
-    cboHighlightMode.AddItem ntHLFlatBarAndPlainAndCaptionUnderlined & " - ntHLFlatBarAndPlainAndCaptionUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarAndPlainAndCaptionUnderlined
-    cboHighlightMode.AddItem ntHLFlatBarAndCaptionBoldUnderlined & " - ntHLFlatBarAndCaptionBoldUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarAndCaptionBoldUnderlined
-    cboHighlightMode.AddItem ntHLFlatBarPlainAndCaptionBoldUnderlined & " - ntHLFlatBarPlainAndCaptionBoldUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarPlainAndCaptionBoldUnderlined
-    cboHighlightMode.AddItem ntHLFlatBarWithGrip & " - ntHLFlatBarWithGrip": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGrip
-    cboHighlightMode.AddItem ntHLFlatBarWithGripAndGradient & " - ntHLFlatBarWithGripAndGradient": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripAndGradient
-    cboHighlightMode.AddItem ntHLFlatBarWithGripAndPlain & " - ntHLFlatBarWithGripAndPlain": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripAndPlain
-    cboHighlightMode.AddItem ntHLFlatBarWithGripAndCaptionBold & " - ntHLFlatBarWithGripAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripAndCaptionBold
-    cboHighlightMode.AddItem ntHLFlatBarWithGripGradientAndCaptionBold & " - ntHLFlatBarWithGripGradientAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripGradientAndCaptionBold
-    cboHighlightMode.AddItem ntHLFlatBarWithGripPlainAndCaptionBold & " - ntHLFlatBarWithGripPlainAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripPlainAndCaptionBold
-    cboHighlightMode.AddItem ntHLFlatBarWithGripAndGradientLight & " - ntHLFlatBarWithGripAndGradientLight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripAndGradientLight
-    cboHighlightMode.AddItem ntHLFlatBarWithGripGradientLightAndCaptionBold & " - ntHLFlatBarWithGripGradientLightAndCaptionBold": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripGradientLightAndCaptionBold
-    cboHighlightMode.AddItem ntHLFlatBarWithGripAndCaptionUnderlined & " - ntHLFlatBarWithGripAndCaptionUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripAndCaptionUnderlined
-    cboHighlightMode.AddItem ntHLFlatBarWithGripPlainAndCaptionUnderlined & " - ntHLFlatBarWithGripPlainAndCaptionUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripPlainAndCaptionUnderlined
-    cboHighlightMode.AddItem ntHLFlatBarWithGripAndCaptionBoldUnderlined & " - ntHLFlatBarWithGripAndCaptionBoldUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripAndCaptionBoldUnderlined
-    cboHighlightMode.AddItem ntHLFlatBarWithGripPlainAndCaptionBoldUnderlined & " - ntHLFlatBarWithGripPlainAndCaptionBoldUnderlined": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripPlainAndCaptionBoldUnderlined
-    cboHighlightMode.AddItem ntHLExtraHeight & " - ntHLExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLExtraHeight
-    cboHighlightMode.AddItem ntHLGradientAndExtraHeight & " - ntHLGradientAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLGradientAndExtraHeight
-    cboHighlightMode.AddItem ntHLDoubleGradientAndExtraHeight & " - ntHLDoubleGradientAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLDoubleGradientAndExtraHeight
-    cboHighlightMode.AddItem ntHLDoubleGradientAndExtraHeight & " - ntHLDoubleGradientAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLDoubleGradientAndExtraHeight
-    cboHighlightMode.AddItem ntHLPlainAndExtraHeight & " - ntHLPlainAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLPlainAndExtraHeight
-    cboHighlightMode.AddItem ntHLCaptionBoldAndExtraHeight & " - ntHLCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLCaptionBoldAndExtraHeight
-    cboHighlightMode.AddItem ntHLGradientCaptionBoldAndExtraHeight & " - ntHLGradientCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLGradientCaptionBoldAndExtraHeight
-    cboHighlightMode.AddItem ntHLDoubleGradientCaptionBoldAndExtraHeight & " - ntHLDoubleGradientCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLDoubleGradientCaptionBoldAndExtraHeight
-    cboHighlightMode.AddItem ntHLPlainCaptionBoldAndExtraHeight & " - ntHLPlainCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLPlainCaptionBoldAndExtraHeight
-    cboHighlightMode.AddItem ntHLGradientLightAndExtraHeight & " - ntHLGradientLightAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLGradientLightAndExtraHeight
-    cboHighlightMode.AddItem ntHLDoubleGradientLightAndExtraHeight & " - ntHLDoubleGradientLightAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLDoubleGradientLightAndExtraHeight
-    cboHighlightMode.AddItem ntHLGradientLightCaptionBoldAndExtraHeight & " - ntHLGradientLightCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLGradientLightCaptionBoldAndExtraHeight
-    cboHighlightMode.AddItem ntHLDoubleGradientLightCaptionBoldAndExtraHeight & " - ntHLDoubleGradientLightCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLDoubleGradientLightCaptionBoldAndExtraHeight
-    cboHighlightMode.AddItem ntHLFlatBarAndExtraHeight & " - ntHLFlatBarAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarAndExtraHeight
-    cboHighlightMode.AddItem ntHLFlatBarGradientAndExtraHeight & " - ntHLFlatBarGradientAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarGradientAndExtraHeight
-    cboHighlightMode.AddItem ntHLFlatBarPlainAndExtraHeight & " - ntHLFlatBarPlainAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarPlainAndExtraHeight
-    cboHighlightMode.AddItem ntHLFlatBarPlainAndExtraHeight & " - ntHLFlatBarPlainAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarPlainAndExtraHeight
-    cboHighlightMode.AddItem ntHLFlatBarCaptionBoldAndExtraHeight & " - ntHLFlatBarCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarCaptionBoldAndExtraHeight
-    cboHighlightMode.AddItem ntHLFlatBarGradientCaptionBoldAndExtraHeight & " - ntHLFlatBarGradientCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarGradientCaptionBoldAndExtraHeight
-    cboHighlightMode.AddItem ntHLFlatBarPlainCaptionBoldAndExtraHeight & " - ntHLFlatBarPlainCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarPlainCaptionBoldAndExtraHeight
-    cboHighlightMode.AddItem ntHLFlatBarGradientLightAndExtraHeight & " - ntHLFlatBarGradientLightAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarGradientLightAndExtraHeight
-    cboHighlightMode.AddItem ntHLFlatBarGradientLightCaptionBoldAndExtraHeight & " - ntHLFlatBarGradientLightCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarGradientLightCaptionBoldAndExtraHeight
-    cboHighlightMode.AddItem ntHLFlatBarGradientLightCaptionBoldUnderlinedAndExtraHeight & " - ntHLFlatBarGradientLightCaptionBoldUnderlinedAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarGradientLightCaptionBoldUnderlinedAndExtraHeight
-    cboHighlightMode.AddItem ntHLFlatBarWithGripAndExtraHeight & " - ntHLFlatBarWithGripAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripAndExtraHeight
-    cboHighlightMode.AddItem ntHLFlatBarWithGripGradientAndExtraHeight & " - ntHLFlatBarWithGripGradientAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripGradientAndExtraHeight
-    cboHighlightMode.AddItem ntHLFlatBarWithGripPlainAndExtraHeight & " - ntHLFlatBarWithGripPlainAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripPlainAndExtraHeight
-    cboHighlightMode.AddItem ntHLFlatBarWithGripPlainAndExtraHeight & " - ntHLFlatBarWithGripPlainAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripPlainAndExtraHeight
-    cboHighlightMode.AddItem ntHLFlatBarWithGripCaptionBoldAndExtraHeight & " - ntHLFlatBarWithGripCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripCaptionBoldAndExtraHeight
-    cboHighlightMode.AddItem ntHLFlatBarWithGripGradientCaptionBoldAndExtraHeight & " - ntHLFlatBarWithGripGradientCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripGradientCaptionBoldAndExtraHeight
-    cboHighlightMode.AddItem ntHLFlatBarWithGripPlainCaptionBoldAndExtraHeight & " - ntHLFlatBarWithGripPlainCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripPlainCaptionBoldAndExtraHeight
-    cboHighlightMode.AddItem ntHLFlatBarWithGripGradientLightAndExtraHeight & " - ntHLFlatBarWithGripGradientLightAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripGradientLightAndExtraHeight
-    cboHighlightMode.AddItem ntHLFlatBarWithGripGradientLightCaptionBoldAndExtraHeight & " - ntHLFlatBarWithGripGradientLightCaptionBoldAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripGradientLightCaptionBoldAndExtraHeight
-    cboHighlightMode.AddItem ntHLFlatBarWithGripGradientLightCaptionBoldUnderlinedAndExtraHeight & " - ntHLFlatBarWithGripGradientLightCaptionBoldUnderlinedAndExtraHeight": cboHighlightMode.ItemData(cboHighlightMode.NewIndex) = ntHLFlatBarWithGripGradientLightCaptionBoldUnderlinedAndExtraHeight
-    SelectInComboByItemData cboHighlightMode, CLng(cboHighlightMode.Tag)
-    
-    cboHighlightModeTabSel.Clear
-    iStr = ntHLAuto & " - Automatic"
-    If mTDIMode Then
-        iStr = iStr & " (ntHLGradientAndCaptionBold)"
-    Else
-        Select Case cboStyle.ItemData(cboStyle.ListIndex)
-            Case ntStyleFlat
-                iStr = iStr & " (ntHLFlatBarAndGradientLight)"
-            Case ssStyleTabbedDialog
-                iStr = iStr & " (ntHLCaptionBold)"
-            Case ntStyleWindows
-                iStr = iStr & " (ntHLNone)"
-            Case Else
-                iStr = iStr & " (ntHLDoubleGradient)"
-        End Select
-    End If
-    cboHighlightModeTabSel.AddItem iStr: cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLAuto
-    cboHighlightModeTabSel.AddItem ntHLNone & " - ntHLNone": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLNone
-    cboHighlightModeTabSel.AddItem ntHLGradient & " - ntHLGradient": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLGradient
-    cboHighlightModeTabSel.AddItem ntHLDoubleGradient & " - ntHLDoubleGradient": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLDoubleGradient
-    cboHighlightModeTabSel.AddItem ntHLPlain & " - ntHLPlain": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLPlain
-    cboHighlightModeTabSel.AddItem ntHLCaptionBold & " - ntHLCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLCaptionBold
-    cboHighlightModeTabSel.AddItem ntHLGradientAndCaptionBold & " - ntHLGradientAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLGradientAndCaptionBold
-    cboHighlightModeTabSel.AddItem ntHLDoubleGradientAndCaptionBold & " - ntHLDoubleGradientAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLDoubleGradientAndCaptionBold
-    cboHighlightModeTabSel.AddItem ntHLPlainAndCaptionBold & " - ntHLPlainAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLPlainAndCaptionBold
-    cboHighlightModeTabSel.AddItem ntHLGradientLight & " - ntHLGradientLight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLGradientLight
-    cboHighlightModeTabSel.AddItem ntHLDoubleGradientLight & " - ntHLDoubleGradientLight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLDoubleGradientLight
-    cboHighlightModeTabSel.AddItem ntHLGradientLightAndCaptionBold & " - ntHLGradientLightAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLGradientLightAndCaptionBold
-    cboHighlightModeTabSel.AddItem ntHLDoubleGradientLightAndCaptionBold & " - ntHLDoubleGradientLightAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLDoubleGradientLightAndCaptionBold
-    cboHighlightModeTabSel.AddItem ntHLCaptionUnderlined & " - ntHLCaptionUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLCaptionUnderlined
-    cboHighlightModeTabSel.AddItem ntHLGradientAndCaptionUnderlined & " - ntHLGradientAndCaptionUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLGradientAndCaptionUnderlined
-    cboHighlightModeTabSel.AddItem ntHLGradientLightAndCaptionUnderlined & " - ntHLGradientLightAndCaptionUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLGradientLightAndCaptionUnderlined
-    cboHighlightModeTabSel.AddItem ntHLCaptionBoldAndUnderlined & " - ntHLCaptionBoldAndUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLCaptionBoldAndUnderlined
-    cboHighlightModeTabSel.AddItem ntHLFlatBar & " - ntHLFlatBar": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBar
-    cboHighlightModeTabSel.AddItem ntHLFlatBarAndGradient & " - ntHLFlatBarAndGradient": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarAndGradient
-    cboHighlightModeTabSel.AddItem ntHLFlatBarAndPlain & " - ntHLFlatBarAndPlain": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarAndPlain
-    cboHighlightModeTabSel.AddItem ntHLFlatBarAndCaptionBold & " - ntHLFlatBarAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarAndCaptionBold
-    cboHighlightModeTabSel.AddItem ntHLFlatBarGradientAndCaptionBold & " - ntHLFlatBarGradientAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarGradientAndCaptionBold
-    cboHighlightModeTabSel.AddItem ntHLFlatBarPlainAndCaptionBold & " - ntHLFlatBarPlainAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarPlainAndCaptionBold
-    cboHighlightModeTabSel.AddItem ntHLFlatBarAndGradientLight & " - ntHLFlatBarAndGradientLight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarAndGradientLight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarAndPlainLight & " - ntHLFlatBarAndPlainLight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarAndPlainLight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarGradientLightAndCaptionBold & " - ntHLFlatBarGradientLightAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarGradientLightAndCaptionBold
-    cboHighlightModeTabSel.AddItem ntHLFlatBarAndCaptionUnderlined & " - ntHLFlatBarAndCaptionUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarAndCaptionUnderlined
-    cboHighlightModeTabSel.AddItem ntHLFlatBarAndPlainAndCaptionUnderlined & " - ntHLFlatBarAndPlainAndCaptionUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarAndPlainAndCaptionUnderlined
-    cboHighlightModeTabSel.AddItem ntHLFlatBarAndCaptionBoldUnderlined & " - ntHLFlatBarAndCaptionBoldUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarAndCaptionBoldUnderlined
-    cboHighlightModeTabSel.AddItem ntHLFlatBarPlainAndCaptionBoldUnderlined & " - ntHLFlatBarPlainAndCaptionBoldUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarPlainAndCaptionBoldUnderlined
-    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGrip & " - ntHLFlatBarWithGrip": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGrip
-    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripAndGradient & " - ntHLFlatBarWithGripAndGradient": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripAndGradient
-    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripAndPlain & " - ntHLFlatBarWithGripAndPlain": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripAndPlain
-    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripAndCaptionBold & " - ntHLFlatBarWithGripAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripAndCaptionBold
-    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripGradientAndCaptionBold & " - ntHLFlatBarWithGripGradientAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripGradientAndCaptionBold
-    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripPlainAndCaptionBold & " - ntHLFlatBarWithGripPlainAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripPlainAndCaptionBold
-    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripAndGradientLight & " - ntHLFlatBarWithGripAndGradientLight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripAndGradientLight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripGradientLightAndCaptionBold & " - ntHLFlatBarWithGripGradientLightAndCaptionBold": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripGradientLightAndCaptionBold
-    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripAndCaptionUnderlined & " - ntHLFlatBarWithGripAndCaptionUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripAndCaptionUnderlined
-    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripPlainAndCaptionUnderlined & " - ntHLFlatBarWithGripPlainAndCaptionUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripPlainAndCaptionUnderlined
-    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripAndCaptionBoldUnderlined & " - ntHLFlatBarWithGripAndCaptionBoldUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripAndCaptionBoldUnderlined
-    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripPlainAndCaptionBoldUnderlined & " - ntHLFlatBarWithGripPlainAndCaptionBoldUnderlined": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripPlainAndCaptionBoldUnderlined
-    cboHighlightModeTabSel.AddItem ntHLExtraHeight & " - ntHLExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLGradientAndExtraHeight & " - ntHLGradientAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLGradientAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLDoubleGradientAndExtraHeight & " - ntHLDoubleGradientAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLDoubleGradientAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLDoubleGradientAndExtraHeight & " - ntHLDoubleGradientAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLDoubleGradientAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLPlainAndExtraHeight & " - ntHLPlainAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLPlainAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLCaptionBoldAndExtraHeight & " - ntHLCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLCaptionBoldAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLGradientCaptionBoldAndExtraHeight & " - ntHLGradientCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLGradientCaptionBoldAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLDoubleGradientCaptionBoldAndExtraHeight & " - ntHLDoubleGradientCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLDoubleGradientCaptionBoldAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLPlainCaptionBoldAndExtraHeight & " - ntHLPlainCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLPlainCaptionBoldAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLGradientLightAndExtraHeight & " - ntHLGradientLightAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLGradientLightAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLDoubleGradientLightAndExtraHeight & " - ntHLDoubleGradientLightAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLDoubleGradientLightAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLGradientLightCaptionBoldAndExtraHeight & " - ntHLGradientLightCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLGradientLightCaptionBoldAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLDoubleGradientLightCaptionBoldAndExtraHeight & " - ntHLDoubleGradientLightCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLDoubleGradientLightCaptionBoldAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarAndExtraHeight & " - ntHLFlatBarAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarGradientAndExtraHeight & " - ntHLFlatBarGradientAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarGradientAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarPlainAndExtraHeight & " - ntHLFlatBarPlainAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarPlainAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarPlainAndExtraHeight & " - ntHLFlatBarPlainAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarPlainAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarCaptionBoldAndExtraHeight & " - ntHLFlatBarCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarCaptionBoldAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarGradientCaptionBoldAndExtraHeight & " - ntHLFlatBarGradientCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarGradientCaptionBoldAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarPlainCaptionBoldAndExtraHeight & " - ntHLFlatBarPlainCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarPlainCaptionBoldAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarGradientLightAndExtraHeight & " - ntHLFlatBarGradientLightAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarGradientLightAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarGradientLightCaptionBoldAndExtraHeight & " - ntHLFlatBarGradientLightCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarGradientLightCaptionBoldAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarGradientLightCaptionBoldUnderlinedAndExtraHeight & " - ntHLFlatBarGradientLightCaptionBoldUnderlinedAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarGradientLightCaptionBoldUnderlinedAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripAndExtraHeight & " - ntHLFlatBarWithGripAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripGradientAndExtraHeight & " - ntHLFlatBarWithGripGradientAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripGradientAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripPlainAndExtraHeight & " - ntHLFlatBarWithGripPlainAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripPlainAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripPlainAndExtraHeight & " - ntHLFlatBarWithGripPlainAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripPlainAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripCaptionBoldAndExtraHeight & " - ntHLFlatBarWithGripCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripCaptionBoldAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripGradientCaptionBoldAndExtraHeight & " - ntHLFlatBarWithGripGradientCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripGradientCaptionBoldAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripPlainCaptionBoldAndExtraHeight & " - ntHLFlatBarWithGripPlainCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripPlainCaptionBoldAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripGradientLightAndExtraHeight & " - ntHLFlatBarWithGripGradientLightAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripGradientLightAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripGradientLightCaptionBoldAndExtraHeight & " - ntHLFlatBarWithGripGradientLightCaptionBoldAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripGradientLightCaptionBoldAndExtraHeight
-    cboHighlightModeTabSel.AddItem ntHLFlatBarWithGripGradientLightCaptionBoldUnderlinedAndExtraHeight & " - ntHLFlatBarWithGripGradientLightCaptionBoldUnderlinedAndExtraHeight": cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.NewIndex) = ntHLFlatBarWithGripGradientLightCaptionBoldUnderlinedAndExtraHeight
-    SelectInComboByItemData cboHighlightModeTabSel, CLng(cboHighlightModeTabSel.Tag)
 End Sub
 
 Private Sub cboTabAppearance_Click()
@@ -964,16 +1150,6 @@ Private Sub SetFlatStyleRelatedPropertiesEnabledState()
     lblFlatBodySeparationLineHeight.Enabled = txtFlatRoundnessTop.Enabled
 End Sub
 
-Private Sub cboHighlightMode_Click()
-    If Not mLoading Then Changed = True
-    cboHighlightMode.Tag = cboHighlightMode.ItemData(cboHighlightMode.ListIndex)
-End Sub
-
-Private Sub cboHighlightModeTabSel_Click()
-    If Not mLoading Then Changed = True
-    cboHighlightModeTabSel.Tag = cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.ListIndex)
-End Sub
-
 Private Sub cboTabWidthStyle_Click()
     If Not mLoading Then Changed = True
     cboTabWidthStyle.Tag = cboTabWidthStyle.ItemData(cboTabWidthStyle.ListIndex)
@@ -1003,6 +1179,34 @@ Private Sub chkAutoTabHeight_Click()
     lblTabHeight.Enabled = txtTabHeight.Enabled
 End Sub
 
+Private Sub chkBackground_Click()
+    chkBackgroundGradient.Enabled = (chkBackground.Value = vbChecked) And (chkHighlightAuto.Value <> vbChecked)
+    chkBackgroundLight.Enabled = (chkBackground.Value = vbChecked) And (chkHighlightAuto.Value <> vbChecked)
+    chkBackgroundGradientDouble.Enabled = (chkBackground.Value = vbChecked) And (chkBackgroundGradient.Value = vbChecked) And (chkHighlightAuto.Value <> vbChecked)
+    If Not mLoadingHighlightDropDown Then Changed = True
+End Sub
+
+Private Sub chkBackgroundGradient_Click()
+    chkBackgroundGradientDouble.Enabled = (chkBackground.Value = vbChecked) And (chkBackgroundGradient.Value = vbChecked)
+    If Not mLoadingHighlightDropDown Then Changed = True
+End Sub
+
+Private Sub chkBackgroundGradientDouble_Click()
+    If Not mLoadingHighlightDropDown Then Changed = True
+End Sub
+
+Private Sub chkBackgroundLight_Click()
+    If Not mLoadingHighlightDropDown Then Changed = True
+End Sub
+
+Private Sub chkCaptionBold_Click()
+    If Not mLoadingHighlightDropDown Then Changed = True
+End Sub
+
+Private Sub chkCaptionUnderlined_Click()
+    If Not mLoadingHighlightDropDown Then Changed = True
+End Sub
+
 Private Sub chkChangeControlsBackColor_Click()
     If Not mLoading Then Changed = True
 End Sub
@@ -1011,8 +1215,37 @@ Private Sub chkChangeControlsForeColor_Click()
     If Not mLoading Then Changed = True
 End Sub
 
+Private Sub chkFlatDrawBorder_Click()
+    If Not mLoadingHighlightDropDown Then Changed = True
+End Sub
+
 Private Sub chkEnabled_Click()
     If Not mLoading Then Changed = True
+End Sub
+
+Private Sub chkExtraHeight_Click()
+    If Not mLoadingHighlightDropDown Then Changed = True
+End Sub
+
+Private Sub chkFlatBar_Click()
+    chkFlatBarGrip.Enabled = (chkFlatBar.Value = vbChecked) And (chkHighlightAuto.Value <> vbChecked)
+    If Not mLoadingHighlightDropDown Then Changed = True
+End Sub
+
+Private Sub chkFlatBarGrip_Click()
+    If Not mLoadingHighlightDropDown Then Changed = True
+End Sub
+
+Private Sub chkHighlightAuto_Click()
+    chkBackground.Enabled = (chkHighlightAuto.Value <> vbChecked)
+    chkBackground_Click
+    chkCaptionBold.Enabled = chkBackground.Enabled
+    chkCaptionUnderlined.Enabled = chkBackground.Enabled
+    chkFlatBar.Enabled = chkBackground.Enabled
+    chkFlatBar_Click
+    chkExtraHeight.Enabled = chkBackground.Enabled
+    chkFlatDrawBorder.Enabled = chkBackground.Enabled
+    If Not mLoadingHighlightDropDown Then Changed = True
 End Sub
 
 Private Sub chkOLEDropOnOtherTabs_Click()
@@ -1061,6 +1294,10 @@ Private Sub PropertyPage_ApplyChanges()
         Exit Sub
     End If
     
+    If picHighlightDropDown.Visible Then
+        HighlightDropUp
+    End If
+    
     Dim c As Long
     
     On Error Resume Next
@@ -1090,8 +1327,8 @@ Private Sub PropertyPage_ApplyChanges()
     SelectedControls(0).AutoTabHeight = CBool(chkAutoTabHeight.Value)
     SelectedControls(0).SoftEdges = CBool(chkSoftEdges.Value)
     SelectedControls(0).HandleHighContrastTheme = CBool(chkHandleHighContrastTheme.Value)
-    SelectedControls(0).HighlightMode = cboHighlightMode.ItemData(cboHighlightMode.ListIndex)
-    SelectedControls(0).HighlightModeTabSel = cboHighlightModeTabSel.ItemData(cboHighlightModeTabSel.ListIndex)
+    SelectedControls(0).HighlightMode = mHighlightMode
+    SelectedControls(0).HighlightModeTabSel = mHighlightModeTabSel
     SelectedControls(0).AutoRelocateControls = cboAutoRelocateControls.ItemData(cboAutoRelocateControls.ListIndex)
     If Not SelectedControls(0).AutoTabHeight Then
         SelectedControls(0).TabHeight = CSng(txtTabHeight.Text)
@@ -1341,8 +1578,10 @@ Private Sub tmrLoad_Timer()
     cboTabAppearance.Tag = iCtl.TabAppearance
     cboTabWidthStyle.Tag = iCtl.TabWidthStyle
     cboShowRowsInPerspective.Tag = iCtl.ShowRowsInPerspective
-    cboHighlightMode.Tag = iCtl.HighlightMode
-    cboHighlightModeTabSel.Tag = iCtl.HighlightModeTabSel
+    mHighlightMode = iCtl.HighlightMode
+    SetHLComboText cboHighlightMode, mHighlightMode
+    mHighlightModeTabSel = iCtl.HighlightModeTabSel
+    SetHLComboText cboHighlightModeTabSel, mHighlightModeTabSel
     
     SelectInComboByItemData cboStyle, iCtl.Style
     
@@ -1378,11 +1617,39 @@ Private Sub tmrLoad_Timer()
     SelectInComboByItemData cboFlatBarPosition, iCtl.FlatBarPosition
     txtFlatBodySeparationLineHeight.Text = iCtl.FlatBodySeparationLineHeight
     
+    Changed = False
     mLoading = False
     'Debug.Print PropertyPage.Name & " End: " & Round(Timer, 2)
 
 End Sub
 
+Private Sub tmrPicDropped_Timer()
+    Dim iHide As Boolean
+    
+    If IsMouseButtonPressed(bsMBRight) Then
+        iHide = True
+    ElseIf IsMouseButtonPressed(bsMBLeft) Then
+        Dim iPt As POINTAPI
+        Dim iRect As RECT
+        
+        GetCursorPos iPt
+        GetWindowRect picHighlightDropDown.hWnd, iRect
+        
+        If (iPt.X < iRect.Left) Or (iPt.X > iRect.Right) Or (iPt.Y < iRect.Top) Or (iPt.Y > iRect.Bottom) Then
+            iHide = True
+        End If
+    End If
+    If iHide Then
+        HighlightDropUp
+    End If
+End Sub
+
+Private Sub HighlightDropUp()
+    picHighlightDropDown.Visible = False
+    tmrPicDropped.Enabled = False
+    SetVariablesFromPicHighlightDropDown
+End Sub
+    
 Private Sub tmrRedraw_Timer()
     tmrRedraw.Enabled = False
     RedrawWindow PropertyPage.hWnd, ByVal 0&, 0&, RDW_INVALIDATE Or RDW_ALLCHILDREN
@@ -1499,3 +1766,18 @@ Private Sub txtTabsPerRow_GotFocus()
     EnterTxt txtTabsPerRow
 End Sub
 
+Private Function IsMouseButtonPressed(nButton As NTMouseButtonsConstants) As Boolean
+    Dim iButton As Long
+    Dim iDummy As Long
+    
+    iButton = nButton
+    If GetSystemMetrics(SM_SWAPBUTTON) <> 0 Then
+        If nButton = bsMBLeft Then
+            iButton = VK_RBUTTON
+        ElseIf nButton = bsMBRight Then
+            iButton = VK_LBUTTON
+        End If
+    End If
+    iDummy = GetAsyncKeyState(iButton)
+    IsMouseButtonPressed = GetAsyncKeyState(iButton) <> 0
+End Function

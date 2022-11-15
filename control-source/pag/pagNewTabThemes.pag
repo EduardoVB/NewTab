@@ -43,7 +43,7 @@ Begin VB.PropertyPage pagNewTabThemes
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      TabHeight       =   558
+      TabHeight       =   600
       Themed          =   0   'False
       AutoTabHeight   =   -1  'True
       TabCaption(0)   =   "Tab 0"
@@ -245,7 +245,7 @@ Begin VB.PropertyPage pagNewTabThemes
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         TabHeight       =   558
+         TabHeight       =   600
          Themed          =   0   'False
          AutoTabHeight   =   -1  'True
          TabCaption(0)   =   "Tab 0"
@@ -273,7 +273,7 @@ Begin VB.PropertyPage pagNewTabThemes
             Italic          =   0   'False
             Strikethrough   =   0   'False
          EndProperty
-         TabHeight       =   558
+         TabHeight       =   600
          Themed          =   0   'False
          AutoTabHeight   =   -1  'True
          TabCaption(0)   =   "Tab 0"
@@ -1092,7 +1092,7 @@ Private Sub SetPropertyPageColors(nBackColor As Long, nForeColor As Long)
 End Sub
 
 Private Sub ModifyColors()
-    Const cPropertyList As String = "|BackColor|ForeColor|ForeColorTabSel|ForeColorHighlighted|BackColorTabs|BackColorTabSel|FlatBarColorInactive|FlatTabsSeparationLineColor|FlatBodySeparationLineColor|FlatBorderColor|FlatBarColorHighlight|FlatBarColorTabSel|IconColor|IconColorTabSel|IconColorTabHighlighted|HighlightColor|HighlightColorTabSel|"
+    Const cPropertyList As String = "|BackColor|ForeColor|ForeColorTabSel|ForeColorHighlighted|FlatTabBoderColorHighlight|FlatTabBoderColorTabSel|BackColorTabs|BackColorTabSel|FlatBarColorInactive|FlatTabsSeparationLineColor|FlatBodySeparationLineColor|FlatBorderColor|FlatBarColorHighlight|FlatBarColorTabSel|IconColor|IconColorTabSel|IconColorTabHighlighted|HighlightColor|HighlightColorTabSel|"
     Dim iProp As cPropertyData
     Dim iProp2 As cPropertyData
     Dim iColors As Collection
@@ -1182,6 +1182,10 @@ Private Sub ModifyColors()
                     nt.ForeColorTabSel = iProp.Value
                 Case "ForeColorHighlighted"
                     nt.ForeColorHighlighted = iProp.Value
+                Case "FlatTabBoderColorHighlight"
+                    nt.FlatTabBoderColorHighlight = iProp.Value
+                Case "FlatTabBoderColorTabSel"
+                    nt.FlatTabBoderColorTabSel = iProp.Value
                 Case "BackColorTabs"
                     nt.BackColorTabs = iProp.Value
                 Case "BackColorTabSel"
@@ -1421,7 +1425,7 @@ Private Function CloneFont(nOrigFont As iFont) As StdFont
 End Function
 
 Private Function GetCurrentColors() As Collection
-    Const cPropertyList As String = "|BackColor|ForeColor|ForeColorTabSel|ForeColorHighlighted|BackColorTabs|BackColorTabSel|FlatBarColorInactive|FlatTabsSeparationLineColor|FlatBodySeparationLineColor|FlatBorderColor|FlatBarColorHighlight|FlatBarColorTabSel|IconColor|IconColorTabSel|IconColorTabHighlighted|HighlightColor|HighlightColorTabSel|"
+    Const cPropertyList As String = "|BackColor|ForeColor|ForeColorTabSel|ForeColorHighlighted|FlatTabBoderColorHighlight|FlatTabBoderColorTabSel|BackColorTabs|BackColorTabSel|FlatBarColorInactive|FlatTabsSeparationLineColor|FlatBodySeparationLineColor|FlatBorderColor|FlatBarColorHighlight|FlatBarColorTabSel|IconColor|IconColorTabSel|IconColorTabHighlighted|HighlightColor|HighlightColorTabSel|"
     Dim iPropNames() As String
     Dim c As Long
     Dim nt As NewTab
@@ -1443,6 +1447,10 @@ Private Function GetCurrentColors() As Collection
                     iProp.Value = nt.ForeColorTabSel
                 Case "ForeColorHighlighted"
                     iProp.Value = nt.ForeColorHighlighted
+                Case "FlatTabBoderColorHighlight"
+                    iProp.Value = nt.FlatTabBoderColorHighlight
+                Case "FlatTabBoderColorTabSel"
+                    iProp.Value = nt.FlatTabBoderColorTabSel
                 Case "BackColorTabs"
                     iProp.Value = nt.BackColorTabs
                 Case "BackColorTabSel"
