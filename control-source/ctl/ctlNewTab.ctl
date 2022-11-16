@@ -1149,6 +1149,7 @@ End Property
 Public Property Get IconFont() As StdFont
 Attribute IconFont.VB_Description = "Returns/sets the Font that will be used to draw the icon of the currently selected tab."
 Attribute IconFont.VB_ProcData.VB_Invoke_Property = ";Fuente"
+Attribute IconFont.VB_MemberFlags = "40"
     Set IconFont = TabIconFont(mTabSel)
 End Property
 

@@ -18,6 +18,37 @@ Begin VB.PropertyPage pagNewTabTabs
    PaletteMode     =   0  'Halftone
    ScaleHeight     =   8508
    ScaleWidth      =   6804
+   Begin VB.PictureBox picIconFontNote 
+      BorderStyle     =   0  'None
+      Height          =   372
+      Left            =   1920
+      ScaleHeight     =   372
+      ScaleWidth      =   4812
+      TabIndex        =   61
+      Top             =   2760
+      Visible         =   0   'False
+      Width           =   4812
+      Begin VB.Label Label6 
+         Caption         =   "The Icon Font is per tab. Each tab has its own icon font (you can have different fonts for each tab icon)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H000000FF&
+         Height          =   410
+         Left            =   0
+         MouseIcon       =   "pagNewTabTabs.pgx":0000
+         MousePointer    =   99  'Custom
+         TabIndex        =   62
+         Top             =   0
+         Width           =   3840
+      End
+   End
    Begin VB.PictureBox picTDICover1 
       BorderStyle     =   0  'None
       Height          =   2890
@@ -97,9 +128,9 @@ Begin VB.PropertyPage pagNewTabTabs
    End
    Begin VB.ComboBox cboIconAlignment 
       Height          =   290
-      ItemData        =   "pagNewTabTabs.pgx":0000
+      ItemData        =   "pagNewTabTabs.pgx":0152
       Left            =   2000
-      List            =   "pagNewTabTabs.pgx":0002
+      List            =   "pagNewTabTabs.pgx":0154
       Style           =   2  'Dropdown List
       TabIndex        =   37
       Top             =   3120
@@ -169,12 +200,13 @@ Begin VB.PropertyPage pagNewTabTabs
    End
    Begin VB.ComboBox cboTabIconFont 
       Height          =   290
-      ItemData        =   "pagNewTabTabs.pgx":0004
+      ItemData        =   "pagNewTabTabs.pgx":0156
       Left            =   2000
-      List            =   "pagNewTabTabs.pgx":0006
+      List            =   "pagNewTabTabs.pgx":0158
       Sorted          =   -1  'True
       Style           =   2  'Dropdown List
       TabIndex        =   40
+      ToolTipText     =   "Each tab has its own icon font (you can have different fonts for each tab icon)"
       Top             =   3450
       Width           =   3217
    End
@@ -767,6 +799,7 @@ Begin VB.PropertyPage pagNewTabTabs
       Height          =   230
       Left            =   935
       TabIndex        =   39
+      ToolTipText     =   "Each tab has its own icon font (you can have different fonts for each tab icon)"
       Top             =   3480
       Width           =   1010
    End
@@ -823,7 +856,7 @@ Begin VB.PropertyPage pagNewTabTabs
       ForeColor       =   &H000000FF&
       Height          =   410
       Left            =   2800
-      MouseIcon       =   "pagNewTabTabs.pgx":0008
+      MouseIcon       =   "pagNewTabTabs.pgx":015A
       MousePointer    =   99  'Custom
       TabIndex        =   35
       Top             =   2740
@@ -1040,6 +1073,10 @@ Private Sub cboTabIconFont_Click()
     End If
 End Sub
 
+Private Sub cboTabIconFont_DropDown()
+    picIconFontNote.Visible = True
+End Sub
+
 Private Sub chkTabEnabled_Click()
     If Not mLoading Then
         Changed = True
@@ -1081,6 +1118,7 @@ End Sub
 Private Sub cmdChangeIconFont_Click()
     Dim cDlg As New cCommonDialog
     
+    picIconFontNote.Visible = True
     Set cDlg.Font = mTabData(mTabSel).IconFont
     cDlg.ShowFont
     If Not cDlg.Canceled Then
@@ -2575,15 +2613,17 @@ Private Function FontsAreEqual(nFont1 As StdFont, nFont2 As StdFont) As Boolean
 End Function
 
 Private Sub EnsureFontListLoaded()
-    Const CB_ADDSTRING = &H143
+    Const WM_SETREDRAW = &HB
     Dim c As Long
     
+    SendMessage cboTabIconFont.hWnd, WM_SETREDRAW, 0, 0
     If Not mFontListLoaded Then
         cboTabIconFont.Clear
         cboTabIconFont.AddItem ""
         For c = 0 To Screen.FontCount - 1
-            SendMessage cboTabIconFont.hWnd, CB_ADDSTRING, 0, ByVal StrPtr(Screen.Fonts(c))
+            cboTabIconFont.AddItem Screen.Fonts(c)
         Next
         mFontListLoaded = True
     End If
+    SendMessage cboTabIconFont.hWnd, WM_SETREDRAW, -1, 0
 End Sub
