@@ -1,12 +1,12 @@
 # VB6 source files (show diff + keep CRLF in zip download)
 
-*.bas        working-tree-encoding=CP1252 text eol=crlf linguist-language=vb6
-*.cls        working-tree-encoding=CP1252 text eol=crlf linguist-language=vb6
-*.ctl        working-tree-encoding=CP1252 text eol=crlf linguist-language=vb6
-*.dob        working-tree-encoding=CP1252 text eol=crlf linguist-language=vb6
-*.dsr        working-tree-encoding=CP1252 text eol=crlf linguist-language=vb6
-*.frm        working-tree-encoding=CP1252 text eol=crlf linguist-language=vb6
-*.pag        working-tree-encoding=CP1252 text eol=crlf linguist-language=vb6
+*.bas        working-tree-encoding=CP1252 text eol=crlf
+*.cls        working-tree-encoding=CP1252 text eol=crlf
+*.ctl        working-tree-encoding=CP1252 text eol=crlf
+*.dob        working-tree-encoding=CP1252 text eol=crlf
+*.dsr        working-tree-encoding=CP1252 text eol=crlf
+*.frm        working-tree-encoding=CP1252 text eol=crlf
+*.pag        working-tree-encoding=CP1252 text eol=crlf
 *.vbg        working-tree-encoding=CP1252 text eol=crlf
 *.vbl        working-tree-encoding=CP1252 text eol=crlf
 *.vbp        working-tree-encoding=CP1252 text eol=crlf
