@@ -4913,19 +4913,33 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     If mHighlightColor = -1 Then mHighlightColor_IsAutomatic = True: mHighlightColor = 0
     mHighlightColorTabSel = PropBag.ReadProperty("HighlightColorTabSel", -1)
     If mHighlightColorTabSel = -1 Then mHighlightColorTabSel_IsAutomatic = True: mHighlightColorTabSel = 0
+    mSoftEdges = PropBag.ReadProperty("SoftEdges", cPropDef_SoftEdges)
+    mChangeControlsBackColor = PropBag.ReadProperty("ChangeControlsBackColor", cPropDef_ChangeControlsBackColor)
+    mChangeControlsForeColor = PropBag.ReadProperty("ChangeControlsForeColor", cPropDef_ChangeControlsForeColor)
+    mTabTransition = PropBag.ReadProperty("TabTransition", cPropDef_TabTransition)
+    mHighlightMode = PropBag.ReadProperty("HighlightMode", cPropDef_HighlightMode)
+    mHighlightModeTabSel = PropBag.ReadProperty("HighlightModeTabSel", cPropDef_HighlightModeTabSel)
     If PropBag.ReadProperty("_Version", 0) <> 0 Then
         ' upgrading from SSTab
         If (mStyle <> ssStyleTabbedDialog) And (mStyle <> ssStylePropertyPage) Then
             mStyle = ssStyleTabbedDialog
-            mBackColorTabs = vbButtonFace
-            mBackColorTabsIsFromAmbient = False
-            mBackColorTabSel = vbButtonFace
-            mForeColor = vbButtonText
-            mForeColorTabSel = vbButtonText
-            mForeColorHighlighted = vbButtonText
-            mFlatTabBoderColorHighlight = vbButtonText
-            mFlatTabBoderColorTabSel = vbButtonText
         End If
+        mBackColorTabs = vbButtonFace
+        mBackColorTabsIsFromAmbient = False
+        mBackColorTabSel = vbButtonFace
+        mForeColor = vbButtonText
+        mForeColorTabSel = vbButtonText
+        mForeColorHighlighted = vbButtonText
+        mFlatTabBoderColorHighlight = vbButtonText
+        mFlatTabBoderColorTabSel = vbButtonText
+        mSoftEdges = False
+        mShowFocusRect = True
+        mChangeControlsBackColor = False
+        mChangeControlsForeColor = False
+        mTabTransition = ntTransitionImmediate
+        mHighlightEffect = False
+        mHighlightMode = ntHLNone
+        mHighlightModeTabSel = ntHLNone
         iUpgradingFromSSTab = True
     ElseIf PropBag.ReadProperty("Themed", cPropDef_Style = ntStyleWindows) Then
         ' upgrading from SSTab Ex
@@ -4939,14 +4953,11 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     End If
     mVisualStyles = (mStyle = ntStyleWindows)
     mShowDisabledState = PropBag.ReadProperty("ShowDisabledState", cPropDef_ShowDisabledState)
-    mChangeControlsBackColor = PropBag.ReadProperty("ChangeControlsBackColor", cPropDef_ChangeControlsBackColor)
-    mChangeControlsForeColor = PropBag.ReadProperty("ChangeControlsForeColor", cPropDef_ChangeControlsForeColor)
     mTabSeparation = PropBag.ReadProperty("TabSeparation", cPropDef_TabSeparation)
     mTabSeparationDPIScaled = mTabSeparation * mDPIScale
     mTabAppearance = PropBag.ReadProperty("TabAppearance", cPropDef_TabAppearance)
     mIconAlignment = PropBag.ReadProperty("IconAlignment", IIf(iUpgradingFromSSTab, ntIconAlignBeforeCaption, cPropDef_IconAlignment))
     mAutoRelocateControls = PropBag.ReadProperty("AutoRelocateControls", cPropDef_AutoRelocateControls)
-    mSoftEdges = PropBag.ReadProperty("SoftEdges", cPropDef_SoftEdges)
     mRightToLeft = PropBag.ReadProperty("RightToLeft", Ambient.RightToLeft)
     If mRightToLeft Then
         SetLayout GetDC(picDraw.hWnd), LAYOUT_RTL Or LAYOUT_BITMAPORIENTATIONPRESERVED
@@ -4956,7 +4967,6 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     mAutoTabHeight = PropBag.ReadProperty("AutoTabHeight", False) ' Defaults to False for backward compatibility with SSTab
     mOLEDropOnOtherTabs = PropBag.ReadProperty("OLEDropOnOtherTabs", cPropDef_OLEDropOnOtherTabs)
     mFlatBarColorTabSel = PropBag.ReadProperty("FlatBarColorTabSel", cPropDef_FlatBarColorTabSel)
-    mTabTransition = PropBag.ReadProperty("TabTransition", cPropDef_TabTransition)
     mFlatRoundnessTop = PropBag.ReadProperty("FlatRoundnessTop", cPropDef_FlatRoundnessTop)
     mFlatRoundnessTopDPIScaled = mFlatRoundnessTop * mDPIScale
     mFlatRoundnessBottom = PropBag.ReadProperty("FlatRoundnessBottom", cPropDef_FlatRoundnessBottom)
@@ -4970,8 +4980,6 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     mIconColorMouseHover = PropBag.ReadProperty("IconColorMouseHover", mIconColor)
     mIconColorMouseHoverTabSel = PropBag.ReadProperty("IconColorMouseHoverTabSel", mIconColor)
     mIconColorTabHighlighted = PropBag.ReadProperty("IconColorTabHighlighted", mIconColor)
-    mHighlightMode = PropBag.ReadProperty("HighlightMode", cPropDef_HighlightMode)
-    mHighlightModeTabSel = PropBag.ReadProperty("HighlightModeTabSel", cPropDef_HighlightModeTabSel)
     mFlatBorderMode = PropBag.ReadProperty("FlatBorderMode", cPropDef_FlatBorderMode)
     mFlatBarHeight = PropBag.ReadProperty("FlatBarHeight", cPropDef_FlatBarHeight)
     mFlatBarHeightDPIScaled = mFlatBarHeight * mDPIScale
@@ -13079,11 +13087,15 @@ End Sub
 'VBA6.DLL is in VS6's installation folder, usually:
 'C:\Program Files (x86)\Microsoft Visual Studio\VB98\
 
-'Public Property Get Tab() As Integer
-''Attribute Tab.VB_Description = "Returns or sets the index of the current (""selected"" or ""active"") tab."
-'    Tab = TabSel
-'End Property
-'
-'Public Property Let Tab(ByVal nValue As Integer)
-'    TabSel = nValue
-'End Property
+#Const COMPILE_WITH_TAB_PROPERTY = 0
+#If COMPILE_WITH_TAB_PROPERTY Then
+Public Property Get Tab() As Integer
+Attribute Tab.VB_Description = "Returns or sets the index of the current (""""selected"""" or """"active"""") tab."
+'Attribute Tab.VB_Description = "Returns or sets the index of the current (""selected"" or ""active"") tab."
+    Tab = TabSel
+End Property
+
+Public Property Let Tab(ByVal nValue As Integer)
+    TabSel = nValue
+End Property
+#End If

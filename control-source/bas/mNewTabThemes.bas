@@ -22,12 +22,12 @@ Public Const cThemeIsCustomSettings As String = "Current custom settings, not sa
 
 ' Default Themes strings
 Private Const cThemeString_Default                       As String = ""
-Private Const cThemeString_SSTab                         As String = "ChangeControlsBackColor=0|HighlightEffect=0|HighlightMode=1|HighlightModeTabSel=1|ShowFocusRect=-1|SoftEdges=0|Style=0|TabTransition=0"
-Private Const cThemeString_SSTabWindows                  As String = "ChangeControlsBackColor=0|ShowFocusRect=-1|TabTransition=0"
-Private Const cThemeString_SSTabPropertyPage             As String = "ChangeControlsBackColor=0|HighlightEffect=0|HighlightMode=1|HighlightModeTabSel=1|ShowFocusRect=-1|SoftEdges=0|Style=1|TabTransition=0"
-Private Const cThemeString_SSTabPropertyPageWindows      As String = "ChangeControlsBackColor=0|ShowFocusRect=-1|ShowRowsInPerspective=1|TabWidthStyle=1|TabTransition=0"
-Private Const cThemeString_TabStrip                      As String = "ChangeControlsBackColor=0|HighlightEffect=0|HighlightMode=1|HighlightModeTabSel=1|ShowFocusRect=-1|SoftEdges=0|Style=2|TabTransition=0"
-Private Const cThemeString_TabStripWindows               As String = "ChangeControlsBackColor=0|ShowFocusRect=-1|TabTransition=0|TabWidthStyle=0"
+Private Const cThemeString_SSTab                         As String = "ChangeControlsBackColor=0|ChangeControlsForeColor=0|HighlightEffect=0|HighlightMode=1|HighlightModeTabSel=1|ShowFocusRect=-1|SoftEdges=0|Style=0|TabTransition=0"
+Private Const cThemeString_SSTabWindows                  As String = "ChangeControlsBackColor=0|ChangeControlsForeColor=0|HighlightMode=1|HighlightModeTabSel=1|ShowFocusRect=-1|TabTransition=0"
+Private Const cThemeString_SSTabPropertyPage             As String = "ChangeControlsBackColor=0|ChangeControlsForeColor=0|HighlightEffect=0|HighlightMode=1|HighlightModeTabSel=1||ShowFocusRect=-1|SoftEdges=0|Style=1|TabTransition=0"
+Private Const cThemeString_SSTabPropertyPageWindows      As String = "ChangeControlsBackColor=0|ChangeControlsForeColor=0|HighlightMode=1|HighlightModeTabSel=1|ShowFocusRect=-1|ShowRowsInPerspective=1|TabWidthStyle=1|TabTransition=0"
+Private Const cThemeString_TabStrip                      As String = "ChangeControlsBackColor=0|ChangeControlsForeColor=0|HighlightEffect=0|HighlightMode=1|HighlightModeTabSel=1||ShowFocusRect=-1|SoftEdges=0|Style=2|TabTransition=0"
+Private Const cThemeString_TabStripWindows               As String = "ChangeControlsBackColor=0|ChangeControlsForeColor=0|HighlightMode=1|HighlightModeTabSel=1|ShowFocusRect=-1|TabTransition=0|TabWidthStyle=0"
 Private Const cThemeString_FlatSilver                    As String = "BackColorTabs=15658734|FlatBarColorTabSel=14181684|HighlightMode=2|HighlightModeTabSel=66|Style=3"
 Private Const cThemeString_FlatBronze                    As String = "BackColorTabSel=16383485|BackColorTabs=14611960|FlatBarColorHighlight=3431538|FlatBarColorInactive=13559786|FlatBarColorTabSel=1148870|FlatBorderColor=1148870|FlatBorderMode=1|ForeColorHighlighted=16777215|HighlightColor=3431538|HighlightEffect=0|HighlightMode=68|HighlightModeTabSel=90|IconColorTabHighlighted=16777215|Style=3"
 Private Const cThemeString_FlatGolden                    As String = "BackColorTabSel=16777215|BackColorTabs=15202556|FlatBarColorHighlight=3530228|FlatBarColorInactive=13559786|FlatBarColorTabSel=768981|HighlightColor=3530228|HighlightMode=76|HighlightModeTabSel=90|IconColorTabHighlighted=12664841|Style=3"
