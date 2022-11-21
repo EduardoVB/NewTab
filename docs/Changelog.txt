@@ -1,3 +1,4 @@
+2022-11-19 Minor bux fix in pagNewTabThemes property page.
 2022-11-15 removed (actually hided) de IconFont property, since it is source of confusion. It worked like several other tab properties, that work with the current tab (since the font is per tab, like the Caption, the IconCharHex or Picture), but in this case it seems to be a cause of confusion. Better to just leave the access to the TabIconFont property from the Tabs property page.
 2022-11-15 Ole OCX version changed to 2 because binary compatibility was broken.
 2022-11-15 Added two new default themes.

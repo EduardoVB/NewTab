@@ -15,6 +15,7 @@ Begin VB.PropertyPage pagNewTabThemes
       Italic          =   0   'False
       Strikethrough   =   0   'False
    EndProperty
+   LockControls    =   -1  'True
    PaletteMode     =   0  'Halftone
    ScaleHeight     =   8160
    ScaleWidth      =   6804
@@ -449,6 +450,7 @@ Private mModifyingColors As Boolean
 Private mSelectedSettingsHash As String
 Private mThemesLookupData() As T_ThemeLookupData
 Private mColorsSelectedTheme As Collection
+Private mLoadTimeThemeHash As String
 
 Private Sub cboThemes_Click()
     Static sLastListIndex As Long
@@ -544,10 +546,13 @@ Private Sub chkSaveInControl_Click()
         iTheme.Name = iName
         mThemesControl.Add iTheme
         Set mCurrentSettings = iTheme
+        Debug.Print "Change name", mSelectedSettingsHash, GetSelectedTheme.Hash, mLoadTimeThemeHash, mCurrentSettings.Hash
         LoadThemes
     Else
+        Debug.Print "remove 1", mSelectedSettingsHash, GetSelectedTheme.Hash, mLoadTimeThemeHash, mCurrentSettings.Hash
         If (chkSaveInFile.Value = vbUnchecked) And (chkSaveInRegistry.Value = vbUnchecked) Then
             MsgBox "Since this Theme is not currently saved anywhere else, it will be deleted permanently." & vbCrLf & "The changes will be applied when you accept the property page changes."
+            mSelectedSettingsHash = mLoadTimeThemeHash
         End If
         mThemesControl.Remove GetSelectedTheme.Name
         LoadThemes
@@ -613,6 +618,7 @@ Private Sub chkSaveInFile_Click()
     Else
         If (chkSaveInControl.Value = vbUnchecked) And (chkSaveInRegistry.Value = vbUnchecked) Then
             MsgBox "Since this Theme is not currently saved anywhere else, it will be deleted permanently." & vbCrLf & "The changes will be applied when you accept the property page changes."
+            mSelectedSettingsHash = mLoadTimeThemeHash
         End If
         mThemesFile.Remove GetSelectedTheme.Name
         LoadThemes
@@ -652,6 +658,7 @@ Private Sub chkSaveInRegistry_Click()
     Else
         If (chkSaveInControl.Value = vbUnchecked) And (chkSaveInFile.Value = vbUnchecked) Then
             MsgBox "Since this Theme is not currently saved anywhere else, it will be deleted permanently." & vbCrLf & "The changes will be applied when you accept the property page changes."
+            mSelectedSettingsHash = mLoadTimeThemeHash
         End If
         mThemesRegistry.Remove GetSelectedTheme.Name
         LoadThemes
@@ -877,6 +884,7 @@ Private Sub PropertyPage_SelectionChanged()
     mCurrentSettings.ThemeString = GetThemeStringFromControl(SelectedControls(0), mAmbientBackColor, mAmbientForeColor, mAmbientFont)
     Set mSelectedSettings = mCurrentSettings.Clone
     mSelectedSettingsHash = mSelectedSettings.Hash
+    mLoadTimeThemeHash = mSelectedSettingsHash
     
     Set mThemesControl = New NewTabThemes
     mThemesControl.DoNotCopyDefaultThemes = True
