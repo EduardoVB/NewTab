@@ -3374,7 +3374,7 @@ Public Property Let RightToLeft(ByVal nValue As Boolean)
     If nValue <> mRightToLeft Then
         mRightToLeft = nValue
         If mRightToLeft Then
-            SetLayout GetDC(picDraw.hWnd), LAYOUT_RTL Or LAYOUT_BITMAPORIENTATIONPRESERVED
+            SetLayout GetDC(picDraw.hWnd), LAYOUT_RTL
         Else
             SetLayout GetDC(picDraw.hWnd), 0
         End If
@@ -4960,7 +4960,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     mAutoRelocateControls = PropBag.ReadProperty("AutoRelocateControls", cPropDef_AutoRelocateControls)
     mRightToLeft = PropBag.ReadProperty("RightToLeft", Ambient.RightToLeft)
     If mRightToLeft Then
-        SetLayout GetDC(picDraw.hWnd), LAYOUT_RTL Or LAYOUT_BITMAPORIENTATIONPRESERVED
+        SetLayout GetDC(picDraw.hWnd), LAYOUT_RTL
     End If
     mHandleHighContrastTheme = PropBag.ReadProperty("HandleHighContrastTheme", cPropDef_HandleHighContrastThem)
     mBackStyle = PropBag.ReadProperty("BackStyle", cPropDef_BackStyle)
@@ -6962,6 +6962,7 @@ Private Sub DrawTab(nTab As Long)
                 
                 iTRect2 = iTRect
                 iTRect2.Bottom = iTRect.Bottom + 1
+                
                 DrawThemeBackground mTheme, picAux.hDC, iPartId, iState, iTRect2, iTRect
 '                SetThemedTabTransparentPixels iTabData.LeftTab, (iState = TIS_FOCUSED) Or (iTabData.RightTab And Not iState = TIS_SELECTED), (iTabData.TopTab Or (mTabSeparation2 > 0)) And Not (iState = TIS_SELECTED)
                 SetThemedTabTransparentPixels iTabData.LeftTab, (iState = TIS_FOCUSED) Or iTabData.RightTab, (iTabData.TopTab Or (mTabSeparation2 > 0)) And Not (iState = TIS_SELECTED)
@@ -8087,6 +8088,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     iMeasureRect.Bottom = iMeasureRect.Top + 5
     
     iCaptionRect.Left = iMeasureRect.Left
+    
     iCaptionRect.Right = iMeasureRect.Right
     ' Calculate iMeasureRect again, without elipsis for WordWrap and with elipsis for single line, and without both text centering
     If mWordWrap Then
@@ -8119,7 +8121,6 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     
     If mTabOrientation = ssTabOrientationBottom Then
         iGMPrev = SetGraphicsMode(picDraw.hDC, GM_ADVANCED)
-        iTx1.eM11 = 1: iTx1.eM22 = -1: iTx1.eDx = 0: iTx1.eDy = iTabSpaceRect.Top + iTabSpaceRect.Bottom
         iTx1.eM11 = 1: iTx1.eM22 = -1: iTx1.eDx = 0: iTx1.eDy = iTabSpaceRect.Top + iFlatBarHeightTop / 2 + iTabSpaceRect.Bottom
         SetWorldTransform picDraw.hDC, iTx1
     End If
@@ -8203,10 +8204,16 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
             Set picDraw.Font = iFontPrev
             picDraw.ForeColor = iForeColorPrev
         Else
+            If mRightToLeft Then
+                SetLayout GetDC(picDraw.hWnd), LAYOUT_RTL Or LAYOUT_BITMAPORIENTATIONPRESERVED
+            End If
             If iAuxPicture.Type = vbPicTypeBitmap And mUseMaskColor Then
                 Call DrawImage(picDraw.hDC, iAuxPicture.Handle, TranslatedColor(mMaskColor), iPicLeft, iPicTop, iPicWidthToShow, iPicHeightToShow, iPicSourceShiftX, iPicSourceShiftY)
             Else
                 picDraw.PaintPicture iAuxPicture, iPicLeft, iPicTop, iPicWidthToShow, iPicHeightToShow, iPicSourceShiftX, iPicSourceShiftY, iPicWidthToShow, iPicHeightToShow
+            End If
+            If mRightToLeft Then
+                SetLayout GetDC(picDraw.hWnd), LAYOUT_RTL
             End If
         End If
     End If
@@ -8222,7 +8229,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
         iCaptionRect.Bottom = iTabData.TabRect.Bottom
     End If
     picDraw.ForeColor = iForeColor2
-    DrawTextW picDraw.hDC, StrPtr(iCaption), -1, iCaptionRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0) Or IIf(mRightToLeft, DT_RTLREADING, 0)
+    DrawTextW picDraw.hDC, StrPtr(iCaption), -1, iCaptionRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
     
     ' Draw the focus rect
     If mAmbientUserMode Then    'only at run time
