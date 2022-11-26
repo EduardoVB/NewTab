@@ -6801,7 +6801,7 @@ Private Sub DrawTab(nTab As Long)
                 End If
             Else
                 iFlatBarTopHeight = 1
-                If (iHighlightGradient <> ntGradientNone) And (mFlatBarHeight > 0) Then
+                If (iHighlightGradient <> ntGradientNone) Then
                     iFlatBarTopColor = mFlatBarGlowColor
                 Else
                     iFlatBarTopColor = iFlatTabsSeparationLineColor
@@ -7613,6 +7613,8 @@ Private Sub DrawBody(nScaleHeight As Long)
     Dim iFlatBorderColor As Long
     Dim iFlatBodySeparationLineColor As Long
     Dim iColor As Long
+    Dim iActiveTabIsLeft As Boolean
+    Dim iTopLeftCornerIsRounded As Boolean
     
     If mControlIsThemed Then
         EnsureTabBodyThemedReady
@@ -7630,7 +7632,11 @@ Private Sub DrawBody(nScaleHeight As Long)
             iColor = iColor Xor 1
         End If
         If mAppearanceIsFlat Then
-            FillCurvedGradient2 0, mTabBodyStart + iLng, mTabBodyWidth - 1, nScaleHeight - 1, iColor, iColor, IIf((mFlatBorderMode = ntBorderTabSel) And mHighlightFlatDrawBorderTabSel And (mFlatRoundnessTopDPIScaled > 0) And (mFlatBodySeparationLineHeight = 1), mFlatRoundnessTopDPIScaled, 0), IIf(((mTabBodyWidth - mTabData(mTabSel).TabRect.Right) > 3) And ((mFlatBorderMode = ntBorderTabSel) Or ((mTabBodyWidth - mRightMostTabsRightPos(mRows - 1)) > 3)), mFlatRoundnessTopDPIScaled, 0), mFlatRoundnessBottomDPIScaled, mFlatRoundnessBottomDPIScaled
+            If mTabSel > -1 Then
+                iActiveTabIsLeft = mTabData(mTabSel).LeftTab
+            End If
+            iTopLeftCornerIsRounded = (mFlatBorderMode = ntBorderTabSel) And (mHighlightFlatDrawBorderTabSel Or (Not iActiveTabIsLeft))
+            FillCurvedGradient2 0, mTabBodyStart + iLng, mTabBodyWidth - 1, nScaleHeight - 1, iColor, iColor, IIf(iTopLeftCornerIsRounded And (mFlatRoundnessTopDPIScaled > 0) And (mFlatBodySeparationLineHeight = 1), mFlatRoundnessTopDPIScaled, 0), IIf(((mTabBodyWidth - mTabData(mTabSel).TabRect.Right) > 3) And ((mFlatBorderMode = ntBorderTabSel) Or ((mTabBodyWidth - mRightMostTabsRightPos(mRows - 1)) > 3)), mFlatRoundnessTopDPIScaled, 0), mFlatRoundnessBottomDPIScaled, mFlatRoundnessBottomDPIScaled
         Else
             picDraw.Line (0, mTabBodyStart + iLng)-(mTabBodyWidth - 1, nScaleHeight - 1), iColor, BF
         End If
@@ -7692,20 +7698,20 @@ Private Sub DrawBody(nScaleHeight As Long)
             ' top line
             If (iFlatBodySeparationLineColor <> mBackColorTabs2) Then
                 If mFlatBodySeparationLineHeight = 1 Then
-                    picDraw.Line (IIf((mFlatBorderMode = ntBorderTabSel) And mHighlightFlatDrawBorderTabSel, mFlatRoundnessTopDPIScaled, 0), mTabBodyStart)-(mTabBodyWidth - 1 - IIf(mFlatBorderMode = ntBorderTabSel, mFlatRoundnessTopDPIScaled, 0), mTabBodyStart), iFlatBodySeparationLineColor
+                    picDraw.Line (IIf(iTopLeftCornerIsRounded, mFlatRoundnessTopDPIScaled, 0), mTabBodyStart)-(mTabBodyWidth - 1 - IIf(mFlatBorderMode = ntBorderTabSel, mFlatRoundnessTopDPIScaled, 0), mTabBodyStart), iFlatBodySeparationLineColor
                 ElseIf mFlatBodySeparationLineHeight > 1 Then
                     picDraw.Line (0, mTabBodyStart + 1)-(mTabBodyWidth - 2, mTabBodyStart + mFlatBodySeparationLineHeightDPIScaled), iFlatBodySeparationLineColor, BF
                 End If
             End If
             
             ' left line
-            picDraw.Line (0, mTabBodyStart + IIf((mFlatBorderMode = ntBorderTabSel) And mHighlightFlatDrawBorderTabSel And (mFlatBodySeparationLineHeight = 1), mFlatRoundnessTopDPIScaled, 0))-(0, nScaleHeight - 1 - mFlatRoundnessBottomDPIScaled), iFlatBorderColor
+            picDraw.Line (0, mTabBodyStart + IIf(iTopLeftCornerIsRounded And (mFlatBodySeparationLineHeight = 1), mFlatRoundnessTopDPIScaled, 0))-(0, nScaleHeight - 1 - mFlatRoundnessBottomDPIScaled), iFlatBorderColor
             ' right line
             picDraw.Line (mTabBodyWidth - 1, mTabBodyStart + IIf(((mTabBodyWidth - mTabData(mTabSel).TabRect.Right) > 3) And (mFlatBodySeparationLineHeight = 1), mFlatRoundnessTopDPIScaled, 0))-(mTabBodyWidth - 1, nScaleHeight - 1 - mFlatRoundnessBottomDPIScaled), iFlatBorderColor
             ' bottom line
             picDraw.Line (mFlatRoundnessBottomDPIScaled, nScaleHeight - 1)-(mTabBodyWidth - mFlatRoundnessBottomDPIScaled, nScaleHeight - 1), iFlatBorderColor
             
-            If (mFlatBorderMode = ntBorderTabSel) And mHighlightFlatDrawBorderTabSel Then
+            If iTopLeftCornerIsRounded Then
                 ' top-left corner
                 If (mFlatRoundnessTopDPIScaled > 0) And (mFlatBodySeparationLineHeight = 1) Then
                     DrawRoundedCorner ntCornerTopleft, 0, mTabBodyStart, mFlatRoundnessTopDPIScaled, iFlatBorderColor
