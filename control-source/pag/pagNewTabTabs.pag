@@ -957,7 +957,7 @@ Private Type TEXTMETRICW
     tmCharSet As Byte
 End Type
 
-Private Declare Function GetTextMetricsW Lib "gdi32" (ByVal hDC As Long, ByRef TEXTMETRICW As TEXTMETRICW) As Long
+Private Declare Function GetTextMetricsW Lib "gdi32" (ByVal HDC As Long, ByRef TEXTMETRICW As TEXTMETRICW) As Long
 Private Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
 Private Declare Function WindowFromPoint Lib "user32" (ByVal xPoint As Long, ByVal yPoint As Long) As Long
 
@@ -980,9 +980,9 @@ Private Type GLYPHSET
     ranges() As WCRANGE
 End Type
 
-Private Declare Function GetFontUnicodeRanges Lib "gdi32.dll" (ByVal hDC As Long, lpGS As Any) As Long
+Private Declare Function GetFontUnicodeRanges Lib "gdi32.dll" (ByVal HDC As Long, lpGS As Any) As Long
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
-Private Declare Function GetGlyphIndicesW Lib "gdi32.dll" (ByVal hDC As Long, ByVal lpStr As Long, ByVal lpStrLen As Long, ByVal pGI As Long, ByVal Flags As Long) As Long
+Private Declare Function GetGlyphIndicesW Lib "gdi32.dll" (ByVal HDC As Long, ByVal lpStr As Long, ByVal lpStrLen As Long, ByVal pGI As Long, ByVal Flags As Long) As Long
 
 Private Type RECT
     Left As Long
@@ -991,7 +991,7 @@ Private Type RECT
     Bottom As Long
 End Type
 
-Private Declare Function DrawTextW Lib "user32" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
+Private Declare Function DrawTextW Lib "user32" (ByVal HDC As Long, ByVal lpStr As Long, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
 
 'Draw Text Constants
 Private Const DT_CALCRECT = &H400&
@@ -1058,7 +1058,7 @@ Private mSubclassed As Boolean
 Private mPPHwnd As Long
 
 Private Sub cboIconAlignment_Click()
-    If Not mLoading Then Changed = True
+    If Not mLoading And Not mShowingTabData Then Changed = True
     NewTab1.IconAlignment = cboIconAlignment.ItemData(cboIconAlignment.ListIndex)
 End Sub
 
@@ -1078,7 +1078,7 @@ Private Sub cboTabIconFont_DropDown()
 End Sub
 
 Private Sub chkTabEnabled_Click()
-    If Not mLoading Then
+    If Not mLoading And Not mShowingTabData Then
         Changed = True
         mTabData(mTabSel).Enabled = (chkTabEnabled.Value = 1)
         ShowTabData
@@ -1086,7 +1086,7 @@ Private Sub chkTabEnabled_Click()
 End Sub
 
 Private Sub chkTabVisible_Click()
-    If Not mLoading Then
+    If Not mLoading And Not mShowingTabData Then
         Changed = True
         mTabData(mTabSel).Visible = (chkTabVisible.Value = 1)
     End If
@@ -1625,7 +1625,7 @@ Private Sub lblWarningImgSizes_Click()
 End Sub
 
 Private Sub NewTab1_Click(PreviousTab As Integer)
-    If Not mLoading Then
+    If Not mLoading And Not mShowingTabData Then
         mLoading = True
         mTabSel = NewTab1.TabSel
         ShowTabData
@@ -2035,7 +2035,7 @@ Private Sub txtIconTopOffset_Change()
 End Sub
 
 Private Sub txtTabCaption_Change()
-    If Not mLoading Then
+    If Not mLoading And Not mShowingTabData Then
         Changed = True
         mTabData(mTabSel).Caption = txtTabCaption.Text
         ShowTabData
@@ -2047,7 +2047,7 @@ Private Sub txtTabSel_Change()
 End Sub
 
 Private Sub txtTabToolTipText_Change()
-    If Not mLoading Then
+    If Not mLoading And Not mShowingTabData Then
         Changed = True
         mTabData(mTabSel).ToolTipText = txtTabToolTipText.Text
     End If
@@ -2355,15 +2355,15 @@ Private Sub PrepareIconFontData()
     If mFontForCharMap.Size < 11 Then mFontForCharMap.Size = 11
     If mFontForCharMap.Size > 30 Then mFontForCharMap.Size = 30
     Set picCharSelected.Font = mFontForCharMap
-    GetTextMetricsW picCharSelected.hDC, iTM
+    GetTextMetricsW picCharSelected.HDC, iTM
     mCharWidth = iTM.tmAveCharWidth * 3
     If mCharWidth > iTM.tmMaxCharWidth Then mCharWidth = iTM.tmMaxCharWidth
     iStr = ChrU(iTM.tmDefaultChar)
-    GetGlyphIndicesW picCharSelected.hDC, StrPtr(iStr), Len(iStr), VarPtr(mDefaultGlyph), 0
+    GetGlyphIndicesW picCharSelected.HDC, StrPtr(iStr), Len(iStr), VarPtr(mDefaultGlyph), 0
     iStr = ChrU(32)
-    GetGlyphIndicesW picCharSelected.hDC, StrPtr(iStr), Len(iStr), VarPtr(mSpaceGlyph), 0
+    GetGlyphIndicesW picCharSelected.HDC, StrPtr(iStr), Len(iStr), VarPtr(mSpaceGlyph), 0
     
-    mGlyphSet = GetGlyphSet(picCharSelected.hDC, mTabData(mTabSel).IconFont)
+    mGlyphSet = GetGlyphSet(picCharSelected.HDC, mTabData(mTabSel).IconFont)
     mCharCount = 0
     ub = 2000
     ReDim mChars(ub)
@@ -2378,7 +2378,7 @@ Private Sub PrepareIconFontData()
                 End If
                 For g = iLow To iLow + .cGlyphs - 1
                     If (g >= -1) Then
-                        If GlyphIsValid(g, picCharSelected.hDC) Then
+                        If GlyphIsValid(g, picCharSelected.HDC) Then
                             mChars(mCharCount) = g
                             mCharCount = mCharCount + 1
                             If mCharCount > ub Then
@@ -2518,7 +2518,7 @@ Private Sub DrawChar(nCharCode As Long, nPic As PictureBox)
     iIconCharacter = ChrU(nCharCode)
     nPic.Cls
     iFlags = DT_CALCRECT Or DT_SINGLELINE Or DT_CENTER
-    DrawTextW nPic.hDC, StrPtr(iIconCharacter), -1, iIconCharRect, iFlags
+    DrawTextW nPic.HDC, StrPtr(iIconCharacter), -1, iIconCharRect, iFlags
     iWidth = (iIconCharRect.Right - iIconCharRect.Left)
     iHeight = (iIconCharRect.Bottom - iIconCharRect.Top)
     If (iWidth <= nPic.ScaleWidth) And (iHeight <= nPic.ScaleHeight) Then
@@ -2533,7 +2533,7 @@ Private Sub DrawChar(nCharCode As Long, nPic As PictureBox)
     iIconCharRect.Bottom = iIconCharRect.Bottom + iTop
     iIconCharRect.Top = iIconCharRect.Top + iTop
     iFlags = DT_SINGLELINE Or DT_CENTER
-    DrawTextW nPic.hDC, StrPtr(iIconCharacter), -1, iIconCharRect, iFlags
+    DrawTextW nPic.HDC, StrPtr(iIconCharacter), -1, iIconCharRect, iFlags
     nPic.Tag = nCharCode
     nPic.ToolTipText = "&H" & Hex(nCharCode) & " (" & nCharCode & ")"
 End Sub

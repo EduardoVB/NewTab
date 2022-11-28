@@ -11,6 +11,12 @@ Begin VB.UserControl NewTab
    ScaleHeight     =   2880
    ScaleWidth      =   3840
    ToolboxBitmap   =   "ctlNewTab.ctx":0068
+   Begin VB.Timer tmrShowTabTTT 
+      Enabled         =   0   'False
+      Interval        =   900
+      Left            =   1560
+      Top             =   1560
+   End
    Begin VB.PictureBox picAuxIconFont 
       BorderStyle     =   0  'None
       Height          =   492
@@ -328,7 +334,7 @@ Private Declare Function DefWindowProc Lib "user32" Alias "DefWindowProcW" (ByVa
 Private Declare Function RevokeDragDrop Lib "ole32" (ByVal hWnd As Long) As Long
 
 Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Sub mouse_event Lib "user32" (ByVal dwFlags As Long, ByVal dx As Long, ByVal dy As Long, ByVal cButtons As Long, ByVal dwExtraInfo As Long)
+Private Declare Sub mouse_event Lib "user32" (ByVal dwFlags As Long, ByVal dX As Long, ByVal dY As Long, ByVal cButtons As Long, ByVal dwExtraInfo As Long)
 Private Declare Function GetMessageExtraInfo Lib "user32" () As Long
 Private Const MOUSEEVENTF_LEFTDOWN = &H2 ' Left button down
 Private Const MOUSEEVENTF_LEFTUP = &H4 ' Left button up
@@ -477,7 +483,7 @@ Private Declare Function GetThemeAppProperties Lib "uxtheme" () As Long
 Private Const S_OK As Long = &H0
 Private Const STAP_ALLOW_CONTROLS As Long = (1 * (2 ^ 1))
 
-Private Declare Function FindWindowEx Lib "user32" Alias "FindWindowExA" (ByVal hwndParent As Long, ByVal hwndChildAfter As Long, ByVal lpszClass As String, ByVal lpszCaption As String) As Long
+Private Declare Function FindWindowEx Lib "user32" Alias "FindWindowExA" (ByVal hWndParent As Long, ByVal hwndChildAfter As Long, ByVal lpszClass As String, ByVal lpszCaption As String) As Long
 Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, lpdwProcessId As Long) As Long
 Private Declare Function GetCurrentProcessId Lib "kernel32" () As Long
 
@@ -875,8 +881,6 @@ Private mFormIsActive As Boolean
 Private mDrawing As Boolean
 Private mTabUnderMouse As Integer
 Private mAmbientUserMode As Boolean
-Private mExtenderToolTipText As String
-Private mLastTabToolTipTextSet As String
 Private mThereAreTabsToolTipTexts As Boolean
 Private mDefaultTabHeight As Single  ' in Himetric
 Private mPropertiesReady As Boolean
@@ -990,6 +994,7 @@ Private mTabIconDistanceToCaptionDPIScaled As Long
 Private mIconClickExtendDPIScaled As Long
 Private mMovingATab As Boolean
 Private mPreviousTabBeforeDragging As Integer
+Private mToolTipEx As cToolTipEx
 
 Private mBackColorTabs_SavedWhileVisualStyles As Long
 Private mBackColorTabSel_SavedWhileVisualStyles As Long
@@ -2416,12 +2421,14 @@ Public Property Let TabToolTipText(ByVal Index, ByVal nValue As String)
         Exit Property
     End If
     If nValue <> mTabData(Index).ToolTipText Then
-        If mThereAreTabsToolTipTexts And mAmbientUserMode Then RestoreExtenderTTT
         mTabData(Index).ToolTipText = nValue
         CheckIfThereAreTabsToolTipTexts
-        If mTabUnderMouse > -1 Then
-            If mTabData(mTabUnderMouse).ToolTipText <> "" Then
+        If Index = mTabUnderMouse Then
+            If mTabData(Index).ToolTipText <> "" Then
                 ShowTabTTT mTabUnderMouse
+            Else
+                tmrShowTabTTT.Enabled = False
+                Set mToolTipEx = Nothing
             End If
         End If
         SetPropertyChanged "TabToolTipText"
@@ -3854,6 +3861,21 @@ Private Sub tmrRestoreDropMode_Timer()
         UserControl.OLEDropMode = ssOLEDropManual
         tmrRestoreDropMode.Enabled = False
     End If
+End Sub
+
+Private Sub tmrShowTabTTT_Timer()
+    Static sFormHwnd As Long
+    
+    tmrShowTabTTT.Enabled = False
+    If tmrShowTabTTT.Tag <> mTabUnderMouse Then Exit Sub 'a protection, just in case
+    Set mToolTipEx = New cToolTipEx
+    mToolTipEx.TipText = mTabData(mTabUnderMouse).ToolTipText
+    mToolTipEx.Style = vxTTStandard
+    mToolTipEx.CloseButton = False
+    mToolTipEx.DelayTimeSeconds = 0
+    mToolTipEx.RightToLeft = mRightToLeft
+    If sFormHwnd = 0 Then sFormHwnd = GetAncestor(UserControl.ContainerHwnd, GA_ROOT)
+    mToolTipEx.Create sFormHwnd
 End Sub
 
 Private Sub tmrTabDragging_Timer()
@@ -5312,6 +5334,8 @@ Private Sub DoTerminate()
     If mUserControlTerminated Then Exit Sub
     mUserControlTerminated = True
     
+    tmrShowTabTTT.Enabled = False
+    Set mToolTipEx = Nothing
     If (mFormHwnd <> 0) And mAmbientUserMode Then
         On Error Resume Next
         DetachMessage Me, mFormHwnd, WM_SYSCOLORCHANGE
@@ -9417,7 +9441,9 @@ Private Sub RaiseEvent_TabMouseEnter(nTab As Integer)
     If (mHighlightGradient <> ntGradientNone) Or mAppearanceIsFlat Or mControlIsThemed Then PostDrawMessage
     
     If mThereAreTabsToolTipTexts Then
-        ShowTabTTT nTab
+        If mTabData(nTab).ToolTipText <> "" Then
+            ShowTabTTT nTab
+        End If
     End If
 End Sub
 
@@ -9436,54 +9462,17 @@ Private Sub RaiseEvent_TabMouseLeave(nTab As Integer)
     If nTab <> mTabSel Then
         If (mHighlightGradient <> ntGradientNone) Or mAppearanceIsFlat Or mControlIsThemed Then PostDrawMessage
     End If
-    
-    If mThereAreTabsToolTipTexts Then RestoreExtenderTTT
     mMouseIsOverIcon = False
     mMouseIsOverIcon_Tab = -1
     DrawDelayed
+    tmrShowTabTTT.Enabled = False
+    Set mToolTipEx = Nothing
 End Sub
 
 Private Sub ShowTabTTT(nTab As Integer)
-    Dim iTCtl As String
-    Dim iTTab As String
-    
-    iTTab = mTabData(nTab).ToolTipText
-    On Error Resume Next
-    iTCtl = UserControl.Extender.ToolTipText
-    On Error GoTo 0
-    If (iTCtl <> mLastTabToolTipTextSet) And (mLastTabToolTipTextSet <> "") Then
-        mExtenderToolTipText = iTCtl
-        mLastTabToolTipTextSet = ""
-    End If
-    If (iTTab = "") And (iTCtl = mLastTabToolTipTextSet) Then
-        On Error Resume Next
-        UserControl.Extender.ToolTipText = mExtenderToolTipText
-        On Error GoTo 0
-        mLastTabToolTipTextSet = ""
-        mExtenderToolTipText = ""
-    End If
-    If (iTTab <> "") Then
-        mExtenderToolTipText = iTCtl
-        On Error Resume Next
-        UserControl.Extender.ToolTipText = iTTab
-        mLastTabToolTipTextSet = iTTab
-        On Error GoTo 0
-    End If
-End Sub
-
-Private Sub RestoreExtenderTTT()
-    Dim iTCtl As String
-    
-    On Error Resume Next
-    iTCtl = UserControl.Extender.ToolTipText
-    On Error GoTo 0
-    If (iTCtl = mLastTabToolTipTextSet) Then
-        On Error Resume Next
-        UserControl.Extender.ToolTipText = mExtenderToolTipText
-        On Error GoTo 0
-    End If
-    mExtenderToolTipText = ""
-    mLastTabToolTipTextSet = ""
+    tmrShowTabTTT.Enabled = False
+    tmrShowTabTTT.Enabled = True
+    tmrShowTabTTT.Tag = nTab
 End Sub
 
 Private Sub CheckIfThereAreTabsToolTipTexts()
