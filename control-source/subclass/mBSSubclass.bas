@@ -70,6 +70,8 @@ Private Type IMAGE_DOS_HEADER
     e_lfanew As Long
 End Type
  
+Private Declare Function CallWindowProc Lib "user32.dll" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function CallWindowProcW Lib "user32.dll" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function VirtualAlloc Lib "kernel32" (ByRef lpAddress As Long, ByVal dwSize As Long, ByVal flAllocType As Long, ByVal flProtect As Long) As Long
 Private Declare Function VirtualFree Lib "kernel32.dll" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
 Private Declare Function VirtualProtect Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal flNewProtect As Long, ByRef lpflOldProtect As Long) As Long
@@ -1134,9 +1136,9 @@ Private Function GetIDEMainHwnd() As Long
     GetIDEMainHwnd = mIDEMainHwnd
 End Function
 
-Private Function MakeTrue(value As Boolean) As Boolean
+Private Function MakeTrue(Value As Boolean) As Boolean
     MakeTrue = True
-    value = True
+    Value = True
 End Function
 
 Private Function IsHwndOfCodeWindowWatched(nHwnd As Long) As Boolean
@@ -1565,13 +1567,13 @@ Private Function UnsignedAdd(ByVal Start As Long, ByVal Incr As Long) As Long
     UnsignedAdd = ((Start Xor &H80000000) + Incr) Xor &H80000000
 End Function
 
-Private Function CLongToULong(ByVal value As Long) As Double
+Private Function CLongToULong(ByVal Value As Long) As Double
     Const OFFSET_4 As Double = 4294967296#
     '
-    If value < 0 Then
-        CLongToULong = value + OFFSET_4
+    If Value < 0 Then
+        CLongToULong = Value + OFFSET_4
     Else
-        CLongToULong = value
+        CLongToULong = Value
     End If
 End Function
 
@@ -1747,3 +1749,23 @@ End Sub
 #End If
 
 
+Public Function UniTextBoxWindowProc(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+    
+    Dim refObject As Object, unRefObj As Object
+    Dim lProc As Long, bUnicode As Boolean
+    
+    CopyMemory unRefObj, GetProp(hWnd, "cUniTextBox"), 4&
+    Set refObject = unRefObj
+    CopyMemory unRefObj, 0&, 4&
+    
+    UniTextBoxWindowProc = refObject.DoWindowMsg(hWnd, uMsg, wParam, lParam, bUnicode, lProc)
+    Set refObject = Nothing
+    If lProc Then
+        If bUnicode Then
+            UniTextBoxWindowProc = CallWindowProcW(lProc, hWnd, uMsg, wParam, lParam)
+        Else
+            UniTextBoxWindowProc = CallWindowProc(lProc, hWnd, uMsg, wParam, lParam)
+        End If
+    End If
+    
+End Function

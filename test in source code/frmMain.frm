@@ -17,6 +17,7 @@ Begin VB.Form frmMain
       Strikethrough   =   0   'False
    EndProperty
    LinkTopic       =   "Form1"
+   LockControls    =   -1  'True
    MaxButton       =   0   'False
    MinButton       =   0   'False
    ScaleHeight     =   4716
@@ -62,7 +63,7 @@ Begin VB.Form frmMain
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      TabHeight       =   558
+      TabHeight       =   600
       Themed          =   0   'False
       AutoTabHeight   =   -1  'True
       TabCaption(0)   =   "Tab 0"

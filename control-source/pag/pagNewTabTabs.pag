@@ -18,6 +18,32 @@ Begin VB.PropertyPage pagNewTabTabs
    PaletteMode     =   0  'Halftone
    ScaleHeight     =   8508
    ScaleWidth      =   6804
+   Begin VB.PictureBox picTabToolTipTextHolder 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   310
+      Left            =   2000
+      ScaleHeight     =   312
+      ScaleWidth      =   3216
+      TabIndex        =   13
+      Top             =   855
+      Width           =   3217
+   End
+   Begin VB.PictureBox picTabCaptionHolder 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
+      ForeColor       =   &H80000008&
+      Height          =   310
+      Left            =   2000
+      ScaleHeight     =   312
+      ScaleWidth      =   3216
+      TabIndex        =   10
+      Top             =   505
+      Width           =   3217
+   End
    Begin VB.PictureBox picIconFontNote 
       BorderStyle     =   0  'None
       Height          =   372
@@ -657,20 +683,6 @@ Begin VB.PropertyPage pagNewTabTabs
       Top             =   70
       Width           =   300
    End
-   Begin VB.TextBox txtTabToolTipText 
-      Height          =   310
-      Left            =   2000
-      TabIndex        =   13
-      Top             =   855
-      Width           =   3217
-   End
-   Begin VB.TextBox txtTabCaption 
-      Height          =   310
-      Left            =   2000
-      TabIndex        =   10
-      Top             =   505
-      Width           =   3217
-   End
    Begin VB.CommandButton cmdInsertTab 
       Caption         =   "Insert tab"
       Height          =   300
@@ -1056,6 +1068,13 @@ Private mTDIMode As Boolean
 Private mFontListLoaded As Boolean
 Private mSubclassed As Boolean
 Private mPPHwnd As Long
+
+Private WithEvents mUniTextTabCaption As cUniTextBox
+Attribute mUniTextTabCaption.VB_VarHelpID = -1
+Private mUniTextTabCaptionSync As Boolean
+Private WithEvents mUniTextTabToolTipText As cUniTextBox
+Attribute mUniTextTabToolTipText.VB_VarHelpID = -1
+Private mUniTextTabToolTipTextSync As Boolean
 
 Private Sub cboIconAlignment_Click()
     If Not mLoading And Not mShowingTabData Then Changed = True
@@ -1624,6 +1643,28 @@ Private Sub lblWarningImgSizes_Click()
     MsgBox mStrImagesDifferences, vbInformation
 End Sub
 
+Private Sub mUniTextTabCaption_GotFocus()
+    If Not mUniTextTabCaptionSync Then ' user clicked on textbox
+        picTabCaptionHolder.SetFocus
+    End If
+End Sub
+
+Private Sub mUniTextTabCaption_LostFocus()
+    mUniTextTabCaptionSync = False
+End Sub
+
+
+Private Sub mUniTextTabToolTipText_GotFocus()
+    If Not mUniTextTabToolTipTextSync Then ' user clicked on textbox
+        picTabToolTipTextHolder.SetFocus
+    End If
+End Sub
+
+Private Sub mUniTextTabToolTipText_LostFocus()
+    mUniTextTabToolTipTextSync = False
+End Sub
+
+
 Private Sub NewTab1_Click(PreviousTab As Integer)
     If Not mLoading And Not mShowingTabData Then
         mLoading = True
@@ -1638,7 +1679,6 @@ Private Sub NewTab1_Click(PreviousTab As Integer)
             tmrTabSelChanged.Enabled = True
             NewTab1.Left = 120 - NewTab1.GetTabLeft(mTabSel)
         End If
-        
     End If
 End Sub
 
@@ -1708,6 +1748,20 @@ Private Sub picImgPicture_DblClick()
     End If
 End Sub
 
+Private Sub picTabCaptionHolder_GotFocus()
+    If Not mUniTextTabCaptionSync Then
+        mUniTextTabCaptionSync = True
+        mUniTextTabCaption.SetFocus
+    End If
+End Sub
+
+Private Sub picTabToolTipTextHolder_GotFocus()
+    If Not mUniTextTabToolTipTextSync Then
+        mUniTextTabToolTipTextSync = True
+        mUniTextTabToolTipText.SetFocus
+    End If
+End Sub
+
 Private Sub PropertyPage_ApplyChanges()
     Dim t As Integer
     Dim iSC As NewTab
@@ -1750,6 +1804,20 @@ Private Sub PropertyPage_ApplyChanges()
     Unsubclass
 End Sub
 
+Private Sub PropertyPage_Initialize()
+    Const ES_AUTOHSCROLL As Long = &H80&
+    Const ES_LEFT As Long = &H0&
+    Const WS_VISIBLE As Long = &H10000000
+    Const WS_EX_CLIENTEDGE  As Long = &H200
+    
+    picTabCaptionHolder.ScaleMode = vbPixels
+    Set mUniTextTabCaption = New cUniTextBox
+    mUniTextTabCaption.CreateTextBox picTabCaptionHolder.hWnd, 0, 0, picTabCaptionHolder.ScaleWidth, picTabCaptionHolder.ScaleHeight, ES_AUTOHSCROLL Or ES_LEFT Or WS_VISIBLE, WS_EX_CLIENTEDGE, ""
+    picTabToolTipTextHolder.ScaleMode = vbPixels
+    Set mUniTextTabToolTipText = New cUniTextBox
+    mUniTextTabToolTipText.CreateTextBox picTabToolTipTextHolder.hWnd, 0, 0, picTabToolTipTextHolder.ScaleWidth, picTabToolTipTextHolder.ScaleHeight, ES_AUTOHSCROLL Or ES_LEFT Or WS_VISIBLE, WS_EX_CLIENTEDGE, ""
+End Sub
+
 Private Sub PropertyPage_Paint()
     If tmrShowTabData.Enabled Then tmrShowTabData_Timer
     If tmrScrollCharMapToSelected.Enabled Then tmrScrollCharMapToSelected_Timer
@@ -1773,7 +1841,6 @@ Private Sub PropertyPage_SelectionChanged()
             picTDICover1(c).Visible = True
         Next
         picTDICover1(0).Height = cboIconAlignment.Top - picTDICover1(0).Top + cboIconAlignment.Height
-        'txtTabCaption.Enabled = False
         chkTabEnabled.Enabled = False
         chkTabVisible.Enabled = False
         fraPicture.Enabled = False
@@ -1896,8 +1963,12 @@ Private Sub DoShowTabData()
     t = mTabSel
     txtTabSel.Text = t
     txtTabSel.Refresh
-    txtTabCaption.Text = mTabData(t).Caption
-    txtTabToolTipText.Text = mTabData(t).ToolTipText
+    If mUniTextTabCaption.Text <> mTabData(t).Caption Then
+        mUniTextTabCaption.Text = mTabData(t).Caption
+    End If
+    If mUniTextTabToolTipText.Text <> mTabData(t).ToolTipText Then
+        mUniTextTabToolTipText.Text = mTabData(t).ToolTipText
+    End If
     chkTabEnabled.Value = CLng(mTabData(t).Enabled) * -1
     chkTabVisible.Value = CLng(mTabData(t).Visible) * -1
     
@@ -1986,6 +2057,8 @@ End Sub
 
 Private Sub PropertyPage_Terminate()
     Unsubclass
+    Set mUniTextTabCaption = Nothing
+    Set mUniTextTabToolTipText = Nothing
 End Sub
 
 Private Sub tmrAutoClick_Timer()
@@ -2034,23 +2107,24 @@ Private Sub txtIconTopOffset_Change()
     End If
 End Sub
 
-Private Sub txtTabCaption_Change()
+Private Sub mUniTextTabCaption_Change()
     If Not mLoading And Not mShowingTabData Then
         Changed = True
-        mTabData(mTabSel).Caption = txtTabCaption.Text
+        mTabData(mTabSel).Caption = mUniTextTabCaption.Text
+        ShowTabData
+    End If
+End Sub
+
+Private Sub mUniTextTabToolTipText_Change()
+    If Not mLoading And Not mShowingTabData Then
+        Changed = True
+        mTabData(mTabSel).ToolTipText = mUniTextTabToolTipText.Text
         ShowTabData
     End If
 End Sub
 
 Private Sub txtTabSel_Change()
     NewTab1.TabSel = Val(txtTabSel.Text)
-End Sub
-
-Private Sub txtTabToolTipText_Change()
-    If Not mLoading And Not mShowingTabData Then
-        Changed = True
-        mTabData(mTabSel).ToolTipText = txtTabToolTipText.Text
-    End If
 End Sub
 
 Private Function WindowsUnderMouse() As Long

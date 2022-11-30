@@ -1,3 +1,4 @@
+2022-11-30 Added Unicode support for text input for the Caption and TabToolTipText properties on the Tabs property page.
 2022-11-24 Added Unicode support to TabToolTipText.
 2022-11-24 Fixed a bug in FlatBorderMode = ntBorderTabSel.
 2022-11-24 Fixed a bug in RightToLeft and themed.
