@@ -1,3 +1,4 @@
+2022-12-02 Fixed a bug in property page pagNewTabTabs, 'Move the controls to another tab' command function.
 2022-11-30 Added Unicode support for text input for the Caption and TabToolTipText properties on the Tabs property page.
 2022-11-24 Added Unicode support to TabToolTipText.
 2022-11-24 Fixed a bug in FlatBorderMode = ntBorderTabSel.

@@ -1346,7 +1346,7 @@ Private Sub cmdMoveContainedControls_Click()
     If iStr <> "" Then
         If IsNumeric(iStr) Then
             t = Val(iStr)
-            If (t > -1) And (t - (mTabs - 1)) Then
+            If (t > -1) And (t <= (mTabs - 1)) Then
                 If t = mTabSel Then
                     MsgBox "Destination tab number must be different than current tab.", vbExclamation
                 Else
