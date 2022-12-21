@@ -98,9 +98,9 @@ Private Declare Function GetMessageExtraInfo Lib "user32" () As Long
 Private Declare Sub mouse_event Lib "user32" (ByVal dwFlags As Long, ByVal dX As Long, ByVal dY As Long, ByVal cButtons As Long, ByVal dwExtraInfo As Long)
 Private Declare Function SystemParametersInfoW Lib "user32" (ByVal uAction As Long, ByVal uParam As Long, ByRef pvParam As Any, ByVal fWinIni As Long) As Long
 Private Declare Sub CopyMemoryAny1 Lib "kernel32" Alias "RtlMoveMemory" (lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
-Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal HDC As Long, ByVal nIndex As Long) As Long
+Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function ReleaseDC& Lib "user32" (ByVal hWnd As Long, ByVal HDC As Long)
+Private Declare Function ReleaseDC& Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long)
 
 Private Enum bsSystemFontConstants
    bsIconFont = 1
@@ -775,7 +775,7 @@ Private Function LogFontToStdFont(LF As LOGFONTW, Optional nPrinterFont As Boole
     If LF.LFHeight = 0 Then Exit Function
     
     If nPrinterFont Then
-        iDPIY = GetDeviceCaps(Printer.HDC, LOGPIXELSY)
+        iDPIY = GetDeviceCaps(Printer.hDC, LOGPIXELSY)
     Else
         iDC = GetDC(0)
         iDPIY = GetDeviceCaps(iDC, LOGPIXELSY)

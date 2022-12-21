@@ -128,20 +128,20 @@ Private Const FW_BOLD As Long = 700
 
 'data buffer for the ChooseFont function
 Private Type LOGFONT
-    lfHeight As Long
-    lfWidth As Long
-    lfEscapement As Long
-    lfOrientation As Long
-    lfWeight As Long
-    lfItalic As Byte
-    lfUnderline As Byte
-    lfStrikeOut As Byte
-    lfCharSet As Byte
-    lfOutPrecision As Byte
-    lfClipPrecision As Byte
-    lfQuality As Byte
-    lfPitchAndFamily As Byte
-    lfFaceName(0 To LF_FACESIZE - 1) As Byte
+    LFHeight As Long
+    LFWidth As Long
+    LFEscapement As Long
+    LFOrientation As Long
+    LFWeight As Long
+    LFItalic As Byte
+    LFUnderline As Byte
+    LFStrikeOut As Byte
+    LFCharset As Byte
+    LFOutPrecision As Byte
+    LFClipPrecision As Byte
+    LFQuality As Byte
+    LFPitchAndFamily As Byte
+    LFFaceName(0 To LF_FACESIZE - 1) As Byte
 End Type
 
 'data buffer for the ChooseFont function
@@ -857,43 +857,43 @@ Public Sub ShowFont(Optional ByVal nFlags As cdeCommonDialogExFontFlagsConstants
     '***    prepare tChooseFont data
         
     
-    tLogFont.lfHeight = mFont.Size * 20 / Screen.TwipsPerPixelY * -1 ' PointsPerTwip = 1440 / 72 = 20
+    tLogFont.LFHeight = mFont.Size * 20 / Screen.TwipsPerPixelY * -1 ' PointsPerTwip = 1440 / 72 = 20
     'tLogFont.lfWidth As Long
     'tLogFont.lfEscapement As Long
     'tLogFont.lfOrientation As Long
     
     'tLogFont.lfWeight As Long - init from FontBold property
     If mFont.Bold Then
-        tLogFont.lfWeight = FW_BOLD
+        tLogFont.LFWeight = FW_BOLD
     Else
-        tLogFont.lfWeight = FW_NORMAL
+        tLogFont.LFWeight = FW_NORMAL
     End If
     
     'tLogFont.lfItalic As Byte - init from FontItalic property
     If mFont.Italic Then
-        tLogFont.lfItalic = 1
+        tLogFont.LFItalic = 1
     End If
     
     'tLogFont.lfUnderline As Byte - init from FontUnderline property
     If mFont.Underline Then
-        tLogFont.lfUnderline = 1
+        tLogFont.LFUnderline = 1
     End If
 
     'tLogFont.lfStrikeOut As Byte - init from FontStrikethru property
     If mFont.Strikethrough Then
-        tLogFont.lfStrikeOut = 1
+        tLogFont.LFStrikeOut = 1
     End If
 
 
-    tLogFont.lfCharSet = DEFAULT_CHARSET
+    tLogFont.LFCharset = DEFAULT_CHARSET
     'tLogFont.lfOutPrecision As Byte
     'tLogFont.lfClipPrecision As Byte
-    tLogFont.lfQuality = CLEARTYPE_QUALITY
+    tLogFont.LFQuality = CLEARTYPE_QUALITY
     'tLogFont.lfPitchAndFamily As Byte
     
     For i = 0 To Len(mFont.Name) - 1
         If i > 31 Then Exit For
-        tLogFont.lfFaceName(i) = Asc(Mid$(mFont.Name, i + 1, 1))
+        tLogFont.LFFaceName(i) = Asc(Mid$(mFont.Name, i + 1, 1))
     Next
     
     lLogFontSize = Len(tLogFont)
@@ -982,28 +982,28 @@ Public Sub ShowFont(Optional ByVal nFlags As cdeCommonDialogExFontFlagsConstants
             Call CopyMemory(tLogFont, ByVal lLogFontAddress, lLogFontSize)
             
             'tLogFont.lfWeight As Long  - store to FontBold property
-            If tLogFont.lfWeight >= FW_BOLD Then
+            If tLogFont.LFWeight >= FW_BOLD Then
                 mFont.Bold = True
             Else
                 mFont.Bold = False
             End If
                         
             'tLogFont.lfItalic As Byte - store to FontItalic property
-            If tLogFont.lfItalic <> 0 Then
+            If tLogFont.LFItalic <> 0 Then
                 mFont.Italic = True
             Else
                 mFont.Italic = False
             End If
             
             'tLogFont.lfUnderline As Byte - store to FontUnderline property
-            If tLogFont.lfUnderline <> 0 Then
+            If tLogFont.LFUnderline <> 0 Then
                 mFont.Underline = True
             Else
                 mFont.Underline = False
             End If
         
             'tLogFont.lfStrikeOut As Byte - store to FontStrikethru property
-            If tLogFont.lfStrikeOut <> 0 Then
+            If tLogFont.LFStrikeOut <> 0 Then
                 mFont.Strikethrough = True
             Else
                 mFont.Strikethrough = False
@@ -1012,7 +1012,7 @@ Public Sub ShowFont(Optional ByVal nFlags As cdeCommonDialogExFontFlagsConstants
             mColor = tChooseFont.rgbColors
             
             'tLogFont.lfFaceName(LF_FACESIZE) As Byte - store to FontName property
-            FontName = sByteArrayToString(tLogFont.lfFaceName())
+            FontName = sByteArrayToString(tLogFont.LFFaceName())
             
             'tChooseFont.iPointSize As Long - store to FontSize property
             mFont.Size = CLng(tChooseFont.iPointSize / 10)
@@ -1681,7 +1681,7 @@ Private Sub ShowFileDialog(ByVal mAction As Integer, nFlags As Long, Optional By
     'tOpenFile.lStructSize As Long
     tOpenFile.lStructSize = Len(tOpenFile)
     
-    'tOpenFile.hWndOwner As Long - init from hdc property
+    'tOpenFile.hWndOwner As Long - init from hDC property
     tOpenFile.hwndOwner = nHwndOwner
     
     'tOpenFile.lpstrFilter As String - init from Filter property

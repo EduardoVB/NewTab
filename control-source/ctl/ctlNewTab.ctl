@@ -671,6 +671,7 @@ Attribute Click.VB_UserMemId = -600
 Event DblClick()
 Attribute DblClick.VB_Description = "Occurs when you press and release a mouse button and then press and release it again over an object."
 Attribute DblClick.VB_UserMemId = -601
+Attribute DblClick.VB_MemberFlags = "200"
 Event KeyDown(ByVal KeyCode As Integer, ByVal Shift As Integer)
 Attribute KeyDown.VB_Description = "Occurs when the user presses a key while an object has the focus."
 Attribute KeyDown.VB_UserMemId = -602
@@ -5374,34 +5375,41 @@ Private Sub DoTerminate()
     Set mParentControlsUseMnemonic = Nothing
     Set mContainedControlsThatAreContainers = Nothing
     
-    For c = 1 To mSubclassedControlsForPaintingHwnds.Count
-        iHwnd = mSubclassedControlsForPaintingHwnds(c)
-        On Error Resume Next
-        DetachMessage Me, iHwnd, WM_PAINT
-        DetachMessage Me, iHwnd, WM_MOVE
-        On Error GoTo 0
-    Next c
-    Set mSubclassedControlsForPaintingHwnds = Nothing
+    If Not mSubclassedControlsForPaintingHwnds Is Nothing Then
+        For c = 1 To mSubclassedControlsForPaintingHwnds.Count
+            iHwnd = mSubclassedControlsForPaintingHwnds(c)
+            On Error Resume Next
+            DetachMessage Me, iHwnd, WM_PAINT
+            DetachMessage Me, iHwnd, WM_MOVE
+            On Error GoTo 0
+        Next c
+        Set mSubclassedControlsForPaintingHwnds = Nothing
+    End If
     
-    For c = 1 To mSubclassedFramesHwnds.Count
-        iHwnd = mSubclassedFramesHwnds(c)
-        On Error Resume Next
-        DetachMessage Me, iHwnd, WM_PRINTCLIENT
-        DetachMessage Me, iHwnd, WM_MOUSELEAVE
-        On Error GoTo 0
-    Next c
-    Set mSubclassedFramesHwnds = Nothing
+    If Not mSubclassedFramesHwnds Is Nothing Then
+        For c = 1 To mSubclassedFramesHwnds.Count
+            iHwnd = mSubclassedFramesHwnds(c)
+            On Error Resume Next
+            DetachMessage Me, iHwnd, WM_PRINTCLIENT
+            DetachMessage Me, iHwnd, WM_MOUSELEAVE
+            On Error GoTo 0
+        Next c
+        Set mSubclassedFramesHwnds = Nothing
+    End If
     
-    For c = 1 To mSubclassedControlsForMoveHwnds.Count
-        iHwnd = mSubclassedControlsForMoveHwnds(c)
-        On Error Resume Next
-        DetachMessage Me, iHwnd, WM_WINDOWPOSCHANGING
-        On Error GoTo 0
-    Next c
-    Set mSubclassedControlsForMoveHwnds = Nothing
-    mTabIconFontsEventsHandler.Release
-    Set mTabIconFontsEventsHandler = Nothing
-    
+    If Not mSubclassedControlsForMoveHwnds Is Nothing Then
+        For c = 1 To mSubclassedControlsForMoveHwnds.Count
+            iHwnd = mSubclassedControlsForMoveHwnds(c)
+            On Error Resume Next
+            DetachMessage Me, iHwnd, WM_WINDOWPOSCHANGING
+            On Error GoTo 0
+        Next c
+        Set mSubclassedControlsForMoveHwnds = Nothing
+    End If
+    If Not mTabIconFontsEventsHandler Is Nothing Then
+        mTabIconFontsEventsHandler.Release
+        Set mTabIconFontsEventsHandler = Nothing
+    End If
     If mHandIconHandle <> 0 Then
         DestroyCursor mHandIconHandle
         mHandIconHandle = 0
@@ -6571,11 +6579,11 @@ Private Sub Draw()
             UserControl.Cls
         Case ssTabOrientationLeft
             RotatePic picDraw, picRotate, nt90DegreesCounterClockWise
-            'BitBlt UserControl.hDc, 0, 0, mScaleWidth, mScaleHeight, picRotate.hDc, 0, 0, vbSrcCopy
+            'BitBlt UserControl.hDC, 0, 0, mScaleWidth, mScaleHeight, picRotate.hDC, 0, 0, vbSrcCopy
             Set UserControl.Picture = picRotate.Image
         Case Else ' ssTabOrientationRight
             RotatePic picDraw, picRotate, nt90DegreesClockWise
-            'BitBlt UserControl.hDc, 0, 0, mScaleWidth, mScaleHeight, picRotate.hDc, 0, 0, vbSrcCopy
+            'BitBlt UserControl.hDC, 0, 0, mScaleWidth, mScaleHeight, picRotate.hDC, 0, 0, vbSrcCopy
             Set UserControl.Picture = picRotate.Image
     End Select
     iAlreadyNeedToBePainted = GetUpdateRect(mUserControlHwnd, iTmpRect, 0&) <> 0&

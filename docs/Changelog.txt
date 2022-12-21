@@ -1,3 +1,5 @@
+2022-12-21 Added protection for in IDE undeterministic project objects shut-down.
+2022-12-17 Set DblClick event as default to match SSTab.
 2022-12-02 Fixed a bug in property page pagNewTabTabs, 'Move the controls to another tab' command function.
 2022-11-30 Added Unicode support for text input for the Caption and TabToolTipText properties on the Tabs property page.
 2022-11-24 Added Unicode support to TabToolTipText.
