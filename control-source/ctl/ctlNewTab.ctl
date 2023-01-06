@@ -1168,7 +1168,7 @@ Public Property Set IconFont(ByVal nValue As StdFont)
 End Property
 
 
-Public Property Get TabIconFont(ByVal Index) As StdFont
+Public Property Get TabIconFont(ByVal Index As Variant) As StdFont
 Attribute TabIconFont.VB_Description = "Returns/sets the Font that will be used to draw the icon in the tab pointed by the Index parameter."
 Attribute TabIconFont.VB_ProcData.VB_Invoke_Property = ";Fuente"
     If (Index < 0) Or (Index >= mTabs) Then
@@ -1182,11 +1182,11 @@ Attribute TabIconFont.VB_ProcData.VB_Invoke_Property = ";Fuente"
     Set TabIconFont = mTabData(Index).IconFont
 End Property
 
-Public Property Let TabIconFont(ByVal Index, ByVal nValue As StdFont)
+Public Property Let TabIconFont(ByVal Index As Variant, ByVal nValue As StdFont)
     Set TabIconFont(Index) = nValue
 End Property
 
-Public Property Set TabIconFont(ByVal Index, ByVal nValue As StdFont)
+Public Property Set TabIconFont(ByVal Index As Variant, ByVal nValue As StdFont)
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 380, TypeName(Me) ' invalid property value
         Exit Property
@@ -2070,7 +2070,7 @@ Public Property Set TabPicture(ByVal Index As Integer, ByVal nValue As Picture)
 End Property
 
 
-Public Property Get TabPic16(ByVal Index) As Picture
+Public Property Get TabPic16(ByVal Index As Variant) As Picture
 Attribute TabPic16.VB_Description = "Specifies a bitmap to display on the specified tab at 96 DPI, when the application is DPI aware."
 Attribute TabPic16.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     If (Index < 0) Or (Index >= mTabs) Then
@@ -2080,7 +2080,7 @@ Attribute TabPic16.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     Set TabPic16 = mTabData(Index).Pic16
 End Property
 
-Public Property Let TabPic16(ByVal Index, ByVal nValue As Picture)
+Public Property Let TabPic16(ByVal Index As Variant, ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 380, TypeName(Me) ' invalid property value
@@ -2089,7 +2089,7 @@ Public Property Let TabPic16(ByVal Index, ByVal nValue As Picture)
     Set TabPic16(Index) = nValue
 End Property
 
-Public Property Set TabPic16(ByVal Index, ByVal nValue As Picture)
+Public Property Set TabPic16(ByVal Index As Variant, ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 380, TypeName(Me) ' invalid property value
@@ -2106,7 +2106,7 @@ Public Property Set TabPic16(ByVal Index, ByVal nValue As Picture)
 End Property
 
 
-Public Property Get TabPic20(ByVal Index) As Picture
+Public Property Get TabPic20(ByVal Index As Variant) As Picture
 Attribute TabPic20.VB_Description = "Specifies a bitmap to display on the specified tab at 120 DPI, when the application is DPI aware."
 Attribute TabPic20.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     If (Index < 0) Or (Index >= mTabs) Then
@@ -2116,7 +2116,7 @@ Attribute TabPic20.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     Set TabPic20 = mTabData(Index).Pic20
 End Property
 
-Public Property Let TabPic20(ByVal Index, ByVal nValue As Picture)
+Public Property Let TabPic20(ByVal Index As Variant, ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 380, TypeName(Me) ' invalid property value
@@ -2125,7 +2125,7 @@ Public Property Let TabPic20(ByVal Index, ByVal nValue As Picture)
     Set TabPic20(Index) = nValue
 End Property
 
-Public Property Set TabPic20(ByVal Index, ByVal nValue As Picture)
+Public Property Set TabPic20(ByVal Index As Variant, ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 380, TypeName(Me) ' invalid property value
@@ -2142,7 +2142,7 @@ Public Property Set TabPic20(ByVal Index, ByVal nValue As Picture)
 End Property
 
 
-Public Property Get TabPic24(ByVal Index) As Picture
+Public Property Get TabPic24(ByVal Index As Variant) As Picture
 Attribute TabPic24.VB_Description = "Specifies a bitmap to display on the specified tab at 144 DPI, when the application is DPI aware."
 Attribute TabPic24.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     If (Index < 0) Or (Index >= mTabs) Then
@@ -2152,7 +2152,7 @@ Attribute TabPic24.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     Set TabPic24 = mTabData(Index).Pic24
 End Property
 
-Public Property Let TabPic24(ByVal Index, ByVal nValue As Picture)
+Public Property Let TabPic24(ByVal Index As Variant, ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 380, TypeName(Me) ' invalid property value
@@ -2161,7 +2161,7 @@ Public Property Let TabPic24(ByVal Index, ByVal nValue As Picture)
     Set TabPic24(Index) = nValue
 End Property
 
-Public Property Set TabPic24(ByVal Index, ByVal nValue As Picture)
+Public Property Set TabPic24(ByVal Index As Variant, ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 380, TypeName(Me) ' invalid property value
@@ -2178,7 +2178,7 @@ Public Property Set TabPic24(ByVal Index, ByVal nValue As Picture)
 End Property
 
 
-Public Property Get TabIconCharHex(ByVal Index) As String
+Public Property Get TabIconCharHex(ByVal Index As Variant) As String
 Attribute TabIconCharHex.VB_Description = "Returns/sets a string representing the hexadecimal value of the character that will be used as the icon for the tab pointed by the Index parameter."
 Attribute TabIconCharHex.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     If (Index < 0) Or (Index >= mTabs) Then
@@ -2194,7 +2194,7 @@ Attribute TabIconCharHex.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     End If
 End Property
 
-Public Property Let TabIconCharHex(ByVal Index, ByVal nValue As String)
+Public Property Let TabIconCharHex(ByVal Index As Variant, ByVal nValue As String)
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 380, TypeName(Me) ' invalid property value
         Exit Property
@@ -2217,7 +2217,7 @@ Public Property Let TabIconCharHex(ByVal Index, ByVal nValue As String)
 End Property
 
 
-Public Property Get TabIconLeftOffset(ByVal Index) As Long
+Public Property Get TabIconLeftOffset(ByVal Index As Variant) As Long
 Attribute TabIconLeftOffset.VB_Description = "Returns/sets the value in pixels of the offset for the left position when drawing the icon of the tab pointed by the Index parameter. It can be negative."
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 380, TypeName(Me) ' invalid property value
@@ -2226,7 +2226,7 @@ Attribute TabIconLeftOffset.VB_Description = "Returns/sets the value in pixels o
     TabIconLeftOffset = mTabData(Index).IconLeftOffset
 End Property
 
-Public Property Let TabIconLeftOffset(ByVal Index, ByVal nValue As Long)
+Public Property Let TabIconLeftOffset(ByVal Index As Variant, ByVal nValue As Long)
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 380, TypeName(Me) ' invalid property value
         Exit Property
@@ -2241,7 +2241,7 @@ Public Property Let TabIconLeftOffset(ByVal Index, ByVal nValue As Long)
 End Property
 
 
-Public Property Get TabIconTopOffset(ByVal Index) As Long
+Public Property Get TabIconTopOffset(ByVal Index As Variant) As Long
 Attribute TabIconTopOffset.VB_Description = "Returns/sets the value in pixels of the offset for the top position when drawing the icon of the tab pointed by the Index parameter. It can be negative."
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 380, TypeName(Me) ' invalid property value
@@ -2250,7 +2250,7 @@ Attribute TabIconTopOffset.VB_Description = "Returns/sets the value in pixels of
     TabIconTopOffset = mTabData(Index).IconTopOffset
 End Property
 
-Public Property Let TabIconTopOffset(ByVal Index, ByVal nValue As Long)
+Public Property Let TabIconTopOffset(ByVal Index As Variant, ByVal nValue As Long)
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 380, TypeName(Me) ' invalid property value
         Exit Property
@@ -2406,7 +2406,7 @@ Public Property Let TabCaption(ByVal Index As Integer, ByVal nValue As String)
 End Property
 
 
-Public Property Get TabToolTipText(ByVal Index) As String
+Public Property Get TabToolTipText(ByVal Index As Variant) As String
 Attribute TabToolTipText.VB_Description = "Returns/sets the text that will be shown as tooltip text when the mouse pointer is over the specified tab."
 Attribute TabToolTipText.VB_ProcData.VB_Invoke_Property = ";Texto"
     If (Index < 0) Or (Index >= mTabs) Then
@@ -2416,7 +2416,7 @@ Attribute TabToolTipText.VB_ProcData.VB_Invoke_Property = ";Texto"
     TabToolTipText = mTabData(Index).ToolTipText
 End Property
 
-Public Property Let TabToolTipText(ByVal Index, ByVal nValue As String)
+Public Property Let TabToolTipText(ByVal Index As Variant, ByVal nValue As String)
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 380, TypeName(Me) ' invalid property value
         Exit Property
@@ -9236,20 +9236,20 @@ Private Function ContainerScaleMode() As ScaleModeConstants
     Err.Clear
 End Function
 
-Friend Function FromContainerSizeY(nValue, Optional nToScale As ScaleModeConstants = vbTwips) As Single
+Friend Function FromContainerSizeY(nValue As Variant, Optional nToScale As ScaleModeConstants = vbTwips) As Single
     FromContainerSizeY = pScaleY(nValue, ContainerScaleMode, nToScale)
 End Function
 
-Private Function ToContainerSizeY(nValue, Optional nFromScale As ScaleModeConstants = vbTwips) As Single
+Private Function ToContainerSizeY(nValue As Variant, Optional nFromScale As ScaleModeConstants = vbTwips) As Single
     ToContainerSizeY = pScaleY(nValue, nFromScale, ContainerScaleMode)
 End Function
 
 
-Friend Function FromContainerSizeX(nValue, Optional nToScale As ScaleModeConstants = vbTwips) As Single
+Friend Function FromContainerSizeX(nValue As Variant, Optional nToScale As ScaleModeConstants = vbTwips) As Single
     FromContainerSizeX = pScaleX(nValue, ContainerScaleMode, nToScale)
 End Function
 
-Private Function ToContainerSizeX(nValue, Optional nFromScale As ScaleModeConstants = vbTwips) As Single
+Private Function ToContainerSizeX(nValue As Variant, Optional nFromScale As ScaleModeConstants = vbTwips) As Single
     ToContainerSizeX = pScaleX(nValue, nFromScale, ContainerScaleMode)
 End Function
 
@@ -10130,7 +10130,7 @@ Private Function GetControlHwnd2(nControl As Object) As Long
     GetControlHwnd2 = nControl.hWnd
 End Function
 
-Private Function IsControlInOtherTab(nCtlName, nTab As Integer) As Boolean
+Private Function IsControlInOtherTab(nCtlName As Variant, nTab As Integer) As Boolean
     Dim t As Long
     Dim iStr As String
     
@@ -10852,7 +10852,7 @@ Private Sub PostDrawMessage()
     End If
 End Sub
 
-Friend Property Get TabControlsNames(Index) As Object
+Friend Property Get TabControlsNames(ByVal Index As Variant) As Object
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 380, TypeName(Me) ' invalid property value
         Exit Property
@@ -10860,7 +10860,7 @@ Friend Property Get TabControlsNames(Index) As Object
     Set TabControlsNames = mTabData(Index).Controls
 End Property
 
-Friend Property Set TabControlsNames(Index, nValue As Object)
+Friend Property Set TabControlsNames(ByVal Index As Variant, nValue As Object)
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 380, TypeName(Me) ' invalid property value
         Exit Property
@@ -11188,7 +11188,7 @@ Attribute Controls.VB_ProcData.VB_Invoke_Property = ";Datos"
     Set Controls = UserControlContainedControls
 End Property
 
-Private Sub RaiseError(ByVal Number As Long, Optional ByVal Source, Optional ByVal Description, Optional ByVal HelpFile, Optional ByVal HelpContext)
+Private Sub RaiseError(ByVal Number As Long, Optional ByVal Source As Variant, Optional ByVal Description As Variant, Optional ByVal HelpFile As Variant, Optional ByVal HelpContext As Variant)
     If mInIDE Then
         On Error Resume Next
         Err.Raise Number, Source, Description, HelpFile, HelpContext
@@ -11332,7 +11332,7 @@ Attribute TabControls.VB_ProcData.VB_Invoke_Property = ";Datos"
     
     If (nTab < 0) Or (nTab > (mTabs - 1)) Then
         RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
-        Exit Sub
+        Exit Property
     End If
     
     Set TabControls = New Collection
@@ -11400,7 +11400,7 @@ Public Property Let HandleHighContrastTheme(ByVal nValue As Boolean)
 End Property
 
 
-Friend Function pScaleX(Width, Optional ByVal FromScale As Variant, Optional ByVal ToScale As Variant) As Single
+Friend Function pScaleX(Width As Variant, Optional ByVal FromScale As Variant, Optional ByVal ToScale As Variant) As Single
     Select Case True
         Case ToScale = vbPixels
             Select Case FromScale
@@ -11451,7 +11451,7 @@ Friend Function pScaleX(Width, Optional ByVal FromScale As Variant, Optional ByV
     End Select
 End Function
 
-Friend Function pScaleY(Height, Optional ByVal FromScale As Variant, Optional ByVal ToScale As Variant) As Single
+Friend Function pScaleY(Height As Variant, Optional ByVal FromScale As Variant, Optional ByVal ToScale As Variant) As Single
     Select Case True
         Case ToScale = vbPixels
             Select Case FromScale
@@ -12417,19 +12417,19 @@ Private Sub SetHighlightMode()
 
 End Sub
 
-Public Function GetTabLeft(ByVal Index) As Single
+Public Function GetTabLeft(ByVal Index As Variant) As Single
 Attribute GetTabLeft.VB_Description = "Returns the left position of a tab."
     EnsureDrawn
     GetTabLeft = FixRoundingError(UserControl.ScaleX(mTabData(Index).TabRect.Left, vbPixels, vbTwips))
 End Function
 
-Public Function GetTabTop(ByVal Index) As Single
+Public Function GetTabTop(ByVal Index As Variant) As Single
 Attribute GetTabTop.VB_Description = "Returns the top position of a tab."
     EnsureDrawn
     GetTabTop = FixRoundingError(UserControl.ScaleY(mTabData(Index).TabRect.Top, vbPixels, vbTwips))
 End Function
 
-Public Function GetTabSize(ByVal Index) As Single
+Public Function GetTabSize(ByVal Index As Variant) As Single
 Attribute GetTabSize.VB_Description = "Returns the size of a tab (height or width depending on the TabOrientation setting). The other dimention is  provided by the TabHeight property."
     EnsureDrawn
     GetTabSize = FixRoundingError(UserControl.ScaleX(mTabData(Index).TabRect.Right - mTabData(Index).TabRect.Left, vbPixels, vbTwips))

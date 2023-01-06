@@ -1317,7 +1317,7 @@ Public Property Let Filter(nValue As String)
 End Property
 
 
-Private Function sLeftOfNull(ByVal sIn As String)
+Private Function sLeftOfNull(ByVal sIn As String) As String
     'returns the part of sIn preceding Chr$(0)
     Dim lNullPos As Long
     
@@ -1334,7 +1334,7 @@ Private Function sLeftOfNull(ByVal sIn As String)
     
 End Function
 
-Private Function sLeftOfLastNull(ByVal sIn As String)
+Private Function sLeftOfLastNull(ByVal sIn As String) As String
     'returns the part of sIn preceding Chr$(0)
     Dim iNullPos As Long
     Dim iChr As String
@@ -1363,7 +1363,7 @@ Private Function sLeftOfLastNull(ByVal sIn As String)
 End Function
 
 
-Private Function sAPIFilter(sIn)
+Private Function sAPIFilter(sIn As String) As String
     'prepares sIn for use as a filter string in API common dialog functions
     Dim lChrNdx As Long
     Dim sOneChr As String
@@ -2339,7 +2339,7 @@ End Sub
 Private Function GetDevNameString( _
       ByVal ptrDevNames As Long, _
       ByVal ptrOffset As Long _
-   )
+   ) As String
    Dim Ptr As Long
    Dim lSize As Long
    Dim B() As Byte
@@ -2596,7 +2596,7 @@ Private Function GetActiveWindowHwnd() As Long
     End If
 End Function
 
-Private Function CloneFont(nOrigFont) As StdFont
+Private Function CloneFont(nOrigFont As StdFont) As StdFont
     Dim iFont As New StdFont
     
     If nOrigFont Is Nothing Then Exit Function

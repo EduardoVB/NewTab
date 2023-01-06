@@ -69,7 +69,7 @@ Friend Sub Add(ByVal nTheme As NewTabTheme)
     mThemes.Add nTheme, nTheme.Name
 End Sub
 
-Public Function Exists(ByVal nThemeName As String)
+Public Function Exists(ByVal nThemeName As String) As Boolean
 Attribute Exists.VB_Description = "Returns True if the theme exists in the collection."
     Dim iTheme As NewTabTheme
     

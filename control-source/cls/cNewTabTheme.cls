@@ -80,7 +80,7 @@ Friend Property Get Hash() As String
     Hash = mHash
 End Property
 
-Private Function GetThemeStringHash(nThemeString) As String
+Private Function GetThemeStringHash(nThemeString As String) As String
     GetThemeStringHash = SimpleHash(nThemeString)
 End Function
 

@@ -246,7 +246,7 @@ Private Function FileExists(ByVal strPathName As String) As Boolean
 End Function
 
 Private Sub SaveTextFile(nPath As String, nText As String)
-    Dim iFreeFile
+    Dim iFreeFile As Long
     
     If FileExists(nPath) Then
         Err.Raise 867, , "File already exists"
