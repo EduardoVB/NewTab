@@ -476,6 +476,7 @@ End Property
 
 Public Property Let BackColor(ByVal nValue As Variant)
    If Not IsNumeric(nValue) Then Exit Property
+   If Not IsValidOLE_COLOR(nValue) Then Err.Raise 380, TypeName(Me): Exit Property
    mBackColor = nValue
    If mTTHwnd <> 0 Then
       SendMessage mTTHwnd, TTM_SETTIPBKCOLOR, mBackColor, 0&
@@ -488,6 +489,7 @@ End Property
 
 Public Property Let ForeColor(ByVal nValue As Variant)
    If Not IsNumeric(nValue) Then Exit Property
+   If Not IsValidOLE_COLOR(nValue) Then Err.Raise 380, TypeName(Me): Exit Property
    mForeColor = nValue
    If mTTHwnd <> 0 Then
       SendMessage mTTHwnd, TTM_SETTIPTEXTCOLOR, mForeColor, 0&

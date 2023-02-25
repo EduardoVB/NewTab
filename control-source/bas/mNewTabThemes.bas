@@ -1,6 +1,7 @@
 Attribute VB_Name = "mNewTabThemes"
 Option Explicit
 
+Private Declare Function TranslateColor Lib "olepro32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As Long, Col As Long) As Long
 Private Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
 Private Declare Function FindWindow Lib "user32.dll" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As Long
 Private Declare Function GetProp Lib "user32.dll" Alias "GetPropA" (ByVal hWnd As Long, ByVal lpString As String) As Long
@@ -999,3 +1000,10 @@ Private Sub QuickSort(ByRef pvarArray As Variant, Optional ByVal plngLeft As Lon
     If plngLeft < lngLast Then QuickSort pvarArray, plngLeft, lngLast
     If lngFirst < plngRight Then QuickSort pvarArray, lngFirst, plngRight
 End Sub
+
+Public Function IsValidOLE_COLOR(ByVal nColor As Long) As Boolean
+    Const S_OK As Long = 0
+    IsValidOLE_COLOR = (TranslateColor(nColor, 0, nColor) = S_OK)
+End Function
+
+

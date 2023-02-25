@@ -1119,6 +1119,7 @@ End Property
 
 Public Property Let BackColor(ByVal nValue As OLE_COLOR)
     If nValue <> mBackColor Then
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         mBackColorIsFromAmbient = (nValue = Ambient.BackColor)
         mBackColor = nValue
         SetPropertyChanged "BackColor"
@@ -1281,6 +1282,7 @@ Public Property Let ForeColor(ByVal nValue As OLE_COLOR)
     Dim iPrev As Long
     
     If nValue <> mForeColor Then
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         mForeColorIsFromAmbient = (nValue = Ambient.ForeColor)
         If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
             mHandleHighContrastTheme_OrigForeColor = nValue
@@ -1321,7 +1323,9 @@ End Property
 
 Public Property Let ForeColorTabSel(ByVal nValue As OLE_COLOR)
     Dim iPrev As Long
+    
     If nValue <> mForeColorTabSel Then
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
             mHandleHighContrastTheme_OrigForeColorTabSel = nValue
         Else
@@ -1353,6 +1357,7 @@ End Property
 
 Public Property Let ForeColorHighlighted(ByVal nValue As OLE_COLOR)
     If nValue <> mForeColorHighlighted Then
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
             mHandleHighContrastTheme_OrigForeColorHighlighted = nValue
         Else
@@ -1377,6 +1382,7 @@ End Property
 
 Public Property Let FlatTabBoderColorHighlight(ByVal nValue As OLE_COLOR)
     If nValue <> mFlatTabBoderColorHighlight Then
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
             mHandleHighContrastTheme_OrigFlatTabBoderColorHighlight = nValue
         Else
@@ -1398,6 +1404,7 @@ End Property
 
 Public Property Let FlatTabBoderColorTabSel(ByVal nValue As OLE_COLOR)
     If nValue <> mFlatTabBoderColorTabSel Then
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
             mHandleHighContrastTheme_OrigFlatTabBoderColorTabSel = nValue
         Else
@@ -2444,6 +2451,7 @@ End Property
 
 Public Property Let MaskColor(ByVal nValue As OLE_COLOR)
     If nValue <> mMaskColor Then
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         mMaskColor = nValue
         SetPropertyChanged "MaskColor"
         DrawDelayed
@@ -2547,6 +2555,7 @@ Public Property Let BackColorTabs(ByVal nValue As OLE_COLOR)
     Dim iPrev As Long
     
     If nValue <> IIf(mBackColorTabsSavingWhileVisualStyles, mBackColorTabs_SavedWhileVisualStyles, mBackColorTabs) Then
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         mBackColorTabsIsFromAmbient = (nValue = Ambient.BackColor)
         If mBackColorTabsSavingWhileVisualStyles Then
             mBackColorTabs_SavedWhileVisualStyles = nValue
@@ -2595,6 +2604,7 @@ Public Property Let BackColorTabSel(ByVal nValue As OLE_COLOR)
     Dim iWv As Boolean
     
     If nValue <> IIf(mBackColorTabsSavingWhileVisualStyles, mBackColorTabSel_SavedWhileVisualStyles, mBackColorTabSel) Then
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         If Not mChangingHighContrastTheme Then
             'mBackColorTabSel_IsAutomatic = (nValue = BackColorTabs) Or (nValue = GetAutomaticBackColorTabSel)
             mBackColorTabSel_IsAutomatic = (nValue = -1) Or (nValue = GetAutomaticBackColorTabSel)
@@ -2642,6 +2652,7 @@ Public Property Let FlatBarColorTabSel(ByVal nValue As OLE_COLOR)
     Dim iWv As Boolean
     
     If nValue <> mFlatBarColorTabSel Then
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         mFlatBarColorTabSel = nValue
         SetPropertyChanged "FlatBarColorTabSel"
         SetColors
@@ -2670,6 +2681,7 @@ Public Property Let FlatBarColorHighlight(ByVal nValue As OLE_COLOR)
 '                Stop
 '            End If
         End If
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         mFlatBarColorHighlight = nValue
         mFlatBarColorHighlight_IsAutomatic = (nValue = mFlatBarColorHighlight_ColorAutomatic)
         SetPropertyChanged "FlatBarColorHighlight"
@@ -2688,11 +2700,11 @@ End Property
 Public Property Let FlatBarColorInactive(ByVal nValue As OLE_COLOR)
     Dim iWv As Boolean
     
-    
     If nValue <> mFlatBarColorInactive Then
         If nValue = -1 Then
             nValue = mFlatBarColorInactive_ColorAutomatic
         End If
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         mFlatBarColorInactive = nValue
         mFlatBarColorInactive_IsAutomatic = (nValue = mFlatBarColorInactive_ColorAutomatic)
         SetPropertyChanged "FlatBarColorInactive"
@@ -2715,6 +2727,7 @@ Public Property Let FlatTabsSeparationLineColor(ByVal nValue As OLE_COLOR)
         If nValue = -1 Then
             nValue = mFlatTabsSeparationLineColor_ColorAutomatic
         End If
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         mFlatTabsSeparationLineColor = nValue
         mFlatTabsSeparationLineColor_IsAutomatic = (nValue = mFlatTabsSeparationLineColor_ColorAutomatic)
         SetPropertyChanged "FlatTabsSeparationLineColor"
@@ -2737,6 +2750,7 @@ Public Property Let FlatBodySeparationLineColor(ByVal nValue As OLE_COLOR)
         If nValue = -1 Then
             nValue = mFlatBodySeparationLineColor_ColorAutomatic
         End If
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         mFlatBodySeparationLineColor = nValue
         mFlatBodySeparationLineColor_IsAutomatic = (nValue = mFlatBodySeparationLineColor_ColorAutomatic)
         SetPropertyChanged "FlatBodySeparationLineColor"
@@ -2759,6 +2773,7 @@ Public Property Let FlatBorderColor(ByVal nValue As OLE_COLOR)
         If nValue = -1 Then
             nValue = mFlatBorderColor_ColorAutomatic
         End If
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         mFlatBorderColor = nValue
         mFlatBorderColor_IsAutomatic = (nValue = mFlatBorderColor_ColorAutomatic)
         SetPropertyChanged "FlatBorderColor"
@@ -2781,6 +2796,7 @@ Public Property Let HighlightColor(ByVal nValue As OLE_COLOR)
         If nValue = -1 Then
             nValue = mHighlightColor_ColorAutomatic
         End If
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         mHighlightColor = nValue
         mHighlightColor_IsAutomatic = (nValue = mHighlightColor_ColorAutomatic)
         SetPropertyChanged "HighlightColor"
@@ -2803,6 +2819,7 @@ Public Property Let HighlightColorTabSel(ByVal nValue As OLE_COLOR)
         If nValue = -1 Then
             nValue = mHighlightColorTabSel_ColorAutomatic
         End If
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         mHighlightColorTabSel = nValue
         mHighlightColorTabSel_IsAutomatic = (nValue = mHighlightColorTabSel_ColorAutomatic)
         SetPropertyChanged "HighlightColorTabSel"
@@ -2826,6 +2843,7 @@ Public Property Let IconColor(ByVal nValue As OLE_COLOR)
     Dim iPrev As Long
     
     If nValue <> mIconColor Then
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         mIconColorIsFromAmbient = (nValue = Ambient.ForeColor)
         If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
             mHandleHighContrastTheme_OrigIconColor = nValue
@@ -2866,6 +2884,7 @@ End Property
 
 Public Property Let IconColorTabSel(ByVal nValue As OLE_COLOR)
     If nValue <> mIconColorTabSel Then
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
             mHandleHighContrastTheme_OrigIconColorTabSel = nValue
         Else
@@ -2888,6 +2907,7 @@ End Property
 
 Public Property Let IconColorMouseHover(ByVal nValue As OLE_COLOR)
     If nValue <> mIconColorMouseHover Then
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
             mHandleHighContrastTheme_OrigIconColorMouseHover = nValue
         Else
@@ -2913,6 +2933,7 @@ End Property
 
 Public Property Let IconColorMouseHoverTabSel(ByVal nValue As OLE_COLOR)
     If nValue <> mIconColorMouseHoverTabSel Then
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
             mHandleHighContrastTheme_OrigIconColorMouseHoverTabSel = nValue
         Else
@@ -2936,6 +2957,7 @@ End Property
 
 Public Property Let IconColorTabHighlighted(ByVal nValue As OLE_COLOR)
     If nValue <> mIconColorTabHighlighted Then
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
             mHandleHighContrastTheme_OrigIconColorTabHighlighted = nValue
         Else
