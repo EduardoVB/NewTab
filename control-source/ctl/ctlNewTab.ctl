@@ -3348,7 +3348,7 @@ Public Property Let ChangeControlsForeColor(ByVal nValue As Boolean)
         iWv = IsWindowVisible(mUserControlHwnd) <> 0
         If iWv Then SendMessage mUserControlHwnd, WM_SETREDRAW, False, 0&
         If Not mChangeControlsForeColor Then
-            SetControlsForeColor vbButtonFace, mForeColorTabSel
+            SetControlsForeColor vbButtonText, mForeColorTabSel
         Else
             SetControlsForeColor mForeColorTabSel
         End If
@@ -4156,7 +4156,13 @@ Private Sub UserControl_InitProperties()
     mControlJustAdded = True
 End Sub
 
-Friend Sub SetDefaultPropertyValues()
+Friend Sub SetDefaultPropertyValues(Optional nSetControlsColors As Boolean)
+    Dim iBackColor_Prev As Long
+    Dim iForeColor_Prev As Long
+    
+    iBackColor_Prev = IIf(mEnabled Or Not mShowDisabledState, mBackColorTabSel, mBackColorTabSelDisabled)
+    iForeColor_Prev = mForeColorTabSel
+    
     Set mFont = Ambient.Font: PropertyChanged "Font"
     
     mBackColor = Ambient.BackColor: PropertyChanged "BackColor"
@@ -4168,6 +4174,7 @@ Friend Sub SetDefaultPropertyValues()
     mBackColorTabs = Ambient.BackColor: PropertyChanged "BackColorTabs"
     mIconColorTabSel = Ambient.ForeColor: PropertyChanged "IconColorTabSel"
     mIconColorTabHighlighted = Ambient.ForeColor: PropertyChanged "IconColorTabHighlighted"
+    
     mBackColorIsFromAmbient = True
     mForeColorIsFromAmbient = True
     mIconColorIsFromAmbient = True
@@ -4243,7 +4250,10 @@ Friend Sub SetDefaultPropertyValues()
     SetButtonFaceColor
     SetColors
     UserControl.BackColor = mBackColor
-
+    If nSetControlsColors Then
+        SetControlsBackColor IIf(mEnabled Or Not mShowDisabledState, mBackColorTabSel, mBackColorTabSelDisabled), iBackColor_Prev
+        SetControlsForeColor mForeColorTabSel, iForeColor_Prev
+    End If
 End Sub
 
 Friend Property Let ControlJustAdded(nValue As Boolean)

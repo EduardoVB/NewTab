@@ -283,16 +283,14 @@ Public Sub CopyControlProperties(nCtlSrc As NewTab, nCtlDest As NewTab)
     iRedraw = nCtlDest.Redraw
     nCtlDest.Redraw = False
     
-    nCtlDest.SetDefaultPropertyValues
-    
-    nCtlDest.ChangeControlsBackColor = nCtlSrc.ChangeControlsBackColor
-    nCtlDest.ChangeControlsForeColor = nCtlSrc.ChangeControlsForeColor
+    nCtlDest.SetDefaultPropertyValues True
     
     nCtlDest.BackColor = nCtlSrc.BackColor
     nCtlDest.BackColorTabs = nCtlSrc.BackColorTabs
     If Not nCtlSrc.BackColorTabSel_IsAutomatic Then nCtlDest.BackColorTabSel = nCtlSrc.BackColorTabSel
      
     nCtlDest.ForeColor = nCtlSrc.ForeColor
+    
     nCtlDest.ForeColorTabSel = nCtlSrc.ForeColorTabSel
     nCtlDest.ForeColorHighlighted = nCtlSrc.ForeColorHighlighted
     nCtlDest.FlatTabBoderColorHighlight = nCtlSrc.FlatTabBoderColorHighlight
@@ -352,6 +350,8 @@ Public Sub CopyControlProperties(nCtlSrc As NewTab, nCtlDest As NewTab)
         nCtlDest.IconColorMouseHoverTabSel = nCtlSrc.IconColorMouseHoverTabSel
         nCtlDest.TabWidthStyle = nCtlSrc.TabWidthStyle
     End If
+    nCtlDest.ChangeControlsBackColor = nCtlSrc.ChangeControlsBackColor
+    nCtlDest.ChangeControlsForeColor = nCtlSrc.ChangeControlsForeColor
     
     nCtlDest.Redraw = iRedraw
 End Sub
@@ -397,7 +397,7 @@ Public Sub ApplyThemeToControl(ByRef nThemeData As Collection, nCtl As NewTab, n
     
     iRedraw = nCtl.Redraw
     nCtl.Redraw = False
-    nCtl.SetDefaultPropertyValues
+    nCtl.SetDefaultPropertyValues True
     
     Set iProp = Nothing
     On Error Resume Next
@@ -433,9 +433,6 @@ Public Sub ApplyThemeToControl(ByRef nThemeData As Collection, nCtl As NewTab, n
             If iProp.Value = "F" Then nCtl.IconColorMouseHoverTabSel = nAmbientForeColor Else nCtl.IconColorMouseHoverTabSel = Val(iProp.Value)
         End If
     End If
-    
-    If PropertyExists("ChangeControlsBackColor") Then nCtl.ChangeControlsBackColor = GetPropertyValue("ChangeControlsBackColor")
-    If PropertyExists("ChangeControlsForeColor") Then nCtl.ChangeControlsForeColor = GetPropertyValue("ChangeControlsForeColor")
     
     If PropertyExists("BackColor") Then nCtl.BackColor = GetPropertyValue("BackColor")
     If PropertyExists("BackColorTabs") Then nCtl.BackColorTabs = GetPropertyValue("BackColorTabs")
@@ -652,6 +649,8 @@ Public Sub ApplyThemeToControl(ByRef nThemeData As Collection, nCtl As NewTab, n
         End Select
     Next
     nCtl.Redraw = iRedraw
+    If PropertyExists("ChangeControlsBackColor") Then nCtl.ChangeControlsBackColor = GetPropertyValue("ChangeControlsBackColor")
+    If PropertyExists("ChangeControlsForeColor") Then nCtl.ChangeControlsForeColor = GetPropertyValue("ChangeControlsForeColor")
 End Sub
 
 Public Function GetThemeStringFromControl(nCtl As NewTab, nAmbientBackColor As Long, nAmbientForeColor As Long, nAmbientFont As StdFont, Optional nHash As String) As String
