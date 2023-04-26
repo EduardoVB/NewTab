@@ -1,3 +1,4 @@
+2023-04-26 Fixed Icon orientation in TabOrientation <> top
 2022-12-21 Added protection for in IDE undeterministic project objects shut-down.
 2022-12-17 Set DblClick event as default to match SSTab.
 2022-12-02 Fixed a bug in property page pagNewTabTabs, 'Move the controls to another tab' command function.

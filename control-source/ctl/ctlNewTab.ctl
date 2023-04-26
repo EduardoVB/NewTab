@@ -295,6 +295,7 @@ End Type
 
 Private Declare Function SetGraphicsMode Lib "gdi32" (ByVal hDC As Long, ByVal iMode As Long) As Long
 Private Declare Function SetWorldTransform Lib "gdi32" (ByVal hDC As Long, lpXform As XFORM) As Long
+Private Declare Function GetWorldTransform Lib "gdi32" (ByVal hDC As Long, lpXform As XFORM) As Long
 
 Private Const GM_ADVANCED = 2
 
@@ -7864,6 +7865,9 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     Dim iLng2 As Long
     Dim iGMPrev As Long
     Dim iTx1 As XFORM
+    Dim iGMPrev2 As Long
+    Dim iTx2 As XFORM
+    Dim iTx2Prev As XFORM
     Dim iFlatBarPosition As NTFlatBarPosition
     
     If Not mTabData(nTab).Visible Then Exit Sub
@@ -8259,7 +8263,53 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
                     iIconCharRect.Right = iIconCharRect.Right + iLng
                 End If
             End If
+            If (mTabOrientation <> ssTabOrientationTop) And (mTabOrientation <> ssTabOrientationBottom) Then
+                iGMPrev2 = SetGraphicsMode(picDraw.hDC, GM_ADVANCED)
+                GetWorldTransform picDraw.hDC, iTx2Prev
+                If mTabOrientation = ssTabOrientationLeft Then
+                    iTx2.eM11 = 0
+                    iTx2.eM12 = 1
+                    iTx2.eM21 = -1
+                    iTx2.eM22 = 0
+                    iTx2.eDx = (iIconCharRect.Left + iIconCharRect.Right) / 2 + iPicWidth / 2
+                    iTx2.eDy = (iIconCharRect.Top + iIconCharRect.Bottom) / 2 - iPicHeight / 2
+                    iLng = iIconCharRect.Left
+                    iIconCharRect.Left = 0
+                    iIconCharRect.Top = 0
+                    iIconCharRect.Right = iPicHeight
+                    iIconCharRect.Bottom = iPicWidth
+'                ElseIf mTabOrientation = ssTabOrientationBottom Then
+'                    iTx2.eM11 = 1
+'                    iTx2.eM12 = 0
+'                    iTx2.eM21 = 0
+'                    iTx2.eM22 = -1
+'                    iTx2.eDx = (iIconCharRect.Left + iIconCharRect.Right) / 2 - iPicWidth / 2
+'                    iTx2.eDy = (iIconCharRect.Top + iIconCharRect.Bottom) / 2 + iPicHeight / 2
+'                    iLng = iIconCharRect.Left
+'                    iIconCharRect.Left = 0
+'                    iIconCharRect.Top = 0
+'                    iIconCharRect.Right = iPicHeight
+'                    iIconCharRect.Bottom = iPicWidth
+                Else
+                    iTx2.eM11 = 0
+                    iTx2.eM12 = -1
+                    iTx2.eM21 = 1
+                    iTx2.eM22 = 0
+                    iTx2.eDx = (iIconCharRect.Left + iIconCharRect.Right) / 2 - iPicWidth / 2
+                    iTx2.eDy = (iIconCharRect.Top + iIconCharRect.Bottom) / 2 + iPicHeight / 2
+                    iLng = iIconCharRect.Left
+                    iIconCharRect.Left = 0
+                    iIconCharRect.Top = 0
+                    iIconCharRect.Right = iPicHeight
+                    iIconCharRect.Bottom = iPicWidth
+                End If
+                SetWorldTransform picDraw.hDC, iTx2
+            End If
             DrawTextW picDraw.hDC, StrPtr(iIconCharacter), -1, iIconCharRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
+            If (mTabOrientation <> ssTabOrientationTop) And (mTabOrientation <> ssTabOrientationBottom) Then
+                SetWorldTransform picDraw.hDC, iTx2Prev
+                SetGraphicsMode picDraw.hDC, iGMPrev2
+            End If
             mTabData(nTab).IconRect = iIconCharRect
             Set picDraw.Font = iFontPrev
             picDraw.ForeColor = iForeColorPrev
