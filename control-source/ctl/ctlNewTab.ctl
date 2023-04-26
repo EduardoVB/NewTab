@@ -4093,6 +4093,9 @@ Private Sub UserControl_InitProperties()
     
     mTabSel = 0
     
+    mChangeControlsBackColor = cPropDef_ChangeControlsBackColor: PropertyChanged "ChangeControlsBackColor"
+    mChangeControlsForeColor = cPropDef_ChangeControlsForeColor: PropertyChanged "ChangeControlsForeColor"
+    
     SetDefaultPropertyValues
     
     mIconColorMouseHover = Ambient.ForeColor
@@ -4196,8 +4199,8 @@ Friend Sub SetDefaultPropertyValues(Optional nSetControlsColors As Boolean)
     mShowFocusRect = cPropDef_ShowFocusRect: PropertyChanged "ShowFocusRect"
     mTabsPerRow = cPropDef_TabsPerRow: PropertyChanged "TabsPerRow"
     mShowDisabledState = cPropDef_ShowDisabledState: PropertyChanged "ShowDisabledState"
-    mChangeControlsBackColor = cPropDef_ChangeControlsBackColor: PropertyChanged "ChangeControlsBackColor"
-    mChangeControlsForeColor = cPropDef_ChangeControlsForeColor: PropertyChanged "ChangeControlsForeColor"
+'    mChangeControlsBackColor = cPropDef_ChangeControlsBackColor: PropertyChanged "ChangeControlsBackColor"
+'    mChangeControlsForeColor = cPropDef_ChangeControlsForeColor: PropertyChanged "ChangeControlsForeColor"
     mHighlightEffect = cPropDef_HighlightEffect: PropertyChanged "HighlightEffect"
     mTabWidthStyle = cPropDef_TabWidthStyle: PropertyChanged "TabWidthStyle"
     mShowRowsInPerspective = cPropDef_ShowRowsInPerspective: PropertyChanged "ShowRowsInPerspective"

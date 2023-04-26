@@ -23,12 +23,12 @@ Public Const cThemeIsCustomSettings As String = "Current custom settings, not sa
 
 ' Default Themes strings
 Private Const cThemeString_Default                       As String = ""
-Private Const cThemeString_SSTab                         As String = "ChangeControlsBackColor=0|ChangeControlsForeColor=0|HighlightEffect=0|HighlightMode=1|HighlightModeTabSel=1|ShowFocusRect=-1|SoftEdges=0|Style=0|TabTransition=0"
-Private Const cThemeString_SSTabWindows                  As String = "ChangeControlsBackColor=0|ChangeControlsForeColor=0|HighlightMode=1|HighlightModeTabSel=1|ShowFocusRect=-1|TabTransition=0"
-Private Const cThemeString_SSTabPropertyPage             As String = "ChangeControlsBackColor=0|ChangeControlsForeColor=0|HighlightEffect=0|HighlightMode=1|HighlightModeTabSel=1||ShowFocusRect=-1|SoftEdges=0|Style=1|TabTransition=0"
-Private Const cThemeString_SSTabPropertyPageWindows      As String = "ChangeControlsBackColor=0|ChangeControlsForeColor=0|HighlightMode=1|HighlightModeTabSel=1|ShowFocusRect=-1|ShowRowsInPerspective=1|TabWidthStyle=1|TabTransition=0"
-Private Const cThemeString_TabStrip                      As String = "ChangeControlsBackColor=0|ChangeControlsForeColor=0|HighlightEffect=0|HighlightMode=1|HighlightModeTabSel=1||ShowFocusRect=-1|SoftEdges=0|Style=2|TabTransition=0"
-Private Const cThemeString_TabStripWindows               As String = "ChangeControlsBackColor=0|ChangeControlsForeColor=0|HighlightMode=1|HighlightModeTabSel=1|ShowFocusRect=-1|TabTransition=0|TabWidthStyle=0"
+Private Const cThemeString_SSTab                         As String = "HighlightEffect=0|HighlightMode=1|HighlightModeTabSel=1|ShowFocusRect=-1|SoftEdges=0|Style=0|TabTransition=0"
+Private Const cThemeString_SSTabWindows                  As String = "HighlightMode=1|HighlightModeTabSel=1|ShowFocusRect=-1|TabTransition=0"
+Private Const cThemeString_SSTabPropertyPage             As String = "HighlightEffect=0|HighlightMode=1|HighlightModeTabSel=1||ShowFocusRect=-1|SoftEdges=0|Style=1|TabTransition=0"
+Private Const cThemeString_SSTabPropertyPageWindows      As String = "HighlightMode=1|HighlightModeTabSel=1|ShowFocusRect=-1|ShowRowsInPerspective=1|TabWidthStyle=1|TabTransition=0"
+Private Const cThemeString_TabStrip                      As String = "HighlightEffect=0|HighlightMode=1|HighlightModeTabSel=1||ShowFocusRect=-1|SoftEdges=0|Style=2|TabTransition=0"
+Private Const cThemeString_TabStripWindows               As String = "HighlightMode=1|HighlightModeTabSel=1|ShowFocusRect=-1|TabTransition=0|TabWidthStyle=0"
 Private Const cThemeString_FlatSilver                    As String = "BackColorTabs=15658734|FlatBarColorTabSel=14181684|HighlightMode=2|HighlightModeTabSel=66|Style=3"
 Private Const cThemeString_FlatBronze                    As String = "BackColorTabSel=16383485|BackColorTabs=14611960|FlatBarColorHighlight=3431538|FlatBarColorInactive=13559786|FlatBarColorTabSel=1148870|FlatBorderColor=1148870|FlatBorderMode=1|ForeColorHighlighted=16777215|HighlightColor=3431538|HighlightEffect=0|HighlightMode=68|HighlightModeTabSel=90|IconColorTabHighlighted=16777215|Style=3"
 Private Const cThemeString_FlatGolden                    As String = "BackColorTabSel=16777215|BackColorTabs=15202556|FlatBarColorHighlight=3530228|FlatBarColorInactive=13559786|FlatBarColorTabSel=768981|HighlightColor=3530228|HighlightMode=76|HighlightModeTabSel=90|IconColorTabHighlighted=12664841|Style=3"
@@ -350,8 +350,8 @@ Public Sub CopyControlProperties(nCtlSrc As NewTab, nCtlDest As NewTab)
         nCtlDest.IconColorMouseHoverTabSel = nCtlSrc.IconColorMouseHoverTabSel
         nCtlDest.TabWidthStyle = nCtlSrc.TabWidthStyle
     End If
-    nCtlDest.ChangeControlsBackColor = nCtlSrc.ChangeControlsBackColor
-    nCtlDest.ChangeControlsForeColor = nCtlSrc.ChangeControlsForeColor
+'    nCtlDest.ChangeControlsBackColor = nCtlSrc.ChangeControlsBackColor
+ '   nCtlDest.ChangeControlsForeColor = nCtlSrc.ChangeControlsForeColor
     
     nCtlDest.Redraw = iRedraw
 End Sub
@@ -649,8 +649,8 @@ Public Sub ApplyThemeToControl(ByRef nThemeData As Collection, nCtl As NewTab, n
         End Select
     Next
     nCtl.Redraw = iRedraw
-    If PropertyExists("ChangeControlsBackColor") Then nCtl.ChangeControlsBackColor = GetPropertyValue("ChangeControlsBackColor")
-    If PropertyExists("ChangeControlsForeColor") Then nCtl.ChangeControlsForeColor = GetPropertyValue("ChangeControlsForeColor")
+'    If PropertyExists("ChangeControlsBackColor") Then nCtl.ChangeControlsBackColor = GetPropertyValue("ChangeControlsBackColor")
+ '   If PropertyExists("ChangeControlsForeColor") Then nCtl.ChangeControlsForeColor = GetPropertyValue("ChangeControlsForeColor")
 End Sub
 
 Public Function GetThemeStringFromControl(nCtl As NewTab, nAmbientBackColor As Long, nAmbientForeColor As Long, nAmbientFont As StdFont, Optional nHash As String) As String
@@ -692,8 +692,8 @@ Public Function GetThemeStringFromControl(nCtl As NewTab, nAmbientBackColor As L
     If nCtl.TabMaxWidth <> cPropDef_TabMaxWidth Then AddPropStrToArray iPropsStr, c, "TabMaxWidth", Val(Str$(nCtl.TabMaxWidth))
     If nCtl.TabMinWidth <> cPropDef_TabMinWidth Then AddPropStrToArray iPropsStr, c, "TabMinWidth", Val(Str$(nCtl.TabMinWidth))
     If nCtl.ShowFocusRect <> cPropDef_ShowFocusRect Then AddPropStrToArray iPropsStr, c, "ShowFocusRect", Val(Str$(CLng(nCtl.ShowFocusRect)))
-    If nCtl.ChangeControlsBackColor <> cPropDef_ChangeControlsBackColor Then AddPropStrToArray iPropsStr, c, "ChangeControlsBackColor", Val(Str$(CLng(nCtl.ChangeControlsBackColor)))
-    If nCtl.ChangeControlsForeColor <> cPropDef_ChangeControlsForeColor Then AddPropStrToArray iPropsStr, c, "ChangeControlsForeColor", Val(Str$(CLng(nCtl.ChangeControlsForeColor)))
+'    If nCtl.ChangeControlsBackColor <> cPropDef_ChangeControlsBackColor Then AddPropStrToArray iPropsStr, c, "ChangeControlsBackColor", Val(Str$(CLng(nCtl.ChangeControlsBackColor)))
+'    If nCtl.ChangeControlsForeColor <> cPropDef_ChangeControlsForeColor Then AddPropStrToArray iPropsStr, c, "ChangeControlsForeColor", Val(Str$(CLng(nCtl.ChangeControlsForeColor)))
     If nCtl.WordWrap <> cPropDef_WordWrap Then AddPropStrToArray iPropsStr, c, "WordWrap", Val(Str$(CLng(nCtl.WordWrap)))
     If nCtl.TabMousePointerHand <> cPropDef_TabMousePointerHand Then AddPropStrToArray iPropsStr, c, "TabMousePointerHand", Val(Str$(CLng(nCtl.TabMousePointerHand)))
     If nCtl.Style <> ntStyleWindows Then
