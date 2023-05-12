@@ -223,7 +223,7 @@ Attribute VB_Description = "Tabbed control for VB6."
 Option Explicit
 
 ' Uncomment the line below for IDE protection when running uncompiled (some features will be lost in the IDE-uncompiled when it is uncommented, like changing tabs with a click at design time)
-#Const NOSUBCLASSINIDE = True
+#Const NOSUBCLASSINIDE = 1
 
 Implements IBSSubclass
 
@@ -331,7 +331,6 @@ Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpvDest As 
 Private Declare Function GetForegroundWindow Lib "user32" () As Long
 Private Declare Function ValidateRect Lib "user32" (ByVal hWnd As Long, lpRect As RECT) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hWnd As Long, lpRect As RECT) As Long
-Private Declare Function DefWindowProc Lib "user32" Alias "DefWindowProcW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function RevokeDragDrop Lib "ole32" (ByVal hWnd As Long) As Long
 
 Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long
@@ -664,6 +663,12 @@ Public Enum NTTDINewTabTypeConstants
     ntLastTabClosed = 2
 End Enum
 
+Public Enum NTSubclassingMethodConstants
+    ntSMSetWindowSubclass = 0
+    ntSMSetWindowLong = 1
+    ntSMDisabled = 2
+End Enum
+
 ' Events
 ' Original
 Event Click(ByVal PreviousTab As Integer)
@@ -871,6 +876,7 @@ Private mCanReorderTabs As Boolean
 Private mTDIMode As Boolean
 Private mFlatBarPosition As NTFlatBarPosition
 Private mFlatBodySeparationLineHeight As Long
+Private mSubclassingMethod As NTSubclassingMethodConstants
 
 ' Variables
 Private mTabBodyStart As Long ' in Pixels
@@ -3003,7 +3009,7 @@ Public Property Let Redraw(ByVal nValue As Boolean)
     If nValue <> mRedraw Then
         mRedraw = nValue
         If mRedraw Then
-            If mNeedToDraw Then
+            If mNeedToDraw Or mDrawMessagePosted Or tmrDraw.Enabled Then
                 Draw
             End If
         End If
@@ -3500,7 +3506,7 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, 
                 PostDrawMessage
             End If
         Case WM_PRINTCLIENT, WM_MOUSELEAVE ' fixes frames paint bug in XP
-            IBSSubclass_WindowProc = DefWindowProc(hWnd, iMsg, wParam, lParam)
+            IBSSubclass_WindowProc = CallOldWindowProc(hWnd, iMsg, wParam, lParam)
         Case WM_SYSCOLORCHANGE, WM_THEMECHANGED ' they are form's messages
             SetButtonFaceColor
             SetColors
@@ -4093,6 +4099,7 @@ Private Sub UserControl_InitProperties()
     
     mTabSel = 0
     
+    mSubclassingMethod = cPropDef_SubclassingMethod
     mChangeControlsBackColor = cPropDef_ChangeControlsBackColor: PropertyChanged "ChangeControlsBackColor"
     mChangeControlsForeColor = cPropDef_ChangeControlsForeColor: PropertyChanged "ChangeControlsForeColor"
     
@@ -4127,7 +4134,7 @@ Private Sub UserControl_InitProperties()
     If mHandleHighContrastTheme Then CheckHighContrastTheme
     mPropertiesReady = True
     
-    mSubclassed = True
+    mSubclassed = mSubclassingMethod <> ntSMDisabled
 #If NOSUBCLASSINIDE Then
     If mInIDE Then
         mSubclassed = False
@@ -4135,19 +4142,8 @@ Private Sub UserControl_InitProperties()
 #End If
     
     If mSubclassed Then
-        If mAmbientUserMode Then
-            AttachMessage Me, mUserControlHwnd, WM_MOUSEACTIVATE
-            AttachMessage Me, mUserControlHwnd, WM_SETFOCUS
-            AttachMessage Me, mUserControlHwnd, WM_DRAW
-            AttachMessage Me, mUserControlHwnd, WM_INIT
-            AttachMessage Me, mUserControlHwnd, WM_SETCURSOR
-            PostMessage mUserControlHwnd, WM_INIT, 0&, 0&
-            mCanPostDrawMessage = True
-        Else
-            AttachMessage Me, mUserControlHwnd, WM_LBUTTONDOWN
-            AttachMessage Me, mUserControlHwnd, WM_LBUTTONUP
-            AttachMessage Me, mUserControlHwnd, WM_LBUTTONDBLCLK
-        End If
+        gSubclassWithSetWindowLong = (mSubclassingMethod = ntSMSetWindowLong)
+        SubclassUserControl
     Else
         mFormIsActive = True
     End If
@@ -4157,6 +4153,31 @@ Private Sub UserControl_InitProperties()
         mHandIconHandle = LoadCursor(ByVal 0&, IDC_HAND)
     End If
     mControlJustAdded = True
+End Sub
+
+Private Sub SubclassUserControl()
+    If mAmbientUserMode Then
+        AttachMessage Me, mUserControlHwnd, WM_MOUSEACTIVATE
+        AttachMessage Me, mUserControlHwnd, WM_SETFOCUS
+        AttachMessage Me, mUserControlHwnd, WM_DRAW
+        AttachMessage Me, mUserControlHwnd, WM_INIT
+        AttachMessage Me, mUserControlHwnd, WM_SETCURSOR
+        PostMessage mUserControlHwnd, WM_INIT, 0&, 0&
+        mCanPostDrawMessage = True
+    Else
+        AttachMessage Me, mUserControlHwnd, WM_LBUTTONDOWN
+        AttachMessage Me, mUserControlHwnd, WM_LBUTTONUP
+        AttachMessage Me, mUserControlHwnd, WM_LBUTTONDBLCLK
+    End If
+End Sub
+
+Private Sub SubclassForm()
+    If (mFormHwnd <> 0) Then
+        AttachMessage Me, mFormHwnd, WM_SYSCOLORCHANGE
+        AttachMessage Me, mFormHwnd, WM_THEMECHANGED
+        AttachMessage Me, mFormHwnd, WM_NCACTIVATE
+        AttachMessage Me, mFormHwnd, WM_GETDPISCALEDSIZE
+    End If
 End Sub
 
 Friend Sub SetDefaultPropertyValues(Optional nSetControlsColors As Boolean)
@@ -4182,14 +4203,17 @@ Friend Sub SetDefaultPropertyValues(Optional nSetControlsColors As Boolean)
     mForeColorIsFromAmbient = True
     mIconColorIsFromAmbient = True
     mBackColorTabsIsFromAmbient = True
-    If cPropDef_Style = ntStyleWindows Then
-        If (Ambient.BackColor = vbButtonFace) And (Ambient.ForeColor = vbButtonText) Then
-            mStyle = cPropDef_Style
+    mStyle = cPropDef_Style
+    If Not nSetControlsColors Then
+        If cPropDef_Style = ntStyleWindows Then
+            If (Ambient.BackColor = vbButtonFace) And (Ambient.ForeColor = vbButtonText) Then
+                mStyle = cPropDef_Style
+            Else
+                mStyle = ntStyleFlat
+            End If
         Else
-            mStyle = ntStyleFlat
+            mStyle = cPropDef_Style
         End If
-    Else
-        mStyle = cPropDef_Style
     End If
     PropertyChanged "Style"
     mVisualStyles = (mStyle = ntStyleWindows)
@@ -4199,8 +4223,6 @@ Friend Sub SetDefaultPropertyValues(Optional nSetControlsColors As Boolean)
     mShowFocusRect = cPropDef_ShowFocusRect: PropertyChanged "ShowFocusRect"
     mTabsPerRow = cPropDef_TabsPerRow: PropertyChanged "TabsPerRow"
     mShowDisabledState = cPropDef_ShowDisabledState: PropertyChanged "ShowDisabledState"
-'    mChangeControlsBackColor = cPropDef_ChangeControlsBackColor: PropertyChanged "ChangeControlsBackColor"
-'    mChangeControlsForeColor = cPropDef_ChangeControlsForeColor: PropertyChanged "ChangeControlsForeColor"
     mHighlightEffect = cPropDef_HighlightEffect: PropertyChanged "HighlightEffect"
     mTabWidthStyle = cPropDef_TabWidthStyle: PropertyChanged "TabWidthStyle"
     mShowRowsInPerspective = cPropDef_ShowRowsInPerspective: PropertyChanged "ShowRowsInPerspective"
@@ -4257,6 +4279,7 @@ Friend Sub SetDefaultPropertyValues(Optional nSetControlsColors As Boolean)
         SetControlsBackColor IIf(mEnabled Or Not mShowDisabledState, mBackColorTabSel, mBackColorTabSelDisabled), iBackColor_Prev
         SetControlsForeColor mForeColorTabSel, iForeColor_Prev
     End If
+    mNeedToDraw = True
 End Sub
 
 Friend Property Let ControlJustAdded(nValue As Boolean)
@@ -4916,6 +4939,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     End If
     On Error GoTo 0
     
+    mSubclassingMethod = PropBag.ReadProperty("SubclassingMethod", cPropDef_SubclassingMethod)
     iLeftOffsetToHideWhenSaved = PropBag.ReadProperty("LeftOffsetToHideWhenSaved", 75000)
     If iLeftOffsetToHideWhenSaved <> mLeftOffsetToHide Then
         mPendingLeftOffset = iLeftOffsetToHideWhenSaved - mLeftOffsetToHide
@@ -5156,7 +5180,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     UserControl.OLEDropMode = mOLEDropMode
     'If mTDIMode Then mTabs = 2
     
-    mSubclassed = True
+    mSubclassed = mSubclassingMethod <> ntSMDisabled
 #If NOSUBCLASSINIDE Then
     If mInIDE Then
         mSubclassed = False
@@ -5164,19 +5188,8 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 #End If
     
     If mSubclassed Then
-        If mAmbientUserMode Then
-            AttachMessage Me, mUserControlHwnd, WM_MOUSEACTIVATE
-            AttachMessage Me, mUserControlHwnd, WM_SETFOCUS
-            AttachMessage Me, mUserControlHwnd, WM_DRAW
-            AttachMessage Me, mUserControlHwnd, WM_INIT
-            AttachMessage Me, mUserControlHwnd, WM_SETCURSOR
-            PostMessage mUserControlHwnd, WM_INIT, 0&, 0&
-            mCanPostDrawMessage = True
-        Else
-            AttachMessage Me, mUserControlHwnd, WM_LBUTTONDOWN
-            AttachMessage Me, mUserControlHwnd, WM_LBUTTONUP
-            AttachMessage Me, mUserControlHwnd, WM_LBUTTONDBLCLK
-        End If
+        gSubclassWithSetWindowLong = (mSubclassingMethod = ntSMSetWindowLong)
+        SubclassUserControl
     Else
         mFormIsActive = True
     End If
@@ -5228,12 +5241,7 @@ Private Sub UserControl_Show()
         If (mFormHwnd = 0) Then
             mFormHwnd = GetAncestor(UserControl.ContainerHwnd, GA_ROOT)
             mFormIsActive = GetForegroundWindow = mFormHwnd
-            If (mFormHwnd <> 0) Then
-                AttachMessage Me, mFormHwnd, WM_SYSCOLORCHANGE
-                AttachMessage Me, mFormHwnd, WM_THEMECHANGED
-                AttachMessage Me, mFormHwnd, WM_NCACTIVATE
-                AttachMessage Me, mFormHwnd, WM_GETDPISCALEDSIZE
-            End If
+            SubclassForm
         End If
         
         Dim iAuxLeft As Long
@@ -5365,41 +5373,11 @@ Private Sub UserControl_Terminate()
 End Sub
 
 Private Sub DoTerminate()
-    Dim c As Long
-    Dim iHwnd As Long
-    
     If mUserControlTerminated Then Exit Sub
     mUserControlTerminated = True
     
     tmrShowTabTTT.Enabled = False
     Set mToolTipEx = Nothing
-    If (mFormHwnd <> 0) And mAmbientUserMode Then
-        On Error Resume Next
-        DetachMessage Me, mFormHwnd, WM_SYSCOLORCHANGE
-        DetachMessage Me, mFormHwnd, WM_THEMECHANGED
-        DetachMessage Me, mFormHwnd, WM_NCACTIVATE
-        DetachMessage Me, mFormHwnd, WM_GETDPISCALEDSIZE
-        On Error GoTo 0
-    End If
-    If mSubclassed Then
-        If mAmbientUserMode Then
-            On Error Resume Next
-            DetachMessage Me, mUserControlHwnd, WM_MOUSEACTIVATE
-            DetachMessage Me, mUserControlHwnd, WM_SETFOCUS
-            DetachMessage Me, mUserControlHwnd, WM_DRAW
-            DetachMessage Me, mUserControlHwnd, WM_INIT
-            DetachMessage Me, mUserControlHwnd, WM_SETCURSOR
-            On Error GoTo 0
-            mCanPostDrawMessage = False
-        Else
-            On Error Resume Next
-            DetachMessage Me, mUserControlHwnd, WM_LBUTTONDOWN
-            DetachMessage Me, mUserControlHwnd, WM_LBUTTONUP
-            DetachMessage Me, mUserControlHwnd, WM_LBUTTONDBLCLK
-            On Error GoTo 0
-        End If
-    End If
-    mSubclassed = False
     
     tmrTabMouseLeave.Enabled = False
     tmrDraw.Enabled = False
@@ -5411,6 +5389,52 @@ Private Sub DoTerminate()
     Set mParentControlsUseMnemonic = Nothing
     Set mContainedControlsThatAreContainers = Nothing
     
+    Unsubclass
+    
+    If Not mTabIconFontsEventsHandler Is Nothing Then
+        mTabIconFontsEventsHandler.Release
+        Set mTabIconFontsEventsHandler = Nothing
+    End If
+    If mHandIconHandle <> 0 Then
+        DestroyCursor mHandIconHandle
+        mHandIconHandle = 0
+    End If
+End Sub
+
+Private Sub Unsubclass()
+    Dim c As Long
+    Dim iHwnd As Long
+    
+    If mSubclassed Then
+        If (mFormHwnd <> 0) And mAmbientUserMode Then
+            On Error Resume Next
+            DetachMessage Me, mFormHwnd, WM_SYSCOLORCHANGE
+            DetachMessage Me, mFormHwnd, WM_THEMECHANGED
+            DetachMessage Me, mFormHwnd, WM_NCACTIVATE
+            DetachMessage Me, mFormHwnd, WM_GETDPISCALEDSIZE
+            On Error GoTo 0
+        End If
+        If mSubclassed Then
+            If mAmbientUserMode Then
+                On Error Resume Next
+                DetachMessage Me, mUserControlHwnd, WM_MOUSEACTIVATE
+                DetachMessage Me, mUserControlHwnd, WM_SETFOCUS
+                DetachMessage Me, mUserControlHwnd, WM_DRAW
+                DetachMessage Me, mUserControlHwnd, WM_INIT
+                DetachMessage Me, mUserControlHwnd, WM_SETCURSOR
+                On Error GoTo 0
+                mCanPostDrawMessage = False
+            Else
+                On Error Resume Next
+                DetachMessage Me, mUserControlHwnd, WM_LBUTTONDOWN
+                DetachMessage Me, mUserControlHwnd, WM_LBUTTONUP
+                DetachMessage Me, mUserControlHwnd, WM_LBUTTONDBLCLK
+                On Error GoTo 0
+            End If
+        End If
+        mSubclassed = False
+    End If
+
     If Not mSubclassedControlsForPaintingHwnds Is Nothing Then
         For c = 1 To mSubclassedControlsForPaintingHwnds.Count
             iHwnd = mSubclassedControlsForPaintingHwnds(c)
@@ -5442,14 +5466,7 @@ Private Sub DoTerminate()
         Next c
         Set mSubclassedControlsForMoveHwnds = Nothing
     End If
-    If Not mTabIconFontsEventsHandler Is Nothing Then
-        mTabIconFontsEventsHandler.Release
-        Set mTabIconFontsEventsHandler = Nothing
-    End If
-    If mHandIconHandle <> 0 Then
-        DestroyCursor mHandIconHandle
-        mHandIconHandle = 0
-    End If
+
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -5459,6 +5476,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     
     StoreVisibleControlsInSelectedTab
     
+    PropBag.WriteProperty "SubclassingMethod", mSubclassingMethod, cPropDef_SubclassingMethod
     PropBag.WriteProperty "Tabs", mTabs, 3
     PropBag.WriteProperty "BackColor", mBackColor, Ambient.BackColor
     PropBag.WriteProperty "ForeColor", mForeColor, Ambient.ForeColor
@@ -6500,7 +6518,8 @@ Private Sub Draw()
     Next iRow
     
     If Not mRedraw Then Exit Sub
-    
+    mNeedToDraw = False
+
     ' Do the draw
     
     ' How the "light" need to come according to TabOrientation (because the image later will be rotated). Note: in Windows the llight comes from top-left, and shadows are in bottom right.
@@ -12244,6 +12263,37 @@ Public Property Let TabTag(ByVal Index As Integer, ByVal nValue As String)
         Exit Property
     End If
     mTabData(Index).Tag = nValue
+End Property
+
+
+Public Property Get SubclassingMethod() As NTSubclassingMethodConstants
+    SubclassingMethod = mSubclassingMethod
+End Property
+
+Public Property Let SubclassingMethod(ByVal nValue As NTSubclassingMethodConstants)
+    Dim iPrev As NTSubclassingMethodConstants
+    
+    If (nValue < ntSMSetWindowSubclass) Or (nValue > ntSMDisabled) Then
+        RaiseError 380, TypeName(Me) ' invalid property value
+        Exit Property
+    End If
+    If nValue <> SubclassingMethod Then
+        iPrev = mSubclassingMethod
+        mSubclassingMethod = nValue
+        SetPropertyChanged "SubclassingMethod"
+        If iPrev <> ntSMDisabled Then
+            Unsubclass
+        End If
+        gSubclassWithSetWindowLong = (mSubclassingMethod = ntSMSetWindowLong)
+        If mSubclassingMethod <> ntSMDisabled Then
+            mSubclassed = True
+            Set mSubclassedControlsForPaintingHwnds = New Collection
+            Set mSubclassedFramesHwnds = New Collection
+            Set mSubclassedControlsForMoveHwnds = New Collection
+            SubclassUserControl
+            SubclassForm
+        End If
+    End If
 End Property
 
 

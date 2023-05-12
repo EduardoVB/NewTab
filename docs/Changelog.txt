@@ -1,3 +1,5 @@
+2023-05-11 Added the property SubclassingMethod.
+2023-05-11 Fixed bug in Theme property page when the default theme is the current theme.
 2023-04-26 Fixed Icon orientation in TabOrientation <> top
 2022-12-21 Added protection for in IDE undeterministic project objects shut-down.
 2022-12-17 Set DblClick event as default to match SSTab.

@@ -70,8 +70,9 @@ Private Type IMAGE_DOS_HEADER
     e_lfanew As Long
 End Type
  
-Private Declare Function CallWindowProc Lib "user32.dll" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-Private Declare Function CallWindowProcW Lib "user32.dll" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function CallWindowProc Lib "user32.dll" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function CallWindowProcW Lib "user32.dll" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function VirtualAlloc Lib "kernel32" (ByRef lpAddress As Long, ByVal dwSize As Long, ByVal flAllocType As Long, ByVal flProtect As Long) As Long
 Private Declare Function VirtualFree Lib "kernel32.dll" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
 Private Declare Function VirtualProtect Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal flNewProtect As Long, ByRef lpflOldProtect As Long) As Long
@@ -181,6 +182,7 @@ Private m_f As Long
 Private mPropsDatabaseChecked As Boolean
 Private mUseLocalPropsDB As Boolean
 Private mAddressOfWindowProc As Long
+Public gSubclassWithSetWindowLong As Boolean
 
 #If IDE_PROTECTION_ENABLED Then
 Private mIDEProtectionInitialized As Boolean
@@ -248,6 +250,24 @@ Private Property Let MessageCount(ByVal hWnd As Long, ByVal Count As Long)
     'logMessage "Changed message count for " & Hex(hWnd) & " to " & count
 End Property
 
+Private Property Get OldWindowProc(ByVal hWnd As Long) As Long
+    Dim sName As String
+    
+    sName = hWnd
+    OldWindowProc = ThisGetProp(hWnd, sName)
+End Property
+
+Private Property Let OldWindowProc(ByVal hWnd As Long, ByVal lPtr As Long)
+    Dim sName As String
+    
+    m_f = 1
+    sName = hWnd
+    m_f = ThisSetProp(hWnd, sName, lPtr)
+    If (lPtr = 0) Then
+        ThisRemoveProp hWnd, sName
+    End If
+End Property
+
 Private Property Get MessageClassCount(ByVal hWnd As Long, ByVal iMsg As Long) As Long
     Dim sName As String
     
@@ -296,7 +316,7 @@ Sub AttachMessage(iwp As IBSSubclass, ByVal hWnd As Long, ByVal iMsg As Long)
     Dim msgClassCount As Long
     Dim msgClass As Long
     Dim iLng As Long
-
+    
 '   If InIDE Then Exit Sub
     If Not mPropsDatabaseChecked Then
          CheckPropsDatabase
@@ -395,17 +415,51 @@ Sub AttachMessage(iwp As IBSSubclass, ByVal hWnd As Long, ByVal iMsg As Long)
     If msgCount = 0 Then
         
         ' Subclass window by installing window procedure
-        If SetWindowSubclass(hWnd, AddressOf WindowProc, ObjPtr(iwp), 0&) = 0 Then
-            ' remove class:
-            MessageClass(hWnd, iMsg, MessageClassCount(hWnd, iMsg)) = 0
-            ' remove class count:
-            MessageClassCount(hWnd, iMsg) = MessageClassCount(hWnd, iMsg) - 1
+        If gSubclassWithSetWindowLong Then
+            Dim iProcOld As Long
+
+            ' Subclass window by installing window procedure
+            iProcOld = SetWindowLong(hWnd, GWL_WNDPROC, AddressOf WindowProcSWL)
+            If iProcOld = 0 Then
+               ' remove class:
+               MessageClass(hWnd, iMsg, MessageClassCount(hWnd, iMsg)) = 0
+               ' remove class count:
+               MessageClassCount(hWnd, iMsg) = MessageClassCount(hWnd, iMsg) - 1
+               
+               ErrRaise eeCantSubclass
+               Exit Sub
+            End If
             
-            ErrRaise eeCantSubclass
-            Exit Sub
+            ' Associate old procedure with handle
+            OldWindowProc(hWnd) = iProcOld
+            If m_f = 0 Then
+               ' SPM: Failed to VBThisSetProp, windows properties database problem.
+               ' Has to be out of memory.
+               
+               ' Put the old window proc back again:
+               SetWindowLong hWnd, GWL_WNDPROC, iProcOld
+               ' remove class:
+               MessageClass(hWnd, iMsg, MessageClassCount(hWnd, iMsg)) = 0
+               ' remove class count:
+               MessageClassCount(hWnd, iMsg) = MessageClassCount(hWnd, iMsg) - 1
+               
+               ' Raise an error:
+               ErrRaise 5
+               Exit Sub
+            End If
         Else
-            If mAddressOfWindowProc = 0 Then
-                mAddressOfWindowProc = GetAddresOfProc(AddressOf WindowProc)
+            If SetWindowSubclass(hWnd, AddressOf WindowProcSWS, ObjPtr(iwp), 0&) = 0 Then
+                ' remove class:
+                MessageClass(hWnd, iMsg, MessageClassCount(hWnd, iMsg)) = 0
+                ' remove class count:
+                MessageClassCount(hWnd, iMsg) = MessageClassCount(hWnd, iMsg) - 1
+                
+                ErrRaise eeCantSubclass
+                Exit Sub
+            Else
+                If mAddressOfWindowProc = 0 Then
+                    mAddressOfWindowProc = GetAddresOfProc(AddressOf WindowProcSWS)
+                End If
             End If
         End If
     End If
@@ -425,7 +479,16 @@ Sub AttachMessage(iwp As IBSSubclass, ByVal hWnd As Long, ByVal iMsg As Long)
         ' If we haven't any messages on this window then remove the subclass:
         If (MessageCount(hWnd) = 0) Then
             ' put old window proc back again:
-            RemoveWindowSubclass hWnd, mAddressOfWindowProc, ObjPtr(iwp)
+            If gSubclassWithSetWindowLong Then
+
+                iProcOld = OldWindowProc(hWnd)
+                If Not (iProcOld = 0) Then
+                   SetWindowLong hWnd, GWL_WNDPROC, iProcOld
+                   OldWindowProc(hWnd) = 0
+                End If
+            Else
+                RemoveWindowSubclass hWnd, mAddressOfWindowProc, ObjPtr(iwp)
+            End If
         End If
         
         ' Raise the error:
@@ -541,13 +604,23 @@ Sub DetachMessage(iwp As IBSSubclass, ByVal hWnd As Long, ByVal iMsg As Long)
     msgCount = MessageCount(hWnd)
     If (msgCount = 1) Then
         ' remove the subclass:
-        RemoveWindowSubclass hWnd, mAddressOfWindowProc, ObjPtr(iwp)
+        If gSubclassWithSetWindowLong Then
+            Dim iProcOld As Long
+            
+            iProcOld = OldWindowProc(hWnd)
+            If Not (iProcOld = 0) Then
+               SetWindowLong hWnd, GWL_WNDPROC, iProcOld
+               OldWindowProc(hWnd) = 0
+            End If
+        Else
+            RemoveWindowSubclass hWnd, mAddressOfWindowProc, ObjPtr(iwp)
+        End If
     End If
     MessageCount(hWnd) = MessageCount(hWnd) - 1
 
 End Sub
 
-Private Function WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal uIdSubclass As Long, ByVal dwRefData As Long) As Long
+Private Function WindowProcSWS(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal uIdSubclass As Long, ByVal dwRefData As Long) As Long
     
     Dim bCalled As Boolean
     Dim pSubClass As Long
@@ -590,7 +663,7 @@ Private Function WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam
         Exit Function
     End If
     If InBreakMode Then
-        WindowProc = DefSubclassProc(hWnd, iMsg, wParam, lParam)
+        WindowProcSWS = DefSubclassProc(hWnd, iMsg, wParam, lParam)
         Exit Function
     End If
     
@@ -630,12 +703,12 @@ Private Function WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam
                         ' Consume (this message is always passed to all control
                         ' instances regardless of whether any single one of them
                         ' requests to consume it):
-                        WindowProc = .WindowProc(hWnd, iMsg, wParam, lParam, bConsume)
+                        WindowProcSWS = .WindowProc(hWnd, iMsg, wParam, lParam, bConsume)
                         
                         If Not bConsume Then
                             If (iIndex = 1) Then
                                 If Not (bCalled) Then
-                                    WindowProc = DefSubclassProc(hWnd, iMsg, wParam, ByVal lParam)
+                                    WindowProcSWS = DefSubclassProc(hWnd, iMsg, wParam, ByVal lParam)
                                     bCalled = True
                                 End If
                             End If
@@ -645,7 +718,7 @@ Private Function WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam
                         ' Consume (this message is always passed to all control
                         ' instances regardless of whether any single one of them
                         ' requests to consume it):
-                        WindowProc = .WindowProc(hWnd, iMsg, wParam, lParam, bConsume)
+                        WindowProcSWS = .WindowProc(hWnd, iMsg, wParam, lParam, bConsume)
                     End If
                 End With
             End If
@@ -658,14 +731,14 @@ Private Function WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam
             iResp = iwp.MsgResponse(hWnd, iMsg)
             If (iResp = emrPostProcess) Then
                 If Not (bCalled) Then
-                    WindowProc = DefSubclassProc(hWnd, iMsg, wParam, ByVal lParam)
+                    WindowProcSWS = DefSubclassProc(hWnd, iMsg, wParam, ByVal lParam)
                     bCalled = True
                 End If
             End If
         End If
         
         If Not iHandled Then
-            WindowProc = DefSubclassProc(hWnd, iMsg, wParam, ByVal lParam)
+            WindowProcSWS = DefSubclassProc(hWnd, iMsg, wParam, ByVal lParam)
             If GetWindowLong(hWnd, GWL_WNDPROC) = mAddressOfWindowProc Then     ' if we are at the top of the subclassing chain, else we'll wait for the WM_DESTROY, WM_NCDESTROY and WM_UAHDESTROYWINDOW messages
                 pClearUp hWnd, uIdSubclass
             End If
@@ -676,10 +749,10 @@ Private Function WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam
             ' If WM_DESTROY isn't handled already, we should
             ' clear up any subclass
             If GetWindowLong(hWnd, GWL_WNDPROC) = mAddressOfWindowProc Then ' if we are at the top of the subclassing chain
-                WindowProc = DefSubclassProc(hWnd, iMsg, wParam, ByVal lParam)
+                WindowProcSWS = DefSubclassProc(hWnd, iMsg, wParam, ByVal lParam)
                 pClearUp hWnd, uIdSubclass
             Else ' we are not a the top subclassing chain
-                WindowProc = DefSubclassProc(hWnd, iMsg, wParam, ByVal lParam)  ' let's see if the other subclass unsubclass itself
+                WindowProcSWS = DefSubclassProc(hWnd, iMsg, wParam, ByVal lParam)  ' let's see if the other subclass unsubclass itself
                 If GetWindowLong(hWnd, GWL_WNDPROC) = mAddressOfWindowProc Then ' it did
                     pClearUp hWnd, uIdSubclass
                 Else
@@ -689,7 +762,157 @@ Private Function WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam
                 End If
             End If
         Else
-            WindowProc = DefSubclassProc(hWnd, iMsg, wParam, ByVal lParam)
+            WindowProcSWS = DefSubclassProc(hWnd, iMsg, wParam, ByVal lParam)
+        End If
+    End If
+    
+TheExit:
+    Err.Clear
+End Function
+
+Private Function WindowProcSWL(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+    
+    Dim bCalled As Boolean
+    Dim pSubClass As Long
+    Dim iwp As IBSSubclass
+    Dim iwpT As IBSSubclass
+    Dim iIndex As Long
+    Dim iHandled As Boolean
+    Dim bConsume As Boolean
+    Dim iResp As Long
+    Dim iInIDE As Boolean
+    
+#If IDE_PROTECTION_ENABLED Then
+    If mCompiling Then
+        Debug.Assert MakeTrue(iInIDE)
+        If iInIDE Then
+            RemoveAllSubclasses
+            mCompiling = False
+            Exit Function
+        End If
+    ElseIf mAllSubclassesRemoved Then
+       pClearUp hWnd
+       Exit Function
+    End If
+#End If
+    
+    If IsResetting Then ' this runs when it is compiled into an OCX or DLL but is running in the IDE
+        pClearUp hWnd
+'        #If IDE_PROTECTION_ENABLED Then
+'            Debug.Assert MakeTrue(iInIDE)
+'            If iInIDE Then
+'                TerminateIDEProtection
+'                RemoveAllSubclasses
+'            End If
+'        #End If
+        Exit Function
+    End If
+    
+    If IsWindow(hWnd) = 0 Then
+        pClearUp hWnd
+        Exit Function
+    End If
+    If InBreakMode Then
+        WindowProcSWL = CallOldWindowProc(hWnd, iMsg, wParam, lParam)
+        Exit Function
+    End If
+    
+    ' SPM - in this version I am allowing more than one class to
+    ' make a subclass to the same hWnd and Msg.  Why am I doing
+    ' this?  Well say the class in question is a control, and it
+    ' wants to subclass its container.  In this case, we want
+    ' all instances of the control on the form to receive the
+    ' form notification message.
+     
+    ' Get the number of instances for this msg/hWnd:
+    bCalled = False
+   
+    If (MessageClassCount(hWnd, iMsg) > 0) Then
+        iIndex = MessageClassCount(hWnd, iMsg)
+        
+        Do While (iIndex >= 1)
+            pSubClass = MessageClass(hWnd, iMsg, iIndex)
+            
+            If (pSubClass = 0) Then
+                ' Not handled by this instance
+            Else
+                iHandled = True
+                ' Turn pointer into a reference:
+                CopyMemory iwpT, pSubClass, 4
+                Set iwp = iwpT
+                CopyMemory iwpT, 0&, 4
+                
+                ' Store the current message, so the client can check it:
+                m_iCurrentMessage = iMsg
+                
+                With iwp
+                    ' Preprocess (only checked first time around):
+                    On Error GoTo TheExit:
+                    If (.MsgResponse(hWnd, iMsg) = emrPreprocess) Then
+                        On Error GoTo 0
+                        ' Consume (this message is always passed to all control
+                        ' instances regardless of whether any single one of them
+                        ' requests to consume it):
+                        WindowProcSWL = .WindowProc(hWnd, iMsg, wParam, lParam, bConsume)
+                        
+                        If Not bConsume Then
+                            If (iIndex = 1) Then
+                                If Not (bCalled) Then
+                                    WindowProcSWL = CallOldWindowProc(hWnd, iMsg, wParam, ByVal lParam)
+                                    bCalled = True
+                                End If
+                            End If
+                        End If
+                        On Error GoTo 0
+                    Else
+                        ' Consume (this message is always passed to all control
+                        ' instances regardless of whether any single one of them
+                        ' requests to consume it):
+                        WindowProcSWL = .WindowProc(hWnd, iMsg, wParam, lParam, bConsume)
+                    End If
+                End With
+            End If
+            
+            iIndex = iIndex - 1
+       Loop
+       
+       ' PostProcess (only check this the last time around):
+        If Not (iwp Is Nothing) Then
+            iResp = iwp.MsgResponse(hWnd, iMsg)
+            If (iResp = emrPostProcess) Then
+                If Not (bCalled) Then
+                    WindowProcSWL = CallOldWindowProc(hWnd, iMsg, wParam, ByVal lParam)
+                    bCalled = True
+                End If
+            End If
+        End If
+        
+        If Not iHandled Then
+            WindowProcSWL = CallOldWindowProc(hWnd, iMsg, wParam, ByVal lParam)
+            If GetWindowLong(hWnd, GWL_WNDPROC) = mAddressOfWindowProc Then     ' if we are at the top of the subclassing chain, else we'll wait for the WM_DESTROY, WM_NCDESTROY and WM_UAHDESTROYWINDOW messages
+                pClearUp hWnd
+            End If
+        End If
+    Else
+        ' Not handled:
+        If (iMsg = WM_DESTROY) Or (iMsg = WM_NCDESTROY) Or (iMsg = WM_UAHDESTROYWINDOW) Then
+            ' If WM_DESTROY isn't handled already, we should
+            ' clear up any subclass
+            If GetWindowLong(hWnd, GWL_WNDPROC) = mAddressOfWindowProc Then ' if we are at the top of the subclassing chain
+                WindowProcSWL = CallOldWindowProc(hWnd, iMsg, wParam, ByVal lParam)
+                pClearUp hWnd
+            Else ' we are not a the top subclassing chain
+                WindowProcSWL = CallOldWindowProc(hWnd, iMsg, wParam, ByVal lParam)  ' let's see if the other subclass unsubclass itself
+                If GetWindowLong(hWnd, GWL_WNDPROC) = mAddressOfWindowProc Then ' it did
+                    pClearUp hWnd
+                Else
+                    If (iMsg = WM_NCDESTROY) Or (iMsg = WM_UAHDESTROYWINDOW) Then ' in these cases we will unsubclass anyway, but for WM_DESTROY we will wait for the WM_NCDESTROY message
+                        pClearUp hWnd
+                    End If
+                End If
+            End If
+        Else
+            WindowProcSWL = CallOldWindowProc(hWnd, iMsg, wParam, ByVal lParam)
         End If
     End If
     
@@ -698,7 +921,16 @@ TheExit:
 End Function
 
 Public Function CallOldWindowProc(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-    CallOldWindowProc = DefSubclassProc(hWnd, iMsg, wParam, lParam)
+    If gSubclassWithSetWindowLong Then
+        Dim iProcOld As Long
+        
+        iProcOld = OldWindowProc(hWnd)
+        If Not (iProcOld = 0) Then
+           CallOldWindowProc = CallWindowProc(iProcOld, hWnd, iMsg, wParam, lParam)
+        End If
+    Else
+        CallOldWindowProc = DefSubclassProc(hWnd, iMsg, wParam, lParam)
+    End If
 End Function
 
 Private Function IsWindowLocal(ByVal hWnd As Long) As Boolean
@@ -713,7 +945,7 @@ End Function
 'End Sub
 
 
-Private Sub pClearUp(ByVal hWnd As Long, uIdSubclass As Long)
+Private Sub pClearUp(ByVal hWnd As Long, Optional uIdSubclass As Long)
     Dim msgCount As Long
     
     ' this is only called if you haven't explicitly cleared up
@@ -724,7 +956,18 @@ Private Sub pClearUp(ByVal hWnd As Long, uIdSubclass As Long)
     If (msgCount > 0) Then
         ' remove the subclass:
         ' Unsubclass
-        RemoveWindowSubclass hWnd, mAddressOfWindowProc, uIdSubclass
+        
+        If gSubclassWithSetWindowLong Then
+            Dim iProcOld As Long
+            
+            iProcOld = OldWindowProc(hWnd)
+            If Not (iProcOld = 0) Then
+               SetWindowLong hWnd, GWL_WNDPROC, iProcOld
+               OldWindowProc(hWnd) = 0
+            End If
+        Else
+            RemoveWindowSubclass hWnd, mAddressOfWindowProc, uIdSubclass
+        End If
         ' remove the old window proc:
         MessageCount(hWnd) = 0
     End If
@@ -908,227 +1151,227 @@ End Function
 #If IDE_PROTECTION_ENABLED Then
 
 Private Function GetMessageName(nMsg As Long) As String
-   Dim msg As String
+   Dim Msg As String
    
    Select Case nMsg
-      Case &H0: msg = "WM_NULL"
-      Case &H1: msg = "WM_CREATE"
-      Case &H2: msg = "WM_DESTROY"
-      Case &H3: msg = "WM_MOVE"
-      Case &H5: msg = "WM_SIZE"
-      Case &H6: msg = "WM_ACTIVATE"
-      Case &H7: msg = "WM_SETFOCUS"
-      Case &H8: msg = "WM_KILLFOCUS"
-      Case &HA: msg = "WM_ENABLE"
-      Case &HB: msg = "WM_SETREDRAW"
-      Case &HC: msg = "WM_SETTEXT"
-      Case &HD: msg = "WM_GETTEXT"
-      Case &HE: msg = "WM_GETTEXTLENGTH"
-      Case &HF: msg = "WM_PAINT"
-      Case &H10: msg = "WM_CLOSE"
-      Case &H11: msg = "WM_QUERYENDSESSION"
-      Case &H12: msg = "WM_QUIT"
-      Case &H13: msg = "WM_QUERYOPEN"
-      Case &H14: msg = "WM_ERASEBKGND"
-      Case &H15: msg = "WM_SYSCOLORCHANGE"
-      Case &H16: msg = "WM_ENDSESSION"
-      Case &H18: msg = "WM_SHOWWINDOW"
-      Case &H1A: msg = "WM_SETTINGCHANGE"
-      Case &H1B: msg = "WM_DEVMODECHANGE"
-      Case &H1C: msg = "WM_ACTIVATEAPP"
-      Case &H1D: msg = "WM_FONTCHANGE"
-      Case &H1E: msg = "WM_TIMECHANGE"
-      Case &H1F: msg = "WM_CANCELMODE"
-      Case &H20: msg = "WM_SETCURSOR"
-      Case &H21: msg = "WM_MOUSEACTIVATE"
-      Case &H22: msg = "WM_CHILDACTIVATE"
-      Case &H23: msg = "WM_QUEUESYNC"
-      Case &H24: msg = "WM_GETMINMAXINFO"
-      Case &H26: msg = "WM_PAINTICON"
-      Case &H27: msg = "WM_ICONERASEBKGND"
-      Case &H28: msg = "WM_NEXTDLGCTL"
-      Case &H2A: msg = "WM_SPOOLERSTATUS"
-      Case &H2B: msg = "WM_DRAWITEM"
-      Case &H2C: msg = "WM_MEASUREITEM"
-      Case &H2D: msg = "WM_DELETEITEM"
-      Case &H2E: msg = "WM_VKEYTOITEM"
-      Case &H2F: msg = "WM_CHARTOITEM"
-      Case &H30: msg = "WM_SETFONT"
-      Case &H31: msg = "WM_GETFONT"
-      Case &H32: msg = "WM_SETHOTKEY"
-      Case &H33: msg = "WM_GETHOTKEY"
-      Case &H37: msg = "WM_QUERYDRAGICON"
-      Case &H39: msg = "WM_COMPAREITEM"
-      Case &H3D: msg = "WM_GETOBJECT"
-      Case &H41: msg = "WM_COMPACTING"
-      Case &H44: msg = "WM_COMMNOTIFY"
-      Case &H46: msg = "WM_WINDOWPOSCHANGING"
-      Case &H47: msg = "WM_WINDOWPOSCHANGED"
-      Case &H48: msg = "WM_POWER"
-      Case &H4A: msg = "WM_COPYDATA"
-      Case &H4B: msg = "WM_CANCELJOURNAL"
-      Case &H4E: msg = "WM_NOTIFY"
-      Case &H50: msg = "WM_INPUTLANGCHANGEREQUEST"
-      Case &H51: msg = "WM_INPUTLANGCHANGE"
-      Case &H52: msg = "WM_TCARD"
-      Case &H53: msg = "WM_HELP"
-      Case &H54: msg = "WM_USERCHANGED"
-      Case &H55: msg = "WM_NOTIFYFORMAT"
-      Case &H7B: msg = "WM_CONTEXTMENU"
-      Case &H7C: msg = "WM_STYLECHANGING"
-      Case &H7D: msg = "WM_STYLECHANGED"
-      Case &H7E: msg = "WM_DISPLAYCHANGE"
-      Case &H7F: msg = "WM_GETICON"
-      Case &H80: msg = "WM_SETICON"
-      Case &H81: msg = "WM_NCCREATE"
-      Case &H82: msg = "WM_NCDESTROY"
-      Case &H83: msg = "WM_NCCALCSIZE"
-      Case &H84: msg = "WM_NCHITTEST"
-      Case &H85: msg = "WM_NCPAINT"
-      Case &H86: msg = "WM_NCACTIVATE"
-      Case &H87: msg = "WM_GETDLGCODE"
-      Case &H88: msg = "WM_SYNCPAINT"
-      Case &HA0: msg = "WM_NCMOUSEMOVE"
-      Case &HA1: msg = "WM_NCLBUTTONDOWN"
-      Case &HA2: msg = "WM_NCLBUTTONUP"
-      Case &HA3: msg = "WM_NCLBUTTONDBLCLK"
-      Case &HA4: msg = "WM_NCRBUTTONDOWN"
-      Case &HA5: msg = "WM_NCRBUTTONUP"
-      Case &HA6: msg = "WM_NCRBUTTONDBLCLK"
-      Case &HA7: msg = "WM_NCMBUTTONDOWN"
-      Case &HA8: msg = "WM_NCMBUTTONUP"
-      Case &HA9: msg = "WM_NCMBUTTONDBLCLK"
-      Case &HAB: msg = "WM_NCXBUTTONDOWN"
-      Case &HAC: msg = "WM_NCXBUTTONUP"
-      Case &HAD: msg = "WM_NCXBUTTONDBLCLK"
-      Case &HFF: msg = "WM_INPUT"
-      Case &H100: msg = "WM_KEYDOWN"
-      Case &H101: msg = "WM_KEYUP"
-      Case &H102: msg = "WM_CHAR"
-      Case &H103: msg = "WM_DEADCHAR"
-      Case &H104: msg = "WM_SYSKEYDOWN"
-      Case &H105: msg = "WM_SYSKEYUP"
-      Case &H106: msg = "WM_SYSCHAR"
-      Case &H107: msg = "WM_SYSDEADCHAR"
-      Case &H108: msg = "WM_KEYLAST"
-      Case &H10D: msg = "WM_IME_STARTCOMPOSITION"
-      Case &H10E: msg = "WM_IME_ENDCOMPOSITION"
-      Case &H10F: msg = "WM_IME_COMPOSITION"
-      Case &H110: msg = "WM_INITDIALOG"
-      Case &H111: msg = "WM_COMMAND"
-      Case &H112: msg = "WM_SYSCOMMAND"
-      Case &H113: msg = "WM_TIMER"
-      Case &H114: msg = "WM_HSCROLL"
-      Case &H115: msg = "WM_VSCROLL"
-      Case &H116: msg = "WM_INITMENU"
-      Case &H117: msg = "WM_INITMENUPOPUP"
-      Case &H11F: msg = "WM_MENUSELECT"
-      Case &H120: msg = "WM_MENUCHAR"
-      Case &H121: msg = "WM_ENTERIDLE"
-      Case &H122: msg = "WM_MENURBUTTONUP"
-      Case &H123: msg = "WM_MENUDRAG"
-      Case &H124: msg = "WM_MENUGETOBJECT"
-      Case &H125: msg = "WM_UNINITMENUPOPUP"
-      Case &H126: msg = "WM_MENUCOMMAND"
-      Case &H127: msg = "WM_CHANGEUISTATE"
-      Case &H128: msg = "WM_UPDATEUISTATE"
-      Case &H129: msg = "WM_QUERYUISTATE"
-      Case &H132: msg = "WM_CTLCOLORMSGBOX"
-      Case &H133: msg = "WM_CTLCOLOREDIT"
-      Case &H134: msg = "WM_CTLCOLORLISTBOX"
-      Case &H135: msg = "WM_CTLCOLORBTN"
-      Case &H136: msg = "WM_CTLCOLORDLG"
-      Case &H137: msg = "WM_CTLCOLORSCROLLBAR"
-      Case &H138: msg = "WM_CTLCOLORSTATIC"
-      Case &H1E1: msg = "MN_GETHMENU"
+      Case &H0: Msg = "WM_NULL"
+      Case &H1: Msg = "WM_CREATE"
+      Case &H2: Msg = "WM_DESTROY"
+      Case &H3: Msg = "WM_MOVE"
+      Case &H5: Msg = "WM_SIZE"
+      Case &H6: Msg = "WM_ACTIVATE"
+      Case &H7: Msg = "WM_SETFOCUS"
+      Case &H8: Msg = "WM_KILLFOCUS"
+      Case &HA: Msg = "WM_ENABLE"
+      Case &HB: Msg = "WM_SETREDRAW"
+      Case &HC: Msg = "WM_SETTEXT"
+      Case &HD: Msg = "WM_GETTEXT"
+      Case &HE: Msg = "WM_GETTEXTLENGTH"
+      Case &HF: Msg = "WM_PAINT"
+      Case &H10: Msg = "WM_CLOSE"
+      Case &H11: Msg = "WM_QUERYENDSESSION"
+      Case &H12: Msg = "WM_QUIT"
+      Case &H13: Msg = "WM_QUERYOPEN"
+      Case &H14: Msg = "WM_ERASEBKGND"
+      Case &H15: Msg = "WM_SYSCOLORCHANGE"
+      Case &H16: Msg = "WM_ENDSESSION"
+      Case &H18: Msg = "WM_SHOWWINDOW"
+      Case &H1A: Msg = "WM_SETTINGCHANGE"
+      Case &H1B: Msg = "WM_DEVMODECHANGE"
+      Case &H1C: Msg = "WM_ACTIVATEAPP"
+      Case &H1D: Msg = "WM_FONTCHANGE"
+      Case &H1E: Msg = "WM_TIMECHANGE"
+      Case &H1F: Msg = "WM_CANCELMODE"
+      Case &H20: Msg = "WM_SETCURSOR"
+      Case &H21: Msg = "WM_MOUSEACTIVATE"
+      Case &H22: Msg = "WM_CHILDACTIVATE"
+      Case &H23: Msg = "WM_QUEUESYNC"
+      Case &H24: Msg = "WM_GETMINMAXINFO"
+      Case &H26: Msg = "WM_PAINTICON"
+      Case &H27: Msg = "WM_ICONERASEBKGND"
+      Case &H28: Msg = "WM_NEXTDLGCTL"
+      Case &H2A: Msg = "WM_SPOOLERSTATUS"
+      Case &H2B: Msg = "WM_DRAWITEM"
+      Case &H2C: Msg = "WM_MEASUREITEM"
+      Case &H2D: Msg = "WM_DELETEITEM"
+      Case &H2E: Msg = "WM_VKEYTOITEM"
+      Case &H2F: Msg = "WM_CHARTOITEM"
+      Case &H30: Msg = "WM_SETFONT"
+      Case &H31: Msg = "WM_GETFONT"
+      Case &H32: Msg = "WM_SETHOTKEY"
+      Case &H33: Msg = "WM_GETHOTKEY"
+      Case &H37: Msg = "WM_QUERYDRAGICON"
+      Case &H39: Msg = "WM_COMPAREITEM"
+      Case &H3D: Msg = "WM_GETOBJECT"
+      Case &H41: Msg = "WM_COMPACTING"
+      Case &H44: Msg = "WM_COMMNOTIFY"
+      Case &H46: Msg = "WM_WINDOWPOSCHANGING"
+      Case &H47: Msg = "WM_WINDOWPOSCHANGED"
+      Case &H48: Msg = "WM_POWER"
+      Case &H4A: Msg = "WM_COPYDATA"
+      Case &H4B: Msg = "WM_CANCELJOURNAL"
+      Case &H4E: Msg = "WM_NOTIFY"
+      Case &H50: Msg = "WM_INPUTLANGCHANGEREQUEST"
+      Case &H51: Msg = "WM_INPUTLANGCHANGE"
+      Case &H52: Msg = "WM_TCARD"
+      Case &H53: Msg = "WM_HELP"
+      Case &H54: Msg = "WM_USERCHANGED"
+      Case &H55: Msg = "WM_NOTIFYFORMAT"
+      Case &H7B: Msg = "WM_CONTEXTMENU"
+      Case &H7C: Msg = "WM_STYLECHANGING"
+      Case &H7D: Msg = "WM_STYLECHANGED"
+      Case &H7E: Msg = "WM_DISPLAYCHANGE"
+      Case &H7F: Msg = "WM_GETICON"
+      Case &H80: Msg = "WM_SETICON"
+      Case &H81: Msg = "WM_NCCREATE"
+      Case &H82: Msg = "WM_NCDESTROY"
+      Case &H83: Msg = "WM_NCCALCSIZE"
+      Case &H84: Msg = "WM_NCHITTEST"
+      Case &H85: Msg = "WM_NCPAINT"
+      Case &H86: Msg = "WM_NCACTIVATE"
+      Case &H87: Msg = "WM_GETDLGCODE"
+      Case &H88: Msg = "WM_SYNCPAINT"
+      Case &HA0: Msg = "WM_NCMOUSEMOVE"
+      Case &HA1: Msg = "WM_NCLBUTTONDOWN"
+      Case &HA2: Msg = "WM_NCLBUTTONUP"
+      Case &HA3: Msg = "WM_NCLBUTTONDBLCLK"
+      Case &HA4: Msg = "WM_NCRBUTTONDOWN"
+      Case &HA5: Msg = "WM_NCRBUTTONUP"
+      Case &HA6: Msg = "WM_NCRBUTTONDBLCLK"
+      Case &HA7: Msg = "WM_NCMBUTTONDOWN"
+      Case &HA8: Msg = "WM_NCMBUTTONUP"
+      Case &HA9: Msg = "WM_NCMBUTTONDBLCLK"
+      Case &HAB: Msg = "WM_NCXBUTTONDOWN"
+      Case &HAC: Msg = "WM_NCXBUTTONUP"
+      Case &HAD: Msg = "WM_NCXBUTTONDBLCLK"
+      Case &HFF: Msg = "WM_INPUT"
+      Case &H100: Msg = "WM_KEYDOWN"
+      Case &H101: Msg = "WM_KEYUP"
+      Case &H102: Msg = "WM_CHAR"
+      Case &H103: Msg = "WM_DEADCHAR"
+      Case &H104: Msg = "WM_SYSKEYDOWN"
+      Case &H105: Msg = "WM_SYSKEYUP"
+      Case &H106: Msg = "WM_SYSCHAR"
+      Case &H107: Msg = "WM_SYSDEADCHAR"
+      Case &H108: Msg = "WM_KEYLAST"
+      Case &H10D: Msg = "WM_IME_STARTCOMPOSITION"
+      Case &H10E: Msg = "WM_IME_ENDCOMPOSITION"
+      Case &H10F: Msg = "WM_IME_COMPOSITION"
+      Case &H110: Msg = "WM_INITDIALOG"
+      Case &H111: Msg = "WM_COMMAND"
+      Case &H112: Msg = "WM_SYSCOMMAND"
+      Case &H113: Msg = "WM_TIMER"
+      Case &H114: Msg = "WM_HSCROLL"
+      Case &H115: Msg = "WM_VSCROLL"
+      Case &H116: Msg = "WM_INITMENU"
+      Case &H117: Msg = "WM_INITMENUPOPUP"
+      Case &H11F: Msg = "WM_MENUSELECT"
+      Case &H120: Msg = "WM_MENUCHAR"
+      Case &H121: Msg = "WM_ENTERIDLE"
+      Case &H122: Msg = "WM_MENURBUTTONUP"
+      Case &H123: Msg = "WM_MENUDRAG"
+      Case &H124: Msg = "WM_MENUGETOBJECT"
+      Case &H125: Msg = "WM_UNINITMENUPOPUP"
+      Case &H126: Msg = "WM_MENUCOMMAND"
+      Case &H127: Msg = "WM_CHANGEUISTATE"
+      Case &H128: Msg = "WM_UPDATEUISTATE"
+      Case &H129: Msg = "WM_QUERYUISTATE"
+      Case &H132: Msg = "WM_CTLCOLORMSGBOX"
+      Case &H133: Msg = "WM_CTLCOLOREDIT"
+      Case &H134: Msg = "WM_CTLCOLORLISTBOX"
+      Case &H135: Msg = "WM_CTLCOLORBTN"
+      Case &H136: Msg = "WM_CTLCOLORDLG"
+      Case &H137: Msg = "WM_CTLCOLORSCROLLBAR"
+      Case &H138: Msg = "WM_CTLCOLORSTATIC"
+      Case &H1E1: Msg = "MN_GETHMENU"
 '      Case &H200: msg = "WM_MOUSEFIRST"
-      Case &H200: msg = "WM_MOUSEMOVE"
-      Case &H201: msg = "WM_LBUTTONDOWN"
-      Case &H202: msg = "WM_LBUTTONUP"
-      Case &H203: msg = "WM_LBUTTONDBLCLK"
-      Case &H204: msg = "WM_RBUTTONDOWN"
-      Case &H205: msg = "WM_RBUTTONUP"
-      Case &H206: msg = "WM_RBUTTONDBLCLK"
-      Case &H207: msg = "WM_MBUTTONDOWN"
-      Case &H208: msg = "WM_MBUTTONUP"
-      Case &H209: msg = "WM_MBUTTONDBLCLK"
-      Case &H20A: msg = "WM_MOUSEWHEEL"
-      Case &H20B: msg = "WM_XBUTTONDOWN"
-      Case &H20C: msg = "WM_XBUTTONUP"
-      Case &H20D: msg = "WM_XBUTTONDBLCLK"
-      Case &H210: msg = "WM_PARENTNOTIFY"
-      Case &H211: msg = "WM_ENTERMENULOOP"
-      Case &H212: msg = "WM_EXITMENULOOP"
-      Case &H213: msg = "WM_NEXTMENU"
-      Case &H214: msg = "WM_SIZING"
-      Case &H215: msg = "WM_CAPTURECHANGED"
-      Case &H216: msg = "WM_MOVING"
-      Case &H218: msg = "WM_POWERBROADCAST"
-      Case &H219: msg = "WM_DEVICECHANGE"
-      Case &H220: msg = "WM_MDICREATE"
-      Case &H221: msg = "WM_MDIDESTROY"
-      Case &H222: msg = "WM_MDIACTIVATE"
-      Case &H223: msg = "WM_MDIRESTORE"
-      Case &H224: msg = "WM_MDINEXT"
-      Case &H225: msg = "WM_MDIMAXIMIZE"
-      Case &H226: msg = "WM_MDITILE"
-      Case &H227: msg = "WM_MDICASCADE"
-      Case &H228: msg = "WM_MDIICONARRANGE"
-      Case &H229: msg = "WM_MDIGETACTIVE"
-      Case &H230: msg = "WM_MDISETMENU"
-      Case &H231: msg = "WM_ENTERSIZEMOVE"
-      Case &H232: msg = "WM_EXITSIZEMOVE"
-      Case &H233: msg = "WM_DROPFILES"
-      Case &H234: msg = "WM_MDIREFRESHMENU"
-      Case &H281: msg = "WM_IME_SETCONTEXT"
-      Case &H282: msg = "WM_IME_NOTIFY"
-      Case &H283: msg = "WM_IME_CONTROL"
-      Case &H284: msg = "WM_IME_COMPOSITIONFULL"
-      Case &H285: msg = "WM_IME_SELECT"
-      Case &H286: msg = "WM_IME_CHAR"
-      Case &H288: msg = "WM_IME_REQUEST"
-      Case &H290: msg = "WM_IME_KEYDOWN"
-      Case &H291: msg = "WM_IME_KEYUP"
-      Case &H2A1: msg = "WM_MOUSEHOVER"
-      Case &H2A3: msg = "WM_MOUSELEAVE"
-      Case &H2A0: msg = "WM_NCMOUSEHOVER"
-      Case &H2A2: msg = "WM_NCMOUSELEAVE"
-      Case &H2B1: msg = "WM_WTSSESSION_CHANGE"
-      Case &H2C0: msg = "WM_TABLET_FIRST"
-      Case &H2DF: msg = "WM_TABLET_LAST"
-      Case &H300: msg = "WM_CUT"
-      Case &H301: msg = "WM_COPY"
-      Case &H302: msg = "WM_PASTE"
-      Case &H303: msg = "WM_CLEAR"
-      Case &H304: msg = "WM_UNDO"
-      Case &H305: msg = "WM_RENDERFORMAT"
-      Case &H306: msg = "WM_RENDERALLFORMATS"
-      Case &H307: msg = "WM_DESTROYCLIPBOARD"
-      Case &H308: msg = "WM_DRAWCLIPBOARD"
-      Case &H309: msg = "WM_PAINTCLIPBOARD"
-      Case &H30A: msg = "WM_VSCROLLCLIPBOARD"
-      Case &H30B: msg = "WM_SIZECLIPBOARD"
-      Case &H30C: msg = "WM_ASKCBFORMATNAME"
-      Case &H30D: msg = "WM_CHANGECBCHAIN"
-      Case &H30E: msg = "WM_HSCROLLCLIPBOARD"
-      Case &H30F: msg = "WM_QUERYNEWPALETTE"
-      Case &H310: msg = "WM_PALETTEISCHANGING"
-      Case &H311: msg = "WM_PALETTECHANGED"
-      Case &H312: msg = "WM_HOTKEY"
-      Case &H317: msg = "WM_PRINT"
-      Case &H318: msg = "WM_PRINTCLIENT"
-      Case &H319: msg = "WM_APPCOMMAND"
-      Case &H31A: msg = "WM_THEMECHANGED"
-      Case &H358: msg = "WM_HANDHELDFIRST"
-      Case &H35F: msg = "WM_HANDHELDLAST"
-      Case &H360: msg = "WM_AFXFIRST"
-      Case &H37F: msg = "WM_AFXLAST"
-      Case &H380: msg = "WM_PENWINFIRST"
-      Case &H38F: msg = "WM_PENWINLAST"
-      Case &H400: msg = "WM_USER"
-      Case Else: msg = "&H" & Hex(nMsg)
+      Case &H200: Msg = "WM_MOUSEMOVE"
+      Case &H201: Msg = "WM_LBUTTONDOWN"
+      Case &H202: Msg = "WM_LBUTTONUP"
+      Case &H203: Msg = "WM_LBUTTONDBLCLK"
+      Case &H204: Msg = "WM_RBUTTONDOWN"
+      Case &H205: Msg = "WM_RBUTTONUP"
+      Case &H206: Msg = "WM_RBUTTONDBLCLK"
+      Case &H207: Msg = "WM_MBUTTONDOWN"
+      Case &H208: Msg = "WM_MBUTTONUP"
+      Case &H209: Msg = "WM_MBUTTONDBLCLK"
+      Case &H20A: Msg = "WM_MOUSEWHEEL"
+      Case &H20B: Msg = "WM_XBUTTONDOWN"
+      Case &H20C: Msg = "WM_XBUTTONUP"
+      Case &H20D: Msg = "WM_XBUTTONDBLCLK"
+      Case &H210: Msg = "WM_PARENTNOTIFY"
+      Case &H211: Msg = "WM_ENTERMENULOOP"
+      Case &H212: Msg = "WM_EXITMENULOOP"
+      Case &H213: Msg = "WM_NEXTMENU"
+      Case &H214: Msg = "WM_SIZING"
+      Case &H215: Msg = "WM_CAPTURECHANGED"
+      Case &H216: Msg = "WM_MOVING"
+      Case &H218: Msg = "WM_POWERBROADCAST"
+      Case &H219: Msg = "WM_DEVICECHANGE"
+      Case &H220: Msg = "WM_MDICREATE"
+      Case &H221: Msg = "WM_MDIDESTROY"
+      Case &H222: Msg = "WM_MDIACTIVATE"
+      Case &H223: Msg = "WM_MDIRESTORE"
+      Case &H224: Msg = "WM_MDINEXT"
+      Case &H225: Msg = "WM_MDIMAXIMIZE"
+      Case &H226: Msg = "WM_MDITILE"
+      Case &H227: Msg = "WM_MDICASCADE"
+      Case &H228: Msg = "WM_MDIICONARRANGE"
+      Case &H229: Msg = "WM_MDIGETACTIVE"
+      Case &H230: Msg = "WM_MDISETMENU"
+      Case &H231: Msg = "WM_ENTERSIZEMOVE"
+      Case &H232: Msg = "WM_EXITSIZEMOVE"
+      Case &H233: Msg = "WM_DROPFILES"
+      Case &H234: Msg = "WM_MDIREFRESHMENU"
+      Case &H281: Msg = "WM_IME_SETCONTEXT"
+      Case &H282: Msg = "WM_IME_NOTIFY"
+      Case &H283: Msg = "WM_IME_CONTROL"
+      Case &H284: Msg = "WM_IME_COMPOSITIONFULL"
+      Case &H285: Msg = "WM_IME_SELECT"
+      Case &H286: Msg = "WM_IME_CHAR"
+      Case &H288: Msg = "WM_IME_REQUEST"
+      Case &H290: Msg = "WM_IME_KEYDOWN"
+      Case &H291: Msg = "WM_IME_KEYUP"
+      Case &H2A1: Msg = "WM_MOUSEHOVER"
+      Case &H2A3: Msg = "WM_MOUSELEAVE"
+      Case &H2A0: Msg = "WM_NCMOUSEHOVER"
+      Case &H2A2: Msg = "WM_NCMOUSELEAVE"
+      Case &H2B1: Msg = "WM_WTSSESSION_CHANGE"
+      Case &H2C0: Msg = "WM_TABLET_FIRST"
+      Case &H2DF: Msg = "WM_TABLET_LAST"
+      Case &H300: Msg = "WM_CUT"
+      Case &H301: Msg = "WM_COPY"
+      Case &H302: Msg = "WM_PASTE"
+      Case &H303: Msg = "WM_CLEAR"
+      Case &H304: Msg = "WM_UNDO"
+      Case &H305: Msg = "WM_RENDERFORMAT"
+      Case &H306: Msg = "WM_RENDERALLFORMATS"
+      Case &H307: Msg = "WM_DESTROYCLIPBOARD"
+      Case &H308: Msg = "WM_DRAWCLIPBOARD"
+      Case &H309: Msg = "WM_PAINTCLIPBOARD"
+      Case &H30A: Msg = "WM_VSCROLLCLIPBOARD"
+      Case &H30B: Msg = "WM_SIZECLIPBOARD"
+      Case &H30C: Msg = "WM_ASKCBFORMATNAME"
+      Case &H30D: Msg = "WM_CHANGECBCHAIN"
+      Case &H30E: Msg = "WM_HSCROLLCLIPBOARD"
+      Case &H30F: Msg = "WM_QUERYNEWPALETTE"
+      Case &H310: Msg = "WM_PALETTEISCHANGING"
+      Case &H311: Msg = "WM_PALETTECHANGED"
+      Case &H312: Msg = "WM_HOTKEY"
+      Case &H317: Msg = "WM_PRINT"
+      Case &H318: Msg = "WM_PRINTCLIENT"
+      Case &H319: Msg = "WM_APPCOMMAND"
+      Case &H31A: Msg = "WM_THEMECHANGED"
+      Case &H358: Msg = "WM_HANDHELDFIRST"
+      Case &H35F: Msg = "WM_HANDHELDLAST"
+      Case &H360: Msg = "WM_AFXFIRST"
+      Case &H37F: Msg = "WM_AFXLAST"
+      Case &H380: Msg = "WM_PENWINFIRST"
+      Case &H38F: Msg = "WM_PENWINLAST"
+      Case &H400: Msg = "WM_USER"
+      Case Else: Msg = "&H" & Hex(nMsg)
    End Select
-   GetMessageName = msg
+   GetMessageName = Msg
 End Function
 
 Private Function GetIDEMainHwnd() As Long
@@ -1769,3 +2012,4 @@ Public Function UniTextBoxWindowProc(ByVal hWnd As Long, ByVal uMsg As Long, ByV
     End If
     
 End Function
+

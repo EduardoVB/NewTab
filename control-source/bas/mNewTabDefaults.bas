@@ -44,4 +44,4 @@ Public Const cPropDef_HighlightTabExtraHeight As Long = 40 'twips
 Public Const cPropDef_FlatBodySeparationLineHeight As Long = 1
 Public Const cPropDef_TabMaxWidth As Long = 0
 Public Const cPropDef_TabMinWidth As Long = 0
-
+Public Const cPropDef_SubclassingMethod As Long = ntSMSetWindowSubclass
