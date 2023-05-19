@@ -3789,6 +3789,7 @@ Private Sub tmrCheckContainedControlsAdditionDesignTime_Timer()
     If UserControlContainedControlsCount <> mLastContainedControlsCount Then
         mLastContainedControlsCount = UserControlContainedControlsCount
         SetControlsBackColor mBackColorTabSel
+        SetControlsForeColor mForeColorTabSel
         If mControlIsThemed Or (mBackStyle = ntTransparent) Then
             mSubclassControlsPaintingPending = True
             RedrawWindow mUserControlHwnd, ByVal 0&, 0&, RDW_INVALIDATE Or RDW_ALLCHILDREN
