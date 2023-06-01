@@ -667,6 +667,8 @@ Public Enum NTSubclassingMethodConstants
     ntSMSetWindowSubclass = 0
     ntSMSetWindowLong = 1
     ntSMDisabled = 2
+    ntSM_SWSOnlyUserControl = 3
+    ntSM_SWLOnlyUserControl = 4
 End Enum
 
 ' Events
@@ -877,6 +879,7 @@ Private mTDIMode As Boolean
 Private mFlatBarPosition As NTFlatBarPosition
 Private mFlatBodySeparationLineHeight As Long
 Private mSubclassingMethod As NTSubclassingMethodConstants
+Private mOnlySubclassUserControl As Boolean
 
 ' Variables
 Private mTabBodyStart As Long ' in Pixels
@@ -4143,7 +4146,8 @@ Private Sub UserControl_InitProperties()
 #End If
     
     If mSubclassed Then
-        gSubclassWithSetWindowLong = (mSubclassingMethod = ntSMSetWindowLong)
+        gSubclassWithSetWindowLong = (mSubclassingMethod = ntSMSetWindowLong) Or (mSubclassingMethod = ntSM_SWLOnlyUserControl)
+        mOnlySubclassUserControl = (mSubclassingMethod = ntSM_SWSOnlyUserControl) Or (mSubclassingMethod = ntSM_SWLOnlyUserControl)
         SubclassUserControl
     Else
         mFormIsActive = True
@@ -4173,7 +4177,7 @@ Private Sub SubclassUserControl()
 End Sub
 
 Private Sub SubclassForm()
-    If (mFormHwnd <> 0) Then
+    If (mFormHwnd <> 0) And (Not mOnlySubclassUserControl) Then
         AttachMessage Me, mFormHwnd, WM_SYSCOLORCHANGE
         AttachMessage Me, mFormHwnd, WM_THEMECHANGED
         AttachMessage Me, mFormHwnd, WM_NCACTIVATE
@@ -5189,7 +5193,8 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 #End If
     
     If mSubclassed Then
-        gSubclassWithSetWindowLong = (mSubclassingMethod = ntSMSetWindowLong)
+        gSubclassWithSetWindowLong = (mSubclassingMethod = ntSMSetWindowLong) Or (mSubclassingMethod = ntSM_SWLOnlyUserControl)
+        mOnlySubclassUserControl = (mSubclassingMethod = ntSM_SWSOnlyUserControl) Or (mSubclassingMethod = ntSM_SWLOnlyUserControl)
         SubclassUserControl
     Else
         mFormIsActive = True
@@ -5282,12 +5287,14 @@ Private Sub UserControl_Show()
                     iAuxLeft = iAuxLeft - mLeftOffsetToHide
                 End If
             End If
-            If iAuxLeft < -mLeftThresholdHided Then
-                iHwnd = 0
-                iHwnd = GetControlHwnd(iCtl)
-                If iHwnd <> 0 Then
-                    mSubclassedControlsForMoveHwnds.Add iHwnd
-                    AttachMessage Me, iHwnd, WM_WINDOWPOSCHANGING
+            If Not mOnlySubclassUserControl Then
+                If iAuxLeft < -mLeftThresholdHided Then
+                    iHwnd = 0
+                    iHwnd = GetControlHwnd(iCtl)
+                    If iHwnd <> 0 Then
+                        mSubclassedControlsForMoveHwnds.Add iHwnd
+                        AttachMessage Me, iHwnd, WM_WINDOWPOSCHANGING
+                    End If
                 End If
             End If
         Next
@@ -10205,7 +10212,7 @@ Private Sub SetVisibleControls(iPreviousTab As Integer)
         mLastContainedControlsString = iContainedControlsString
     End If
     
-    If mSubclassed Then
+    If mSubclassed And (Not mOnlySubclassUserControl) Then
         On Error Resume Next
         For Each iCtl In UserControlContainedControls
             If iCtl.Left < -mLeftThresholdHided Then
@@ -10346,7 +10353,7 @@ Private Sub SubclassControlsPainting()
     Dim iStr As String
     
   '  If Not mAmbientUserMode Then Exit Sub
-    If Not mSubclassed Then Exit Sub
+    If (Not mSubclassed) Or mOnlySubclassUserControl Then Exit Sub
     If Not mUserControlShown Then
         If Val(tmrSubclassControls.Tag) < 200 Then
             tmrSubclassControls.Enabled = True
@@ -11038,7 +11045,7 @@ Friend Sub MakeContainedControlsInSelTabVisible()
                     iCtl.Left = iCtl.Left + mLeftOffsetToHide
                 End If
             End If
-            If mAmbientUserMode And mSubclassed Then
+            If mAmbientUserMode And mSubclassed And (Not mOnlySubclassUserControl) Then
                 iHwnd = 0
                 iHwnd = GetControlHwnd(iCtl)
                 If iHwnd <> 0 Then
@@ -12274,7 +12281,7 @@ End Property
 Public Property Let SubclassingMethod(ByVal nValue As NTSubclassingMethodConstants)
     Dim iPrev As NTSubclassingMethodConstants
     
-    If (nValue < ntSMSetWindowSubclass) Or (nValue > ntSMDisabled) Then
+    If (nValue < ntSMSetWindowSubclass) Or (nValue > ntSM_SWLOnlyUserControl) Then
         RaiseError 380, TypeName(Me) ' invalid property value
         Exit Property
     End If
@@ -12285,14 +12292,22 @@ Public Property Let SubclassingMethod(ByVal nValue As NTSubclassingMethodConstan
         If iPrev <> ntSMDisabled Then
             Unsubclass
         End If
-        gSubclassWithSetWindowLong = (mSubclassingMethod = ntSMSetWindowLong)
+        gSubclassWithSetWindowLong = (mSubclassingMethod = ntSMSetWindowLong) Or (mSubclassingMethod = ntSM_SWLOnlyUserControl)
+        mOnlySubclassUserControl = (mSubclassingMethod = ntSM_SWSOnlyUserControl) Or (mSubclassingMethod = ntSM_SWLOnlyUserControl)
         If mSubclassingMethod <> ntSMDisabled Then
             mSubclassed = True
+            #If NOSUBCLASSINIDE Then
+                If mInIDE Then
+                    mSubclassed = False
+                End If
+            #End If
             Set mSubclassedControlsForPaintingHwnds = New Collection
             Set mSubclassedFramesHwnds = New Collection
             Set mSubclassedControlsForMoveHwnds = New Collection
-            SubclassUserControl
-            SubclassForm
+            If mSubclassed Then
+                SubclassUserControl
+                SubclassForm
+            End If
         End If
     End If
 End Property
