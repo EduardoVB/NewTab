@@ -12323,6 +12323,7 @@ Private Sub ShowPicCover()
     Dim iWindowStyle As Long
     Dim iDC As Long
     Static sShowing As Boolean
+    Dim iFormRect As RECT
     
     If sShowing Or mSettingTDIMode Then Exit Sub
     sShowing = True
@@ -12332,10 +12333,15 @@ Private Sub ShowPicCover()
     End If
     
     GetWindowRect mUserControlHwnd, iRect
+    GetWindowRect mFormHwnd, iFormRect
+    
     iRect.Right = iRect.Left + mTabBodyRect.Right
     iRect.Bottom = iRect.Top + mTabBodyRect.Bottom
     iRect.Left = iRect.Left + mTabBodyRect.Left
     iRect.Top = iRect.Top + mTabBodyRect.Top
+    
+    If iRect.Right > (iFormRect.Right - 2) Then iRect.Right = iFormRect.Right - 2
+    If iRect.Bottom > (iFormRect.Bottom - 2) Then iRect.Bottom = iFormRect.Bottom - 2
     
     picCover.Visible = False
     SetParent picCover.hWnd, 0
