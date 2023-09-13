@@ -7156,52 +7156,52 @@ Private Sub DrawTab(nTab As Long)
             If mAppearanceIsFlat Then
                 If iHighlighted Then
                     If iHighlightGradient = ntGradientSimple Then
-                        Call FillCurvedGradient2(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom), iHighlightColor, iBackColorTabs2, iFlatLeftRoundness, iFlatRightRoundness)
+                        Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom), iHighlightColor, iBackColorTabs2, iFlatLeftRoundness, iFlatRightRoundness)
                         If iHighlightFlatDrawBorder Then
-                            Call FillCurvedGradient2(.Left + iLeftOffset, .Bottom, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + 1), iBackColorTabs2, iBackColorTabs2, 0, 0, iFlatLeftRoundness, iFlatRightRoundness)
+                            Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Bottom, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + 1), iBackColorTabs2, iBackColorTabs2, 0, 0, iFlatLeftRoundness, iFlatRightRoundness)
                         Else
-                            Call FillCurvedGradient2(.Left + iLeftOffset, .Bottom, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iBackColorTabs2, iBackColorTabs2, 0, 0)
+                            Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Bottom, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iBackColorTabs2, iBackColorTabs2, 0, 0)
                         End If
                     ElseIf iHighlightGradient = ntGradientDouble Then
-                        Call FillCurvedGradient2(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset, (.Bottom + .Top + iTopOffset) / 2 + 2, iBackColorTabs2, iHighlightColor, iFlatLeftRoundness, iFlatRightRoundness)
-                        Call FillCurvedGradient2(.Left + iLeftOffset, (.Bottom + .Top + iTopOffset) / 2, .Right + iRightOffset, .Bottom, iHighlightColor, iBackColorTabs2, 0, 0)
+                        Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset, (.Bottom + .Top + iTopOffset) / 2 + 2, iBackColorTabs2, iHighlightColor, iFlatLeftRoundness, iFlatRightRoundness)
+                        Call FillCurvedGradient2(.Left + iLeftOffset + 1, (.Bottom + .Top + iTopOffset) / 2, .Right + iRightOffset, .Bottom, iHighlightColor, iBackColorTabs2, 0, 0)
                         If iHighlightFlatDrawBorder Then
-                            Call FillCurvedGradient2(.Left + iLeftOffset, .Bottom, .Right + iRightOffset, .Bottom + 1, iBackColorTabs2, iBackColorTabs2, 0, 0, iFlatLeftRoundness, iFlatRightRoundness)
+                            Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Bottom, .Right + iRightOffset, .Bottom + 1, iBackColorTabs2, iBackColorTabs2, 0, 0, iFlatLeftRoundness, iFlatRightRoundness)
                         Else
-                            Call FillCurvedGradient2(.Left + iLeftOffset, .Bottom, .Right + iRightOffset, .Bottom + iBottomOffset, iBackColorTabs2, iBackColorTabs2, 0, 0)
+                            Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Bottom, .Right + iRightOffset, .Bottom + iBottomOffset, iBackColorTabs2, iBackColorTabs2, 0, 0)
                         End If
                     ElseIf iHighlightGradient = ntGradientPlain Then
                         If iHighlightFlatDrawBorder Then
-                            Call FillCurvedGradient2(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + 1), iHighlightColor, iHighlightColor, iFlatLeftRoundness, iFlatRightRoundness, iFlatLeftRoundness, iFlatRightRoundness)
+                            Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + 1), iHighlightColor, iHighlightColor, iFlatLeftRoundness, iFlatRightRoundness, iFlatLeftRoundness, iFlatRightRoundness)
                         Else
-                            Call FillCurvedGradient2(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iHighlightColor, iHighlightColor, iFlatLeftRoundness, iFlatRightRoundness)
+                            Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iHighlightColor, iHighlightColor, iFlatLeftRoundness, iFlatRightRoundness)
                         End If
                     ElseIf iHighlightGradient = ntGradientNone Then
-                        Call FillCurvedGradient2(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iBackColorTabs2, iBackColorTabs2, iFlatLeftRoundness, iFlatRightRoundness)
+                        Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iBackColorTabs2, iBackColorTabs2, iFlatLeftRoundness, iFlatRightRoundness)
                     End If
                 Else
                     If iHighlightFlatDrawBorder Then
-                        Call FillCurvedGradient2(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset, .Bottom + 1, iBackColorTabs2, iBackColorTabs2, iFlatLeftRoundness, iFlatRightRoundness, iFlatLeftRoundness, iFlatRightRoundness)
+                        Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset, .Bottom + 1, iBackColorTabs2, iBackColorTabs2, iFlatLeftRoundness, iFlatRightRoundness, iFlatLeftRoundness, iFlatRightRoundness)
                     Else
-                        Call FillCurvedGradient2(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset, .Bottom + iBottomOffset, iBackColorTabs2, iBackColorTabs2, iFlatLeftRoundness, iFlatRightRoundness)
+                        Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset, .Bottom + iBottomOffset, iBackColorTabs2, iBackColorTabs2, iFlatLeftRoundness, iFlatRightRoundness)
                     End If
                 End If
             Else
                 If iHighlighted Then
                     If iHighlightGradient = ntGradientSimple Then
-                        Call FillCurvedGradient(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom), iHighlightColor, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
-                        Call FillCurvedGradient(.Left + iLeftOffset, .Bottom, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iBackColorTabs2, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
+                        Call FillCurvedGradient(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom), iHighlightColor, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
+                        Call FillCurvedGradient(.Left + iLeftOffset + 1, .Bottom, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iBackColorTabs2, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
                     ElseIf iHighlightGradient = ntGradientDouble Then
-                        Call FillCurvedGradient(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset, (.Bottom + .Top + iTopOffset) / 2 + 2, iBackColorTabs2, iHighlightColor, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
-                        Call FillCurvedGradient(.Left + iLeftOffset, (.Bottom + .Top + iTopOffset) / 2, .Right + iRightOffset, .Bottom, iHighlightColor, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
-                        Call FillCurvedGradient(.Left + iLeftOffset, .Bottom, .Right + iRightOffset, .Bottom + iBottomOffset, iBackColorTabs2, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
+                        Call FillCurvedGradient(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset, (.Bottom + .Top + iTopOffset) / 2 + 2, iBackColorTabs2, iHighlightColor, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
+                        Call FillCurvedGradient(.Left + iLeftOffset + 1, (.Bottom + .Top + iTopOffset) / 2, .Right + iRightOffset, .Bottom, iHighlightColor, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
+                        Call FillCurvedGradient(.Left + iLeftOffset + 1, .Bottom, .Right + iRightOffset, .Bottom + iBottomOffset, iBackColorTabs2, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
                     ElseIf iHighlightGradient = ntGradientPlain Then
-                        Call FillCurvedGradient(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iHighlightColor, iHighlightColor, iCurv, True, True)
+                        Call FillCurvedGradient(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iHighlightColor, iHighlightColor, iCurv, True, True)
                     ElseIf iHighlightGradient = ntGradientNone Then
-                        Call FillCurvedGradient(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iBackColorTabs2, iBackColorTabs2, iCurv, True, True)
+                        Call FillCurvedGradient(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iBackColorTabs2, iBackColorTabs2, iCurv, True, True)
                     End If
                 Else
-                    Call FillCurvedGradient(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset, .Bottom + iBottomOffset, iBackColorTabs2, iBackColorTabs2, iCurv, True, True)
+                    Call FillCurvedGradient(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset, .Bottom + iBottomOffset, iBackColorTabs2, iBackColorTabs2, iCurv, True, True)
                 End If
             End If
             
