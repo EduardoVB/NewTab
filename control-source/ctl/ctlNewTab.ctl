@@ -381,6 +381,7 @@ Private Const WM_USER As Long = &H400
 Private Const WM_DRAW As Long = WM_USER + 10 ' custom message
 Private Const WM_INIT As Long = WM_USER + 11 ' custom message
 Private Const WM_LBUTTONDBLCLK As Long = &H203&
+Private Const WM_MOUSEMOVE As Long = &H200
 Private Const WM_PRINTCLIENT As Long = &H318
 Private Const WM_NCACTIVATE As Long = &H86&
 Private Const WM_WINDOWPOSCHANGING = &H46&
@@ -3464,7 +3465,7 @@ Private Function IBSSubclass_MsgResponse(ByVal hWnd As Long, ByVal iMsg As Long)
     Select Case iMsg
         Case WM_PAINT, WM_PRINTCLIENT, WM_MOUSELEAVE
             IBSSubclass_MsgResponse = emrConsume
-        Case WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEACTIVATE, WM_SETFOCUS, WM_LBUTTONDBLCLK, WM_MOVE, WM_WINDOWPOSCHANGING, WM_SETCURSOR
+        Case WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEACTIVATE, WM_SETFOCUS, WM_LBUTTONDBLCLK, WM_MOVE, WM_WINDOWPOSCHANGING, WM_SETCURSOR, WM_MOUSEMOVE
             IBSSubclass_MsgResponse = emrPreprocess
         Case Else
             IBSSubclass_MsgResponse = emrPostProcess
@@ -3559,6 +3560,8 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, 
                 mouse_event MOUSEEVENTF_LEFTDOWN, 0&, 0&, 0&, GetMessageExtraInfo()
                 mouse_event MOUSEEVENTF_LEFTUP, 0&, 0&, 0&, GetMessageExtraInfo()
             End If
+        Case WM_MOUSEMOVE
+            Call ProcessMouseMove(vbLeftButton, 0, (lParam And &HFFFF&) * Screen_TwipsPerPixelX, (lParam \ &H10000 And &HFFFF&) * Screen_TwipsPerPixelX)
         Case WM_LBUTTONDOWN ' UserControl message, only in design mode (Not Ambient.UserMode), to provide change of selected tab by clicking at design time
             If Not MouseIsOverAContainedControl Then
                 iTab = mTabSel
@@ -4173,6 +4176,7 @@ Private Sub SubclassUserControl()
         AttachMessage Me, mUserControlHwnd, WM_LBUTTONDOWN
         AttachMessage Me, mUserControlHwnd, WM_LBUTTONUP
         AttachMessage Me, mUserControlHwnd, WM_LBUTTONDBLCLK
+        AttachMessage Me, mUserControlHwnd, WM_MOUSEMOVE
     End If
 End Sub
 
@@ -5437,6 +5441,7 @@ Private Sub Unsubclass()
                 DetachMessage Me, mUserControlHwnd, WM_LBUTTONDOWN
                 DetachMessage Me, mUserControlHwnd, WM_LBUTTONUP
                 DetachMessage Me, mUserControlHwnd, WM_LBUTTONDBLCLK
+                DetachMessage Me, mUserControlHwnd, WM_MOUSEMOVE
                 On Error GoTo 0
             End If
         End If
@@ -9598,7 +9603,7 @@ End Sub
 Private Sub CheckIfThereAreTabsToolTipTexts()
     Dim c As Long
     
-    If Not mAmbientUserMode Then Exit Sub
+    'If Not mAmbientUserMode Then Exit Sub
     mThereAreTabsToolTipTexts = False
     For c = 0 To mTabs - 1
         If mTabData(c).ToolTipText <> "" Then
