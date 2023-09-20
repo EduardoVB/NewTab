@@ -1,3 +1,4 @@
+2023-09-20 Added theme "Apple Green"
 2023-09-19 TabToolTipText now show at design time too. 
 2023-09-19 Change theme name Esmerald to Emerald.
 2023-09-13 Fixed visual bug in left tab roundness of the Flat style.
