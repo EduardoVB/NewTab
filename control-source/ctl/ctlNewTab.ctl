@@ -9533,6 +9533,7 @@ Attribute Refresh.VB_Description = "Redraws the control."
     Draw
     If iWv Then SendMessage mUserControlHwnd, WM_SETREDRAW, True, 0&
     If iWv Then RedrawWindow mUserControlHwnd, ByVal 0&, 0&, RDW_INVALIDATE Or RDW_ALLCHILDREN
+    If iWv Then UserControl.Refresh
 End Sub
 
 Private Sub RaiseEvent_TabMouseEnter(nTab As Integer)
