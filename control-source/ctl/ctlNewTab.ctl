@@ -3089,7 +3089,7 @@ Public Property Let FlatRoundnessTop(ByVal nValue As Long)
         mFlatRoundnessTop = nValue
         mFlatRoundnessTopDPIScaled = mFlatRoundnessTop * mDPIScale
         SetPropertyChanged "FlatRoundnessTop"
-        Refresh
+        DrawDelayed
     End If
 End Property
 
@@ -3109,7 +3109,7 @@ Public Property Let FlatRoundnessBottom(ByVal nValue As Long)
         mFlatRoundnessBottom = nValue
         mFlatRoundnessBottomDPIScaled = mFlatRoundnessBottom * mDPIScale
         SetPropertyChanged "FlatRoundnessBottom"
-        Refresh
+        DrawDelayed
     End If
 End Property
 
@@ -3129,7 +3129,7 @@ Public Property Let FlatRoundnessTabs(ByVal nValue As Long)
         mFlatRoundnessTabs = nValue
         mFlatRoundnessTabsDPIScaled = mFlatRoundnessTabs * mDPIScale
         SetPropertyChanged "FlatRoundnessTabs"
-        Refresh
+        DrawDelayed
     End If
 End Property
 
