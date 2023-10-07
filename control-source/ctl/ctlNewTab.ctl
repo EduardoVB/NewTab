@@ -9393,6 +9393,9 @@ Private Sub SetControlsBackColor(nColor As Long, Optional nPrevColor As Long = -
     Dim iContainer As Object
     Dim iContainer_Prev As Object
     Dim iStr As String
+    Dim iCtlIsNewTab As Boolean
+    Dim iLngT As Long
+    Dim iLngTS As Long
     
     On Error Resume Next
     Set iControls = UserControl.Parent.Controls
@@ -9420,6 +9423,11 @@ Private Sub SetControlsBackColor(nColor As Long, Optional nPrevColor As Long = -
                 If iContainer Is UserControl.Extender Then
                     iLng = -1
                     iLng = iCtl.BackColor
+                    If TypeName(iCtl) = TypeName(Me) Then
+                        iLngT = iCtl.BackColorTabs
+                        iLngTS = iCtl.BackColorTabSel
+                        iCtlIsNewTab = True
+                    End If
                     If iLng <> -1 Then
                         If (iLng = vbButtonFace) And (nColor <> vbButtonFace) Or (iLng = nPrevColor) Then
                             iCancel = False
@@ -9435,6 +9443,44 @@ Private Sub SetControlsBackColor(nColor As Long, Optional nPrevColor As Long = -
                                 RaiseEvent ChangeControlBackColor(iStr, TypeName(iCtl), iCancel)
                                 If Not iCancel Then
                                     iCtl.BackColor = nColor
+                                End If
+                            End If
+                        End If
+                    End If
+                    If iCtlIsNewTab Then
+                        If (iLngT = vbButtonFace) And (nColor <> vbButtonFace) Or (iLngT = nPrevColor) Then
+                            iCancel = False
+                            If Not iContainer_Prev Is Nothing Then
+                                If iContainer_Prev.Container Is UserControl.Extender Then
+                                    iStr = iContainer_Prev.Name
+                                    RaiseEvent ChangeControlBackColor(iStr, TypeName(iContainer_Prev), iCancel)
+                                End If
+                            End If
+                            If Not iCancel Then
+                                iCancel = False
+                                iStr = iCtl.Name
+                                RaiseEvent ChangeControlBackColor(iStr, TypeName(iCtl), iCancel)
+                                If Not iCancel Then
+                                    iCtl.BackColorTabs = nColor
+                                End If
+                            End If
+                        End If
+                        If iLngTS <> iLngT Then
+                            If (iLngTS = vbButtonFace) And (nColor <> vbButtonFace) Or (iLngTS = nPrevColor) Then
+                                iCancel = False
+                                If Not iContainer_Prev Is Nothing Then
+                                    If iContainer_Prev.Container Is UserControl.Extender Then
+                                        iStr = iContainer_Prev.Name
+                                        RaiseEvent ChangeControlBackColor(iStr, TypeName(iContainer_Prev), iCancel)
+                                    End If
+                                End If
+                                If Not iCancel Then
+                                    iCancel = False
+                                    iStr = iCtl.Name
+                                    RaiseEvent ChangeControlBackColor(iStr, TypeName(iCtl), iCancel)
+                                    If Not iCancel Then
+                                        iCtl.BackColorTabSel = nColor
+                                    End If
                                 End If
                             End If
                         End If
@@ -9505,8 +9551,11 @@ Private Sub SetControlsForeColor(nColor As Long, Optional nPrevColor As Long = -
                                 RaiseEvent ChangeControlForeColor(iStr, TypeName(iCtl), iCancel)
                                 If Not iCancel Then
                                     If iCtlIsNewTab Then
-                                        iCtl.ForeColorTabSel = nColor
-                                        
+                                        If iCtl.ForeColor = iCtl.ForeColorTabSel Then
+                                            iCtl.ForeColor = nColor
+                                        Else
+                                            iCtl.ForeColorTabSel = nColor
+                                        End If
                                     Else
                                         iCtl.ForeColor = nColor
                                     End If
