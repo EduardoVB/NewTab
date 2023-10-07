@@ -9457,6 +9457,7 @@ Private Sub SetControlsForeColor(nColor As Long, Optional nPrevColor As Long = -
     Dim iContainer As Object
     Dim iContainer_Prev As Object
     Dim iStr As String
+    Dim iCtlIsNewTab As Boolean
     
     On Error Resume Next
     Set iControls = UserControl.Parent.Controls
@@ -9483,7 +9484,12 @@ Private Sub SetControlsForeColor(nColor As Long, Optional nPrevColor As Long = -
             Do Until iContainer Is Nothing
                 If iContainer Is UserControl.Extender Then
                     iLng = -1
-                    iLng = iCtl.ForeColor
+                    If TypeName(iCtl) = TypeName(Me) Then
+                        iLng = iCtl.ForeColorTabSel
+                        iCtlIsNewTab = True
+                    Else
+                        iLng = iCtl.ForeColor
+                    End If
                     If iLng <> -1 Then
                         If (iLng = vbButtonText) And (nColor <> vbButtonText) Or (iLng = nPrevColor) Then
                             iCancel = False
@@ -9498,7 +9504,12 @@ Private Sub SetControlsForeColor(nColor As Long, Optional nPrevColor As Long = -
                                 iStr = iCtl.Name
                                 RaiseEvent ChangeControlForeColor(iStr, TypeName(iCtl), iCancel)
                                 If Not iCancel Then
-                                    iCtl.ForeColor = nColor
+                                    If iCtlIsNewTab Then
+                                        iCtl.ForeColorTabSel = nColor
+                                        
+                                    Else
+                                        iCtl.ForeColor = nColor
+                                    End If
                                 End If
                             End If
                         End If
