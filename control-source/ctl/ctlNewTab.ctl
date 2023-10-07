@@ -7226,7 +7226,7 @@ Private Sub DrawTab(nTab As Long)
                 End If
             ElseIf mAppearanceIsFlat Then
                 If (iFlatBarTopHeight > 0) Then
-                    FillCurvedGradient2 .Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset, .Top + iTopOffset + iFlatBarTopHeight, iFlatBarTopColor, iFlatBarTopColor, iFlatLeftRoundness, iFlatRightRoundness
+                    FillCurvedGradient2 .Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 2, 0), .Top + iTopOffset + iFlatBarTopHeight, iFlatBarTopColor, iFlatBarTopColor, iFlatLeftRoundness, iFlatRightRoundness
                     If iHighlighted And (iFlatBarTopHeight > 1) Then
                         If IIf(iActive, mHighlightFlatBarWithGripTabSel, mHighlightFlatBarWithGrip) Then
                             Dim iTriangle(2) As POINTAPI
@@ -7485,7 +7485,7 @@ Private Sub DrawTab(nTab As Long)
                             iLineColor = IIf((mFlatBorderMode = ntBorderTabs) Or iActive, iFlatBorderColor, iFlatTabsSeparationLineColor)
                         End If
                         If iLineColor <> mBackColorTabs2 Then
-                            DrawRoundedCorner ntCornerTopRight, .Right + iRightOffset, .Top + iTopOffset, iFlatRightRoundness, iLineColor
+                            DrawRoundedCorner ntCornerTopRight, .Right + iRightOffset, .Top + iTopOffset, iFlatRightRoundness, iLineColor, iFlatBarTopHeight
                         End If
                     End If
                 End If
@@ -7540,7 +7540,7 @@ Private Sub DrawTab(nTab As Long)
                             iLineColor = IIf((mFlatBorderMode = ntBorderTabs) Or (iActive And (mFlatBorderMode = ntBorderTabSel)), iFlatBorderColor, iFlatTabsSeparationLineColor)
                         End If
                         If iLineColor <> mBackColorTabs2 Then
-                            DrawRoundedCorner ntCornerTopleft, .Left + iLeftOffset, .Top + iTopOffset, iFlatLeftRoundness, iLineColor
+                            DrawRoundedCorner ntCornerTopleft, .Left + iLeftOffset, .Top + iTopOffset, iFlatLeftRoundness, iLineColor, iFlatBarTopHeight
                         End If
                     End If
                 End If
@@ -7581,6 +7581,7 @@ Private Sub DrawTab(nTab As Long)
                     End If
                 End If
             End If
+        
         End If
     End With
 End Sub
@@ -8752,14 +8753,14 @@ Private Sub FillCurvedGradient2(ByVal nLeft As Long, ByVal nTop As Long, ByVal n
     End If
 End Sub
 
-Private Sub DrawRoundedCorner(ByVal nCorner As NTCornerPositionConstants, ByVal nX As Long, ByVal nY As Long, ByVal nRoundness As Long, ByVal nColor As Long)
+Private Sub DrawRoundedCorner(ByVal nCorner As NTCornerPositionConstants, ByVal nX As Long, ByVal nY As Long, ByVal nRoundness As Long, ByVal nColor As Long, Optional nSkipAtTop As Long)
     Dim iX As Long
     Dim iY As Long
     Dim iDistance As Single
     
     If nCorner = ntCornerTopRight Then
         For iX = nX To nX - nRoundness Step -1
-            For iY = nY To nY + nRoundness
+            For iY = nY + nSkipAtTop To nY + nRoundness
                 iDistance = Sqr((nRoundness - (iX - nX + nRoundness * 2)) ^ 2 + (nRoundness - (iY - (nY))) ^ 2) - nRoundness
                 If (Abs(iDistance) < 1) Then
                     SetPixelV picDraw.hDC, iX, iY, MixColors(nColor, GetPixel(picDraw.hDC, iX, iY), (1 - Abs(iDistance)) * 100)
@@ -8768,7 +8769,7 @@ Private Sub DrawRoundedCorner(ByVal nCorner As NTCornerPositionConstants, ByVal 
         Next
     ElseIf nCorner = ntCornerTopleft Then
         For iX = nX To nX + nRoundness
-            For iY = nY To nY + nRoundness
+            For iY = nY + nSkipAtTop To nY + nRoundness
                 iDistance = Sqr((nRoundness - ((nX - iX) + nRoundness * 2)) ^ 2 + (nRoundness - (iY - (nY))) ^ 2) - nRoundness
                 If (Abs(iDistance) < 1) Then
                     SetPixelV picDraw.hDC, iX, iY, MixColors(nColor, GetPixel(picDraw.hDC, iX, iY), (1 - Abs(iDistance)) * 100)
@@ -9551,11 +9552,7 @@ Private Sub SetControlsForeColor(nColor As Long, Optional nPrevColor As Long = -
                                 RaiseEvent ChangeControlForeColor(iStr, TypeName(iCtl), iCancel)
                                 If Not iCancel Then
                                     If iCtlIsNewTab Then
-                                        If iCtl.ForeColor = iCtl.ForeColorTabSel Then
-                                            iCtl.ForeColor = nColor
-                                        Else
-                                            iCtl.ForeColorTabSel = nColor
-                                        End If
+                                        iCtl.ForeColorTabSel = nColor
                                     Else
                                         iCtl.ForeColor = nColor
                                     End If
