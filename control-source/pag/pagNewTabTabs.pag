@@ -1422,6 +1422,7 @@ Private Sub cmdMoveNext_Click()
     iTD = mTabData(mTabSel)
     mTabData(mTabSel) = mTabData(mTabSel + 1)
     mTabData(mTabSel + 1) = iTD
+    DoShowTabData
     mTabSel = mTabSel + 1
     Changed = True
     ShowTabData
@@ -1442,6 +1443,7 @@ Private Sub cmdMovePrevious_Click()
     iTD = mTabData(mTabSel)
     mTabData(mTabSel) = mTabData(mTabSel - 1)
     mTabData(mTabSel - 1) = iTD
+    DoShowTabData
     mTabSel = mTabSel - 1
     Changed = True
     ShowTabData
