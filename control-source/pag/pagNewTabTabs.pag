@@ -1768,6 +1768,7 @@ Private Sub PropertyPage_ApplyChanges()
     Dim t As Integer
     Dim iSC As NewTab
     Dim iDefaultIconFont As StdFont
+    Dim c As Long
     
     Set iDefaultIconFont = New StdFont
     iDefaultIconFont.Name = cPropDef_IconFontName
@@ -1785,7 +1786,7 @@ Private Sub PropertyPage_ApplyChanges()
         Set iSC.TabPic16(t) = mTabData(t).Pic16
         Set iSC.TabPic20(t) = mTabData(t).Pic20
         Set iSC.TabPic24(t) = mTabData(t).Pic24
-        Set iSC.TabControlsNames(t) = mTabData(t).Controls
+        If Not mTDIMode Then Set iSC.TabControlsNames(t) = mTabData(t).Controls
         If mTabData(t).IconFont Is Nothing Then
             Set iSC.TabIconFont(t) = Nothing
         ElseIf FontsAreEqual(mTabData(t).IconFont, iDefaultIconFont) Then
@@ -1797,13 +1798,12 @@ Private Sub PropertyPage_ApplyChanges()
         iSC.TabIconLeftOffset(t) = mTabData(t).IconLeftOffset
         iSC.TabIconTopOffset(t) = mTabData(t).IconTopOffset
     Next t
-    For t = mTabs - 1 To iSC.Tabs - 1
-        Set iSC.TabControlsNames(t) = New Collection
-    Next
     If Not mTDIMode Then
+        For t = mTabs To iSC.Tabs - 1
+            Set iSC.TabControlsNames(t) = New Collection
+        Next
         iSC.Tabs = mTabs
     End If
-    iSC.CheckContainedControlsConsistency
     iSC.MakeContainedControlsInSelTabVisible
     gPagTabsApplyTime = Timer
     gPagTabsLastTabSel = mTabSel

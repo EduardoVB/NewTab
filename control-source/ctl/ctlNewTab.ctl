@@ -11121,7 +11121,7 @@ Friend Sub MakeContainedControlsInSelTabVisible()
     Err.Clear
 End Sub
 
-Friend Sub CheckContainedControlsConsistency(Optional nCheckControlsThatChangedToArray As Boolean)
+Private Sub CheckContainedControlsConsistency(Optional nCheckControlsThatChangedToArray As Boolean)
     Dim t As Long
     Dim iCCList As Collection
     Dim iAllCtInTabs As Collection
