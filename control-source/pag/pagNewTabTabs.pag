@@ -1775,9 +1775,6 @@ Private Sub PropertyPage_ApplyChanges()
     
     Set iSC = SelectedControls(0)
     iSC.HideAllContainedControls
-    If Not mTDIMode Then
-        iSC.Tabs = mTabs
-    End If
     iSC.IconAlignment = cboIconAlignment.ItemData(cboIconAlignment.ListIndex)
     For t = 0 To mTabs - 1
         iSC.TabCaption(t) = mTabData(t).Caption
@@ -1800,6 +1797,13 @@ Private Sub PropertyPage_ApplyChanges()
         iSC.TabIconLeftOffset(t) = mTabData(t).IconLeftOffset
         iSC.TabIconTopOffset(t) = mTabData(t).IconTopOffset
     Next t
+    For t = mTabs - 1 To iSC.Tabs - 1
+        Set iSC.TabControlsNames(t) = New Collection
+    Next
+    If Not mTDIMode Then
+        iSC.Tabs = mTabs
+    End If
+    iSC.CheckContainedControlsConsistency
     iSC.MakeContainedControlsInSelTabVisible
     gPagTabsApplyTime = Timer
     gPagTabsLastTabSel = mTabSel
