@@ -293,6 +293,7 @@ Private Type XFORM
     eDy As Single
 End Type
 
+Private Declare Sub Sleep Lib "Kernel32" (ByVal dwMilliseconds As Long)
 Private Declare Function SetGraphicsMode Lib "gdi32" (ByVal hDC As Long, ByVal iMode As Long) As Long
 Private Declare Function SetWorldTransform Lib "gdi32" (ByVal hDC As Long, lpXform As XFORM) As Long
 Private Declare Function GetWorldTransform Lib "gdi32" (ByVal hDC As Long, lpXform As XFORM) As Long
@@ -327,7 +328,7 @@ Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC A
 Private Const LOGPIXELSX As Long = 88
 Private Const LOGPIXELSY As Long = 90
 
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
+Private Declare Sub CopyMemory Lib "Kernel32" Alias "RtlMoveMemory" (lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
 Private Declare Function GetForegroundWindow Lib "user32" () As Long
 Private Declare Function ValidateRect Lib "user32" (ByVal hWnd As Long, lpRect As RECT) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hWnd As Long, lpRect As RECT) As Long
@@ -486,7 +487,7 @@ Private Const STAP_ALLOW_CONTROLS As Long = (1 * (2 ^ 1))
 
 Private Declare Function FindWindowEx Lib "user32" Alias "FindWindowExA" (ByVal hWndParent As Long, ByVal hwndChildAfter As Long, ByVal lpszClass As String, ByVal lpszCaption As String) As Long
 Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, lpdwProcessId As Long) As Long
-Private Declare Function GetCurrentProcessId Lib "kernel32" () As Long
+Private Declare Function GetCurrentProcessId Lib "Kernel32" () As Long
 
 
 Private Const cAuxTransparentColor As Long = &HFF01FF ' Not the MaskColor, but another transparent color for internal operations
@@ -4137,7 +4138,8 @@ Private Sub UserControl_InitProperties()
     mOLEDropOnOtherTabs = cPropDef_OLEDropOnOtherTabs
     mCanReorderTabs = cPropDef_CanReorderTabs
     mTDIMode = cPropDef_TDIMode
-    
+    mTabTransition = cPropDef_TabTransition: PropertyChanged "TabTransition"
+
     If mHandleHighContrastTheme Then CheckHighContrastTheme
     mPropertiesReady = True
     
@@ -4250,7 +4252,6 @@ Friend Sub SetDefaultPropertyValues(Optional nSetControlsColors As Boolean)
     mFlatBorderColor_IsAutomatic = True: PropertyChanged "FlatBorderColor"
     mHighlightColor_IsAutomatic = True: PropertyChanged "HighlightColor"
     mHighlightColorTabSel_IsAutomatic = True: PropertyChanged "HighlightColorTabSel"
-    mTabTransition = cPropDef_TabTransition: PropertyChanged "TabTransition"
     mFlatRoundnessTop = cPropDef_FlatRoundnessTop: PropertyChanged "FlatRoundnessTop"
     mFlatRoundnessTopDPIScaled = mFlatRoundnessTop * mDPIScale
     mFlatRoundnessBottom = cPropDef_FlatRoundnessBottom: PropertyChanged "FlatRoundnessBottom"
@@ -12403,8 +12404,10 @@ Private Sub ShowPicCover()
     iRect.Left = iRect.Left + mTabBodyRect.Left
     iRect.Top = iRect.Top + mTabBodyRect.Top
     
-    If iRect.Right > (iFormRect.Right - 2) Then iRect.Right = iFormRect.Right - 2
-    If iRect.Bottom > (iFormRect.Bottom - 2) Then iRect.Bottom = iFormRect.Bottom - 2
+    If mFormHwnd <> 0 Then
+        If iRect.Right > (iFormRect.Right - 2) Then iRect.Right = iFormRect.Right - 2
+        If iRect.Bottom > (iFormRect.Bottom - 2) Then iRect.Bottom = iFormRect.Bottom - 2
+    End If
     
     picCover.Visible = False
     SetParent picCover.hWnd, 0
@@ -12429,9 +12432,11 @@ Private Sub ShowPicCover()
     ReleaseDC mUserControlHwnd, iDC
     picCover.Refresh
     
-    Do Until (mTabTransition_Step = 0) Or (picCover.Visible = False) Or (tmrTabTransition.Enabled = False)
-        DoEvents
-    Loop
+    Sleep 30
+    
+'    Do Until (mTabTransition_Step = 0) Or (picCover.Visible = False) Or (tmrTabTransition.Enabled = False)
+'        DoEvents
+'    Loop
     sShowing = False
 End Sub
 

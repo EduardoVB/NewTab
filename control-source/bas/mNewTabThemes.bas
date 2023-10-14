@@ -487,7 +487,7 @@ Public Sub ApplyThemeToControl(ByRef nThemeData As Collection, nCtl As NewTab, n
             Case "AutoRelocateControls"
                 nCtl.AutoRelocateControls = Val(iProp.Value)
             Case "TabTransition"
-                nCtl.TabTransition = Val(iProp.Value)
+                If Val(iProp.Value) = 0 Then nCtl.TabTransition = 0
             Case "FlatBorderMode"
                 nCtl.FlatBorderMode = Val(iProp.Value)
             Case "FlatBarPosition"
