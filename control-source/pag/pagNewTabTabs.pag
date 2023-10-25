@@ -1769,6 +1769,7 @@ Private Sub PropertyPage_ApplyChanges()
     Dim iSC As NewTab
     Dim iDefaultIconFont As StdFont
     Dim c As Long
+    Dim iTabsPrev As Long
     
     Set iDefaultIconFont = New StdFont
     iDefaultIconFont.Name = cPropDef_IconFontName
@@ -1777,6 +1778,12 @@ Private Sub PropertyPage_ApplyChanges()
     Set iSC = SelectedControls(0)
     iSC.HideAllContainedControls
     iSC.IconAlignment = cboIconAlignment.ItemData(cboIconAlignment.ListIndex)
+    iTabsPrev = iSC.Tabs
+    If Not mTDIMode Then
+        If mTabs > iSC.Tabs Then
+            iSC.Tabs = mTabs
+        End If
+    End If
     For t = 0 To mTabs - 1
         iSC.TabCaption(t) = mTabData(t).Caption
         iSC.TabToolTipText(t) = mTabData(t).ToolTipText
@@ -1799,7 +1806,7 @@ Private Sub PropertyPage_ApplyChanges()
         iSC.TabIconTopOffset(t) = mTabData(t).IconTopOffset
     Next t
     If Not mTDIMode Then
-        For t = mTabs To iSC.Tabs - 1
+        For t = mTabs To iTabsPrev - 1
             Set iSC.TabControlsNames(t) = New Collection
         Next
         iSC.Tabs = mTabs
