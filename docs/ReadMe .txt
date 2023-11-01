@@ -14,6 +14,6 @@ If you have many forms you can use a program to make a global text replace in al
 Code for the manifest file to make a SxS installation:
 
   <file name="NewTab01.ocx">
-    <typelib tlbid="{66E63055-5A66-4C79-9327-4BC077858695}" version="3.1" flags="control" helpdir="" />
+    <typelib tlbid="{66E63055-5A66-4C79-9327-4BC077858695}" version="3.2" flags="control" helpdir="" />
     <comClass clsid="{6C9D299A-B6CC-40B8-A155-4D3F154F6584}" tlbid="{66E63055-5A66-4C79-9327-4BC077858695}" threadingModel="Apartment" progid="NewTabCtl.NewTab" miscStatusIcon="recomposeonresize,cantlinkinside,insideout,activatewhenvisible,simpleframe,setclientsitefirst" description="Tabbed control for VB6." />
   </file>

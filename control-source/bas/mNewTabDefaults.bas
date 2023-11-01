@@ -45,3 +45,4 @@ Public Const cPropDef_FlatBodySeparationLineHeight As Long = 1
 Public Const cPropDef_TabMaxWidth As Long = 0
 Public Const cPropDef_TabMinWidth As Long = 0
 Public Const cPropDef_SubclassingMethod As Long = ntSMSetWindowSubclass
+Public Const cPropDef_TabsRightFreeSpace As Long = 0

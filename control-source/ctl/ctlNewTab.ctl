@@ -882,7 +882,8 @@ Private mFlatBarPosition As NTFlatBarPosition
 Private mFlatBodySeparationLineHeight As Long
 Private mSubclassingMethod As NTSubclassingMethodConstants
 Private mOnlySubclassUserControl As Boolean
-
+Private mTabsRightFreeSpace As Long
+ 
 ' Variables
 Private mTabBodyStart As Long ' in Pixels
 Private mTabBodyHeight As Long ' in Pixels
@@ -4107,6 +4108,7 @@ Private Sub UserControl_InitProperties()
     
     mTabSel = 0
     
+    mTabsRightFreeSpace = cPropDef_TabsRightFreeSpace
     mSubclassingMethod = cPropDef_SubclassingMethod
     mChangeControlsBackColor = cPropDef_ChangeControlsBackColor: PropertyChanged "ChangeControlsBackColor"
     mChangeControlsForeColor = cPropDef_ChangeControlsForeColor: PropertyChanged "ChangeControlsForeColor"
@@ -4949,6 +4951,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     End If
     On Error GoTo 0
     
+    mTabsRightFreeSpace = PropBag.ReadProperty("TabsRightFreeSpace", cPropDef_TabsRightFreeSpace)
     mSubclassingMethod = PropBag.ReadProperty("SubclassingMethod", cPropDef_SubclassingMethod)
     iLeftOffsetToHideWhenSaved = PropBag.ReadProperty("LeftOffsetToHideWhenSaved", 75000)
     If iLeftOffsetToHideWhenSaved <> mLeftOffsetToHide Then
@@ -5490,6 +5493,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     
     StoreVisibleControlsInSelectedTab
     
+    PropBag.WriteProperty "TabsRightFreeSpace", mTabsRightFreeSpace, cPropDef_TabsRightFreeSpace
     PropBag.WriteProperty "SubclassingMethod", mSubclassingMethod, cPropDef_SubclassingMethod
     PropBag.WriteProperty "Tabs", mTabs, 3
     PropBag.WriteProperty "BackColor", mBackColor, Ambient.BackColor
@@ -5682,6 +5686,7 @@ Private Sub Draw()
     Dim iAvailableSpaceForTabsPrev As Long
     Dim iRowIsFilled() As Boolean
     Dim iRowStretchRatio As Single
+    Dim iScaleWidthForTabs As Long
     
     If mUserControlTerminated Then Exit Sub
     
@@ -5866,6 +5871,8 @@ Private Sub Draw()
         iScaleHeight = mScaleWidth
     End If
     
+    iScaleWidthForTabs = iScaleWidth - ScaleX(mTabsRightFreeSpace, vbTwips, vbPixels)
+    If iScaleWidthForTabs < 1 Then iScaleWidthForTabs = 1
     ' measure tab captions and pic width
     ctv = -1
     If (mTabWidthStyle2 = ntTWTabStripEmulation) Or (mTabWidthStyle2 = ntTWStretchToFill) Then
@@ -5910,7 +5917,7 @@ Private Sub Draw()
                     iTotalTabWidth = iTotalTabWidth + mTabData(t).IconAndCaptionWidth + 10 + mTabSeparation2
                 End If
             Next
-            iAvailableSpaceForTabs = (iScaleWidth - IIf(mAppearanceIsPP, 4, 0))
+            iAvailableSpaceForTabs = (iScaleWidthForTabs - IIf(mAppearanceIsPP, 4, 0))
             ReDim iRowIsFilled(0)
             Do
                 iRow = 0
@@ -5957,7 +5964,7 @@ Private Sub Draw()
                 mRows = iRow + 1
                 
                 iAvailableSpaceForTabsPrev = iAvailableSpaceForTabs
-                iAvailableSpaceForTabs = (iScaleWidth - IIf(mAppearanceIsPP, 4, 0)) - iRowPerspectiveSpace * (mRows - 1)
+                iAvailableSpaceForTabs = (iScaleWidthForTabs - IIf(mAppearanceIsPP, 4, 0)) - iRowPerspectiveSpace * (mRows - 1)
                 If iAvailableSpaceForTabs = iAvailableSpaceForTabsPrev Then Exit Do
                 ReDim iRowIsFilled(mRows - 1)
             Loop
@@ -6020,7 +6027,7 @@ Private Sub Draw()
         iARPSTmp = 0
         Do
             iAllRowsPerspectiveSpace = iARPSTmp
-            iAvailableSpaceForTabs = (iScaleWidth - iAllRowsPerspectiveSpace - IIf(mAppearanceIsPP, 4, 0))
+            iAvailableSpaceForTabs = (iScaleWidthForTabs - iAllRowsPerspectiveSpace - IIf(mAppearanceIsPP, 4, 0))
             iAccumulatedTabWith = 0
             iAccumulatedAdditionalFixedTabSpace = 0
             iRow = 0
@@ -6268,7 +6275,7 @@ Private Sub Draw()
     End If
     
     If (mTabWidthStyle2 = ntTWTabCaptionWidth) Or (mTabWidthStyle2 = ntTWTabCaptionWidthFillRows) Then
-        iAvailableSpaceForTabs = (iScaleWidth - iAllRowsPerspectiveSpace - IIf(mAppearanceIsPP, 4, 0))
+        iAvailableSpaceForTabs = (iScaleWidthForTabs - iAllRowsPerspectiveSpace - IIf(mAppearanceIsPP, 4, 0))
         For iRow = 0 To mRows - 1
             iAccumulatedTabWith = 0
             iAccumulatedAdditionalFixedTabSpace = 0
@@ -13323,6 +13330,17 @@ Private Sub TDIUnloadTabControls(nTabNumber As Long)
 End Sub
 
 
+Public Property Let TabsRightFreeSpace(ByVal nValue As Long)
+    If nValue <> mTabsRightFreeSpace Then
+        mTabsRightFreeSpace = nValue
+        PropertyChanged "TabsRightFreeSpace"
+        DrawDelayed
+    End If
+End Property
+
+Public Property Get TabsRightFreeSpace() As Long
+    TabsRightFreeSpace = mTabsRightFreeSpace
+End Property
 
 'Tab is a reserved keyword in VB6, but you can remove that restriction.
 'To be able to compile with Tab property, you need to replace VBA6.DLL with this version: https://github.com/EduardoVB/NewTab/raw/main/control-source/lib/VBA6.DLL
