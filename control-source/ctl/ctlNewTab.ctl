@@ -8084,7 +8084,8 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
         iPicHeight = (iIconCharRect.Bottom - iIconCharRect.Top)
     ElseIf Not iTabData.PicToUse Is Nothing Then
         iDrawIcon = True
-        If iTabData.Enabled And mEnabled Then
+        'If iTabData.Enabled And mEnabled Then
+        If iTabData.Enabled Then
             Set iAuxPicture = iTabData.PicToUse
         Else
             If iTabData.PicToUse.Type = vbPicTypeBitmap Then
@@ -13331,6 +13332,7 @@ End Sub
 
 
 Public Property Let TabsRightFreeSpace(ByVal nValue As Long)
+Attribute TabsRightFreeSpace.VB_Description = "Returns/sets the size of an optional free space after the rightmost tab."
     If nValue <> mTabsRightFreeSpace Then
         mTabsRightFreeSpace = nValue
         PropertyChanged "TabsRightFreeSpace"

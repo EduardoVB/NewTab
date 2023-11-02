@@ -1,3 +1,4 @@
+2023-11-02 Bitmaps images in tabs are not grayed anymore when the whole control is disabled, only when the particular tab is disabled. 
 2023-11-01 Added property TabsRightFreeSpace, that allows to set a free space after the rightmost tab but without affecting the whole control width.
 2023-10-14 Fix in TabTransition property.
 2023-10-10 Fix in pagNewTabTabs property page. 
