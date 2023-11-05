@@ -1055,7 +1055,6 @@ Private mUserControlTerminated As Boolean
 Private mFlatBarHighlightEffectColors(10) As Long
 Private mHighlightEffectColors_Light(10) As Long
 Private mTabTransition_Step As Long
-Private mOldpicCoverOwnerHwnd As Long
 Private mFlatRoundnessTop2 As Long
 Private mFlatRoundnessTabs2 As Long
 Private mRightMostTabsRightPos() As Long
@@ -1169,7 +1168,6 @@ End Property
 Public Property Get IconFont() As StdFont
 Attribute IconFont.VB_Description = "Returns/sets the Font that will be used to draw the icon of the currently selected tab."
 Attribute IconFont.VB_ProcData.VB_Invoke_Property = ";Fuente"
-Attribute IconFont.VB_MemberFlags = "40"
     Set IconFont = TabIconFont(mTabSel)
 End Property
 
@@ -6282,7 +6280,7 @@ Private Sub Draw()
             For t = 0 To mTabs - 1
                 If mTabData(t).Row = iRow Then
                     iAccumulatedTabWith = iAccumulatedTabWith + mTabData(t).IconAndCaptionWidth
-                    iAccumulatedAdditionalFixedTabSpace = iAccumulatedAdditionalFixedTabSpace + 10
+                    iAccumulatedAdditionalFixedTabSpace = iAccumulatedAdditionalFixedTabSpace + 12
                     If Not mTabData(t).RightTab Then
                         iAccumulatedAdditionalFixedTabSpace = iAccumulatedAdditionalFixedTabSpace + mTabSeparation2
                     End If
@@ -11908,7 +11906,7 @@ Public Property Let ControlLeft(ByVal ControlName As String, ByVal Left As Singl
     End If
 End Property
 
-Public Sub ControlMove(ByVal nControlName As String, ByVal Left As Single, ByVal Top As Single, ByVal Width As Single, ByVal Height As Single, Optional OnThisTab As Integer = -1)
+Public Sub ControlMove(ByVal nControlName As String, ByVal Left As Single, ByVal Top As Single, Optional ByVal Width, Optional ByVal Height, Optional IndexOfOtherTabToMoveTheControl As Integer = -1)
 Attribute ControlMove.VB_Description = "Replaces the ControlName.Move method. The difference is that it takes into account the Left offset of controls on inactive tabs."
     Dim iCtl As Object
     Dim iFound As Boolean
@@ -11953,6 +11951,12 @@ Attribute ControlMove.VB_Description = "Replaces the ControlName.Move method. Th
             iAuxLeft = iCtl.Left
         End If
         If iIsLine Then
+            If IsMissing(Width) Then
+                Width = Abs(iCtl.X2 - iCtl.X1)
+            End If
+            If IsMissing(Height) Then
+                Height = Abs(iCtl.Y2 - iCtl.Y1)
+            End If
             If iAuxLeft < -mLeftThresholdHided Then
                 iCtl.X1 = Left - mLeftOffsetToHide
             Else
@@ -11963,6 +11967,12 @@ Attribute ControlMove.VB_Description = "Replaces the ControlName.Move method. Th
             iCtl.Y2 = iCtl.Y1 + Height
             iAuxLeft = iCtl.X1
         Else
+            If IsMissing(Width) Then
+                Width = iCtl.Width
+            End If
+            If IsMissing(Height) Then
+                Height = iCtl.Height
+            End If
             If iAuxLeft < -mLeftThresholdHided Then
                 iCtl.Move Left - mLeftOffsetToHide, Top, Width, Height
             Else
@@ -11970,13 +11980,13 @@ Attribute ControlMove.VB_Description = "Replaces the ControlName.Move method. Th
             End If
             iAuxLeft = iCtl.Left
         End If
-        If OnThisTab > -1 Then
+        If IndexOfOtherTabToMoveTheControl > -1 Then
             iCtlName = ControlName(iCtl)
             iFound = False
             For t = 0 To mTabs - 1
                 For c = 1 To mTabData(t).Controls.Count
                     If mTabData(t).Controls(c) = iCtlName Then
-                        If t <> OnThisTab Then
+                        If t <> IndexOfOtherTabToMoveTheControl Then
                             mTabData(t).Controls.Remove iCtlName
                         Else
                             iFound = True
@@ -11986,15 +11996,15 @@ Attribute ControlMove.VB_Description = "Replaces the ControlName.Move method. Th
                 Next
                 If iFound Then Exit For
             Next
-            mTabData(OnThisTab).Controls.Add iCtlName, iCtlName
-            If (iAuxLeft < -mLeftThresholdHided) And (OnThisTab = mTabSel) Then
+            mTabData(IndexOfOtherTabToMoveTheControl).Controls.Add iCtlName, iCtlName
+            If (iAuxLeft < -mLeftThresholdHided) And (IndexOfOtherTabToMoveTheControl = mTabSel) Then
                 If iIsLine Then
                     iCtl.X1 = iCtl.X1 + mLeftOffsetToHide
                     iCtl.X2 = iCtl.X2 + mLeftOffsetToHide
                 Else
                     iCtl.Left = iCtl.Left + mLeftOffsetToHide
                 End If
-            ElseIf (iAuxLeft >= -mLeftThresholdHided) And (OnThisTab <> mTabSel) Then
+            ElseIf (iAuxLeft >= -mLeftThresholdHided) And (IndexOfOtherTabToMoveTheControl <> mTabSel) Then
                 If iIsLine Then
                     iCtl.X1 = iCtl.X1 - mLeftOffsetToHide
                     iCtl.X2 = iCtl.X2 - mLeftOffsetToHide
@@ -12397,6 +12407,7 @@ Private Sub ShowPicCover()
     Static sShowing As Boolean
     Dim iFormRect As RECT
     Dim iPt As POINTAPI
+    Dim iFormHwnd As Long
     
     If sShowing Or mSettingTDIMode Then Exit Sub
     sShowing = True
@@ -12406,8 +12417,13 @@ Private Sub ShowPicCover()
     End If
     
     GetWindowRect mUserControlHwnd, iRect
-    GetClientRect mFormHwnd, iFormRect
-    ClientToScreen mFormHwnd, iPt
+    If mFormHwnd = 0 Then
+        iFormHwnd = GetAncestor(UserControl.ContainerHwnd, GA_ROOT)
+    Else
+        iFormHwnd = mFormHwnd
+    End If
+    GetClientRect iFormHwnd, iFormRect
+    ClientToScreen iFormHwnd, iPt
     
     iFormRect.Left = iFormRect.Left + iPt.X
     iFormRect.Right = iFormRect.Right + iPt.X
@@ -12419,7 +12435,7 @@ Private Sub ShowPicCover()
     iRect.Left = iRect.Left + mTabBodyRect.Left
     iRect.Top = iRect.Top + mTabBodyRect.Top
     
-    If mFormHwnd <> 0 Then
+    If iFormHwnd <> 0 Then
         If iRect.Right > (iFormRect.Right) Then iRect.Right = iFormRect.Right
         If iRect.Bottom > (iFormRect.Bottom) Then iRect.Bottom = iFormRect.Bottom
     End If
@@ -12464,7 +12480,6 @@ Private Sub HidePicCover()
     
     picCover.Visible = False
     picCover.Cls
-    'SetOwner picCover.hWnd, mOldpicCoverOwnerHwnd
     SetParent picCover.hWnd, mUserControlHwnd
     iWindowStyle = GetWindowLong(picCover.hWnd, GWL_EXSTYLE)
     iWindowStyle = iWindowStyle And Not WS_EX_TOOLWINDOW And Not WS_EX_LAYERED
