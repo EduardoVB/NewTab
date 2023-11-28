@@ -1674,9 +1674,9 @@ Private Sub NewTab1_Click(PreviousTab As Integer)
         ShowTabData
         mLoading = False
         
-        If (NewTab1.Left + NewTab1.GetTabLeft(mTabSel) + NewTab1.GetTabSize(mTabSel)) > PropertyPage.ScaleWidth Then
+        If (NewTab1.Left + NewTab1.GetTabLeft(mTabSel) + NewTab1.GetTabWidth(mTabSel)) > PropertyPage.ScaleWidth Then
             tmrTabSelChanged.Enabled = True
-            NewTab1.Left = PropertyPage.ScaleWidth - (NewTab1.GetTabLeft(mTabSel) + NewTab1.GetTabSize(mTabSel)) - 120
+            NewTab1.Left = PropertyPage.ScaleWidth - (NewTab1.GetTabLeft(mTabSel) + NewTab1.GetTabWidth(mTabSel)) - 120
         ElseIf (NewTab1.Left + NewTab1.GetTabLeft(mTabSel)) < 0 Then
             tmrTabSelChanged.Enabled = True
             NewTab1.Left = 120 - NewTab1.GetTabLeft(mTabSel)

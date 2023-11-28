@@ -73,7 +73,7 @@ ChangeControlsBackColor property:
 	Type: Boolean
 	Returns or sets a value that determines if the background color of the contained controls will be changed according to the background color of the tabs (the BackColorTabSel property value).
 	
-	If VisualStyles is set to True, the background of the controls are painted with the background of the themed tab body.
+	If Windows Visual Styles are applied (Style = ntStyleWindows), the background of the controls are painted with the background of the themed tab body, so this property has no effect in that case.
 	If ChangeControlsBackColor is False, the BackColor of the contained controls is left unchanged.
 	If ChangeControlsBackColor is True, and the control is not themed, changing the BackColorTabSel propery value will also change the BackColor of the contained controls, but only when their BackColor's has the same color as the previous BackColorTabSel setting.
 	If ChangeControlsBackColor is True, and the control is themed, only the controls that has the BackColor property value set to the same color of BackColorTabSel are changed.
@@ -196,6 +196,16 @@ FlatRoundnessTop property:
 	Returns or sets the size in pixels of the roundness of the top corners.
 
 
+FlatTabBorderColorHighlight property:
+	Type: Long
+	Returns or sets the color that is used to highlight the tabs with a border when the mouse hovers on them, and the HighlightMode property has the corresponding flag ntHLFlatDrawBorder.
+
+
+FlatTabBorderColorTabSel property:
+	Type: Long
+	Returns or sets the color that is used to highlight the active tab with a border when the HighlightModeTabSel property has the corresponding flag ntHLFlatDrawBorder.
+
+
 FlatTabsSeparationLineColor property:
 	Type: Long
 	Returns or sets the color of the separation line between tabs in flat style.
@@ -213,7 +223,7 @@ ForeColor property:
 
 ForeColorHighlighted property:
 	Type: Long
-	Returns/sets the color used to draw the captions of the inactive tabs when they are highlighted because the mouse is over them.
+	Returns or sets the color used to draw the captions of the inactive tabs when they are highlighted because the mouse is over them.
 
 
 ForeColorTabSel property:
@@ -252,7 +262,7 @@ HighlightEffect property:
 
 
 HighlightMode property:
-	Type: NTHighlightModeConstants
+	Type: Long
 	Returns or sets a value that determines if and how the tabs will appear highlighted when the mouse is over them.
 	
 	This value consists in a group of flags that determine how to highlight a tab.
@@ -269,7 +279,7 @@ HighlightMode property:
 
 
 HighlightModeTabSel property:
-	Type: NTHighlightModeConstants
+	Type: Long
 	Returns or sets a value that determines if and how the selected tab will be highlighted.
 	
 	This value consists in a group of flags that determine how to highlight a tab.
@@ -386,6 +396,11 @@ MousePointer property:
 	Returns or sets the type of mouse pointer displayed when over the control.
 
 
+MouseTab property:
+	Type: Long (Read only)
+	Returns the index of the tab under the mouse. If there is no tab under the mouse it returns -1.
+
+
 Name property:
 	Type: String (Read only)
 	Returns the name used in code to identify the control.
@@ -469,7 +484,7 @@ Rows property:
 ShowDisabledState property:
 	Type: Boolean (Not available at design time)
 	Returns or sets a value that determines if the tabs color will be darkened when the control is disabled (Enabled = False).
-	If has no effect when the control is themed (VisualStyles = True).
+	If has no effect when the control is themed (Style = ntStyleWindows).
 
 
 ShowFocusRect property:
@@ -499,6 +514,11 @@ Style property:
 	The changes are internal, they are not reflected on these properties values (they remain set to Auto).
 	
 	It also can set if the control will have Windows Styles (the Windows "theme" look) or alrernatively a Flat appearance that unlocks other properties.
+
+
+SubclassingMethod property:
+	Type: NTSubclassingMethodConstants
+	Returns/sets the sublassing method, what to subclass (only the UserControl or the Form too) and if the subclassing will be enabled at all. If subclassing is disabled or partially disabled some features may not work. This property is provided in case of incompatibility with other third party controls.
 
 
 Tab property:
@@ -635,7 +655,7 @@ TabMousePointerHand property:
 
 TabOrientation property:
 	Type: NTTabOrientationConstants
-	Returns or sets a value that determines which side of the control the tabs will appear.
+	Returns or sets a value that determines on which side of the control the tabs will appear.
 
 
 TabPic16 property:
@@ -693,6 +713,11 @@ TabSel property:
 	It is an alias of Tab property.
 
 
+TabsEndFreeSpace property:
+	Type: Long
+	Returns or sets the size of an optional free space after the last tab (for top-otiented tabs that is the rightmost tab).
+
+
 TabSeparation property:
 	Type: Integer
 	Returns or sets the number of pixels of separation between tabs. The value must be between 0 (zero) and 20.
@@ -746,6 +771,9 @@ TabWidthStyle property:
 	ssTWSJustified: If there is more than one row, each tab is wide enough to accommodate its contents and, if needed, the width of each tab is increased so that each row of tabs spans the width of the control. If all the tabs fit in one row, the tabs are not justified (it works the same as ssTWSNonJustified).
 	
 	ssTWSAuto: The behavior is defined by the Style property setting.
+	
+	Note: if the TabOrientation property is set to ntTabOrientationLeftHorizontal or ntTabOrientationRightHorizontal this property has no effect since the tab widths are defined by the widest tab caption. The minimal height is defined by the TabHeight property.
+	Also TabMinWidth and TabMaxWidth property settings can be used to set the minimun and maximun tabs size for those orientations.
 
 
 Tag property:
@@ -816,9 +844,9 @@ ControlMove method:
 	    In	Required	nControlName	As	String
 	    In	Required	Left	As	Single
 	    In	Required	Top	As	Single
-	    In	Required	Width	As	Single
-	    In	Required	Height	As	Single
-	    In/Out	Optional	OnThisTab	As	Integer
+	    In	Optional	Width	As	Variant
+	    In	Optional	Height	As	Variant
+	    In/Out	Optional	IndexOfOtherTabToMoveTheControl	As	Integer
 
 	Replaces the ControlName.Move method. The difference is that it takes into account the Left offset of controls on inactive tabs.
 
@@ -838,20 +866,20 @@ Drag method:
 	Begins, ends, or cancels a drag operation.
 
 
+GetTabHeight function:
+	Return Type:	Single
+	Parameter(s):
+	    In	Required	Index	As	Variant
+
+	Returns the height of a tab.
+
+
 GetTabLeft function:
 	Return Type:	Single
 	Parameter(s):
 	    In	Required	Index	As	Variant
 
 	Returns the left position of a tab.
-
-
-GetTabSize function:
-	Return Type:	Single
-	Parameter(s):
-	    In	Required	Index	As	Variant
-
-	Returns the size of a tab (height or width depending on the TabOrientation setting). The other dimention is  provided by the TabHeight property.
 
 
 GetTabTop function:
@@ -862,11 +890,19 @@ GetTabTop function:
 	Returns the top position of a tab.
 
 
-IsVisualStyleApplied function:
+GetTabWidth function:
+	Return Type:	Single
+	Parameter(s):
+	    In	Required	Index	As	Variant
+
+	Returns the width of a tab.
+
+
+IsThemed function:
 	Return Type:	Boolean
 	No parameters.
 
-	Returns a boolean value indicating whether the visual styles are actually applied to the control or not.
+	Returns a boolean value indicating whether the Windows visual styles are applied to the control or not.
 
 
 MoveTab method:
@@ -1174,30 +1210,6 @@ TDITabClosed event:
 	It occurs after a tab was closed in TDI mode.
 
 
-*IBSSubclass object*
-Methods: 
-
-MsgResponse function:
-	Return Type:	Long
-	Parameter(s):
-	    In	Required	hWnd	As	Long
-	    In	Required	iMsg	As	Long
-
-UnsubclassIt method:
-	No parameters.
-
-WindowProc function:
-	Return Type:	Long
-	Parameter(s):
-	    In	Required	hWnd	As	Long
-	    In	Required	iMsg	As	Long
-	    In/Out	Required	wParam	As	Long
-	    In/Out	Required	lParam	As	Long
-	    In/Out	Required	bConsume	As	Boolean
-
-	Raised whenever a message you have subclassed is sent.
-
-
 *NewTabTheme object*
 - "Themes" are a set of property settings stored together.
 They are mostly about appeaarance, but it can affect behavior also with some properties.
@@ -1236,7 +1248,7 @@ Item property:
 Methods: 
 
 Exists function:
-	Return Type:	Variant
+	Return Type:	Boolean
 	Parameter(s):
 	    In	Required	nThemeName	As	String
 
@@ -1300,80 +1312,23 @@ NTFlatBorderModeConstants ENUMERATION
 	ntBorderTabs = 0
 	ntBorderTabSel = 1
 
-NTHighlightModeConstants ENUMERATION
+NTHighlightModeFlagsConstants ENUMERATION
 
 	ntHLAuto = 0
 	ntHLNone = 1
-	ntHLGradient = 2
-	ntHLDoubleGradient = 3
-	ntHLPlain = 4
-	ntHLGradientLight = 10
-	ntHLDoubleGradientLight = 11
+	ntHLBackgroundGradient = 2
+	ntHLBackgroundDoubleGradient = 3
+	ntHLBackgroundPlain = 4
+	ntHLBackgroundTypeFilter = 7
+	ntHLBackgroundLight = 8
 	ntHLCaptionBold = 16
-	ntHLGradientAndCaptionBold = 18
-	ntHLDoubleGradientAndCaptionBold = 19
-	ntHLPlainAndCaptionBold = 20
-	ntHLGradientLightAndCaptionBold = 26
-	ntHLDoubleGradientLightAndCaptionBold = 27
 	ntHLCaptionUnderlined = 32
-	ntHLGradientAndCaptionUnderlined = 34
-	ntHLGradientLightAndCaptionUnderlined = 42
-	ntHLCaptionBoldAndUnderlined = 48
 	ntHLFlatBar = 64
-	ntHLFlatBarAndGradient = 66
-	ntHLFlatBarAndPlain = 68
-	ntHLFlatBarAndGradientLight = 74
-	ntHLFlatBarAndPlainLight = 76
-	ntHLFlatBarAndCaptionBold = 80
-	ntHLFlatBarGradientAndCaptionBold = 82
-	ntHLFlatBarPlainAndCaptionBold = 84
-	ntHLFlatBarGradientLightAndCaptionBold = 90
-	ntHLFlatBarAndCaptionUnderlined = 96
-	ntHLFlatBarAndPlainAndCaptionUnderlined = 100
-	ntHLFlatBarAndCaptionBoldUnderlined = 112
-	ntHLFlatBarPlainAndCaptionBoldUnderlined = 116
+	ntHLFlatBarGrip = 128
 	ntHLFlatBarWithGrip = 196
-	ntHLFlatBarWithGripAndPlain = 196
-	ntHLFlatBarWithGripAndGradient = 198
-	ntHLFlatBarWithGripAndGradientLight = 202
-	ntHLFlatBarWithGripAndCaptionBold = 208
-	ntHLFlatBarWithGripGradientAndCaptionBold = 210
-	ntHLFlatBarWithGripPlainAndCaptionBold = 212
-	ntHLFlatBarWithGripGradientLightAndCaptionBold = 218
-	ntHLFlatBarWithGripAndCaptionUnderlined = 224
-	ntHLFlatBarWithGripPlainAndCaptionUnderlined = 228
-	ntHLFlatBarWithGripAndCaptionBoldUnderlined = 240
-	ntHLFlatBarWithGripPlainAndCaptionBoldUnderlined = 244
 	ntHLExtraHeight = 256
-	ntHLGradientAndExtraHeight = 258
-	ntHLDoubleGradientAndExtraHeight = 259
-	ntHLPlainAndExtraHeight = 260
-	ntHLGradientLightAndExtraHeight = 266
-	ntHLDoubleGradientLightAndExtraHeight = 267
-	ntHLCaptionBoldAndExtraHeight = 272
-	ntHLGradientCaptionBoldAndExtraHeight = 274
-	ntHLDoubleGradientCaptionBoldAndExtraHeight = 275
-	ntHLPlainCaptionBoldAndExtraHeight = 276
-	ntHLGradientLightCaptionBoldAndExtraHeight = 282
-	ntHLDoubleGradientLightCaptionBoldAndExtraHeight = 283
-	ntHLFlatBarAndExtraHeight = 320
-	ntHLFlatBarGradientAndExtraHeight = 322
-	ntHLFlatBarPlainAndExtraHeight = 324
-	ntHLFlatBarGradientLightAndExtraHeight = 330
-	ntHLFlatBarCaptionBoldAndExtraHeight = 336
-	ntHLFlatBarGradientCaptionBoldAndExtraHeight = 338
-	ntHLFlatBarPlainCaptionBoldAndExtraHeight = 340
-	ntHLFlatBarGradientLightCaptionBoldAndExtraHeight = 346
-	ntHLFlatBarGradientLightCaptionBoldUnderlinedAndExtraHeight = 378
-	ntHLFlatBarWithGripAndExtraHeight = 448
-	ntHLFlatBarWithGripGradientAndExtraHeight = 450
-	ntHLFlatBarWithGripPlainAndExtraHeight = 452
-	ntHLFlatBarWithGripGradientLightAndExtraHeight = 458
-	ntHLFlatBarWithGripCaptionBoldAndExtraHeight = 464
-	ntHLFlatBarWithGripGradientCaptionBoldAndExtraHeight = 466
-	ntHLFlatBarWithGripPlainCaptionBoldAndExtraHeight = 468
-	ntHLFlatBarWithGripGradientLightCaptionBoldAndExtraHeight = 474
-	ntHLFlatBarWithGripGradientLightCaptionBoldUnderlinedAndExtraHeight = 506
+	ntHLFlatDrawBorder = 512
+	ntHLAllFlags = 1023
 
 NTIconAlignmentConstants ENUMERATION
 
@@ -1428,6 +1383,14 @@ NTStyleConstants ENUMERATION
 	ntStyleFlat = 3
 	ntStyleWindows = 4
 
+NTSubclassingMethodConstants ENUMERATION
+
+	ntSMSetWindowSubclass = 0
+	ntSMSetWindowLong = 1
+	ntSMDisabled = 2
+	ntSM_SWSOnlyUserControl = 3
+	ntSM_SWLOnlyUserControl = 4
+
 NTTabAppearanceConstants ENUMERATION
 
 	ntTAAuto = 0
@@ -1443,6 +1406,8 @@ NTTabOrientationConstants ENUMERATION
 	ssTabOrientationBottom = 1
 	ssTabOrientationLeft = 2
 	ssTabOrientationRight = 3
+	ntTabOrientationLeftHorizontal = 4
+	ntTabOrientationRightHorizontal = 5
 
 NTTabTransitionConstants ENUMERATION
 

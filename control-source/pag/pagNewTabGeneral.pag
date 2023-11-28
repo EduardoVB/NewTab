@@ -399,15 +399,15 @@ Begin VB.PropertyPage pagNewTabGeneral
    Begin VB.TextBox txtTabMinWidth 
       Height          =   300
       Left            =   2330
-      TabIndex        =   47
-      Top             =   6526
+      TabIndex        =   43
+      Top             =   6166
       Width           =   588
    End
    Begin VB.TextBox txtTabMaxWidth 
       Height          =   300
       Left            =   2330
-      TabIndex        =   43
-      Top             =   6166
+      TabIndex        =   47
+      Top             =   6526
       Width           =   588
    End
    Begin VB.TextBox txtHighlightTabExtraHeight 
@@ -628,8 +628,8 @@ Begin VB.PropertyPage pagNewTabGeneral
       Caption         =   "TabMinWidth:"
       Height          =   228
       Left            =   0
-      TabIndex        =   46
-      Top             =   6574
+      TabIndex        =   42
+      Top             =   6214
       Width           =   2270
    End
    Begin VB.Label Label12 
@@ -637,8 +637,8 @@ Begin VB.PropertyPage pagNewTabGeneral
       Caption         =   "TabMaxWidth:"
       Height          =   228
       Left            =   0
-      TabIndex        =   42
-      Top             =   6214
+      TabIndex        =   46
+      Top             =   6574
       Width           =   2270
    End
    Begin VB.Label Label10 
@@ -1536,6 +1536,8 @@ Private Sub tmrLoad_Timer()
     cboTabOrientation.AddItem ssTabOrientationBottom & " - ssTabOrientationBottom": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ssTabOrientationBottom
     cboTabOrientation.AddItem ssTabOrientationLeft & " - ssTabOrientationLeft": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ssTabOrientationLeft
     cboTabOrientation.AddItem ssTabOrientationRight & " - ssTabOrientationRight": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ssTabOrientationRight
+    cboTabOrientation.AddItem ntTabOrientationLeftHorizontal & " - ntTabOrientationLeftHorizontal": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ntTabOrientationLeftHorizontal
+    cboTabOrientation.AddItem ntTabOrientationRightHorizontal & " - ntTabOrientationRightHorizontal": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ntTabOrientationRightHorizontal
     
     cboBackStyle.Clear
     cboBackStyle.AddItem ntTransparent & " - ntTransparent": cboBackStyle.ItemData(cboBackStyle.NewIndex) = ntTransparent
@@ -1617,6 +1619,8 @@ Private Sub tmrLoad_Timer()
     SelectInComboByItemData cboFlatBarPosition, iCtl.FlatBarPosition
     txtFlatBodySeparationLineHeight.Text = iCtl.FlatBodySeparationLineHeight
     
+    chkHighlightEffect.Enabled = (mHighlightMode <> ntHLNone)
+    
     Changed = False
     mLoading = False
     'Debug.Print PropertyPage.Name & " End: " & Round(Timer, 2)
@@ -1648,6 +1652,9 @@ Private Sub HighlightDropUp()
     picHighlightDropDown.Visible = False
     tmrPicDropped.Enabled = False
     SetVariablesFromPicHighlightDropDown
+    If mControlHighlightModeDropDown = ntHighlightMode Then
+        chkHighlightEffect.Enabled = (mHighlightMode <> ntHLNone)
+    End If
 End Sub
     
 Private Sub tmrRedraw_Timer()

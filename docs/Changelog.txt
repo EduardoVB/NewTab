@@ -1,3 +1,7 @@
+2023-11-28 Changed to OLE version 5.0.
+2023-11-27 Recently added TabsRightFreeSpace property renamed as TabsEndFreeSpace.
+2023-11-27 Added ntTabOrientationLeftHorizontal and ntTabOrientationRightHorizontal options to the TabOrientation property.
+2023-11-22 Several minor bugs fixed.
 2023-11-05 Changed to OLE version 4.0.
 2023-11-05 Fixed bug in Draw procedure when TabWidthStyle = 1. 
 2023-11-02 Bitmaps images in tabs are not grayed anymore when the whole control is disabled, only when the particular tab is disabled. 
