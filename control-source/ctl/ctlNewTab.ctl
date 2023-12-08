@@ -234,7 +234,7 @@ Attribute VB_Exposed = True
 Attribute VB_Description = "Tabbed control for VB6."
 Option Explicit
 
-' Uncomment the line below for IDE protection when running uncompiled (some features will be lost in the IDE-uncompiled when it is uncommented, like changing tabs with a click at design time)
+' Set the line below to 0 to disable the IDE protection (with IDE protection some features are be lost in the IDE-uncompiled when it is set to 1, like changing tabs with a click at design time)
 #Const NOSUBCLASSINIDE = 1
 
 Implements IBSSubclass
