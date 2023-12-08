@@ -14281,7 +14281,6 @@ Friend Sub TDIPutFormIntoTab(nHwndForm As Long)
     End If
     
     mTabData(mTabs - 1).Caption = GetUniqueCaption(GetWindowTitle(nHwndForm))
-    Set TabPicture(mTabs - 1) = LoadPicture("D:\Programas\Infotambo\Iconos e imagenes\Formularios\frmAnimales\1.bmp")  ' CreatePicture(iIconHandle, vbPicTypeIcon)
     DrawDelayed
     mTDIAddingNewTabForForm = False
 End Sub
