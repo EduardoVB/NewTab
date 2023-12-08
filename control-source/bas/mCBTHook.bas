@@ -81,6 +81,8 @@ Private Function WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam
                             mNewTabControl.TDIPutFormIntoTab mHwndSubclassed
                         End If
                     End If
+                Else
+                    mNewTabControl.ShowsModalForm
                 End If
             End If
         End If

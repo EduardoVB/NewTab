@@ -423,6 +423,7 @@ Private Const WM_WINDOWPOSCHANGING = &H46&
 Private Const WM_GETDPISCALEDSIZE As Long = &H2E4&
 Private Const WM_SETCURSOR As Long = &H20
 Private Const WM_ACTIVATE As Long = &H6
+Private Const WM_ACTIVATEAPP As Long = &H1C&
 
 'Private Const MA_NOACTIVATEANDEAT As Long = &H4
 Private Const WM_MOUSELEAVE As Long = &H2A3
@@ -1060,6 +1061,8 @@ Private mTDIModeFormsUnhooked As Boolean
 Private mTDIModeFormsFormData_FormHwnd() As Long
 Private mTDIModeFormsFormData_OldParentHwnd() As Long
 Private mTDIModeFormsFormData_FormIcon() As StdPicture
+Private mShowingModalForm As Boolean
+Private mAppDeactivated As Boolean
 
 Private mBackColorTabs_SavedWhileVisualStyles As Long
 Private mBackColorTabSel_SavedWhileVisualStyles As Long
@@ -3545,6 +3548,8 @@ End Sub
 
 Private Function IBSSubclass_WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, wParam As Long, lParam As Long, bConsume As Boolean) As Long
     Dim iTab As Long
+    Const WA_INACTIVE As Long = 0
+    Const WA_ACTIVE As Long = 1
     
     Select Case iMsg
         Case WM_WINDOWPOSCHANGING ' invisible controls, to prevent being moved to the visible space if they are moved by code. Unfortunately the same can't be done to Labels and other windowless controls. But at least the protection acts on windowed controls.
@@ -3789,13 +3794,15 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, 
                 End If
             End If
         Case WM_ACTIVATE
-            Const WA_INACTIVE As Long = 0
-            Const WA_ACTIVE As Long = 1
-            
             If wParam = WA_INACTIVE Then
-                'If WindowIsTDIChild(lParam) Then
-                    'PostMessage hWnd, WM_ACTIVATE, WA_ACTIVE, 0&
-                'End If
+                If WindowIsTDIChild(lParam) Then
+                    PostMessage hWnd, WM_NCACTIVATE, WA_ACTIVE, 0&
+                End If
+            End If
+        Case WM_ACTIVATEAPP
+            If wParam = WA_INACTIVE Then
+                PostMessage hWnd, WM_NCACTIVATE, WA_INACTIVE, 0&
+                mAppDeactivated = True
             End If
     End Select
 End Function
@@ -3803,7 +3810,7 @@ End Function
 Private Function WindowIsTDIChild(nHwnd) As Boolean
     Dim c As Long
     
-    For c = 1 To UBound(mTDIModeFormsFormData_FormHwnd)
+    For c = 1 To mTabs - 1
         If mTDIModeFormsFormData_FormHwnd(c) = nHwnd Then
             WindowIsTDIChild = True
             Exit Function
@@ -4291,6 +4298,7 @@ Private Sub SubclassForm()
         AttachMessage Me, mFormHwnd, WM_GETDPISCALEDSIZE
         If mTDIMode = ntTDIModeForms Then
             AttachMessage Me, mFormHwnd, WM_ACTIVATE
+            AttachMessage Me, mFormHwnd, WM_ACTIVATEAPP
         End If
     End If
 End Sub
@@ -5845,6 +5853,7 @@ Private Sub Unsubclass()
             DetachMessage Me, mFormHwnd, WM_GETDPISCALEDSIZE
             If mTDIMode = ntTDIModeForms Then
                 DetachMessage Me, mFormHwnd, WM_ACTIVATE
+                DetachMessage Me, mFormHwnd, WM_ACTIVATEAPP
             End If
             On Error GoTo 0
         End If
@@ -14416,6 +14425,12 @@ Friend Sub TDIFormClosing(nHwndForm As Long)
     Dim c As Long
     Dim i As Long
     Dim iDone As Boolean
+    Const WA_ACTIVE As Long = 1
+    
+    If mShowingModalForm Then
+        PostMessage mFormHwnd, WM_NCACTIVATE, WA_ACTIVE, 0&
+        mShowingModalForm = False
+    End If
     
     i = GetTDIModeFormsIndexOfTabFromFormHwnd(nHwndForm)
     If i > -1 Then
@@ -14448,6 +14463,12 @@ End Sub
 
 Friend Sub TDIFocusForm(nHwndForm As Long)
     Dim c As Long
+    Const WA_ACTIVE As Long = 1
+    
+    If mAppDeactivated Then
+        PostMessage mFormHwnd, WM_NCACTIVATE, WA_ACTIVE, 0&
+        mAppDeactivated = False
+    End If
     
     For c = mTabs - 1 To 1 Step -1
         If mTDIModeFormsFormData_FormHwnd(mTabData(c).Data) = nHwndForm Then
@@ -14459,6 +14480,13 @@ Friend Sub TDIFocusForm(nHwndForm As Long)
     Next
 End Sub
 
+Friend Sub ShowsModalForm()
+    Const WA_INACTIVE As Long = 0
+    
+    PostMessage mFormHwnd, WM_NCACTIVATE, WA_INACTIVE, 0&
+    mShowingModalForm = True
+End Sub
+    
 'Tab is a reserved keyword in VB6, but you can remove that restriction.
 'To be able to compile with Tab property, you need to replace VBA6.DLL with this version: https://github.com/EduardoVB/NewTab/raw/main/control-source/lib/VBA6.DLL
 'VBA6.DLL is in VS6's installation folder, usually:
