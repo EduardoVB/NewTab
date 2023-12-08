@@ -1063,6 +1063,7 @@ Private mTDIModeFormsFormData_OldParentHwnd() As Long
 Private mTDIModeFormsFormData_FormIcon() As StdPicture
 Private mShowingModalForm As Boolean
 Private mAppDeactivated As Boolean
+Private mUserControlSizeCorrectionsCounter As Long
 
 Private mBackColorTabs_SavedWhileVisualStyles As Long
 Private mBackColorTabSel_SavedWhileVisualStyles As Long
@@ -6879,54 +6880,64 @@ Private Sub Draw()
     End If
     
     ' minimun size
-    If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ssTabOrientationBottom) Then
-        If mTabBodyHeight < 3 Then
-            UserControl.Height = UserControl.Height + pScaleY(3 - mTabBodyHeight, vbPixels, vbTwips)
-            GoTo TheExit:
-        End If
-        If (mTabWidthStyle2 = ntTWFixed) Or (mTabWidthStyle2 = ntTWTabCaptionWidth) Then
-            If UserControl.Width < CLng(mTabsPerRow) * 500 + pScaleX(iAllRowsPerspectiveSpace, vbPixels, vbTwips) Then
-                UserControl.Width = CLng(mTabsPerRow) * 500 + pScaleX(iAllRowsPerspectiveSpace, vbPixels, vbTwips) + Screen_TwipsPerPixelX
-                GoTo TheExit:
-            End If
-        End If
-    Else
-        If mTabBodyHeight < 3 Then
-            iLng = UserControl.Width + pScaleX(3 - mTabBodyHeight, vbPixels, vbTwips)
-            UserControl.Width = iLng
-            GoTo TheExit:
-        End If
-        If (mTabWidthStyle2 = ntTWFixed) Or (mTabWidthStyle2 = ntTWTabCaptionWidth) Then
-            If UserControl.Height < mTabsPerRow * 500 + pScaleX(iAllRowsPerspectiveSpace, vbPixels, vbTwips) Then ' we are drawing horizontally, so ScaleX
-                UserControl.Height = mTabsPerRow * 500 + pScaleX(iAllRowsPerspectiveSpace, vbPixels, vbTwips) + Screen_TwipsPerPixely
-                GoTo TheExit:
-            End If
-        End If
-    End If
-    If (iTabMaxWidth > 0) And (mTabWidthStyle2 = ntTWFixed) Then
-        iLng = iTabMaxWidth * mTabsPerRow
+    If mUserControlSizeCorrectionsCounter < 3 Then
         If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ssTabOrientationBottom) Then
-            If pScaleX(iLng, vbPixels, vbTwips) > UserControl.Width Then
-                UserControl.Width = pScaleX(iLng, vbPixels, vbTwips)
+            If mTabBodyHeight < 3 Then
+                UserControl.Height = UserControl.Height + pScaleY(3 - mTabBodyHeight, vbPixels, vbTwips)
+                mUserControlSizeCorrectionsCounter = mUserControlSizeCorrectionsCounter + 1
                 GoTo TheExit:
             End If
+            If (mTabWidthStyle2 = ntTWFixed) Or (mTabWidthStyle2 = ntTWTabCaptionWidth) Then
+                If UserControl.Width < CLng(mTabsPerRow) * 500 + pScaleX(iAllRowsPerspectiveSpace, vbPixels, vbTwips) Then
+                    UserControl.Width = CLng(mTabsPerRow) * 500 + pScaleX(iAllRowsPerspectiveSpace, vbPixels, vbTwips) + Screen_TwipsPerPixelX
+                    mUserControlSizeCorrectionsCounter = mUserControlSizeCorrectionsCounter + 1
+                    GoTo TheExit:
+                End If
+            End If
         Else
-            If pScaleY(iLng, vbPixels, vbTwips) > UserControl.Height Then
-                UserControl.Height = pScaleY(iLng, vbPixels, vbTwips)
+            If mTabBodyHeight < 3 Then
+                iLng = UserControl.Width + pScaleX(3 - mTabBodyHeight, vbPixels, vbTwips)
+                UserControl.Width = iLng
+                mUserControlSizeCorrectionsCounter = mUserControlSizeCorrectionsCounter + 1
                 GoTo TheExit:
             End If
+            If (mTabWidthStyle2 = ntTWFixed) Or (mTabWidthStyle2 = ntTWTabCaptionWidth) Then
+                If UserControl.Height < mTabsPerRow * 500 + pScaleX(iAllRowsPerspectiveSpace, vbPixels, vbTwips) Then ' we are drawing horizontally, so ScaleX
+                    UserControl.Height = mTabsPerRow * 500 + pScaleX(iAllRowsPerspectiveSpace, vbPixels, vbTwips) + Screen_TwipsPerPixely
+                    mUserControlSizeCorrectionsCounter = mUserControlSizeCorrectionsCounter + 1
+                    GoTo TheExit:
+                End If
+            End If
         End If
-        If mAppearanceIsPP Then
-            iTabWidth = (iScaleWidth - 5 - iAllRowsPerspectiveSpace - 1 - IIf(mControlIsThemed, 2 - mThemedTabBodyRightShadowPixels, 0) - mTabSeparation2 * (mTabsPerRow - 1)) / mTabsPerRow
+        If (iTabMaxWidth > 0) And (mTabWidthStyle2 = ntTWFixed) Then
+            iLng = iTabMaxWidth * mTabsPerRow
+            If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ssTabOrientationBottom) Then
+                If pScaleX(iLng, vbPixels, vbTwips) > UserControl.Width Then
+                    UserControl.Width = pScaleX(iLng, vbPixels, vbTwips)
+                    mUserControlSizeCorrectionsCounter = mUserControlSizeCorrectionsCounter + 1
+                    GoTo TheExit:
+                End If
+            Else
+                If pScaleY(iLng, vbPixels, vbTwips) > UserControl.Height Then
+                    UserControl.Height = pScaleY(iLng, vbPixels, vbTwips)
+                    mUserControlSizeCorrectionsCounter = mUserControlSizeCorrectionsCounter + 1
+                    GoTo TheExit:
+                End If
+            End If
+            If mAppearanceIsPP Then
+                iTabWidth = (iScaleWidth - 5 - iAllRowsPerspectiveSpace - 1 - IIf(mControlIsThemed, 2 - mThemedTabBodyRightShadowPixels, 0) - mTabSeparation2 * (mTabsPerRow - 1)) / mTabsPerRow
+            Else
+                iTabWidth = (iScaleWidth - 1 - iAllRowsPerspectiveSpace - 1 - IIf(mControlIsThemed, 2 - mThemedTabBodyRightShadowPixels, 0) - mTabSeparation2 * (mTabsPerRow - 1)) / mTabsPerRow
+            End If
+            If iTabWidth > iTabMaxWidth Then
+                iTabWidth = iTabMaxWidth
+            End If
         Else
-            iTabWidth = (iScaleWidth - 1 - iAllRowsPerspectiveSpace - 1 - IIf(mControlIsThemed, 2 - mThemedTabBodyRightShadowPixels, 0) - mTabSeparation2 * (mTabsPerRow - 1)) / mTabsPerRow
+            iTabWidth = (iScaleWidth - iAllRowsPerspectiveSpace - 1 - mTabSeparation2 * (mTabsPerRow - 1)) / mTabsPerRow
         End If
-        If iTabWidth > iTabMaxWidth Then
-            iTabWidth = iTabMaxWidth
-        End If
-    Else
-        iTabWidth = (iScaleWidth - iAllRowsPerspectiveSpace - 1 - mTabSeparation2 * (mTabsPerRow - 1)) / mTabsPerRow
     End If
+    
+    mUserControlSizeCorrectionsCounter = 0
     
     If (mTabBodyWidth_Prev <> mTabBodyWidth) And (mTabBodyWidth_Prev <> 0) Or (mTabBodyHeight_Prev <> mTabBodyHeight) And (mTabBodyHeight_Prev <> 0) Then
         ResetCachedThemeImages
