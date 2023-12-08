@@ -782,8 +782,17 @@ Tag property:
 
 
 TDIMode property:
-	Type: Boolean
-	Returns or sets a value that determines if the control will be used for TDI (tabbed dialog interface). The control behavior changes in some regards in this mode because some things are automated.
+	Type: NTTDIModeConstants
+	Returns/sets a value that determines if the control will be used for TDI (tabbed document interface) and which mode (controls or forms). The control behavior changes significantly in this mode because some things are automated.
+	
+	ntTDIModeControls: Each tab is a "document". Add controls in the tab 0, all control arrays with index 0. For each new tab the controls will replicate. Add also the business code that your program needs to work.
+	
+	ntTDIModeForms: Add the tab control to the main form, resize the tab control to fit the form, and all the other forms should work automatically.
+	It is like an MDI form, but tabbed, that's why it is called 'TDI'. 
+	
+	MDI stands for Multiple Documents Interface.
+	SDI stands for Single Document Interface.
+	TDI is Tabbed Document Interface.
 
 
 Theme property:
@@ -1426,6 +1435,12 @@ NTTabWidthStyleConstants ENUMERATION
 	ntTWAuto = 3
 	ntTWStretchToFill = 4
 	ntTWTabCaptionWidthFillRows = 5
+
+NTTDIModeConstants ENUMERATION
+
+	ntTDIModeNone = 0
+	ntTDIModeControls = 1
+	ntTDIModeForms = 2
 
 NTTDINewTabTypeConstants ENUMERATION
 

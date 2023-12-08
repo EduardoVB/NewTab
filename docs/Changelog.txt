@@ -1,3 +1,6 @@
+2023-12-08 Changed to OLE version 6.0.
+2023-12-08 TDIMode property changed from boolean to Long, now there are two TDI modes: controls and forms.
+2023-12-08 Improvements in tab dragging (CanReorderTabs property).
 2023-11-28 Changed to OLE version 5.0.
 2023-11-27 Recently added TabsRightFreeSpace property renamed as TabsEndFreeSpace.
 2023-11-27 Added ntTabOrientationLeftHorizontal and ntTabOrientationRightHorizontal options to the TabOrientation property.

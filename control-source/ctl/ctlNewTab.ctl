@@ -11,6 +11,18 @@ Begin VB.UserControl NewTab
    ScaleHeight     =   2880
    ScaleWidth      =   3840
    ToolboxBitmap   =   "ctlNewTab.ctx":0068
+   Begin VB.PictureBox picTDIFormContainer 
+      BorderStyle     =   0  'None
+      Height          =   612
+      Index           =   0
+      Left            =   3120
+      ScaleHeight     =   612
+      ScaleWidth      =   492
+      TabIndex        =   9
+      Top             =   240
+      Visible         =   0   'False
+      Width           =   492
+   End
    Begin VB.Timer tmrShowTabTTT 
       Enabled         =   0   'False
       Interval        =   900
@@ -203,15 +215,15 @@ Begin VB.UserControl NewTab
       Width           =   912
    End
    Begin VB.Label lblTDILabel 
-      Alignment       =   2  'Center
+      AutoSize        =   -1  'True
       BackStyle       =   0  'Transparent
-      Caption         =   "Use Tab 0 as a template. Add all controls here, all control arrays with Index = 0."
-      Height          =   850
-      Left            =   480
+      Height          =   192
+      Left            =   468
       TabIndex        =   8
       Top             =   1080
       Visible         =   0   'False
-      Width           =   3130
+      Width           =   3156
+      WordWrap        =   -1  'True
    End
 End
 Attribute VB_Name = "NewTab"
@@ -293,6 +305,28 @@ Private Type XFORM
     eDy As Single
 End Type
 
+Private Type GUID
+    Data1 As Long
+    Data2 As Integer
+    Data3 As Integer
+    Data4(7) As Byte
+End Type
+ 
+Private Type PicBmp
+    Size As Long
+    Type As Long
+    hBmp As Long
+    hPal As Long
+    Reserved As Long
+End Type
+ 
+Private Declare Function OleCreatePictureIndirect Lib "olepro32.dll" (PicDesc As PicBmp, RefIID As GUID, ByVal fPictureOwnsHandle As Long, IPic As IPicture) As Long
+'Private Declare Function DrawIconEx Lib "user32" (ByVal hdc As Long, ByVal xLeft As Long, ByVal yTop As Long, ByVal hIcon As Long, ByVal cxWidth As Long, ByVal cyWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
+Private Declare Function GetClassLong Lib "user32.dll" Alias "GetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
+Private Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As Long) As Long
+Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextW" (ByVal hWnd As Long, ByVal lpString As Long, ByVal cch As Long) As Long
+Private Declare Function GetWindowTextLength Lib "user32" Alias "GetWindowTextLengthW" (ByVal hWnd As Long) As Long
+Private Declare Function IsWindow Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 Private Declare Function SetGraphicsMode Lib "gdi32" (ByVal hDC As Long, ByVal iMode As Long) As Long
 Private Declare Function SetWorldTransform Lib "gdi32" (ByVal hDC As Long, lpXform As XFORM) As Long
@@ -675,6 +709,12 @@ Public Enum NTSubclassingMethodConstants
     ntSM_SWLOnlyUserControl = 4
 End Enum
 
+Public Enum NTTDIModeConstants
+    ntTDIModeNone = 0
+    ntTDIModeControls = 1
+    ntTDIModeForms = 2
+End Enum
+
 ' Events
 ' Original
 Event Click(ByVal PreviousTab As Integer)
@@ -794,7 +834,8 @@ Private Type T_TabData
     TDITabNumber As Long
 End Type
 
-Private Const cRowPerspectiveSpace = 150& ' in Twips
+Private Const cRowPerspectiveSpace As Long = 150&  ' in Twips
+Private Const cTDIForms_FormIconSpace As Long = 40
 
 ' Variables for properties
 ' Original
@@ -879,7 +920,7 @@ Private WithEvents mThemesCollection As NewTabThemes
 Attribute mThemesCollection.VB_VarHelpID = -1
 Private mCurrentThemeName As String
 Private mCanReorderTabs As Boolean
-Private mTDIMode As Boolean
+Private mTDIMode As NTTDIModeConstants
 Private mFlatBarPosition As NTFlatBarPosition
 Private mFlatBodySeparationLineHeight As Long
 Private mSubclassingMethod As NTSubclassingMethodConstants
@@ -1013,6 +1054,11 @@ Private mToolTipEx As cToolTipEx
 Private mTabsAreRotatedButCaptionsAreHorizontal As Boolean
 Private mShowsRowsPerspective2 As Boolean
 Private mTabBodyResizeEventPending As Boolean
+Private mTDIAddingNewTabForForm As Boolean
+Private mTDIModeFormsUnhooked As Boolean
+Private mTDIModeFormsFormData_FormHwnd() As Long
+Private mTDIModeFormsFormData_OldParentHwnd() As Long
+Private mTDIModeFormsFormData_FormIcon() As StdPicture
 
 Private mBackColorTabs_SavedWhileVisualStyles As Long
 Private mBackColorTabSel_SavedWhileVisualStyles As Long
@@ -1352,7 +1398,7 @@ Public Property Let ForeColorTabSel(ByVal nValue As OLE_COLOR)
             If mChangeControlsForeColor Then
                 SetControlsForeColor mForeColorTabSel, iPrev
             End If
-            If mTDIMode Then
+            If mTDIMode <> ntTDIModeNone Then
                 If Not mAmbientUserMode Then lblTDILabel.ForeColor = mForeColorTabSel
             End If
             SetPropertyChanged "ForeColorTabSel"
@@ -1489,7 +1535,7 @@ Public Property Let Tabs(ByVal nValue As Integer)
     If (nValue < 1) Or (nValue > 250) Then
         RaiseError 380, TypeName(Me) ' invalid property value
         Exit Property
-    ElseIf mTDIMode Then
+    ElseIf mTDIMode <> ntTDIModeNone Then
         If Not mAmbientUserMode Then
             If Not mTDIChangingTabCount Then
                 RaiseError 1380, TypeName(Me), "Can't change Tabs in TDI mode"
@@ -1590,7 +1636,7 @@ Public Property Let TabSel(ByVal nValue As Integer)
     
     If (nValue <> mTabSel) Or mReSelTab Then
         iDo = True
-        If mTDIMode Then
+        If mTDIMode <> ntTDIModeNone Then
             If mTabData(nValue).Data = -1 Then
                 If Not (mTDIClosingATab Or mTDIAddingNewTab) Then
                     If mAmbientUserMode Then TDIAddNewTab
@@ -2931,7 +2977,7 @@ Public Property Let IconColorMouseHover(ByVal nValue As OLE_COLOR)
             mHandleHighContrastTheme_OrigIconColorMouseHover = nValue
         Else
             mIconColorMouseHover = nValue
-            If mTDIMode Then
+            If mTDIMode <> ntTDIModeNone Then
                 mTDIIconColorMouseHover = mIconColorMouseHover
             End If
             SetPropertyChanged "IconColorMouseHover"
@@ -4071,7 +4117,37 @@ Friend Sub StoreVisibleControlsInSelectedTab()
 End Sub
 
 Private Sub UserControl_Hide()
+    Dim c As Long
+    Const WM_SYSCOMMAND = &H112
+    Const SC_CLOSE = &HF060&
+    Const SW_HIDE = 0
+    Dim iHwnd As Long
+    Dim iLng As Long
+    
     mTabBodyReset = True
+    If (mTDIMode = ntTDIModeForms) And mAmbientUserMode Then
+        iLng = -1
+        On Error Resume Next
+        iLng = LBound(mTDIModeFormsFormData_FormHwnd)
+        On Error GoTo 0
+        If iLng > -1 Then
+            For c = mTabs - 1 To 0 Step -1
+                iHwnd = mTDIModeFormsFormData_FormHwnd(mTabData(c).Data)
+                If iHwnd <> 0 Then
+                    If IsWindow(iHwnd) <> 0 Then
+                        ShowWindow iHwnd, SW_HIDE
+                        SetParent iHwnd, mTDIModeFormsFormData_OldParentHwnd(mTabData(c).Data)
+                        SendMessage iHwnd, WM_SYSCOMMAND, SC_CLOSE, 0&
+                    End If
+                End If
+            Next
+        End If
+        For c = picTDIFormContainer.LBound + 1 To picTDIFormContainer.UBound
+            Unload picTDIFormContainer(c)
+        Next
+        UninstallCBTHook
+        mTDIModeFormsUnhooked = True
+    End If
 End Sub
 
 Private Sub UserControl_Initialize()
@@ -4721,7 +4797,7 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Sing
     Dim iY As Single
     Dim iXp As Single
     Dim iYp As Single
-    Dim iIconClickRaised As Boolean
+    Dim iTabIconClicked As Boolean
     Dim iForwardClickToTab As Boolean
     
     iX = X * mXCorrection
@@ -4737,19 +4813,18 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Sing
                 If (iXp - mIconClickExtendDPIScaled) <= mTabData(mTabUnderMouse).IconRect.Right Then
                     If (iYp + mIconClickExtendDPIScaled) >= mTabData(mTabUnderMouse).IconRect.Top Then
                         If (iYp - mIconClickExtendDPIScaled) <= mTabData(mTabUnderMouse).IconRect.Bottom Then
-                            If mTDIMode Then
+                            If mTDIMode <> ntTDIModeNone Then
                                 HandleTabTDIEvents
                             Else
                                 iForwardClickToTab = True
                                 RaiseEvent IconClick(mTabUnderMouse, iForwardClickToTab)
                             End If
-                            iIconClickRaised = True
+                            iTabIconClicked = True
                         End If
                     End If
                 End If
             End If
-            
-            If (Not iIconClickRaised) Or iForwardClickToTab Then
+            If (Not iTabIconClicked) Or iForwardClickToTab Then
                 If mTabData(mTabUnderMouse).Enabled Then
                     If mTabSel <> mTabUnderMouse Then
                         mHasFocus = True
@@ -4763,13 +4838,13 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Sing
         End If
         If mCanReorderTabs Then
             tmrCheckTabDrag.Enabled = False
-            If Not (mTabChangedFromAnotherRow Or mProcessingTabChange Or iIconClickRaised Or (IIf(mTDIMode, mVisibleTabs < 3, mVisibleTabs < 2))) Then
+            If Not (mTabChangedFromAnotherRow Or mProcessingTabChange Or iTabIconClicked Or (IIf(mTDIMode, mVisibleTabs < 3, mVisibleTabs < 2))) Then
                 tmrCheckTabDrag.Enabled = True
                 mMouseX = ScaleX(iX, vbTwips, vbPixels)
                 mMouseY = ScaleY(iY, vbTwips, vbPixels)
             End If
         End If
-    ElseIf (Button = vbMiddleButton) And mTDIMode Then
+    ElseIf (Button = vbMiddleButton) And (mTDIMode <> ntTDIModeNone) Then
         HandleTabTDIEvents
     ElseIf mCanReorderTabs Then
         tmrCheckTabDrag.Enabled = True
@@ -4786,33 +4861,60 @@ Private Sub HandleTabTDIEvents()
     Dim iCancel As Boolean
     Dim iLoadTabControls As Boolean
     Dim iUnloadTabControls As Boolean
+    Const WM_SYSCOMMAND = &H112
+    Const SC_CLOSE = &HF060&
+    Const SW_HIDE = 0
+    Dim iHwnd As Long
+    Dim iTabUnderMouse As Long
     
-    If mTabData(mTabUnderMouse).Data = -1 Then
+    iTabUnderMouse = mTabUnderMouse
+    If mTabData(iTabUnderMouse).Data = -1 Then
         If mAmbientUserMode Then TDIAddNewTab
     Else
-        iOpenAnother = True
+        iOpenAnother = (mTDIMode = ntTDIModeControls)
         iIsLastTab = mVisibleTabs = 2
-        iTabNumber = mTabData(mTabUnderMouse).TDITabNumber
+        iTabNumber = mTabData(iTabUnderMouse).TDITabNumber
         iUnloadTabControls = True
         RaiseEvent TDIBeforeClosingTab(iTabNumber, iIsLastTab, iOpenAnother, iUnloadTabControls, iCancel)
+        If iOpenAnother Then If (mTDIMode = ntTDIModeForms) Then iOpenAnother = False
         If mAmbientUserMode And (Not iCancel) Then
             If Not iIsLastTab Then
                 iOpenAnother = False
             End If
             Redraw = False
             mTDIClosingATab = True
-            TabVisible(mTabUnderMouse) = False
+            TabVisible(iTabUnderMouse) = False
             mTDIClosingATab = False
-            If iUnloadTabControls Then
-                TDIUnloadTabControls iTabNumber
+            If mTDIMode = ntTDIModeControls Then
+                If iUnloadTabControls Then
+                    TDIUnloadTabControls iTabNumber
+                End If
+            ElseIf mTDIMode = ntTDIModeForms Then
+                iHwnd = mTDIModeFormsFormData_FormHwnd(mTabData(iTabUnderMouse).Data)
+                If IsWindow(iHwnd) <> 0 Then
+                    ShowWindow iHwnd, SW_HIDE
+                    SetParent iHwnd, mTDIModeFormsFormData_OldParentHwnd(mTabData(iTabUnderMouse).Data)
+                    SendMessage iHwnd, WM_SYSCOMMAND, SC_CLOSE, 0&
+                End If
+                If IsWindow(iHwnd) <> 0 Then
+                    iCancel = True
+                    mTDIClosingATab = True
+                    TabVisible(iTabUnderMouse) = True
+                    mTDIClosingATab = False
+                    If (mTabData(iTabUnderMouse).Data >= picTDIFormContainer.LBound) And (mTabData(iTabUnderMouse).Data <= picTDIFormContainer.UBound) Then
+                        SetParent iHwnd, picTDIFormContainer(mTabData(iTabUnderMouse).Data).hWnd
+                    End If
+                End If
             End If
-            RaiseEvent TDITabClosed(iTabNumber, iIsLastTab)
-            If iOpenAnother Then
-                mTDILastTabNumber = mTDILastTabNumber + 1
-                iTabCaption = "Default tab"
-                iLoadTabControls = True
-                RaiseEvent TDIBeforeNewTab(ntLastTabClosed, mTDILastTabNumber, iTabCaption, iLoadTabControls, False)
-                TDIPrepareNewTab iTabCaption, iLoadTabControls
+            If Not iCancel Then
+                RaiseEvent TDITabClosed(iTabNumber, iIsLastTab)
+                If iOpenAnother Then
+                    mTDILastTabNumber = mTDILastTabNumber + 1
+                    iTabCaption = "Default tab"
+                    iLoadTabControls = True
+                    RaiseEvent TDIBeforeNewTab(ntLastTabClosed, mTDILastTabNumber, iTabCaption, iLoadTabControls, False)
+                    TDIPrepareNewTab iTabCaption, iLoadTabControls
+                End If
             End If
             Redraw = True
         End If
@@ -4828,6 +4930,9 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
     Dim iMouseOverIcon_Tab_Prev As Long
     Dim iBool As Boolean
     Dim i As Integer
+    Dim iTmpRC As RECT
+    Static sXLast As Single
+    Static sYLast As Single
     
     If mTDIAddingNewTab Then Exit Sub
     
@@ -4885,6 +4990,7 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
                     If Button = 1 Then
                         mMouseX2 = ScaleX(iX, vbTwips, vbPixels)
                         mMouseY2 = ScaleY(iY, vbTwips, vbPixels)
+                        If tmrTabDragging.Enabled Then DrawDelayed
                     Else
                         mMouseX2 = 0
                         mMouseY2 = 0
@@ -4893,18 +4999,27 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
                     
                     If mRows = 1 Then
                         If DraggingATab Then
-                            i = GetTabAtDropPoint
-                            If i > -1 Then
-                                If mTDIMode Then
-                                    If i = mTabs - 1 Then
-                                        i = i - 1
+                            If (Abs(sXLast - iX) > (Screen.TwipsPerPixelX * (mTabData(mTabSel).TabRect.Right - mTabData(mTabSel).TabRect.Left) * 0.4)) Or (Abs(sYLast - iY) > (Screen.TwipsPerPixelY * (mTabData(mTabSel).TabRect.Bottom - mTabData(mTabSel).TabRect.Top) * 0.4)) Then
+                                i = GetTabAtDropPoint
+                                sXLast = iX
+                                sYLast = iY
+                                If i > -1 Then
+                                    If mTDIMode = ntTDIModeControls Then
+                                        If i = mTabs - 1 Then
+                                            i = i - 1
+                                        End If
+                                    ElseIf mTDIMode = ntTDIModeForms Then
+                                        If i = 0 Then i = 1
                                     End If
-                                End If
-                                If mTabSel <> i Then
-                                    If (mTabSel > -1) And (i > -1) Then
-                                        mMouseX = mMouseX - mTabData(mTabSel).TabRect.Left + mTabData(i).TabRect.Left
-                                        mMouseY = mMouseY - mTabData(mTabSel).TabRect.Top + mTabData(i).TabRect.Top
-                                        MoveTab mTabSel, i
+                                    If mTabSel <> i Then
+                                        If (mTabSel > -1) And (i > -1) Then
+                                            'mMouseX = mMouseX - mTabData(mTabSel).TabRect.Left + mTabData(i).TabRect.Left
+                                            'mMouseY = mMouseY - mTabData(mTabSel).TabRect.Bottom + mTabData(i).TabRect.Bottom
+                                            iTmpRC = mTabData(mTabSel).TabRect
+                                            MoveTab mTabSel, i
+                                            mMouseX = mMouseX - iTmpRC.Left + mTabData(mTabSel).TabRect.Left
+                                            mMouseY = mMouseY - iTmpRC.Bottom + mTabData(mTabSel).TabRect.Bottom
+                                        End If
                                     End If
                                 End If
                             End If
@@ -5066,7 +5181,10 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single
     Dim iX As Single
     Dim iY As Single
     Dim i As Integer
-    
+    Dim iXp As Single
+    Dim iYp As Single
+    Dim iTabIconClicked As Boolean
+    Dim iForwardClickToTab As Boolean
     iX = X * mXCorrection
     iY = Y * mYCorrection
     
@@ -5076,6 +5194,7 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single
             RaiseEvent TabRightClick(mTabUnderMouse, Shift, iX, iY)
         End If
     End If
+    
     If mCanReorderTabs Then
         If DraggingATab Then
             If mRows = 1 Then
@@ -5086,10 +5205,12 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single
                     tmrCheckTabDrag.Enabled = False
                     i = GetTabAtDropPoint
                     If i > -1 Then
-                        If mTDIMode Then
+                        If mTDIMode = ntTDIModeControls Then
                             If i = mTabs - 1 Then
                                 i = i - 1
                             End If
+                        ElseIf mTDIMode = ntTDIModeForms Then
+                            If i = 0 Then i = 1
                         End If
                         If (mTabSel > -1) And (i > -1) Then
                             MoveTab mTabSel, i
@@ -5334,7 +5455,8 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     mFlatBarPosition = PropBag.ReadProperty("FlatBarPosition", cPropDef_FlatBarPosition)
     mCanReorderTabs = PropBag.ReadProperty("CanReorderTabs", cPropDef_CanReorderTabs)
     mTDIMode = PropBag.ReadProperty("TDIMode", cPropDef_TDIMode)
-    If mTDIMode Then mTDIIconColorMouseHover = mIconColorMouseHover
+    If mTDIMode = -1 Then mTDIMode = ntTDIModeControls
+    If (mTDIMode <> ntTDIModeNone) Then mTDIIconColorMouseHover = mIconColorMouseHover
     mFlatBodySeparationLineHeight = PropBag.ReadProperty("FlatBodySeparationLineHeight", cPropDef_FlatBodySeparationLineHeight)
     mFlatBodySeparationLineHeightDPIScaled = mFlatBodySeparationLineHeight * mDPIScale
     
@@ -5441,7 +5563,8 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     UserControl.BackColor = mBackColor
     CheckIfThereAreTabsToolTipTexts
     UserControl.OLEDropMode = mOLEDropMode
-    'If mTDIMode Then mTabs = 2
+    
+    mControlJustAdded = PropBag.ReadProperty("ControlJustAdded", True)
     
     mSubclassed = mSubclassingMethod <> ntSMDisabled
 #If NOSUBCLASSINIDE Then
@@ -5483,7 +5606,7 @@ End Sub
 Private Sub UserControl_Show()
     If mUserControlTerminated Then Exit Sub
     If mTabBodyResizeEventPending Then RaiseEvent_TabBodyResize
-    If mTDIMode Then
+    If mTDIMode <> ntTDIModeNone Then
         If mSettingTDIMode Then Exit Sub
         If IsWindowVisible(mUserControlHwnd) <> 0 Then
             Static sDone As Boolean
@@ -5497,6 +5620,15 @@ Private Sub UserControl_Show()
     
     If mUserControlShown Then
         Exit Sub
+    End If
+    
+    If mTDIModeFormsUnhooked Then
+        If mTDIMode = ntTDIModeForms Then
+            If mAmbientUserMode Then
+                InstallCBTHook Me
+            End If
+        End If
+        mTDIModeFormsUnhooked = False
     End If
     
     If mPendingLeftOffset <> 0 Then
@@ -5644,6 +5776,13 @@ Private Sub DoTerminate()
     If mUserControlTerminated Then Exit Sub
     mUserControlTerminated = True
     
+    If mTDIMode = ntTDIModeForms Then
+        If mAmbientUserMode Then
+            UninstallCBTHook
+            mTDIModeFormsUnhooked = False
+        End If
+    End If
+    
     tmrShowTabTTT.Enabled = False
     Set mToolTipEx = Nothing
     
@@ -5745,6 +5884,9 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     
     StoreVisibleControlsInSelectedTab
     
+    
+    PropBag.WriteProperty "ControlJustAdded", mControlJustAdded, True
+    
     PropBag.WriteProperty "TabsEndFreeSpace", mTabsEndFreeSpace, cPropDef_TabsEndFreeSpace
     PropBag.WriteProperty "SubclassingMethod", mSubclassingMethod, cPropDef_SubclassingMethod
     PropBag.WriteProperty "Tabs", mTabs, 3
@@ -5839,7 +5981,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     PropBag.WriteProperty "TabMousePointerHand", mTabMousePointerHand, cPropDef_TabMousePointerHand
     PropBag.WriteProperty "IconColor", mIconColor, mForeColor
     PropBag.WriteProperty "IconColorTabSel", mIconColorTabSel, mIconColor
-    PropBag.WriteProperty "IconColorMouseHover", IIf(mTDIMode, mTDIIconColorMouseHover, mIconColorMouseHover), mIconColor
+    PropBag.WriteProperty "IconColorMouseHover", IIf(mTDIMode <> ntTDIModeNone, mTDIIconColorMouseHover, mIconColorMouseHover), mIconColor
     PropBag.WriteProperty "IconColorMouseHoverTabSel", mIconColorMouseHoverTabSel, mIconColor
     PropBag.WriteProperty "IconColorTabHighlighted", mIconColorTabHighlighted, mIconColor
     PropBag.WriteProperty "HighlightMode", mHighlightMode, cPropDef_HighlightMode
@@ -6032,7 +6174,7 @@ Private Sub Draw()
     iTabMaxWidth = pScaleX(mTabMaxWidth, vbHimetric, vbPixels)
     iTabMinWidth = pScaleX(mTabMinWidth, vbHimetric, vbPixels)
     If mTabWidthStyle = ntTWAuto Then
-        If mTDIMode Then
+        If mTDIMode <> ntTDIModeNone Then
             mTabWidthStyle2 = ntTWTabCaptionWidthFillRows
         ElseIf mStyle = ntStyleTabStrip Then
             mTabWidthStyle2 = ntTWTabStripEmulation
@@ -7243,6 +7385,7 @@ Private Sub Draw()
     If lblTDILabel.Visible Then
         lblTDILabel.Move ScaleX(mTabBodyRect.Left, vbPixels, UserControl.ScaleMode), ScaleY(mTabBodyRect.Top, vbPixels, UserControl.ScaleMode), ScaleX(mTabBodyRect.Right - mTabBodyRect.Left, vbPixels, UserControl.ScaleMode), ScaleY(mTabBodyRect.Bottom - mTabBodyRect.Top, vbPixels, UserControl.ScaleMode)
     End If
+
     
 TheExit:
     UserControl.ScaleMode = vbTwips
@@ -7262,10 +7405,31 @@ Private Sub RaiseEvent_TabBodyResize()
         If Not sInside Then
             sInside = True
             mTabBodyResizeEventPending = False
+            If mTDIMode = ntTDIModeForms Then TDIResizeFormContainers
             RaiseEvent TabBodyResize
             sInside = False
         End If
     End If
+End Sub
+
+Private Sub TDIResizeFormContainers()
+    Dim c As Long
+    Dim iSM As Long
+    Dim iLeft As Long
+    Dim iTop As Long
+    
+    iSM = UserControl.ScaleMode
+    UserControl.ScaleMode = vbTwips
+    
+    For c = 1 To mTabs - 1
+        If mTabData(c).Visible Then
+            If (mTabData(c).Data >= picTDIFormContainer.LBound) And (mTabData(c).Data <= picTDIFormContainer.UBound) Then
+                picTDIFormContainer(mTabData(c).Data).Move TabBodyLeft, TabBodyTop, TabBodyWidth, TabBodyHeight
+                MoveWindow mTDIModeFormsFormData_FormHwnd(mTabData(c).Data), 0, 0, mTabBodyRect.Right - mTabBodyRect.Left + 2, mTabBodyRect.Bottom - mTabBodyRect.Top + 3, 1
+            End If
+        End If
+    Next
+    UserControl.ScaleMode = iSM
 End Sub
 
 Private Sub DrawTab(nTab As Long)
@@ -8646,6 +8810,13 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     
     ' Calculate iMeasureRect for one liner and without elipsis for both cases, WordWrap or not
     iMeasureRect = iTabSpaceRect
+    If mTDIMode = ntTDIModeForms Then
+        If mTabData(nTab).Data > 0 Then
+            If Not mTDIModeFormsFormData_FormIcon(mTabData(nTab).Data) Is Nothing Then
+                iTabSpaceRect.Left = iTabSpaceRect.Left + cTDIForms_FormIconSpace - 4
+            End If
+        End If
+    End If
     iMeasureRect.Bottom = iMeasureRect.Top + 5
     
     iFlags = DT_CALCRECT Or DT_SINGLELINE Or DT_CENTER
@@ -8920,6 +9091,14 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     End If
     
     DrawTextW picDraw.hDC, StrPtr(iCaption), -1, iCaptionRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
+    
+    If mTDIMode = ntTDIModeForms Then
+        If mTabData(nTab).Data <> 0 Then
+            If Not mTDIModeFormsFormData_FormIcon(mTabData(nTab).Data) Is Nothing Then
+                picDraw.PaintPicture mTDIModeFormsFormData_FormIcon(mTabData(nTab).Data), iTabRect.Left + 6, iTabRect.Top + 2, 32, 32, 1, 1, 32, 32
+            End If
+        End If
+    End If
     
     ' Draw the focus rect
     If mAmbientUserMode Then    'only at run time
@@ -10714,6 +10893,15 @@ Private Function MeasureTabIconAndCaption(t As Long) As Long
     Else
         MeasureTabIconAndCaption = iPicWidth + mTabIconDistanceToCaptionDPIScaled + iCaptionWidth
     End If
+    If mTDIMode = ntTDIModeForms Then
+        If mTabData(t).Data > 0 Then
+            If Not mTDIModeFormsFormData_FormIcon(mTabData(t).Data) Is Nothing Then
+                MeasureTabIconAndCaption = MeasureTabIconAndCaption + cTDIForms_FormIconSpace + 4
+            Else
+                MeasureTabIconAndCaption = MeasureTabIconAndCaption + 4
+            End If
+        End If
+    End If
 End Function
 
 Public Function IsThemed() As Boolean
@@ -10888,7 +11076,21 @@ Private Sub SetVisibleControls(iPreviousTab As Integer)
         Next
         Err.Clear
     End If
-
+    
+    If mTDIMode = ntTDIModeForms Then
+        If iPreviousTab > -1 Then
+            If (mTabData(iPreviousTab).Data >= picTDIFormContainer.LBound) And (mTabData(iPreviousTab).Data <= picTDIFormContainer.UBound) Then
+               picTDIFormContainer(mTabData(iPreviousTab).Data).Visible = False
+            End If
+        End If
+        If mTabSel > -1 Then
+            If mTabData(mTabSel).Data > 0 Then
+                If (mTabData(mTabSel).Data >= picTDIFormContainer.LBound) And (mTabData(mTabSel).Data <= picTDIFormContainer.UBound) Then
+                    picTDIFormContainer(mTabData(mTabSel).Data).Visible = True
+                End If
+            End If
+        End If
+    End If
 End Sub
 
 Private Function GetControlHwnd(nControl As Object) As Long
@@ -11808,7 +12010,7 @@ Private Sub CheckContainedControlsConsistency(Optional nCheckControlsThatChanged
                 Next t
             End If
         Else
-            ' This fixes SStab paste bug, read http://www.vbforums.com/showthread.php?871285&p=5359379&viewfull=1#post5359379
+            ' This fixes SSTab paste bug, read http://www.vbforums.com/showthread.php?871285&p=5359379&viewfull=1#post5359379
             Set iCtlsTypesAndRects = New Collection
             For Each iCtl In UserControlContainedControls
                 iStr = ControlName(iCtl)
@@ -11971,23 +12173,6 @@ Private Sub RaiseError(ByVal Number As Long, Optional ByVal Source As Variant, O
         Err.Raise Number, Source, Description, HelpFile, HelpContext
     End If
 End Sub
-
-'Private Function InIDE() As Boolean
-'    Static sValue As Long
-'
-'    If sValue = 0 Then
-'        Err.Clear
-'        On Error Resume Next
-'        Debug.Print 1 / 0
-'        If Err.Number Then
-'            sValue = 1
-'        Else
-'            sValue = 2
-'        End If
-'        Err.Clear
-'    End If
-'    InIDE = (sValue = 1)
-'End Function
 
 Private Function MakeTrue(Value As Boolean) As Boolean
     MakeTrue = True
@@ -12721,7 +12906,6 @@ Private Sub SetAutoTabHeight()
     Next
     iVerticalSpaceFromIconToCaption = pScaleY(iVerticalSpaceFromIconToCaption * 0.15, vbHimetric, vbPixels)
     
-    'Debug.Print Ambient.DisplayName, 1, mTabHeight,
     If mAppearanceIsFlat Then
         If mHighlightFlatBar Or mHighlightFlatBarTabSel Then
             If (mFlatBarPosition = ntBarPositionTop) And (mTabOrientation <> ssTabOrientationBottom) Or (mFlatBarPosition = ntBarPositionBottom) And (mTabOrientation = ssTabOrientationBottom) Then
@@ -12743,7 +12927,11 @@ Private Sub SetAutoTabHeight()
             End If
         End If
     End If
-    'Debug.Print mTabHeight, ScaleY(mTabHeight, vbHimetric, vbPixels), mAppearanceIsFlat, mHighlightFlatBar, mHighlightFlatBarTabSel, (mFlatBarPosition = ntBarPositionTop) And (mTabOrientation <> ssTabOrientationBottom) Or (mFlatBarPosition = ntBarPositionBottom) And (mTabOrientation = ssTabOrientationBottom)
+    If mTDIMode = ntTDIModeForms Then
+        If mTabHeight < UserControl.ScaleY(37, vbPixels, vbHimetric) Then
+            mTabHeight = UserControl.ScaleY(37, vbPixels, vbHimetric)
+        End If
+    End If
     PropertyChanged "TabHeight"
     mSetAutoTabHeightPending = False
 End Sub
@@ -12812,35 +13000,40 @@ Public Property Let CanReorderTabs(ByVal nValue As Boolean)
 End Property
 
 
-Public Property Get TDIMode() As Boolean
-Attribute TDIMode.VB_Description = "Returns/sets a value that determines if the control will be used for TDI (tabbed dialog interface). The control behavior changes significantly in this mode because some things are automated. Intended for having multiple instances of the same ""document"" o"
+Public Property Get TDIMode() As NTTDIModeConstants
+Attribute TDIMode.VB_Description = "Returns/sets a value that determines if the control will be used for TDI (tabbed document interface) and which mode (controls or forms). The control behavior changes significantly in this mode because some things are automated. "
 Attribute TDIMode.VB_ProcData.VB_Invoke_Property = ";Comportamiento"
     TDIMode = mTDIMode
 End Property
 
-Public Property Let TDIMode(ByVal nValue As Boolean)
+Public Property Let TDIMode(ByVal nValue As NTTDIModeConstants)
     If nValue <> mTDIMode Then
-        If nValue Then
-            If Not mControlJustAdded Then
-                MsgBox "This property needs to be set immediately after adding the " & TypeName(Me) & " control (without changing other properties first)", vbExclamation
-                Exit Property
-            End If
-            If mTabs <> cPropDef_TabsPerRow Then
-                MsgBox "This property needs to be set immediately after adding the " & TypeName(Me) & " control (without changing other properties first)", vbExclamation
-                Exit Property
-            End If
-            If ContainedControls.Count > 0 Then
-                MsgBox "This property needs to be set when there is still no contained control inside the " & TypeName(Me) & " control.", vbExclamation
-                Exit Property
-            End If
-        Else
-            MsgBox "This property value cannot be undone once set. Delete the " & TypeName(Me) & " control and add a new one.", vbExclamation
+        If Not mControlJustAdded Then
+            MsgBox "This property needs to be set immediately after adding the " & TypeName(Me) & " control (without changing other properties first)", vbExclamation
             Exit Property
+        End If
+        If (mTDIMode = ntTDIModeNone) And (mTabs <> cPropDef_TabsPerRow) And (mTabs <> 2) Then
+            MsgBox "This property needs to be set immediately after adding the " & TypeName(Me) & " control (without changing other properties first)", vbExclamation
+            Exit Property
+        End If
+        If ContainedControls.Count > 0 Then
+            MsgBox "This property needs to be set when there is still no contained control inside the " & TypeName(Me) & " control.", vbExclamation
+            Exit Property
+        End If
+        If mTDIMode = ntTDIModeForms Then
+            If mAmbientUserMode Then UninstallCBTHook
         End If
         mTDIMode = nValue
         ConfigureTDIModeOnce
-        SetTDIMode
+        If mTDIMode <> ntTDIModeNone Then SetTDIMode
+        If Not Ambient.UserMode Then lblTDILabel.Visible = (mTDIMode <> ntTDIModeNone)
+        If mTDIMode = ntTDIModeControls Then
+            lblTDILabel.Caption = "Tabbed Document Interface mode 'Controls'. Use Tab 0 as a template. Add all controls here, all them must be control arrays with Index = 0."
+        ElseIf mTDIMode = ntTDIModeForms Then
+            lblTDILabel.Caption = "Tabbed Document Interface mode 'Forms'. It is like MDI (Multimple Document Interface) but with tabs. This form must be the main/startup form, and this tab will be as a menu. Put here the controls that go in the main form."
+        End If
         SetPropertyChanged "TDIMode"
+        mControlJustAdded = True
     End If
 End Property
 
@@ -13183,7 +13376,7 @@ Private Sub SetHighlightMode()
     
     iHighlightMode = mHighlightMode
     If iHighlightMode = ntHLAuto Then
-        If mTDIMode Then
+        If mTDIMode <> ntTDIModeNone Then
             iHighlightMode = (ntHLBackgroundPlain Or ntHLCaptionBold)
         ElseIf mStyle = ntStyleFlat Then
             iHighlightMode = (ntHLBackgroundGradient Or ntHLBackgroundLight Or ntHLFlatBar)
@@ -13219,7 +13412,7 @@ Private Sub SetHighlightMode()
     
     iHighlightModeTabSel = mHighlightModeTabSel
     If iHighlightModeTabSel = ntHLAuto Then
-        If mTDIMode Then
+        If mTDIMode <> ntTDIModeNone Then
             iHighlightModeTabSel = (ntHLBackgroundPlain Or ntHLBackgroundLight)
         ElseIf mStyle = ntStyleFlat Then
             iHighlightModeTabSel = (ntHLBackgroundGradient Or ntHLBackgroundLight Or ntHLFlatBar)
@@ -13432,6 +13625,11 @@ Private Property Let DraggingATab(nValue As Boolean)
         
         tmrTabDragging.Enabled = True
         'If Not mInIDE Then ClipCursor iRc
+        If mTDIMode = ntTDIModeForms Then
+            If mRows = 1 Then
+                iRc.Left = iRc.Left + mTabData(0).TabRect.Right - mTabData(0).TabRect.Left
+            End If
+        End If
         ClipCursor iRc
     Else
         mMouseX = 0
@@ -13629,7 +13827,25 @@ Private Sub ConfigureTDIModeOnce()
     mTDIIconColorMouseHover = IconColorMouseHover
     
     mTDIChangingTabCount = True
-    Tabs = 2
+    If mTDIMode = ntTDIModeControls Then
+        Tabs = 2
+    ElseIf mTDIMode = ntTDIModeForms Then
+        Tabs = 1
+        TabIconLeftOffset(0) = 0
+        TabIconTopOffset(0) = 0
+        TabIconCharHex(0) = ""
+    Else
+        Tabs = 1
+        TabCaption(0) = "Tab 0"
+        Tabs = cPropDef_TabsPerRow
+        MoveTab 0, 2
+        Tabs = 1
+        TabCaption(0) = "Tab 0"
+        Tabs = cPropDef_TabsPerRow
+        mCanReorderTabs = cPropDef_CanReorderTabs
+        mIconColorMouseHover = Ambient.ForeColor
+        mIconColorMouseHoverTabSel = Ambient.ForeColor
+    End If
     mTDIChangingTabCount = False
     
     Set iFont = New StdFont
@@ -13638,29 +13854,33 @@ Private Sub ConfigureTDIModeOnce()
         iFont.Bold = True
         iFont.Size = 6
         Set TabIconFont(0) = iFont
-        Set TabIconFont(1) = CloneFont(iFont)
-        TabIconFont(1).Size = 8
-        TabIconFont(1).Bold = True
-        TabToolTipText(1) = "Add a new tab"
-        TabIconLeftOffset(1) = -2
-        TabIconTopOffset(1) = 1
-        TabIconCharHex(1) = "&HF8AA&"
-        TabIconLeftOffset(0) = -3
-        TabIconTopOffset(0) = 1
-        TabIconCharHex(0) = "&HE106&"
+        If mTDIMode = ntTDIModeControls Then
+            Set TabIconFont(1) = CloneFont(iFont)
+            TabIconFont(1).Size = 8
+            TabIconFont(1).Bold = True
+            TabToolTipText(1) = "Add a new tab"
+            TabIconLeftOffset(1) = -2
+            TabIconTopOffset(1) = 1
+            TabIconCharHex(1) = "&HF8AA&"
+            TabIconLeftOffset(0) = -3
+            TabIconTopOffset(0) = 1
+            TabIconCharHex(0) = "&HE106&"
+        End If
     Else
         iFont.Name = "Arial"
         iFont.Size = 14
         iFont.Bold = True
         Set TabIconFont(0) = iFont
-        Set TabIconFont(1) = CloneFont(iFont)
-        TabToolTipText(1) = "Add a new tab"
-        TabIconLeftOffset(1) = -2
-        TabIconTopOffset(1) = 2
-        TabIconCharHex(1) = "&H2B&"
-        TabIconLeftOffset(0) = 0
-        TabIconTopOffset(0) = 0
-        TabIconCharHex(0) = "&H78&"
+        If mTDIMode = ntTDIModeControls Then
+            Set TabIconFont(1) = CloneFont(iFont)
+            TabToolTipText(1) = "Add a new tab"
+            TabIconLeftOffset(1) = -2
+            TabIconTopOffset(1) = 2
+            TabIconCharHex(1) = "&H2B&"
+            TabIconLeftOffset(0) = 0
+            TabIconTopOffset(0) = 0
+            TabIconCharHex(0) = "&H78&"
+        End If
     End If
 End Sub
     
@@ -13684,21 +13904,31 @@ Private Sub SetTDIMode()
     mSettingTDIMode = True
     mTDIIconColorMouseHover = IconColorMouseHover
     mTDIChangingTabCount = True
-    Tabs = 2
+    If mTDIMode = ntTDIModeControls Then
+        Tabs = 2
+        TabVisible(1) = True
+    ElseIf mTDIMode = ntTDIModeForms Then
+        Tabs = 1
+    End If
     mTDIChangingTabCount = False
-    TabCaption(1) = ""
-    mTabData(1).Data = -1
+    If mTDIMode = ntTDIModeControls Then
+        TabCaption(1) = ""
+        mTabData(1).Data = -1
+    End If
     'TabWidthStyle = ntTWTabCaptionWidthFillRows
     IconAlignment = ntIconAlignEnd
     mBackColor = Ambient.BackColor
     
-    If Not Ambient.UserMode Then
+    If Not mAmbientUserMode Then
         TabSel = 0
-        TabCaption(0) = "New tab template   "
-        lblTDILabel.Visible = True
+        If mTDIMode = ntTDIModeControls Then
+            TabCaption(0) = "New tab template   "
+        ElseIf (TabCaption(0) = "New tab template   ") Or (TabCaption(0) = "Tab 0") Then
+            TabCaption(0) = "Home"
+        End If
+        lblTDILabel.Visible = mTDIMode <> ntTDIModeNone
         lblTDILabel.ZOrder
         TabVisible(0) = True
-        TabVisible(1) = True
         lblTDILabel.ForeColor = mForeColorTabSel
         DrawDelayed
     Else
@@ -13722,41 +13952,56 @@ Private Sub SetTDIMode()
                 TabIconCharHex(0) = "&H78&"
             End If
         End If
-        If Not FontExists(TabIconFont(1).Name) Then
-            Set iFont = New StdFont
-            If FontExists("Segoe MDL2 Assets") Then
-                iFont.Name = "Segoe MDL2 Assets"
-                iFont.Size = 8
-                iFont.Bold = True
-                Set TabIconFont(1) = iFont
-                TabToolTipText(1) = "Add a new tab"
-                TabIconLeftOffset(1) = -2
-                TabIconTopOffset(1) = 1
-                TabIconCharHex(1) = "&HF8AA&"
-            Else
-                iFont.Name = "Arial"
-                iFont.Size = 14
-                iFont.Bold = True
-                Set TabIconFont(1) = iFont
-                TabToolTipText(1) = "Add a new tab"
-                TabIconLeftOffset(1) = -2
-                TabIconTopOffset(1) = 2
-                TabIconCharHex(1) = "&H2B&"
+        If mTDIMode = ntTDIModeControls Then
+            If Not FontExists(TabIconFont(1).Name) Then
+                Set iFont = New StdFont
+                If FontExists("Segoe MDL2 Assets") Then
+                    iFont.Name = "Segoe MDL2 Assets"
+                    iFont.Size = 8
+                    iFont.Bold = True
+                    Set TabIconFont(1) = iFont
+                    TabToolTipText(1) = "Add a new tab"
+                    TabIconLeftOffset(1) = -2
+                    TabIconTopOffset(1) = 1
+                    TabIconCharHex(1) = "&HF8AA&"
+                Else
+                    iFont.Name = "Arial"
+                    iFont.Size = 14
+                    iFont.Bold = True
+                    Set TabIconFont(1) = iFont
+                    TabToolTipText(1) = "Add a new tab"
+                    TabIconLeftOffset(1) = -2
+                    TabIconTopOffset(1) = 2
+                    TabIconCharHex(1) = "&H2B&"
+                End If
             End If
         End If
         mTDIIconColorMouseHover = mIconColorMouseHover
         mIconColorMouseHover = mIconColor
         mIconColorMouseHoverTabSel = mIconColor
-        TDIStoreTab0ControlInfo
-        mTDILastTabNumber = mTDILastTabNumber + 1
-        iTabCaption = "Default tab"
-        iLoadTabControls = True
-        RaiseEvent TDIBeforeNewTab(ntDefaultTab, mTDILastTabNumber, iTabCaption, iLoadTabControls, False)
-        TDIPrepareNewTab iTabCaption, iLoadTabControls
-        TabVisible(0) = False
+        If mTDIMode = ntTDIModeControls Then
+            TDIStoreTab0ControlInfo
+            mTDILastTabNumber = mTDILastTabNumber + 1
+            If mTDIMode = ntTDIModeControls Then
+                iTabCaption = "Default tab"
+            End If
+            iLoadTabControls = True
+            RaiseEvent TDIBeforeNewTab(ntDefaultTab, mTDILastTabNumber, iTabCaption, iLoadTabControls, False)
+            TDIPrepareNewTab iTabCaption, iLoadTabControls
+            TabVisible(0) = False
+        End If
     End If
     mSettingTDIMode = False
+    If mTDIMode = ntTDIModeForms Then
+        If mAmbientUserMode Then
+            ReDim mTDIModeFormsFormData_FormHwnd(100)
+            ReDim mTDIModeFormsFormData_OldParentHwnd(100)
+            ReDim mTDIModeFormsFormData_FormIcon(100)
+            InstallCBTHook Me
+        End If
+    End If
     Redraw = True
+    
 End Sub
 
 Private Sub TDIStoreTab0ControlInfo()
@@ -13791,17 +14036,32 @@ Private Sub TDIStoreTab0ControlInfo()
     End If
 End Sub
 
-Private Sub TDIAddNewTab()
+Private Sub TDIAddNewTab(Optional Position As Variant, Optional Focused As Boolean = True)
     Dim iTabCaption As String
     Dim iCancel As Boolean
     Dim iLoadTabControls As Boolean
     
+    If Not mTDIAddingNewTabForForm Then
+        If mTDIMode <> ntTDIModeControls Then
+            RaiseError 1381, TypeName(Me), "TDIAddNewTab only available for TDIMode = ntTDIModeControls"
+            Exit Sub
+        End If
+        If Not IsMissing(Position) Then
+            If Position < 0 Then
+                RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
+                Exit Sub
+            ElseIf Position > mTabs Then
+                RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
+                Exit Sub
+            End If
+        End If
+    End If
     mTDILastTabNumber = mTDILastTabNumber + 1
     iTabCaption = "New tab"
     iLoadTabControls = True
     RaiseEvent TDIBeforeNewTab(ntNewTabByClickingIcon, mTDILastTabNumber, iTabCaption, iLoadTabControls, iCancel)
     If Not iCancel Then
-        TDIPrepareNewTab iTabCaption, iLoadTabControls
+        TDIPrepareNewTab iTabCaption, iLoadTabControls, IIf(IsMissing(Position), -1, CLng(Position)), Focused
     End If
 End Sub
 
@@ -13817,9 +14077,17 @@ Private Sub TDIPrepareNewTab(nTabCaption As String, nLoadTabControls As Boolean,
     mTDIAddingNewTab = True
     MoveTab mTabs - 2, mTabs - 1
     mTabData(mTabs - 2).TDITabNumber = mTDILastTabNumber
-    Set TabIconFont(mTabs - 2) = TabIconFont(0)
-    TabIconCharHex(mTabs - 2) = TabIconCharHex(0)
-    TabIconTopOffset(mTabs - 2) = TabIconTopOffset(0)
+    
+    If mTDIMode = ntTDIModeForms Then
+        Set TabIconFont(mTabs - 2) = TabIconFont(mTabs - 1)
+    Else
+        Set TabIconFont(mTabs - 2) = TabIconFont(0)
+    End If
+    
+    TabIconLeftOffset(mTabs - 2) = -3
+    TabIconTopOffset(mTabs - 2) = 1
+    TabIconCharHex(mTabs - 2) = "&HE106&"
+    
     TabCaption(mTabs - 2) = nTabCaption & "   "
     If mAmbientUserMode Then
         mIconColorMouseHover = mIconColor
@@ -13973,6 +14241,193 @@ Public Property Get MouseTab() As Long
 Attribute MouseTab.VB_Description = "Returns the index of the tab under the mouse. If there is no tab under the mouse it returns -1."
     MouseTab = mTabUnderMouse
 End Property
+
+Friend Function IsParentEnabled() As Boolean
+    On Error Resume Next
+    IsParentEnabled = UserControl.Parent.Enabled
+End Function
+
+Friend Sub TDIPutFormIntoTab(nHwndForm As Long)
+    Const WS_CAPTION As Long = &HC00000
+    Const WS_THICKFRAME As Long = &H40000
+    Const GWL_STYLE As Long = (-16)
+    Const WM_GETICON As Long = &H7F
+    Const ICON_BIG As Long = 1
+    Dim iIconHandle As Long
+    Dim iLeft As Long
+    Dim iTop As Long
+    
+    mTDIAddingNewTabForForm = True
+    TDIAddNewTab mTabs
+    If UBound(mTDIModeFormsFormData_FormHwnd) < (mTabs - 1) Then
+        ReDim Preserve mTDIModeFormsFormData_FormHwnd(mTabs + 100)
+        ReDim Preserve mTDIModeFormsFormData_OldParentHwnd(mTabs + 100)
+        ReDim Preserve mTDIModeFormsFormData_FormIcon(mTabs + 100)
+    End If
+    mTDIModeFormsFormData_FormHwnd(mTabs - 1) = nHwndForm
+    mTabData(mTabs - 1).Data = mTabs - 1
+    
+    Load picTDIFormContainer(mTabs - 1)
+    picTDIFormContainer(mTabs - 1).Move TabBodyLeft, TabBodyTop, TabBodyWidth, TabBodyHeight
+    SetWindowLong nHwndForm, GWL_STYLE, GetWindowLong(nHwndForm, GWL_STYLE) And Not (WS_CAPTION Or WS_THICKFRAME)
+    MoveWindow nHwndForm, 0, 0, mTabBodyRect.Right - mTabBodyRect.Left + 2, mTabBodyRect.Bottom - mTabBodyRect.Top + 3, 1
+    
+    mTDIModeFormsFormData_OldParentHwnd(mTabs - 1) = SetParent(nHwndForm, picTDIFormContainer(mTabs - 1).hWnd)
+    picTDIFormContainer(mTabs - 1).Visible = True
+    
+    iIconHandle = SendMessage(nHwndForm, WM_GETICON, ICON_BIG, 0)
+    If iIconHandle <> 0 Then
+        Set mTDIModeFormsFormData_FormIcon(mTabs - 1) = CreatePicture(iIconHandle, vbPicTypeIcon)
+    End If
+    
+    mTabData(mTabs - 1).Caption = GetUniqueCaption(GetWindowTitle(nHwndForm))
+    Set TabPicture(mTabs - 1) = LoadPicture("D:\Programas\Infotambo\Iconos e imagenes\Formularios\frmAnimales\1.bmp")  ' CreatePicture(iIconHandle, vbPicTypeIcon)
+    DrawDelayed
+    mTDIAddingNewTabForForm = False
+End Sub
+
+Private Function CreatePicture(hImage As Long, nType As PictureTypeConstants) As IPictureDisp
+    'This function creates a picture object from a handle to a bitmap or a icon
+    'hImage is the handle to the bitmap or icon
+    'Type is the type of the image (can be either vbPicTypeBitmap or vbPicTypeIcon
+    Dim PicInfo As PicBmp
+    Dim TmpPic As IPictureDisp
+    Dim IID_IDispatch As GUID
+ 
+    'Setup the Guid for the function
+    With IID_IDispatch
+        
+        .Data1 = &H20400
+        .Data4(0) = &HC0
+        .Data4(7) = &H46
+    
+    End With
+    
+    'Setup the pic structure
+    With PicInfo
+        .Size = Len(PicInfo)
+        .Type = nType
+        .hBmp = hImage
+    End With
+ 
+    'create the picture
+    OleCreatePictureIndirect PicInfo, IID_IDispatch, 1, TmpPic
+ 
+    Set CreatePicture = TmpPic
+ 
+End Function
+
+Private Function GetTDIModeFormsIndexOfTabFromFormHwnd(nHwndForm As Long) As Long
+    Dim c As Long
+    
+    GetTDIModeFormsIndexOfTabFromFormHwnd = -1
+    For c = 0 To mTabs - 1
+        If mTDIModeFormsFormData_FormHwnd(mTabData(c).Data) = nHwndForm Then
+            GetTDIModeFormsIndexOfTabFromFormHwnd = c
+            Exit For
+        End If
+    Next
+End Function
+
+Private Function GetUniqueCaption(nCaption As String) As String
+    Dim c As Long
+    Dim iFound As Boolean
+    Dim iCaption As String
+    Dim n As Long
+    Dim n2 As Long
+    Dim iStr As String
+    Dim iLenStr As String
+    Dim iLng As Long
+    
+    n = 1
+    Do
+        iFound = False
+        If n > 1 Then
+            n2 = n
+            iStr = nCaption & "("
+            iLenStr = Len(iStr)
+            For c = 1 To mTabs - 1
+                If Left$(mTabData(c).Caption, iLenStr) = iStr Then
+                    iLng = Val(Mid$(mTabData(c).Caption, iLenStr + 1)) + 1
+                    If iLng > n2 Then
+                        n2 = iLng
+                    End If
+                End If
+            Next
+            iCaption = nCaption & "(" & n2 & ")"
+        Else
+            iCaption = nCaption
+        End If
+        For c = 1 To mTabs - 1
+            If mTabData(c).Visible Then
+                If mTabData(c).Caption = iCaption Then
+                    iFound = True
+                    Exit For
+                End If
+            End If
+        Next
+        If Not iFound Then
+            GetUniqueCaption = iCaption
+            Exit Function
+        End If
+        n = n + 1
+    Loop
+End Function
+
+Private Function GetWindowTitle(ByVal hWnd As Long) As String
+    Dim Buffer As String
+    
+    Buffer = String(GetWindowTextLength(hWnd) + 1, vbNullChar)
+    GetWindowText hWnd, StrPtr(Buffer), Len(Buffer)
+    GetWindowTitle = Left$(Buffer, Len(Buffer) - 1)
+End Function
+
+Friend Sub TDIFormClosing(nHwndForm As Long)
+    Dim c As Long
+    Dim i As Long
+    Dim iDone As Boolean
+    
+    i = GetTDIModeFormsIndexOfTabFromFormHwnd(nHwndForm)
+    If i > -1 Then
+        If (mTabData(i).Data >= picTDIFormContainer.LBound) And (mTabData(i).Data <= picTDIFormContainer.UBound) Then
+           picTDIFormContainer(mTabData(i).Data).Visible = False
+        End If
+        mTabData(i).Visible = False
+        DrawDelayed
+        For c = i - 1 To 1 Step -1
+            If mTabData(c).Visible Then
+                TabSel = c
+                iDone = True
+                Exit For
+            End If
+        Next
+        If Not iDone Then
+            For c = i + 1 To mTabs - 1
+                If mTabData(c).Visible Then
+                    TabSel = c
+                    iDone = True
+                    Exit For
+                End If
+            Next
+        End If
+        If Not iDone Then
+            TabSel = 0
+        End If
+    End If
+End Sub
+
+Friend Sub TDIFocusForm(nHwndForm As Long)
+    Dim c As Long
+    
+    For c = mTabs - 1 To 1 Step -1
+        If mTDIModeFormsFormData_FormHwnd(mTabData(c).Data) = nHwndForm Then
+            If mTabData(c).Visible Then
+                TabSel = c
+            End If
+            Exit For
+        End If
+    Next
+End Sub
 
 'Tab is a reserved keyword in VB6, but you can remove that restriction.
 'To be able to compile with Tab property, you need to replace VBA6.DLL with this version: https://github.com/EduardoVB/NewTab/raw/main/control-source/lib/VBA6.DLL

@@ -1526,7 +1526,7 @@ Private Sub tmrLoad_Timer()
     Set iCtl = SelectedControls(0)
     SetControlTypeName TypeName(iCtl) 'for Themes module
     
-    mTDIMode = iCtl.TDIMode
+    mTDIMode = (iCtl.TDIMode <> ntTDIModeNone)
     If mTDIMode Then
         txtTabs.Enabled = False
     End If

@@ -1072,9 +1072,18 @@ Also <a href="#ilink104">TabMinWidth</a> and <a href="#ilink103">TabMaxWidth</a>
 <h3>Description:</h3>
 <p>Returns or sets an expression that stores any extra data needed for your program.</p><br>
 <a name="ilink122" /><h2><p class"section">TDIMode Property</p></h2></a>
-<p>Type: <b>Boolean</b></p>
+<p>Type: <b><a href="#ilink211">NTTDIModeConstants</a></b></p>
 <h3>Description:</h3>
-<p>Returns or sets a value that determines if the control will be used for TDI (tabbed dialog interface). The control behavior changes in some regards in this mode because some things are automated.</p><br>
+<p>Returns/sets a value that determines if the control will be used for TDI (tabbed document interface) and which mode (controls or forms). The control behavior changes significantly in this mode because some things are automated.<br>
+<br>
+<b>ntTDIModeControls:</b> Each tab is a "document". Add controls in the tab 0, all control arrays with index 0. For each new tab the controls will replicate. Add also the business code that your program needs to work.<br>
+<br>
+<b>ntTDIModeForms:</b> Add the tab control to the main form, resize the tab control to fit the form, and all the other forms should work automatically.<br>
+It is like an MDI form, but tabbed, that's why it is called 'TDI'. <br>
+<br>
+MDI stands for Multiple Documents Interface.<br>
+SDI stands for Single Document Interface.<br>
+TDI is Tabbed Document Interface.</p><br>
 <a name="ilink123" /><h2><p class"section">Theme Property</p></h2></a>
 <p>Type: <b>String</b></p>
 <h3>Description:</h3>
@@ -1367,7 +1376,7 @@ This event is also generated when the control is first shown.<br>
 <a href="#ilink181">TDITabClosed</a> event<br>
 </p><br>
 <a name="ilink179" /><h2><p class"section">TDIBeforeNewTab Event</p></h2></a>
-<p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabType</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbsp<a href="#ilink211">NTTDINewTabTypeConstants</a>&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabNumber</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabCaption</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspString&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>LoadControls</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Cancel</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabType</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbsp<a href="#ilink212">NTTDINewTabTypeConstants</a>&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabNumber</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabCaption</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspString&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>LoadControls</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Cancel</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>It occurs before opening a new tab in TDI mode.<br>
 <br>
@@ -1453,7 +1462,7 @@ Use the names of the themes to set one into the <a href="#ilink123">Theme</a> pr
 </body>
 </html>
 <a name="ilink4"><h1><p class="section">NewTabCtl Enumerations</p></h1></a>
-<li class="toc1"><a href="#ilink195">NTAutoRelocateControlsConstants</a></li><li class="toc1"><a href="#ilink196">NTAutoYesNoConstants</a></li><li class="toc1"><a href="#ilink197">NTBackStyleConstants</a></li><li class="toc1"><a href="#ilink198">NTFlatBarPosition</a></li><li class="toc1"><a href="#ilink199">NTFlatBorderModeConstants</a></li><li class="toc1"><a href="#ilink200">NTHighlightModeFlagsConstants</a></li><li class="toc1"><a href="#ilink201">NTIconAlignmentConstants</a></li><li class="toc1"><a href="#ilink202">NTMousePointerConstants</a></li><li class="toc1"><a href="#ilink203">NTOLEDropConstants</a></li><li class="toc1"><a href="#ilink204">NTSeparationLineConstants</a></li><li class="toc1"><a href="#ilink205">NTStyleConstants</a></li><li class="toc1"><a href="#ilink206">NTSubclassingMethodConstants</a></li><li class="toc1"><a href="#ilink207">NTTabAppearanceConstants</a></li><li class="toc1"><a href="#ilink208">NTTabOrientationConstants</a></li><li class="toc1"><a href="#ilink209">NTTabTransitionConstants</a></li><li class="toc1"><a href="#ilink210">NTTabWidthStyleConstants</a></li><li class="toc1"><a href="#ilink211">NTTDINewTabTypeConstants</a></li><br><a name="ilink195" /><h2><p class"section">NTAutoRelocateControlsConstants</h2></p></h2></a>
+<li class="toc1"><a href="#ilink195">NTAutoRelocateControlsConstants</a></li><li class="toc1"><a href="#ilink196">NTAutoYesNoConstants</a></li><li class="toc1"><a href="#ilink197">NTBackStyleConstants</a></li><li class="toc1"><a href="#ilink198">NTFlatBarPosition</a></li><li class="toc1"><a href="#ilink199">NTFlatBorderModeConstants</a></li><li class="toc1"><a href="#ilink200">NTHighlightModeFlagsConstants</a></li><li class="toc1"><a href="#ilink201">NTIconAlignmentConstants</a></li><li class="toc1"><a href="#ilink202">NTMousePointerConstants</a></li><li class="toc1"><a href="#ilink203">NTOLEDropConstants</a></li><li class="toc1"><a href="#ilink204">NTSeparationLineConstants</a></li><li class="toc1"><a href="#ilink205">NTStyleConstants</a></li><li class="toc1"><a href="#ilink206">NTSubclassingMethodConstants</a></li><li class="toc1"><a href="#ilink207">NTTabAppearanceConstants</a></li><li class="toc1"><a href="#ilink208">NTTabOrientationConstants</a></li><li class="toc1"><a href="#ilink209">NTTabTransitionConstants</a></li><li class="toc1"><a href="#ilink210">NTTabWidthStyleConstants</a></li><li class="toc1"><a href="#ilink211">NTTDIModeConstants</a></li><li class="toc1"><a href="#ilink212">NTTDINewTabTypeConstants</a></li><br><a name="ilink195" /><h2><p class"section">NTAutoRelocateControlsConstants</h2></p></h2></a>
 <p></p><br>
 <table class="table table2">
   <tr>
@@ -1897,7 +1906,23 @@ Use the names of the themes to set one into the <a href="#ilink123">Theme</a> pr
     <td>5    </td>
   </tr>
 </table>
-<br><a name="ilink211" /><h2><p class"section">NTTDINewTabTypeConstants</h2></p></h2></a>
+<br><a name="ilink211" /><h2><p class"section">NTTDIModeConstants</h2></p></h2></a>
+<p></p><br>
+<table class="table table2">
+  <tr>
+    <td><b>ntTDIModeNone</b> =     </td>
+    <td>0    </td>
+  </tr>
+  <tr>
+    <td><b>ntTDIModeControls</b> =     </td>
+    <td>1    </td>
+  </tr>
+  <tr>
+    <td><b>ntTDIModeForms</b> =     </td>
+    <td>2    </td>
+  </tr>
+</table>
+<br><a name="ilink212" /><h2><p class"section">NTTDINewTabTypeConstants</h2></p></h2></a>
 <p></p><br>
 <table class="table table2">
   <tr>

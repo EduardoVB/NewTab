@@ -77,10 +77,10 @@ Begin VB.PropertyPage pagNewTabTabs
    End
    Begin VB.PictureBox picTDICover1 
       BorderStyle     =   0  'None
-      Height          =   2890
+      Height          =   2390
       Index           =   2
       Left            =   15400
-      ScaleHeight     =   2892
+      ScaleHeight     =   2388
       ScaleWidth      =   1332
       TabIndex        =   60
       Top             =   480
@@ -1847,27 +1847,31 @@ Private Sub PropertyPage_SelectionChanged()
     mLoading = True
     Set iSC = SelectedControls(0)
     
-    mTDIMode = iSC.TDIMode
+    mTDIMode = (iSC.TDIMode <> ntTDIModeNone)
+    
     If mTDIMode Then
-        For c = 0 To picTDICover1.Count - 1
-            picTDICover1(c).Left = picTDICover1(c).Left - 10000
-            picTDICover1(c).Visible = True
-        Next
-        picTDICover1(0).Height = cboIconAlignment.Top - picTDICover1(0).Top + cboIconAlignment.Height
-        chkTabEnabled.Enabled = False
-        chkTabVisible.Enabled = False
-        fraPicture.Enabled = False
-        fraPic16.Enabled = False
-        fraPic20.Enabled = False
-        fraPic24.Enabled = False
-        cmdMovePrevious.Enabled = False
-        cmdMoveNext.Enabled = False
-        cmdMoveContainedControls.Enabled = False
-        cmdMoveControlToTab.Enabled = False
-        cmdInsertTab.Enabled = False
-        cmdRemoveTab.Enabled = False
-        cmdRemoveIconChar.Visible = False
+        picTDICover1(0).Left = 0
+        picTDICover1(1).Left = 2520
+        picTDICover1(2).Left = 5400
+        picTDICover1(0).Height = cboIconAlignment.Top - picTDICover1(0).Top + cboIconAlignment.Height + 30
     End If
+    
+    For c = 0 To picTDICover1.Count - 1
+        picTDICover1(c).Visible = mTDIMode
+    Next
+    chkTabEnabled.Enabled = False
+    chkTabVisible.Enabled = Not mTDIMode
+    fraPicture.Enabled = Not mTDIMode
+    fraPic16.Enabled = Not mTDIMode
+    fraPic20.Enabled = Not mTDIMode
+    fraPic24.Enabled = Not mTDIMode
+    cmdMovePrevious.Enabled = Not mTDIMode
+    cmdMoveNext.Enabled = Not mTDIMode
+    cmdMoveContainedControls.Enabled = Not mTDIMode
+    cmdMoveControlToTab.Enabled = Not mTDIMode
+    cmdInsertTab.Enabled = Not mTDIMode
+    cmdRemoveTab.Enabled = Not mTDIMode
+    cmdRemoveIconChar.Visible = Not mTDIMode
     
     If TypeName(SelectedControls(0)) <> "NewTab" Then Exit Sub
     
@@ -2051,6 +2055,7 @@ Private Sub DoShowTabData()
     End If
     lblFontSize.Caption = "Font size: " & mTabData(t).IconFont.Size
     lblFontSize.Refresh
+    
     txtIconLeftOffset.Text = mTabData(t).IconLeftOffset
     txtIconTopOffset.Text = mTabData(t).IconTopOffset
     

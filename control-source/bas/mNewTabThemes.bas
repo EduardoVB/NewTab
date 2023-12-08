@@ -349,7 +349,7 @@ Public Sub CopyControlProperties(nCtlSrc As NewTab, nCtlDest As NewTab)
 '    nCtlDest.Font.Italic = nCtlSrc.Font.Italic
 '    nCtlDest.Font.Underline = nCtlSrc.Font.Underline
 '    nCtlDest.Font.Weight = nCtlSrc.Font.Weight
-    If nCtlDest.TDIMode = nCtlSrc.TDIMode Then
+    If (nCtlDest.TDIMode <> ntTDIModeNone) = (nCtlSrc.TDIMode <> ntTDIModeNone) Then
         'nCtlDest.IconAlignment = nCtlSrc.IconAlignment
         nCtlDest.IconColorMouseHover = nCtlSrc.IconColorMouseHover
         nCtlDest.IconColorMouseHoverTabSel = nCtlSrc.IconColorMouseHoverTabSel
@@ -422,7 +422,7 @@ Public Sub ApplyThemeToControl(ByRef nThemeData As Collection, nCtl As NewTab, n
     Else
         If iProp.Value = "F" Then nCtl.IconColorTabHighlighted = nAmbientForeColor Else nCtl.IconColorTabHighlighted = Val(iProp.Value)
     End If
-    If Not nCtl.TDIMode Then
+    If nCtl.TDIMode = ntTDIModeNone Then
         If iProp Is Nothing Then
             nCtl.IconColorMouseHover = nAmbientForeColor
         Else
@@ -471,7 +471,7 @@ Public Sub ApplyThemeToControl(ByRef nThemeData As Collection, nCtl As NewTab, n
 '            Case "TabAppearance"
 '                nCtl.TabAppearance = Val(iProp.Value)
             Case "TabWidthStyle"
-                If Not nCtl.TDIMode Then
+                If nCtl.TDIMode = ntTDIModeNone Then
                     nCtl.TabWidthStyle = Val(iProp.Value)
                 End If
             Case "ShowRowsInPerspective"
