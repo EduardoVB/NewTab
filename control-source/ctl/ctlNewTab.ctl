@@ -3793,9 +3793,9 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, 
             Const WA_ACTIVE As Long = 1
             
             If wParam = WA_INACTIVE Then
-                If WindowIsTDIChild(lParam) Then
-                    PostMessage hWnd, WM_ACTIVATE, WA_ACTIVE, 0&
-                End If
+                'If WindowIsTDIChild(lParam) Then
+                    'PostMessage hWnd, WM_ACTIVATE, WA_ACTIVE, 0&
+                'End If
             End If
     End Select
 End Function
