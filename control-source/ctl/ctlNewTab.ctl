@@ -422,6 +422,7 @@ Private Const WM_NCACTIVATE As Long = &H86&
 Private Const WM_WINDOWPOSCHANGING = &H46&
 Private Const WM_GETDPISCALEDSIZE As Long = &H2E4&
 Private Const WM_SETCURSOR As Long = &H20
+Private Const WM_ACTIVATE As Long = &H6
 
 'Private Const MA_NOACTIVATEANDEAT As Long = &H4
 Private Const WM_MOUSELEAVE As Long = &H2A3
@@ -3516,7 +3517,7 @@ Private Function IBSSubclass_MsgResponse(ByVal hWnd As Long, ByVal iMsg As Long)
     Select Case iMsg
         Case WM_PAINT, WM_PRINTCLIENT, WM_MOUSELEAVE
             IBSSubclass_MsgResponse = emrConsume
-        Case WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEACTIVATE, WM_SETFOCUS, WM_LBUTTONDBLCLK, WM_MOVE, WM_WINDOWPOSCHANGING, WM_SETCURSOR, WM_MOUSEMOVE
+        Case WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEACTIVATE, WM_SETFOCUS, WM_LBUTTONDBLCLK, WM_MOVE, WM_WINDOWPOSCHANGING, WM_SETCURSOR, WM_MOUSEMOVE, WM_ACTIVATE
             IBSSubclass_MsgResponse = emrPreprocess
         Case Else
             IBSSubclass_MsgResponse = emrPostProcess
@@ -3787,7 +3788,27 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, 
                     SetCursor mHandIconHandle
                 End If
             End If
+        Case WM_ACTIVATE
+            Const WA_INACTIVE As Long = 0
+            Const WA_ACTIVE As Long = 1
+            
+            If wParam = WA_INACTIVE Then
+                If WindowIsTDIChild(lParam) Then
+                    PostMessage hWnd, WM_ACTIVATE, WA_ACTIVE, 0&
+                End If
+            End If
     End Select
+End Function
+
+Private Function WindowIsTDIChild(nHwnd) As Boolean
+    Dim c As Long
+    
+    For c = 1 To UBound(mTDIModeFormsFormData_FormHwnd)
+        If mTDIModeFormsFormData_FormHwnd(c) = nHwnd Then
+            WindowIsTDIChild = True
+            Exit Function
+        End If
+    Next
 End Function
 
 Private Sub mFont_FontChanged(ByVal PropertyName As String)
@@ -4268,6 +4289,9 @@ Private Sub SubclassForm()
         AttachMessage Me, mFormHwnd, WM_THEMECHANGED
         AttachMessage Me, mFormHwnd, WM_NCACTIVATE
         AttachMessage Me, mFormHwnd, WM_GETDPISCALEDSIZE
+        If mTDIMode = ntTDIModeForms Then
+            AttachMessage Me, mFormHwnd, WM_ACTIVATE
+        End If
     End If
 End Sub
 
@@ -5819,6 +5843,9 @@ Private Sub Unsubclass()
             DetachMessage Me, mFormHwnd, WM_THEMECHANGED
             DetachMessage Me, mFormHwnd, WM_NCACTIVATE
             DetachMessage Me, mFormHwnd, WM_GETDPISCALEDSIZE
+            If mTDIMode = ntTDIModeForms Then
+                DetachMessage Me, mFormHwnd, WM_ACTIVATE
+            End If
             On Error GoTo 0
         End If
         If mSubclassed Then
@@ -13008,6 +13035,10 @@ End Property
 
 Public Property Let TDIMode(ByVal nValue As NTTDIModeConstants)
     If nValue <> mTDIMode Then
+        If mAmbientUserMode Then
+            MsgBox "This property cannot be changed at run time!", vbExclamation
+            Exit Property
+        End If
         If Not mControlJustAdded Then
             MsgBox "This property needs to be set immediately after adding the " & TypeName(Me) & " control (without changing other properties first)", vbExclamation
             Exit Property
