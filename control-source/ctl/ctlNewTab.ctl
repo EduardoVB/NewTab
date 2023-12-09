@@ -6882,7 +6882,7 @@ Private Sub Draw()
     End If
     
     ' minimun size
-    If mUserControlSizeCorrectionsCounter < 3 Then
+    If (mUserControlSizeCorrectionsCounter < 3) And (Not mAmbientUserMode) Then
         If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ssTabOrientationBottom) Then
             If mTabBodyHeight < 3 Then
                 UserControl.Height = UserControl.Height + pScaleY(3 - mTabBodyHeight, vbPixels, vbTwips)
@@ -10575,7 +10575,9 @@ Private Sub EnsureTabBodyThemedReady()
         iRect.Right = mTabBodyWidth  '+ 1 '- 1
         iRect.Bottom = mTabBodyHeight '- 1 '+ 1 '- 1
         picTabBodyThemed.Width = iRect.Right
-        picTabBodyThemed.Height = iRect.Bottom
+        If iRect.Bottom > 0 Then
+            picTabBodyThemed.Height = iRect.Bottom
+        End If
         picTabBodyThemed.BackColor = mBackColor
         picTabBodyThemed.Cls
         If (mTabOrientation = ssTabOrientationTop) Then
