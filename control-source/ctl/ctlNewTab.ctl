@@ -320,6 +320,7 @@ Private Type PicBmp
     Reserved As Long
 End Type
  
+Private Declare Function IsIconic Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function OleCreatePictureIndirect Lib "olepro32.dll" (PicDesc As PicBmp, RefIID As GUID, ByVal fPictureOwnsHandle As Long, IPic As IPicture) As Long
 'Private Declare Function DrawIconEx Lib "user32" (ByVal hdc As Long, ByVal xLeft As Long, ByVal yTop As Long, ByVal hIcon As Long, ByVal cxWidth As Long, ByVal cyWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
 Private Declare Function GetClassLong Lib "user32.dll" Alias "GetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
@@ -701,6 +702,7 @@ Public Enum NTTDINewTabTypeConstants
     ntDefaultTab = 0
     ntNewTabByClickingIcon = 1
     ntLastTabClosed = 2
+    ntTDIForm = 3
 End Enum
 
 Public Enum NTSubclassingMethodConstants
@@ -7471,8 +7473,12 @@ Private Sub TDIResizeFormContainers()
     For c = 1 To mTabs - 1
         If mTabData(c).Visible Then
             If (mTabData(c).Data >= picTDIFormContainer.LBound) And (mTabData(c).Data <= picTDIFormContainer.UBound) Then
-                picTDIFormContainer(mTabData(c).Data).Move TabBodyLeft, TabBodyTop, TabBodyWidth, TabBodyHeight
-                MoveWindow mTDIModeFormsFormData_FormHwnd(mTabData(c).Data), 0, 0, mTabBodyRect.Right - mTabBodyRect.Left + 2, mTabBodyRect.Bottom - mTabBodyRect.Top + 3, 1
+                If IsIconic(mFormHwnd) = 0 Then
+                    On Error Resume Next
+                    picTDIFormContainer(mTabData(c).Data).Move TabBodyLeft, TabBodyTop, TabBodyWidth, TabBodyHeight
+                    MoveWindow mTDIModeFormsFormData_FormHwnd(mTabData(c).Data), 0, 0, mTabBodyRect.Right - mTabBodyRect.Left + 2, mTabBodyRect.Bottom - mTabBodyRect.Top + 3, 1
+                    On Error GoTo 0
+                End If
             End If
         End If
     Next
@@ -14087,34 +14093,37 @@ Private Sub TDIStoreTab0ControlInfo()
     End If
 End Sub
 
-Private Sub TDIAddNewTab(Optional Position As Variant, Optional Focused As Boolean = True)
-    Dim iTabCaption As String
+Private Function TDIAddNewTab(Optional Position As Variant, Optional Focused As Boolean = True, Optional nTabType As NTTDINewTabTypeConstants = ntNewTabByClickingIcon, Optional nTabCaption As String = "") As Boolean
     Dim iCancel As Boolean
     Dim iLoadTabControls As Boolean
     
     If Not mTDIAddingNewTabForForm Then
         If mTDIMode <> ntTDIModeControls Then
             RaiseError 1381, TypeName(Me), "TDIAddNewTab only available for TDIMode = ntTDIModeControls"
-            Exit Sub
+            Exit Function
         End If
         If Not IsMissing(Position) Then
             If Position < 0 Then
                 RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
-                Exit Sub
+                Exit Function
             ElseIf Position > mTabs Then
                 RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
-                Exit Sub
+                Exit Function
             End If
         End If
     End If
     mTDILastTabNumber = mTDILastTabNumber + 1
-    iTabCaption = "New tab"
-    iLoadTabControls = True
-    RaiseEvent TDIBeforeNewTab(ntNewTabByClickingIcon, mTDILastTabNumber, iTabCaption, iLoadTabControls, iCancel)
-    If Not iCancel Then
-        TDIPrepareNewTab iTabCaption, iLoadTabControls, IIf(IsMissing(Position), -1, CLng(Position)), Focused
+    
+    If (nTabType <> ntTDIForm) And (nTabCaption = "") Then
+        nTabCaption = "New tab"
     End If
-End Sub
+    iLoadTabControls = True
+    RaiseEvent TDIBeforeNewTab(nTabType, mTDILastTabNumber, nTabCaption, iLoadTabControls, iCancel)
+    If Not iCancel Then
+        TDIPrepareNewTab nTabCaption, iLoadTabControls, IIf(IsMissing(Position), -1, CLng(Position)), Focused
+        TDIAddNewTab = True
+    End If
+End Function
 
 Private Sub TDIPrepareNewTab(nTabCaption As String, nLoadTabControls As Boolean, Optional nPosition As Long = -1, Optional nFocused As Boolean = True)
     Dim iRedraw As Boolean
@@ -14307,32 +14316,35 @@ Friend Sub TDIPutFormIntoTab(nHwndForm As Long)
     Dim iIconHandle As Long
     Dim iLeft As Long
     Dim iTop As Long
+    Dim iFormCaption As String
     
     mTDIAddingNewTabForForm = True
-    TDIAddNewTab mTabs
-    If UBound(mTDIModeFormsFormData_FormHwnd) < (mTabs - 1) Then
-        ReDim Preserve mTDIModeFormsFormData_FormHwnd(mTabs + 100)
-        ReDim Preserve mTDIModeFormsFormData_OldParentHwnd(mTabs + 100)
-        ReDim Preserve mTDIModeFormsFormData_FormIcon(mTabs + 100)
+    iFormCaption = GetWindowTitle(nHwndForm)
+    If TDIAddNewTab(mTabs, , ntTDIForm, iFormCaption) Then
+        If UBound(mTDIModeFormsFormData_FormHwnd) < (mTabs - 1) Then
+            ReDim Preserve mTDIModeFormsFormData_FormHwnd(mTabs + 100)
+            ReDim Preserve mTDIModeFormsFormData_OldParentHwnd(mTabs + 100)
+            ReDim Preserve mTDIModeFormsFormData_FormIcon(mTabs + 100)
+        End If
+        mTDIModeFormsFormData_FormHwnd(mTabs - 1) = nHwndForm
+        mTabData(mTabs - 1).Data = mTabs - 1
+        
+        Load picTDIFormContainer(mTabs - 1)
+        picTDIFormContainer(mTabs - 1).Move TabBodyLeft, TabBodyTop, TabBodyWidth, TabBodyHeight
+        SetWindowLong nHwndForm, GWL_STYLE, GetWindowLong(nHwndForm, GWL_STYLE) And Not (WS_CAPTION Or WS_THICKFRAME)
+        MoveWindow nHwndForm, 0, 0, mTabBodyRect.Right - mTabBodyRect.Left + 2, mTabBodyRect.Bottom - mTabBodyRect.Top + 3, 1
+        
+        mTDIModeFormsFormData_OldParentHwnd(mTabs - 1) = SetParent(nHwndForm, picTDIFormContainer(mTabs - 1).hWnd)
+        picTDIFormContainer(mTabs - 1).Visible = True
+        
+        iIconHandle = SendMessage(nHwndForm, WM_GETICON, ICON_BIG, 0)
+        If iIconHandle <> 0 Then
+            Set mTDIModeFormsFormData_FormIcon(mTabs - 1) = CreatePicture(iIconHandle, vbPicTypeIcon)
+        End If
+        
+        mTabData(mTabs - 1).Caption = GetUniqueCaption(iFormCaption)
+        DrawDelayed
     End If
-    mTDIModeFormsFormData_FormHwnd(mTabs - 1) = nHwndForm
-    mTabData(mTabs - 1).Data = mTabs - 1
-    
-    Load picTDIFormContainer(mTabs - 1)
-    picTDIFormContainer(mTabs - 1).Move TabBodyLeft, TabBodyTop, TabBodyWidth, TabBodyHeight
-    SetWindowLong nHwndForm, GWL_STYLE, GetWindowLong(nHwndForm, GWL_STYLE) And Not (WS_CAPTION Or WS_THICKFRAME)
-    MoveWindow nHwndForm, 0, 0, mTabBodyRect.Right - mTabBodyRect.Left + 2, mTabBodyRect.Bottom - mTabBodyRect.Top + 3, 1
-    
-    mTDIModeFormsFormData_OldParentHwnd(mTabs - 1) = SetParent(nHwndForm, picTDIFormContainer(mTabs - 1).hWnd)
-    picTDIFormContainer(mTabs - 1).Visible = True
-    
-    iIconHandle = SendMessage(nHwndForm, WM_GETICON, ICON_BIG, 0)
-    If iIconHandle <> 0 Then
-        Set mTDIModeFormsFormData_FormIcon(mTabs - 1) = CreatePicture(iIconHandle, vbPicTypeIcon)
-    End If
-    
-    mTabData(mTabs - 1).Caption = GetUniqueCaption(GetWindowTitle(nHwndForm))
-    DrawDelayed
     mTDIAddingNewTabForForm = False
 End Sub
 

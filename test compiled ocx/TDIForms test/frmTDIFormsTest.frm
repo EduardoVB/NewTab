@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{66E63055-5A66-4C79-9327-4BC077858695}#3.0#0"; "NewTab01.ocx"
+Object = "{66E63055-5A66-4C79-9327-4BC077858695}#6.0#0"; "NewTab01.ocx"
 Begin VB.Form frmTDIFormsTest 
    Caption         =   "TDI forms test"
    ClientHeight    =   8112
@@ -37,7 +37,7 @@ Begin VB.Form frmTDIFormsTest
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      TabHeight       =   762
+      TabHeight       =   783
       Themed          =   0   'False
       IconAlignment   =   5
       AutoTabHeight   =   -1  'True
@@ -46,12 +46,13 @@ Begin VB.Form frmTDIFormsTest
       CanReorderTabs  =   -1  'True
       TDIMode         =   2
       TabCaption(0)   =   "Home"
-      Tab(0).ControlCount=   5
-      Tab(0).Control(0)=   "Command5"
-      Tab(0).Control(1)=   "Command4"
-      Tab(0).Control(2)=   "Command1"
-      Tab(0).Control(3)=   "Command2"
-      Tab(0).Control(4)=   "Command3"
+      Tab(0).ControlCount=   6
+      Tab(0).Control(0)=   "Command6"
+      Tab(0).Control(1)=   "Command5"
+      Tab(0).Control(2)=   "Command4"
+      Tab(0).Control(3)=   "Command1"
+      Tab(0).Control(4)=   "Command2"
+      Tab(0).Control(5)=   "Command3"
       BeginProperty IconFont(0) {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Segoe MDL2 Assets"
          Size            =   6
@@ -62,6 +63,14 @@ Begin VB.Form frmTDIFormsTest
          Strikethrough   =   0   'False
       EndProperty
       IconFontName(0) =   "Segoe MDL2 Assets"
+      Begin VB.CommandButton Command6 
+         Caption         =   "Show Form4 (non-TDI-child)"
+         Height          =   612
+         Left            =   600
+         TabIndex        =   7
+         Top             =   3240
+         Width           =   1892
+      End
       Begin VB.CommandButton Command5 
          Caption         =   "Close all forms (tabs)"
          Height          =   612
@@ -128,6 +137,10 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
+Private Sub Command6_Click()
+    Form4.Show
+End Sub
+
 Private Sub Form_Load()
     NewTab1.TabCaption(0) = "Home, Menu or Start"
 End Sub
@@ -158,10 +171,15 @@ Private Sub Command5_Click()
     Dim frm As Form
     
     For Each frm In Forms
-        If Not frm Is Me Then
+        If Not frm Is Me And Not frm Is Form4 Then
             Unload frm
         End If
     Next
 End Sub
 
+Private Sub NewTab1_TDIBeforeNewTab(ByVal TabType As NewTabCtl.NTTDINewTabTypeConstants, ByVal TabNumber As Long, TabCaption As String, LoadControls As Boolean, Cancel As Boolean)
+    If TabCaption = "Form4" Then
+        Cancel = True
+    End If
+End Sub
 

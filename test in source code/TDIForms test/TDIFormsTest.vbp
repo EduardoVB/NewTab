@@ -5,6 +5,7 @@ Object=*\A..\..\control-source\NewTabCtl.vbp
 Form=Form1.frm
 Form=Form2.frm
 Form=Form3Modal.frm
+Form=Form4.frm
 IconForm="frmTDIFormsTest"
 Startup="frmTDIFormsTest"
 HelpFile=""
