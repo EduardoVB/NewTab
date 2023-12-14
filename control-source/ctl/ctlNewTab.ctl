@@ -6911,7 +6911,9 @@ Private Sub Draw()
                 End If
             End If
         End If
-        If (iTabMaxWidth > 0) And (mTabWidthStyle2 = ntTWFixed) Then
+    End If
+    If (iTabMaxWidth > 0) And (mTabWidthStyle2 = ntTWFixed) Then
+        If (mUserControlSizeCorrectionsCounter < 3) And (Not mAmbientUserMode) Then
             iLng = iTabMaxWidth * mTabsPerRow
             If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ssTabOrientationBottom) Then
                 If pScaleX(iLng, vbPixels, vbTwips) > UserControl.Width Then
@@ -6926,17 +6928,17 @@ Private Sub Draw()
                     GoTo TheExit:
                 End If
             End If
-            If mAppearanceIsPP Then
-                iTabWidth = (iScaleWidth - 5 - iAllRowsPerspectiveSpace - 1 - IIf(mControlIsThemed, 2 - mThemedTabBodyRightShadowPixels, 0) - mTabSeparation2 * (mTabsPerRow - 1)) / mTabsPerRow
-            Else
-                iTabWidth = (iScaleWidth - 1 - iAllRowsPerspectiveSpace - 1 - IIf(mControlIsThemed, 2 - mThemedTabBodyRightShadowPixels, 0) - mTabSeparation2 * (mTabsPerRow - 1)) / mTabsPerRow
-            End If
-            If iTabWidth > iTabMaxWidth Then
-                iTabWidth = iTabMaxWidth
-            End If
-        Else
-            iTabWidth = (iScaleWidth - iAllRowsPerspectiveSpace - 1 - mTabSeparation2 * (mTabsPerRow - 1)) / mTabsPerRow
         End If
+        If mAppearanceIsPP Then
+            iTabWidth = (iScaleWidth - 5 - iAllRowsPerspectiveSpace - 1 - IIf(mControlIsThemed, 2 - mThemedTabBodyRightShadowPixels, 0) - mTabSeparation2 * (mTabsPerRow - 1)) / mTabsPerRow
+        Else
+            iTabWidth = (iScaleWidth - 1 - iAllRowsPerspectiveSpace - 1 - IIf(mControlIsThemed, 2 - mThemedTabBodyRightShadowPixels, 0) - mTabSeparation2 * (mTabsPerRow - 1)) / mTabsPerRow
+        End If
+        If iTabWidth > iTabMaxWidth Then
+            iTabWidth = iTabMaxWidth
+        End If
+    Else
+        iTabWidth = (iScaleWidth - iAllRowsPerspectiveSpace - 1 - mTabSeparation2 * (mTabsPerRow - 1)) / mTabsPerRow
     End If
     
     mUserControlSizeCorrectionsCounter = 0
@@ -8773,8 +8775,12 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     
     iTabSpaceRect.Left = iTabRect.Left + 2
     If mAppearanceIsFlat Then iTabSpaceRect.Left = iTabSpaceRect.Left + 1
-    iTabSpaceRect.Top = iTabRect.Top '+ iFlatBarHeightTop
-    iTabSpaceRect.Bottom = iTabRect.Bottom - 2
+    iTabSpaceRect.Top = iTabRect.Top
+    If mTabOrientation = ssTabOrientationBottom Then
+        iTabSpaceRect.Bottom = iTabRect.Bottom + 2
+    Else
+        iTabSpaceRect.Bottom = iTabRect.Bottom - 2
+    End If
     iTabSpaceRect.Right = iTabRect.Right - 2
     
     If mAppearanceIsPP And iTabData.Selected Then
