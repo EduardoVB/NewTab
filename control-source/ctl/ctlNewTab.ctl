@@ -8777,7 +8777,11 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     If mAppearanceIsFlat Then iTabSpaceRect.Left = iTabSpaceRect.Left + 1
     iTabSpaceRect.Top = iTabRect.Top
     If mTabOrientation = ssTabOrientationBottom Then
-        iTabSpaceRect.Bottom = iTabRect.Bottom + 2
+        If nTab = mTabSel Then
+            iTabSpaceRect.Bottom = iTabRect.Bottom + 2
+        Else
+            iTabSpaceRect.Bottom = iTabRect.Bottom + 4
+        End If
     Else
         iTabSpaceRect.Bottom = iTabRect.Bottom - 2
     End If
