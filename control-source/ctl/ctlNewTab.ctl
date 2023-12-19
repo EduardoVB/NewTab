@@ -7257,6 +7257,31 @@ Private Sub Draw()
     End If
     DrawTab CLng(mTabSel)
     DrawTabPicureAndCaption CLng(mTabSel)
+    If mTabOrientation = ssTabOrientationBottom Then
+        ' grip over the body
+        If mHighlightFlatBar And (mFlatBarGripHeightDPIScaled > 0) Then
+            For t = 0 To mTabs - 1
+                If mTabData(t).Hovered Then
+                    Const cEpsilon As Single = 0.499
+                    Dim iTriangle(2) As POINTAPI
+                    
+                    With mTabData(t).TabRect
+                        ' top point
+                        iTriangle(0).X = (.Left + .Right) / 2 + cEpsilon
+                        iTriangle(0).Y = .Bottom + 2 + mFlatBarGripHeightDPIScaled
+                        ' left point
+                        iTriangle(1).X = (.Left + .Right) / 2 - mFlatBarGripHeightDPIScaled + cEpsilon
+                        iTriangle(1).Y = .Bottom + 2
+                        ' right point
+                        iTriangle(2).X = (.Left + .Right) / 2 + mFlatBarGripHeightDPIScaled + cEpsilon
+                        iTriangle(2).Y = .Bottom + 2
+                        DrawTriangle iTriangle, mFlatBarGlowColor
+                    End With
+                    Exit For
+                End If
+            Next
+        End If
+    End If
     
     mEndOfTabs = 0
     For t = 0 To mTabs - 1
@@ -7523,7 +7548,7 @@ Private Sub DrawTab(nTab As Long)
     iRoundedTabs = (mTabAppearance2 = ntTAPropertyPageRounded) Or (mTabAppearance2 = ntTATabbedDialogRounded) Or ((mTabAppearance2 = ntTAFlat) And ((mFlatRoundnessTopDPIScaled > 0) Or (mFlatRoundnessTabsDPIScaled > 0)))
     
     If iActive Then
-        iHighlighted = ((mHighlightGradientTabSel <> ntGradientNone) Or mControlIsThemed) And iTabData.Enabled
+        iHighlighted = ((mHighlightGradientTabSel <> ntGradientNone) Or mAppearanceIsFlat Or mControlIsThemed) And iTabData.Enabled
         iBackColorTabs2 = mBackColorTabSel2
         i3DDKShadow = m3DDKShadow_Sel
         i3DHighlightH = m3DHighlightH_Sel
@@ -7702,11 +7727,11 @@ Private Sub DrawTab(nTab As Long)
         Else
             iFlatRightLineColor = IIf(iActive And (mFlatBorderMode = ntBorderTabSel) Or (mFlatBorderMode = ntBorderTabs) And (mTabSeparationDPIScaled > 0), iFlatBorderColor, iFlatTabsSeparationLineColor)
         End If
-        If iHighlighted Then
-            If mHighlightFlatBar And (iFlatBarPosition = ntBarPositionBottom) Then
-                iShowFlatBarBottom = (mFlatBarHeightDPIScaled > 0)
-            End If
+      '  If iHighlighted Then
+        If IIf(nTab = mTabSel, mHighlightFlatBarTabSel, mHighlightFlatBar) And (iFlatBarPosition = ntBarPositionBottom) Then
+            iShowFlatBarBottom = (mFlatBarHeightDPIScaled > 0)
         End If
+       ' End If
     End If
     
     With iTabData.TabRect
@@ -7982,14 +8007,16 @@ Private Sub DrawTab(nTab As Long)
                 If iShowFlatBarBottom Then
                     If iActive Then
                         iColor = mFlatBarColorTabSel
-                    Else
+                    ElseIf iTabData.Hovered Then
                         iColor = mFlatBarGlowColor
+                    Else
+                        iColor = iFlatBarTopColor
                     End If
                     iColor = TranslatedColor(iColor)
                     
                     FillCurvedGradient2 .Left + iLeftOffset, .Bottom - mFlatBarHeightDPIScaled + 3, .Right + iRightOffset, .Bottom + 3, iColor, iColor, 0, 0
                     If IIf(iActive, mHighlightFlatBarWithGripTabSel, mHighlightFlatBarWithGrip) Then
-                        If mFlatBarGripHeightDPIScaled > 0 Then
+                        If (mFlatBarGripHeightDPIScaled > 0) And iHighlighted Then
                             ' top point
                             iTriangle(0).X = (.Left + .Right) / 2 + cEpsilon
                             iTriangle(0).Y = .Bottom + 2 + mFlatBarGripHeightDPIScaled
@@ -8000,7 +8027,7 @@ Private Sub DrawTab(nTab As Long)
                             iTriangle(2).X = (.Left + .Right) / 2 + mFlatBarGripHeightDPIScaled + cEpsilon
                             iTriangle(2).Y = .Bottom + 2
                             DrawTriangle iTriangle, iColor
-                        Else
+                        ElseIf iHighlighted Then
                             If mFlatBarHeightDPIScaled - Abs(mFlatBarGripHeightDPIScaled) < (mFlatBarHeightDPIScaled * 0.33) Or (mTabOrientation = ssTabOrientationBottom) Then
                                 iLng = Abs(mFlatBarGripHeightDPIScaled) + mFlatBarHeightDPIScaled
                                 ' top point
@@ -8028,14 +8055,15 @@ Private Sub DrawTab(nTab As Long)
                                         iColor = mHighlightColorTabSel
                                     End If
                                 Else
-                                    If mFlatBodySeparationLineHeightDPIScaled > 0 Then
-                                        iColor = TranslatedColor(mFlatBodySeparationLineColor)
-                                    Else
-                                        iColor = mBackColorTabSel2
-                                    End If
+                                    iColor = mBackColorTabSel2
+'                                    If mFlatBodySeparationLineHeightDPIScaled > 0 Then
+                                        'iColor = TranslatedColor(mFlatBodySeparationLineColor)
+'                                    Else
+ '                                       iColor = mBackColorTabSel2
+ '                                   End If
                                 End If
                             Else
-                                iColor = mBackColorTabs2
+                                iColor = mBackColorTabSel2
                             End If
                             iColor = TranslatedColor(iColor)
                             ' top point
@@ -8502,10 +8530,12 @@ Private Sub DrawBody(nScaleHeight As Long)
             
             ' top line
             If (iFlatBodySeparationLineColor <> mBackColorTabs2) Then
-                If mFlatBodySeparationLineHeight = 1 Then
-                    picDraw.Line (IIf(iTopLeftCornerIsRounded, mFlatRoundnessTopDPIScaled, 0), mTabBodyStart)-(mTabBodyWidth - 1 - IIf(mFlatBorderMode = ntBorderTabSel, mFlatRoundnessTopDPIScaled, 0), mTabBodyStart), iFlatBodySeparationLineColor
-                ElseIf mFlatBodySeparationLineHeight > 1 Then
-                    picDraw.Line (0, mTabBodyStart + 1)-(mTabBodyWidth - 2, mTabBodyStart + mFlatBodySeparationLineHeightDPIScaled), iFlatBodySeparationLineColor, BF
+                If Not ((mTabOrientation = ssTabOrientationBottom) And (mFlatBarHeightDPIScaled > 0) And mHighlightFlatBar) Then
+                    If mFlatBodySeparationLineHeight = 1 Then
+                        picDraw.Line (IIf(iTopLeftCornerIsRounded, mFlatRoundnessTopDPIScaled, 0), mTabBodyStart)-(mTabBodyWidth - 1 - IIf(mFlatBorderMode = ntBorderTabSel, mFlatRoundnessTopDPIScaled, 0), mTabBodyStart), iFlatBodySeparationLineColor
+                    ElseIf mFlatBodySeparationLineHeight > 1 Then
+                        picDraw.Line (0, mTabBodyStart + 1)-(mTabBodyWidth - 2, mTabBodyStart + mFlatBodySeparationLineHeightDPIScaled), iFlatBodySeparationLineColor, BF
+                    End If
                 End If
             End If
             
@@ -8623,6 +8653,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     Dim iFlatBarPosition As NTFlatBarPosition
     Dim iTabCenterX As Long
     Dim iTabCenterY As Long
+    Dim iActive As Boolean
     
     If Not mTabData(nTab).Visible Then Exit Sub
     If Not mTabData(nTab).PicToUseSet Then SetPicToUse nTab
@@ -8657,8 +8688,9 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
         SetWorldTransform picDraw.hDC, iTx2
     End If
     
+    iActive = (nTab = mTabSel)
     If mCanReorderTabs Then
-        If nTab = mTabSel Then
+        If iActive Then
             If DraggingATab Then
                 iTabRect.Left = iTabRect.Left + mMouseX2 - mMouseX
                 iTabRect.Right = iTabRect.Right + mMouseX2 - mMouseX
@@ -8673,10 +8705,22 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     If mAppearanceIsFlat Then
         If mHighlightFlatBar Or mHighlightFlatBarTabSel Then
             If iFlatBarPosition = ntBarPositionTop Then
-                iFlatBarHeightTop = mFlatBarHeightDPIScaled
-                If mHighlightFlatBarWithGrip Or mHighlightFlatBarWithGripTabSel Then
+                If mTabOrientation = ssTabOrientationBottom Then
+                    iFlatBarHeightBottom = -mFlatBarHeightDPIScaled
+                Else
+                    iFlatBarHeightTop = mFlatBarHeightDPIScaled
+                End If
+                If (mHighlightFlatBarWithGrip And (Not iActive) And iTabData.Hovered) Or (mHighlightFlatBarWithGripTabSel And iActive) Then
                     If mFlatBarGripHeightDPIScaled < 0 Then
-                        iFlatBarHeightTop = iFlatBarHeightTop + Abs(mFlatBarGripHeightDPIScaled) + 1
+                        If mTabOrientation = ssTabOrientationBottom Then
+                            iFlatBarHeightBottom = iFlatBarHeightBottom - Abs(mFlatBarGripHeightDPIScaled) - 1
+                        Else
+                            iFlatBarHeightTop = iFlatBarHeightTop + Abs(mFlatBarGripHeightDPIScaled) + 1
+                        End If
+                    Else
+                        If mTabOrientation = ssTabOrientationBottom Then
+                            iFlatBarHeightBottom = iFlatBarHeightBottom - Abs(mFlatBarGripHeightDPIScaled) - 1
+                        End If
                     End If
                 End If
             Else
@@ -8690,7 +8734,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
         End If
     End If
     
-    If nTab = mTabSel Then
+    If iActive Then
         iBackColorTabs2 = mBackColorTabSel2
         iForeColor = mForeColorTabSel
         If mIconColorMouseHoverTabSel <> mIconColorTabSel Then
@@ -8757,7 +8801,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     iForeColor2 = picDraw.ForeColor
     
     iFontBoldPrev = picDraw.FontBold
-    If nTab = mTabSel Then
+    If iActive Then
         picDraw.FontBold = mFont.Bold Or mHighlightCaptionBoldTabSel
         picDraw.FontUnderLine = mFont.Underline Or mHighlightCaptionUnderlinedTabSel
     Else
@@ -8777,13 +8821,17 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     If mAppearanceIsFlat Then iTabSpaceRect.Left = iTabSpaceRect.Left + 1
     iTabSpaceRect.Top = iTabRect.Top
     If mTabOrientation = ssTabOrientationBottom Then
-        If nTab = mTabSel Then
+        If iActive And Not mAppearanceIsFlat Then
             iTabSpaceRect.Bottom = iTabRect.Bottom + 2
         Else
             iTabSpaceRect.Bottom = iTabRect.Bottom + 4
         End If
     Else
-        iTabSpaceRect.Bottom = iTabRect.Bottom - 2
+        If mAppearanceIsFlat Then
+            iTabSpaceRect.Bottom = iTabRect.Bottom
+        Else
+            iTabSpaceRect.Bottom = iTabRect.Bottom - 2
+        End If
     End If
     iTabSpaceRect.Right = iTabRect.Right - 2
     
@@ -9029,8 +9077,8 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
             iForeColorPrev = picDraw.ForeColor
             picDraw.ForeColor = iIconColor
             iLng = ((iTabRect.Bottom - iTabRect.Top) - (iIconCharRect.Bottom - iIconCharRect.Top)) / 2
-            iIconCharRect.Left = iPicLeft + iTabData.IconLeftOffset * mDPIScale '+ iTabRect.Left
-            iIconCharRect.Right = iPicLeft + iTabData.IconLeftOffset * mDPIScale + iPicWidth '+ iTabRect.Left
+            iIconCharRect.Left = iPicLeft + iTabData.IconLeftOffset * mDPIScale
+            iIconCharRect.Right = iPicLeft + iTabData.IconLeftOffset * mDPIScale + iPicWidth
             iIconCharRect.Top = iPicTop + iTabData.IconTopOffset * mDPIScale
             iIconCharRect.Bottom = iPicTop + iTabData.IconTopOffset * mDPIScale + iPicHeight + 1
             If (mIconAlignment = ntIconAlignAfterCaption) Or (mIconAlignment = ntIconAlignCenteredAfterCaption) Or (mIconAlignment = ntIconAlignEnd) Then
@@ -9165,7 +9213,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     
     ' Draw the focus rect
     If mAmbientUserMode Then    'only at run time
-        If (nTab = mTabSel) And ControlHasFocus And mShowFocusRect Then
+        If (iActive) And ControlHasFocus And mShowFocusRect Then
             If mTabsAreRotatedButCaptionsAreHorizontal Then
                 If mAppearanceIsPP Then
                     iFocusRect = iTabRect
@@ -10895,11 +10943,11 @@ Private Function MeasureTabIconAndCaption(t As Long) As Long
         End If
         If (mIconAlignment = ntIconAlignAfterCaption) Or (mIconAlignment = ntIconAlignCenteredAfterCaption) Or (mIconAlignment = ntIconAlignEnd) Then
             If mTabData(t).IconLeftOffset > 0 Then
-                iPicWidth = iPicWidth + mTabData(t).IconLeftOffset
+                iPicWidth = iPicWidth + mTabData(t).IconLeftOffset * mDPIScale
             End If
         ElseIf (mIconAlignment = ntIconAlignBeforeCaption) Or (mIconAlignment = ntIconAlignCenteredBeforeCaption) Or (mIconAlignment = ntIconAlignStart) Then
             If mTabData(t).IconLeftOffset < 0 Then
-                iPicWidth = iPicWidth - mTabData(t).IconLeftOffset
+                iPicWidth = iPicWidth - mTabData(t).IconLeftOffset * mDPIScale
             End If
         End If
     Else
@@ -12984,9 +13032,9 @@ Private Sub SetAutoTabHeight()
                 mTabHeight = mTabHeight + ScaleY(mFlatBarHeightDPIScaled, vbPixels, vbHimetric)
                 If mHighlightFlatBarWithGrip Or mHighlightFlatBarWithGripTabSel Then
                     If mFlatBarGripHeightDPIScaled < 0 Then
-                        If mFlatBarHeightDPIScaled - Abs(mFlatBarGripHeightDPIScaled) < (mFlatBarHeightDPIScaled * 0.33) Then
-                            mTabHeight = mTabHeight - ScaleY(mFlatBarGripHeightDPIScaled, vbPixels, vbHimetric)
-                        End If
+                        'If mFlatBarHeightDPIScaled - Abs(mFlatBarGripHeightDPIScaled) < (mFlatBarHeightDPIScaled * 0.33) Then
+                        mTabHeight = mTabHeight - ScaleY(mFlatBarGripHeightDPIScaled, vbPixels, vbHimetric)
+                        'End If
                     End If
                 End If
             End If
@@ -13928,11 +13976,11 @@ Private Sub ConfigureTDIModeOnce()
             TabIconFont(1).Size = 8
             TabIconFont(1).Bold = True
             TabToolTipText(1) = "Add a new tab"
-            TabIconLeftOffset(1) = -2
-            TabIconTopOffset(1) = 1
+            TabIconLeftOffset(1) = -2 * mDPIScale
+            TabIconTopOffset(1) = 1 * mDPIScale
             TabIconCharHex(1) = "&HF8AA&"
-            TabIconLeftOffset(0) = -3
-            TabIconTopOffset(0) = 1
+            TabIconLeftOffset(0) = -3 * mDPIScale
+            TabIconTopOffset(0) = 1 * mDPIScale
             TabIconCharHex(0) = "&HE106&"
         End If
     Else
@@ -13943,8 +13991,8 @@ Private Sub ConfigureTDIModeOnce()
         If mTDIMode = ntTDIModeControls Then
             Set TabIconFont(1) = CloneFont(iFont)
             TabToolTipText(1) = "Add a new tab"
-            TabIconLeftOffset(1) = -2
-            TabIconTopOffset(1) = 2
+            TabIconLeftOffset(1) = -2 * mDPIScale
+            TabIconTopOffset(1) = 2 * mDPIScale
             TabIconCharHex(1) = "&H2B&"
             TabIconLeftOffset(0) = 0
             TabIconTopOffset(0) = 0
@@ -14008,8 +14056,8 @@ Private Sub SetTDIMode()
                 iFont.Size = 6
                 iFont.Bold = True
                 Set TabIconFont(0) = iFont
-                TabIconLeftOffset(0) = -3
-                TabIconTopOffset(0) = 1
+                TabIconLeftOffset(0) = -3 * mDPIScale
+                TabIconTopOffset(0) = 1 * mDPIScale
                 TabIconCharHex(0) = "&HE106&"
             Else
                 iFont.Name = "Arial"
@@ -14030,8 +14078,8 @@ Private Sub SetTDIMode()
                     iFont.Bold = True
                     Set TabIconFont(1) = iFont
                     TabToolTipText(1) = "Add a new tab"
-                    TabIconLeftOffset(1) = -2
-                    TabIconTopOffset(1) = 1
+                    TabIconLeftOffset(1) = -2 * mDPIScale
+                    TabIconTopOffset(1) = 1 * mDPIScale
                     TabIconCharHex(1) = "&HF8AA&"
                 Else
                     iFont.Name = "Arial"
@@ -14039,8 +14087,8 @@ Private Sub SetTDIMode()
                     iFont.Bold = True
                     Set TabIconFont(1) = iFont
                     TabToolTipText(1) = "Add a new tab"
-                    TabIconLeftOffset(1) = -2
-                    TabIconTopOffset(1) = 2
+                    TabIconLeftOffset(1) = -2 * mDPIScale
+                    TabIconTopOffset(1) = 2 * mDPIScale
                     TabIconCharHex(1) = "&H2B&"
                 End If
             End If
@@ -14156,8 +14204,8 @@ Private Sub TDIPrepareNewTab(nTabCaption As String, nLoadTabControls As Boolean,
         Set TabIconFont(mTabs - 2) = TabIconFont(0)
     End If
     
-    TabIconLeftOffset(mTabs - 2) = -3
-    TabIconTopOffset(mTabs - 2) = 1
+    TabIconLeftOffset(mTabs - 2) = -3 * mDPIScale
+    TabIconTopOffset(mTabs - 2) = 1 * mDPIScale
     TabIconCharHex(mTabs - 2) = "&HE106&"
     
     TabCaption(mTabs - 2) = nTabCaption & "   "
