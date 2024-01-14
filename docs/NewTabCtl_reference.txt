@@ -936,7 +936,7 @@ SetActiveTab function:
 	Method parameter: where to look for the data to find.
 	
 	ntFindCaption: searches for a tab with the TabCaption specified in the Find parameter.
-	ntFindOriginalIndex: searches for a tab that when it was created had that tab index.
+	ntFindOriginalIndex: searches for a tab that when it was created had that tab index. If CanReorderTabs is True, the current index of the tab may not be the index it had when it was created.
 	ntFindData: searches for a tab with the TabData specified in the Find parameter.
 	ntFindTag: searches for a tab with the TabTag specified in the Find parameter.
 
