@@ -931,9 +931,10 @@ SetActiveTab function:
 	Sets the current ('selected' or 'active') tab by other means than its index (that can be done with the Tab property).
 	If the tab is found its retuns True, otherwise it returns False.
 	
-	Find: find a tab with this data.
+	Find parameter: find a tab with this data.
 	
 	Method parameter: where to look for the data to find.
+	
 	ntFindCaption: searches for a tab with the TabCaption specified in the Find parameter.
 	ntFindOriginalIndex: searches for a tab that when it was created had that tab index.
 	ntFindData: searches for a tab with the TabData specified in the Find parameter.
