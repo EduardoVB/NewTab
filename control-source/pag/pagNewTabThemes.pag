@@ -434,7 +434,6 @@ Private mAmbientFont As StdFont
 Private mAmbientBackColor As Long
 Private mAmbientForeColor As Long
 Private mCurrentSettings As NewTabTheme
-Private mDefaultIconFont As StdFont
 Private mSelectedSettings As NewTabTheme
 Private mBrightnessIsInverted As Boolean
 Private mSelectingTheme As Boolean
@@ -524,7 +523,6 @@ Private Sub chkSaveInControl_Click()
     Dim iName As String
     Dim iTheme As NewTabTheme
     Static sInside As Boolean
-    Dim iTheme2 As NewTabTheme
     
     If mLoading Or mSelectingTheme Or mModifyingColors Or sInside Then Exit Sub
     sInside = True
@@ -562,18 +560,6 @@ Private Sub chkSaveInControl_Click()
     sInside = False
 End Sub
 
-Private Sub RemoveThemeFromCollectionByHash(nCollection As Object, nHash As String)
-    Dim iTheme As NewTabTheme
-    
-    For Each iTheme In nCollection
-        If iTheme.Hash = nHash Then
-            nCollection.Remove iTheme.Name
-            Exit Sub
-        End If
-    Next
-    If InIDE Then Err.Raise 5
-End Sub
-
 Private Function GetNewThemeName() As String
     Dim iName As String
     
@@ -592,7 +578,6 @@ Private Sub chkSaveInFile_Click()
     Dim iName As String
     Dim iTheme As NewTabTheme
     Static sInside As Boolean
-    Dim iTheme2 As NewTabTheme
     
     If mLoading Or mSelectingTheme Or mModifyingColors Or sInside Then Exit Sub
     sInside = True
@@ -632,7 +617,6 @@ Private Sub chkSaveInRegistry_Click()
     Dim iName As String
     Dim iTheme As NewTabTheme
     Static sInside As Boolean
-    Dim iTheme2 As NewTabTheme
     
     If mLoading Or mSelectingTheme Or mModifyingColors Or sInside Then Exit Sub
     sInside = True
@@ -814,8 +798,6 @@ Private Sub hscLum_Scroll()
 End Sub
 
 Private Sub mnuCopy_Click()
-    Dim iTheme As NewTabTheme
-    
     Clipboard.Clear
     Clipboard.SetText GetThemeStringFromControl(NewTab1, mAmbientBackColor, mAmbientForeColor, mAmbientFont)
 End Sub
@@ -959,7 +941,6 @@ End Sub
 Private Sub LoadThemes()
     Dim iTheme As NewTabTheme
     Dim iCustomLabelEntryAlreadyAdded As Boolean
-    Dim iHash As String
     Dim iLdi As Long
     Dim c As Long
     
@@ -1100,12 +1081,10 @@ Private Sub SetPropertyPageColors(nBackColor As Long, nForeColor As Long)
 End Sub
 
 Private Sub ModifyColors()
-    Const cPropertyList As String = "|BackColor|ForeColor|ForeColorTabSel|ForeColorHighlighted|FlatTabBorderColorHighlight|FlatTabBorderColorTabSel|BackColorTabs|BackColorTabSel|FlatBarColorInactive|FlatTabsSeparationLineColor|FlatBodySeparationLineColor|FlatBorderColor|FlatBarColorHighlight|FlatBarColorTabSel|IconColor|IconColorTabSel|IconColorTabHighlighted|HighlightColor|HighlightColorTabSel|"
     Dim iProp As cPropertyData
     Dim iProp2 As cPropertyData
     Dim iColors As Collection
     Dim iCol As Long
-    Dim iCol2 As Long
     Dim iHue As Integer
     Dim iLum As Integer
     Dim iSat As Integer
@@ -1284,23 +1263,6 @@ Private Function IsItemInCombo(nCombo As ComboBox, nItem As String) As Boolean
             Exit Function
         End If
     Next
-End Function
-
-Private Function InIDE() As Boolean
-    Static sValue As Long
-    
-    If sValue = 0 Then
-        Err.Clear
-        On Error Resume Next
-        Debug.Print 1 / 0
-        If Err.Number Then
-            sValue = 1
-        Else
-            sValue = 2
-        End If
-        Err.Clear
-    End If
-    InIDE = (sValue = 1)
 End Function
 
 Private Function EnsureUniqueThemeNameInCollections(ByVal nTheme As NewTabTheme) As String

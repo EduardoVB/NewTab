@@ -61,37 +61,10 @@ Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Lon
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (hpvDest As Any, hpvSource As Any, ByVal cbCopy As Long)
 Private Declare Function lstrlenPtr Lib "kernel32" Alias "lstrlenA" (ByVal lpString As Long) As Long
 
-Private Type BrowseInfo
-   hwndOwner As Long
-   pIDLRoot As Long
-   pszDisplayName As String
-   lpszTitle As String
-   ulFlags As Long
-   lpfnCallback As Long
-   lParam As Long
-   iImage As Long
-End Type
-
 Private Type SHITEMID
     cb As Long
     abID As Byte
 End Type
-
-Private Type ITEMIDLIST
-    mkid As SHITEMID
-End Type
-
-Private Declare Function SHGetPathFromIDList Lib "shell32.dll" Alias "SHGetPathFromIDListA" (ByVal pidl As Long, ByVal pszPath As String) As Long
-Private Declare Function SHBrowseForFolder Lib "shell32.dll" Alias "SHBrowseForFolderA" (lpBrowseInfo As BrowseInfo) As Long
-Private Declare Sub CoTaskMemFree Lib "ole32.dll" (ByVal pv As Long)
-Private Declare Function SHGetFolderLocation Lib "shell32" (ByVal hwndOwner As Long, ByVal nFolder As Long, ByVal hToken As Long, ByVal dwReserved As Long, pidl As ITEMIDLIST) As Long
-Private Declare Function PathIsDirectory Lib "shlwapi.dll" Alias "PathIsDirectoryA" (ByVal pszPath As String) As Long
-Private Declare Function SHParseDisplayName Lib "shell32.dll" (ByVal pszName As Long, ByVal pbc As Long, ByRef ppidl As Long, ByVal sfgaoIn As Long, ByRef psfgaoOut As Long) As Long
-
-Private Const S_OK As Long = 0&
-Private Const CSIDL_PERSONAL As Long = &H5
-Private Const CSIDL_DRIVES As Long = &H11
-Private Const CSIDL_PRINTERS As Long = &H4
 
 'constants for API memory functions
 Private Const GMEM_MOVEABLE = &H2
@@ -521,28 +494,6 @@ Public Enum cdeCommonDialogExPageSetupFlagsConstants
     cdePSShowHelp = CommonDialogsFlags.cdlbPSShowHelp
 End Enum
 
-Public Enum cdeCommonDialogExFolderFlagsConstants
-    cdeSFReturnOnlyFSDirs = CommonDialogsFlags.cdlbSFReturnOnlyFSDirs
-    cdeSFDontGoBelowDomain = CommonDialogsFlags.cdlbSFDontGoBelowDomain
-    cdeSFStatusText = CommonDialogsFlags.cdlbSFStatusText
-    cdeSFReturnFSAncestors = CommonDialogsFlags.cdlbSFReturnFSAncestors
-    cdeSFEditBox = CommonDialogsFlags.cdlbSFEditBox
-    cdeSFValidate = CommonDialogsFlags.cdlbSFValidate
-    cdeSFNewDialogStyle = CommonDialogsFlags.cdlbSFNewDialogStyle
-    cdeSFUseNewUI = CommonDialogsFlags.cdlbSFUseNewUI
-    cdeSFBrowseIncludeURLs = CommonDialogsFlags.cdlbSFBrowseIncludeURLs
-    cdeSFUAHint = CommonDialogsFlags.cdlbSFUAHint
-    cdeSFNoNewFolderButton = CommonDialogsFlags.cdlbSFNoNewFolderButton
-    cdeSFNoTranslateTargets = CommonDialogsFlags.cdlbSFNoTranslateTargets
-    cdeSFNoReturnOnlyFSDirs = CommonDialogsFlags.cdlbSFNoReturnOnlyFSDirs
-    cdeSFBrowseForComputer = CommonDialogsFlags.cdlbSFBrowseForComputer
-    cdeSFBrowseForPrinter = CommonDialogsFlags.cdlbSFBrowseForPrinter
-    cdeSFBrowseIncludeFiles = CommonDialogsFlags.cdlbSFBrowseIncludeFiles
-    cdeSFShareable = CommonDialogsFlags.cdlbSFShareable
-    
-End Enum
-
-
 ' Other Public enumerations
 Public Enum cdePageOrientationConstants
     vbPRORPrinterDefault = 0&
@@ -680,7 +631,6 @@ Private mToPage As Long
 Private mOrientation As Long
 Private mCustomColors(0 To 15) As Long
 Private mAutoSaveCustomColors As Boolean
-Private mCustomColorsLoaded As Boolean
 
 Private mApiReturn As Long
 Private mExtendedError As Long
@@ -756,10 +706,6 @@ Public Sub ShowColor(Optional ByVal nFlags As cdeCommonDialogExColorFlagsConstan
     mAction = 3  'Action property - ShowColor
     mApiReturn = 0  'APIReturn property
     mExtendedError = 0  'ExtendedError property
-    
-'    If mAutoSaveCustomColors Then
-'        If Not mCustomColorsLoaded Then LoadCustomColors
-'    End If
     
     tChooseColor.lStructSize = Len(tChooseColor)
     
@@ -2428,39 +2374,6 @@ Public Property Let DialogHeader(nValue As String)
     mDialogHeader = nValue
 End Property
 
-
-'Private Function GetFileFolderPath(nFileFullPath As String) As String
-'    Dim iFolderPath As String
-'
-'    SeparatePathAndFileName nFileFullPath, iFolderPath
-'    GetFileFolderPath = iFolderPath
-'    AddDirSep GetFileFolderPath
-'End Function
-
-'Private Function GetFolderName(nFullFolderPath As String) As String
-'    Dim iPath As String
-'    Dim iFolder As String
-'
-'    SeparatePathAndFileName nFullFolderPath, iPath, iFolder
-'    GetFolderName = iFolder
-'End Function
-
-Private Function GetAddressofFunction(Add As Long) As Long
-    GetAddressofFunction = Add
-End Function
-
-
-Private Function IsPrinter(nName As String) As Boolean
-    Dim iPrn As Printer
-    
-    For Each iPrn In Printers
-        If LCase$(iPrn.DeviceName) = LCase$(nName) Then
-            IsPrinter = True
-            Exit For
-        End If
-    Next iPrn
-    
-End Function
 
 Public Property Let AmbientUserMode(nValue As Boolean)
 Attribute AmbientUserMode.VB_MemberFlags = "40"

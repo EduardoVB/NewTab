@@ -322,8 +322,6 @@ End Type
  
 Private Declare Function IsIconic Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function OleCreatePictureIndirect Lib "olepro32.dll" (PicDesc As PicBmp, RefIID As GUID, ByVal fPictureOwnsHandle As Long, IPic As IPicture) As Long
-'Private Declare Function DrawIconEx Lib "user32" (ByVal hdc As Long, ByVal xLeft As Long, ByVal yTop As Long, ByVal hIcon As Long, ByVal cxWidth As Long, ByVal cyWidth As Long, ByVal istepIfAniCur As Long, ByVal hbrFlickerFreeDraw As Long, ByVal diFlags As Long) As Long
-Private Declare Function GetClassLong Lib "user32.dll" Alias "GetClassLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
 Private Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As Long) As Long
 Private Declare Function GetWindowText Lib "user32" Alias "GetWindowTextW" (ByVal hWnd As Long, ByVal lpString As Long, ByVal cch As Long) As Long
 Private Declare Function GetWindowTextLength Lib "user32" Alias "GetWindowTextLengthW" (ByVal hWnd As Long) As Long
@@ -506,22 +504,6 @@ Private Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDC As Long, ByVal
 
 Private Const IDC_HAND = 32649&
 
-Private Type DLLVERSIONINFO
-    cbSize As Long
-    dwMajor As Long
-    dwMinor As Long
-    dwBuildNumber As Long
-    dwPlatformID As Long
-End Type
-
-'Private Declare Function DllGetVersion Lib "comctl32" (ByRef pdvi As DLLVERSIONINFO) As Long
-Private Declare Function IsAppThemed Lib "uxtheme" () As Long
-Private Declare Function IsThemeActive Lib "uxtheme" () As Long
-Private Declare Function GetThemeAppProperties Lib "uxtheme" () As Long
-
-Private Const S_OK As Long = &H0
-Private Const STAP_ALLOW_CONTROLS As Long = (1 * (2 ^ 1))
-
 Private Declare Function FindWindowEx Lib "user32" Alias "FindWindowExA" (ByVal hWndParent As Long, ByVal hwndChildAfter As Long, ByVal lpszClass As String, ByVal lpszCaption As String) As Long
 Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, lpdwProcessId As Long) As Long
 Private Declare Function GetCurrentProcessId Lib "kernel32" () As Long
@@ -653,14 +635,6 @@ Public Enum NTBackStyleConstants
     ntOpaqueTabSel = 2
 End Enum
 
-Public Enum NTSeparationLineConstants
-    ntLineNone = 0
-    ntLineLighter = 1
-    ntLineLight = 2
-    ntLineStrong = 3
-    ntLineStronger = 4
-End Enum
-
 Public Enum NTTabTransitionConstants
     ntTransitionImmediate = 0
     ntTransitionFaster = 1
@@ -719,6 +693,13 @@ Public Enum NTTDIModeConstants
     ntTDIModeForms = 2
 End Enum
 
+Public Enum NTFindTabMethodConstants
+    ntFindCaption = 0
+    ntFindOriginalIndex = 1
+    ntFindData = 2
+    ntFindTag = 3
+End Enum
+
 ' Events
 ' Original
 Event Click(ByVal PreviousTab As Integer)
@@ -760,8 +741,7 @@ Event OLEStartDrag(Data As DataObject, AllowedEffects As Long)
 Attribute OLEStartDrag.VB_Description = "Occurs when a component's OLEDrag method is performed, or when a component initiates an OLE drag/drop operation when the OLEDragMode property is set to Automatic."
 
 ' Added
-Event BeforeClick(ByVal CurrentTabSel As Integer, ByRef NewTabSel As Integer, ByRef Cancel As Boolean)
-Attribute BeforeClick.VB_Description = "Occurs when the active tab is about to change. The action can be canceled at this time by setting the Cancel parameter to True."
+Event BeforeClick(ByVal CurrentTabSel As Long, ByRef NewTabSel As Long, ByRef Cancel As Boolean)
 Event ChangeControlBackColor(ByVal ControlName As String, ByVal ControlTypeName As String, ByRef Cancel As Boolean)
 Attribute ChangeControlBackColor.VB_Description = "When the ChangeControlsBackColor property is set to True, it allows you to individually determine which controls will (or will not) change their BackColor.\r\nThis event is raised for each control on the current tab, before the tab is painted."
 Event ChangeControlForeColor(ByVal ControlName As String, ByVal ControlTypeName As String, ByRef Cancel As Boolean)
@@ -770,34 +750,23 @@ Event RowsChange()
 Attribute RowsChange.VB_Description = "Occurs when the Rows property changes its value."
 Event TabBodyResize()
 Attribute TabBodyResize.VB_Description = "Occurs when the tab body changes its size."
-Event TabMouseEnter(ByVal nTab As Integer)
-Attribute TabMouseEnter.VB_Description = "Occurs when the mouse starts hovering on a tab."
-Event TabMouseLeave(ByVal nTab As Integer)
-Attribute TabMouseLeave.VB_Description = "Occurs when the mouse ends hovering on a tab."
-Event TabRightClick(ByVal nTab As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
-Attribute TabRightClick.VB_Description = "Occurs when a click with the right mouse button takes places over a tab."
-Event TabSelChange()
-Attribute TabSelChange.VB_Description = "Occurs after the current tab has already changed."
+Event TabMouseEnter(ByVal nTab As Long)
+Event TabMouseLeave(ByVal nTab As Long)
+Event TabRightClick(ByVal nTab As Long, ByVal Shift As Long, ByVal X As Single, ByVal Y As Single)
+Event TabChange()
 Event Resize()
 Attribute Resize.VB_Description = "Occurs when the control is first drawn or when its size changes."
-Event IconClick(ByVal nTab As Integer, ByRef ForwardClickToTab As Boolean)
-Attribute IconClick.VB_Description = "Occurs when the icon of a tab is clicked (it doesn't work with pictures)."
-Event BeforeTabReorder(ByVal CurrentIndex As Integer, ByRef NewIndex As Integer, ByRef Cancel As Boolean)
-Attribute BeforeTabReorder.VB_Description = "Occurs when before a tab is changed from one position to another. The action can be canceled using the Cancel parameter or the new position can be altered from the NewIndex parameter."
-Event TabReordered(ByVal CurrentIndex As Integer, ByVal OldIndex As Integer)
-Attribute TabReordered.VB_Description = "Occurs when a tab changed its position."
-Event IconMouseEnter(ByVal nTab As Integer)
-Attribute IconMouseEnter.VB_Description = "Occurs when the mouse enters hovering over a tab icon (not picture)."
-Event IconMouseLeave(ByVal nTab As Integer)
-Attribute IconMouseLeave.VB_Description = "Occurs when the mouse goes out after hovering over a tab icon (not picture)."
+Event IconClick(ByVal nTab As Long, ByRef ForwardClickToTab As Boolean)
+Event BeforeTabReorder(ByVal CurrentIndex As Long, ByRef NewIndex As Long, ByRef Cancel As Boolean)
+Event TabReordered(ByVal CurrentIndex As Long, ByVal OldIndex As Long)
+Event IconMouseEnter(ByVal nTab As Long)
+Event IconMouseLeave(ByVal nTab As Long)
 Event TDIBeforeNewTab(ByVal TabType As NTTDINewTabTypeConstants, ByVal TabNumber As Long, ByRef TabCaption As String, ByRef LoadControls As Boolean, ByRef Cancel As Boolean)
 Attribute TDIBeforeNewTab.VB_Description = "When in TDI mode, it occurs before opening a new tab."
 Event TDINewTabAdded(ByVal TabNumber As Long)
 Attribute TDINewTabAdded.VB_Description = "When in TDI mode, it occurs after a new tab was opened."
-Event TDIBeforeClosingTab(ByVal TabNumber As Long, ByVal IsLastTab, ByRef OpenNewOnLastClosed As Boolean, ByRef UnloadControls As Boolean, ByRef Cancel As Boolean)
-Attribute TDIBeforeClosingTab.VB_Description = "When in TDI mode, it occurs before closing a tab."
-Event TDITabClosed(ByVal TabNumber As Long, ByVal IsLastTab)
-Attribute TDITabClosed.VB_Description = "When in TDI mode, it occurs after a tab was closed."
+Event TDIBeforeClosingTab(ByVal TabNumber As Long, ByVal IsLastTab As Boolean, ByRef OpenNewOnLastClosed As Boolean, ByRef UnloadControls As Boolean, ByRef Cancel As Boolean)
+Event TDITabClosed(ByVal TabNumber As Long, ByVal IsLastTab As Boolean)
 
 Private Type T_TabData
     ' Properties
@@ -836,6 +805,7 @@ Private Type T_TabData
     Tag As Variant
     Data As Long
     TDITabNumber As Long
+    OriginalIndex As Long
 End Type
 
 Private Const cRowPerspectiveSpace As Long = 150&  ' in Twips
@@ -849,10 +819,10 @@ Attribute mFont.VB_VarHelpID = -1
 Private mEnabled As Boolean
 Private mForeColor As Long
 Private mUserControlHwnd As Long ' read only
-Private mTabSel As Integer
-Private mTabsPerRow As Integer
-Private mTabs As Integer
-Private mRows As Integer ' read only
+Private mTab As Long
+Private mTabsPerRow As Long
+Private mTabs As Long
+Private mRows As Long ' read only
 Private mTabOrientation As NTTabOrientationConstants
 Private mShowFocusRect As Boolean
 Private mWordWrap As Boolean
@@ -898,7 +868,7 @@ Private mChangeControlsForeColor As Boolean
 Private mTabMinWidth As Single ' internally in Himetric
 Private mTabWidthStyle As NTTabWidthStyleConstants
 Private mShowRowsInPerspective As NTAutoYesNoConstants
-Private mTabSeparation As Integer
+Private mTabSeparation As Long
 Private mTabAppearance As NTTabAppearanceConstants
 Private mRedraw As Boolean
 Private mIconAlignment As NTIconAlignmentConstants
@@ -942,7 +912,7 @@ Private mScaleHeight As Long
 Private mHasFocus As Boolean
 Private mFormIsActive As Boolean
 Private mDrawing As Boolean
-Private mTabUnderMouse As Integer
+Private mTabUnderMouse As Long
 Private mAmbientUserMode As Boolean
 Private mThereAreTabsToolTipTexts As Boolean
 Private mDefaultTabHeight As Single  ' in Himetric
@@ -980,7 +950,7 @@ Private mNoActivate As Boolean
 Private mCanPostDrawMessage As Boolean
 Private mDrawMessagePosted As Boolean
 Private mNeedToDraw As Boolean
-Private mRows_Prev As Integer
+Private mRows_Prev As Long
 Private mChangedControlsBackColor As Boolean
 Private mChangedControlsForeColor As Boolean
 Private mLastContainedControlsString As String
@@ -1055,7 +1025,7 @@ Private mTabSeparationDPIScaled As Long
 Private mTabIconDistanceToCaptionDPIScaled As Long
 Private mIconClickExtendDPIScaled As Long
 Private mMovingATab As Boolean
-Private mPreviousTabBeforeDragging As Integer
+Private mPreviousTabBeforeDragging As Long
 Private mToolTipEx As cToolTipEx
 Private mTabsAreRotatedButCaptionsAreHorizontal As Boolean
 Private mShowsRowsPerspective2 As Boolean
@@ -1227,15 +1197,15 @@ End Property
 Public Property Get IconFont() As StdFont
 Attribute IconFont.VB_Description = "Returns/sets the Font that will be used to draw the icon of the currently selected tab."
 Attribute IconFont.VB_ProcData.VB_Invoke_Property = ";Fuente"
-    Set IconFont = TabIconFont(mTabSel)
+    Set IconFont = TabIconFont(mTab)
 End Property
 
 Public Property Let IconFont(ByVal nValue As StdFont)
-    Set TabIconFont(mTabSel) = nValue
+    Set TabIconFont(mTab) = nValue
 End Property
 
 Public Property Set IconFont(ByVal nValue As StdFont)
-    Set TabIconFont(mTabSel) = nValue
+    Set TabIconFont(mTab) = nValue
 End Property
 
 
@@ -1243,7 +1213,7 @@ Public Property Get TabIconFont(ByVal Index As Variant) As StdFont
 Attribute TabIconFont.VB_Description = "Returns/sets the Font that will be used to draw the icon in the tab pointed by the Index parameter."
 Attribute TabIconFont.VB_ProcData.VB_Invoke_Property = ";Fuente"
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     If mTabData(Index).IconFont Is Nothing Then
@@ -1259,7 +1229,7 @@ End Property
 
 Public Property Set TabIconFont(ByVal Index As Variant, ByVal nValue As StdFont)
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     If Not nValue Is mTabData(Index).IconFont Then
@@ -1494,11 +1464,11 @@ Attribute Caption.VB_Description = "Returns/sets the text displayed in the activ
 Attribute Caption.VB_ProcData.VB_Invoke_Property = ";Texto"
 Attribute Caption.VB_UserMemId = -518
 Attribute Caption.VB_MemberFlags = "c"
-    Caption = mTabData(mTabSel).Caption
+    Caption = mTabData(mTab).Caption
 End Property
 
 Public Property Let Caption(ByVal nValue As String)
-    TabCaption(mTabSel) = nValue
+    TabCaption(mTab) = nValue
 End Property
 
 
@@ -1512,13 +1482,13 @@ End Property
 
 
 ' Returns/sets the number of tabs to appear on each row.
-Public Property Get TabsPerRow() As Integer
+Public Property Get TabsPerRow() As Long
 Attribute TabsPerRow.VB_Description = "Returns/sets the number of tabs to appear on each row. It only works in some styles."
 Attribute TabsPerRow.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     TabsPerRow = mTabsPerRow
 End Property
 
-Public Property Let TabsPerRow(ByVal nValue As Integer)
+Public Property Let TabsPerRow(ByVal nValue As Long)
     If (nValue < 1) Then
         RaiseError 380, TypeName(Me) ' invalid property value
         Exit Property
@@ -1533,15 +1503,15 @@ End Property
 
 
 ' Returns/sets the number of tabs.
-Public Property Get Tabs() As Integer
+Public Property Get Tabs() As Long
 Attribute Tabs.VB_Description = "Returns/sets the number of tabs."
     Tabs = mTabs
 End Property
 
-Public Property Let Tabs(ByVal nValue As Integer)
+Public Property Let Tabs(ByVal nValue As Long)
     Dim c As Long
     
-    If (nValue < 1) Or (nValue > 250) Then
+    If (nValue < 1) Or (nValue > 1000) Then
         RaiseError 380, TypeName(Me) ' invalid property value
         Exit Property
     ElseIf mTDIMode <> ntTDIModeNone Then
@@ -1594,6 +1564,11 @@ Public Property Let Tabs(ByVal nValue As Integer)
             ReDim mTabData(nValue - 1)
         Else
             ReDim Preserve mTabData(nValue - 1)
+            If mTabs < nValue Then
+                For c = mTabs To nValue - 1
+                    mTabData(c).OriginalIndex = c
+                Next
+            End If
         End If
         If mTabs < nValue Then
             For c = mTabs To nValue - 1
@@ -1604,8 +1579,8 @@ Public Property Let Tabs(ByVal nValue As Integer)
             Next
         End If
         mTabs = nValue
-        If mTabSel > (mTabs - 1) Then
-            mTabSel = (mTabs - 1)
+        If mTab > (mTabs - 1) Then
+            mTab = (mTabs - 1)
         End If
         DrawDelayed
     End If
@@ -1613,22 +1588,24 @@ End Property
 
 
 ' Returns the number of rows of tabs.
-Public Property Get Rows() As Integer
+Public Property Get Rows() As Long
 Attribute Rows.VB_Description = "Returns the number of rows of tabs."
 Attribute Rows.VB_UserMemId = 0
 Attribute Rows.VB_MemberFlags = "400"
     Rows = mRows
 End Property
 
+
 ' Returns/sets the active tab number.
-Public Property Get TabSel() As Integer
+Public Property Get TabSel() As Long
 Attribute TabSel.VB_Description = "Returns/sets the active tab number."
-    TabSel = mTabSel
+Attribute TabSel.VB_MemberFlags = "40"
+    TabSel = mTab
 End Property
 
-Public Property Let TabSel(ByVal nValue As Integer)
-    Dim iPrev As Integer
-    Dim iPrev2 As Integer
+Public Property Let TabSel(ByVal nValue As Long)
+    Dim iPrev As Long
+    Dim iPrev2 As Long
     Dim iCancel As Boolean
     Dim iWv As Boolean
     Dim c As Long
@@ -1643,7 +1620,7 @@ Public Property Let TabSel(ByVal nValue As Integer)
         Exit Property
     End If
     
-    If (nValue <> mTabSel) Or mReSelTab Then
+    If (nValue <> mTab) Or mReSelTab Then
         iDo = True
         If mTDIMode <> ntTDIModeNone Then
             If mTabData(nValue).Data = -1 Then
@@ -1654,24 +1631,24 @@ Public Property Let TabSel(ByVal nValue As Integer)
             End If
         End If
         If iDo Then
-            RaiseEvent BeforeClick(mTabSel, nValue, iCancel)
-            If (nValue < 0) Or (nValue > (mTabs - 1)) Then nValue = mTabSel
+            RaiseEvent BeforeClick(mTab, nValue, iCancel)
+            If (nValue < 0) Or (nValue > (mTabs - 1)) Then nValue = mTab
         End If
-        If (Not iCancel) And (nValue <> mTabSel) Then
+        If (Not iCancel) And (nValue <> mTab) Then
             mChangingTabSel = True
             If Not mMovingATab Then
                 If IsWindowVisible(mUserControlHwnd) <> 0 Then
                     If mTabTransition <> ntTransitionImmediate Then ShowPicCover
                 End If
             End If
-            iPrev = mTabSel
-            mTabSel = nValue
+            iPrev = mTab
+            mTab = nValue
             SetPropertyChanged "TabSel"
             If (iPrev >= 0) And (iPrev <= UBound(mTabData)) Then
                 mTabData(iPrev).Selected = False
             End If
-            If (mTabSel > -1) And (mTabSel < mTabs) Then
-                mTabData(mTabSel).Selected = True
+            If (mTab > -1) And (mTab < mTabs) Then
+                mTabData(mTab).Selected = True
             End If
             iPrev2 = iPrev
             RaiseEvent Click(iPrev)
@@ -1686,7 +1663,7 @@ Public Property Let TabSel(ByVal nValue As Integer)
             Draw
             If iWv Then RedrawWindow mUserControlHwnd, ByVal 0&, 0&, RDW_INVALIDATE Or RDW_ALLCHILDREN
             mChangingTabSel = False
-            RaiseEvent TabSelChange
+            RaiseEvent TabChange
             
             If mTabUnderMouse > -1 Then
                 tmrTabMouseLeave.Enabled = False
@@ -1746,101 +1723,101 @@ End Property
 Public Property Get Picture() As Picture
 Attribute Picture.VB_Description = "Specifies a bitmap or icon to display on the current tab."
 Attribute Picture.VB_ProcData.VB_Invoke_Property = ";Apariencia"
-    Set Picture = TabPicture(mTabSel)
+    Set Picture = TabPicture(mTab)
 End Property
 
 Public Property Let Picture(ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
-    Set TabPicture(mTabSel) = nValue
+    Set TabPicture(mTab) = nValue
 End Property
 
 Public Property Set Picture(ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
-    Set TabPicture(mTabSel) = nValue
+    Set TabPicture(mTab) = nValue
 End Property
 
 
 Public Property Get Pic16() As Picture
 Attribute Pic16.VB_Description = "Specifies a bitmap to display on the current tab at 96 DPI, when the application is DPI aware."
 Attribute Pic16.VB_ProcData.VB_Invoke_Property = ";Apariencia"
-    Set Pic16 = TabPic16(mTabSel)
+    Set Pic16 = TabPic16(mTab)
 End Property
 
 Public Property Let Pic16(ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
-    Set TabPic16(mTabSel) = nValue
+    Set TabPic16(mTab) = nValue
 End Property
 
 Public Property Set Pic16(ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
-    Set TabPic16(mTabSel) = nValue
+    Set TabPic16(mTab) = nValue
 End Property
 
 
 Public Property Get Pic20() As Picture
 Attribute Pic20.VB_Description = "Specifies a bitmap to display on the current tab at 120 DPI, when the application is DPI aware."
 Attribute Pic20.VB_ProcData.VB_Invoke_Property = ";Apariencia"
-    Set Pic20 = TabPic20(mTabSel)
+    Set Pic20 = TabPic20(mTab)
 End Property
 
 Public Property Let Pic20(ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
-    Set TabPic20(mTabSel) = nValue
+    Set TabPic20(mTab) = nValue
 End Property
 
 Public Property Set Pic20(ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
-    Set TabPic20(mTabSel) = nValue
+    Set TabPic20(mTab) = nValue
 End Property
 
 
 Public Property Get Pic24() As Picture
 Attribute Pic24.VB_Description = "Specifies a bitmap to display on the current tab at 144 DPI, when the application is DPI aware."
 Attribute Pic24.VB_ProcData.VB_Invoke_Property = ";Apariencia"
-    Set Pic24 = TabPic24(mTabSel)
+    Set Pic24 = TabPic24(mTab)
 End Property
 
 Public Property Let Pic24(ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
-    Set TabPic24(mTabSel) = nValue
+    Set TabPic24(mTab) = nValue
 End Property
 
 Public Property Set Pic24(ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
-    Set TabPic24(mTabSel) = nValue
+    Set TabPic24(mTab) = nValue
 End Property
 
 
 Public Property Get IconCharHex() As String
 Attribute IconCharHex.VB_Description = "Returns/sets a string representing the hexadecimal value of the character that will be used as the icon in the currently selected tab."
 Attribute IconCharHex.VB_ProcData.VB_Invoke_Property = "pagNewTabTabs;Apariencia"
-    IconCharHex = TabIconCharHex(mTabSel)
+    IconCharHex = TabIconCharHex(mTab)
 End Property
 
 Public Property Let IconCharHex(ByVal nValue As String)
-    TabIconCharHex(mTabSel) = nValue
+    TabIconCharHex(mTab) = nValue
 End Property
 
 
 Public Property Get IconLeftOffset() As Long
 Attribute IconLeftOffset.VB_Description = "Returns/sets the value in pixels of the offset for the left position when drawing the icon of the currently selected tab. It can be negative."
 Attribute IconLeftOffset.VB_ProcData.VB_Invoke_Property = ";Apariencia"
-    IconLeftOffset = TabIconLeftOffset(mTabSel)
+    IconLeftOffset = TabIconLeftOffset(mTab)
 End Property
 
 Public Property Let IconLeftOffset(ByVal nValue As Long)
-    TabIconLeftOffset(mTabSel) = nValue
+    TabIconLeftOffset(mTab) = nValue
 End Property
 
 
 Public Property Get IconTopOffset() As Long
 Attribute IconTopOffset.VB_Description = "Returns/sets the value in pixels of the offset for the top position when drawing the icon of the currently selected tab. It can be negative."
 Attribute IconTopOffset.VB_ProcData.VB_Invoke_Property = ";Apariencia"
-    IconTopOffset = TabIconTopOffset(mTabSel)
+    IconTopOffset = TabIconTopOffset(mTab)
 End Property
 
 Public Property Let IconTopOffset(ByVal nValue As Long)
-    TabIconTopOffset(mTabSel) = nValue
+    TabIconTopOffset(mTab) = nValue
 End Property
 
 
@@ -2115,29 +2092,29 @@ End Property
 
 
 ' Returns the picture displayed on the specified tab.
-Public Property Get TabPicture(ByVal Index As Integer) As Picture
+Public Property Get TabPicture(ByVal Index As Long) As Picture
 Attribute TabPicture.VB_Description = "Returns/sets the picture to be displayed on the specified tab."
 Attribute TabPicture.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     Set TabPicture = mTabData(Index).Picture
 End Property
 
-Public Property Let TabPicture(ByVal Index As Integer, ByVal nValue As Picture)
+Public Property Let TabPicture(ByVal Index As Long, ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     Set TabPicture(Index) = nValue
 End Property
 
-Public Property Set TabPicture(ByVal Index As Integer, ByVal nValue As Picture)
+Public Property Set TabPicture(ByVal Index As Long, ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     If Not nValue Is mTabData(Index).Picture Then
@@ -2155,7 +2132,7 @@ Public Property Get TabPic16(ByVal Index As Variant) As Picture
 Attribute TabPic16.VB_Description = "Specifies a bitmap to display on the specified tab at 96 DPI, when the application is DPI aware."
 Attribute TabPic16.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     Set TabPic16 = mTabData(Index).Pic16
@@ -2164,7 +2141,7 @@ End Property
 Public Property Let TabPic16(ByVal Index As Variant, ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     Set TabPic16(Index) = nValue
@@ -2173,7 +2150,7 @@ End Property
 Public Property Set TabPic16(ByVal Index As Variant, ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     If Not nValue Is mTabData(Index).Pic16 Then
@@ -2191,7 +2168,7 @@ Public Property Get TabPic20(ByVal Index As Variant) As Picture
 Attribute TabPic20.VB_Description = "Specifies a bitmap to display on the specified tab at 120 DPI, when the application is DPI aware."
 Attribute TabPic20.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     Set TabPic20 = mTabData(Index).Pic20
@@ -2200,7 +2177,7 @@ End Property
 Public Property Let TabPic20(ByVal Index As Variant, ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     Set TabPic20(Index) = nValue
@@ -2209,7 +2186,7 @@ End Property
 Public Property Set TabPic20(ByVal Index As Variant, ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     If Not nValue Is mTabData(Index).Pic20 Then
@@ -2227,7 +2204,7 @@ Public Property Get TabPic24(ByVal Index As Variant) As Picture
 Attribute TabPic24.VB_Description = "Specifies a bitmap to display on the specified tab at 144 DPI, when the application is DPI aware."
 Attribute TabPic24.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     Set TabPic24 = mTabData(Index).Pic24
@@ -2236,7 +2213,7 @@ End Property
 Public Property Let TabPic24(ByVal Index As Variant, ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     Set TabPic24(Index) = nValue
@@ -2245,7 +2222,7 @@ End Property
 Public Property Set TabPic24(ByVal Index As Variant, ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     If Not nValue Is mTabData(Index).Pic24 Then
@@ -2263,11 +2240,11 @@ Public Property Get TabIconCharHex(ByVal Index As Variant) As String
 Attribute TabIconCharHex.VB_Description = "Returns/sets a string representing the hexadecimal value of the character that will be used as the icon for the tab pointed by the Index parameter."
 Attribute TabIconCharHex.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     If mTabData(Index).IconChar <> 0 Then
-        TabIconCharHex = "&H" & Hex(mTabData(Index).IconChar)
+        TabIconCharHex = "&H" & Hex$(mTabData(Index).IconChar)
     Else
         If Not mAmbientUserMode Then
             TabIconCharHex = "&H[Font Hex code here]"
@@ -2277,12 +2254,12 @@ End Property
 
 Public Property Let TabIconCharHex(ByVal Index As Variant, ByVal nValue As String)
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     SetPropertyChanged "TabIconCharHex"
     SetPropertyChanged "IconCharHex"
-    If Left(nValue, 2) <> "&H" Then
+    If Left$(nValue, 2) <> "&H" Then
         nValue = "&H" & nValue
     End If
     If Right$(nValue, 1) <> "&" Then
@@ -2301,7 +2278,7 @@ End Property
 Public Property Get TabIconLeftOffset(ByVal Index As Variant) As Long
 Attribute TabIconLeftOffset.VB_Description = "Returns/sets the value in pixels of the offset for the left position when drawing the icon of the tab pointed by the Index parameter. It can be negative."
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     TabIconLeftOffset = mTabData(Index).IconLeftOffset
@@ -2309,7 +2286,7 @@ End Property
 
 Public Property Let TabIconLeftOffset(ByVal Index As Variant, ByVal nValue As Long)
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     SetPropertyChanged "TabIconLeftOffset"
@@ -2325,7 +2302,7 @@ End Property
 Public Property Get TabIconTopOffset(ByVal Index As Variant) As Long
 Attribute TabIconTopOffset.VB_Description = "Returns/sets the value in pixels of the offset for the top position when drawing the icon of the tab pointed by the Index parameter. It can be negative."
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     TabIconTopOffset = mTabData(Index).IconTopOffset
@@ -2333,7 +2310,7 @@ End Property
 
 Public Property Let TabIconTopOffset(ByVal Index As Variant, ByVal nValue As Long)
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     SetPropertyChanged "TabIconTopOffset"
@@ -2347,21 +2324,21 @@ End Property
 
 
 ' Determines if the specified tab is visible.
-Public Property Get TabVisible(ByVal Index As Integer) As Boolean
+Public Property Get TabVisible(ByVal Index As Long) As Boolean
 Attribute TabVisible.VB_Description = "Determines if the specified tab is visible."
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     TabVisible = mTabData(Index).Visible
 End Property
 
-Public Property Let TabVisible(ByVal Index As Integer, ByVal nValue As Boolean)
+Public Property Let TabVisible(ByVal Index As Long, ByVal nValue As Boolean)
     Dim c As Long
     Dim iSetTabSel As Boolean
     
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     If nValue <> mTabData(Index).Visible Then
@@ -2370,8 +2347,8 @@ Public Property Let TabVisible(ByVal Index As Integer, ByVal nValue As Boolean)
                 iSetTabSel = True
             End If
         End If
-        If mTabSel = Index Then
-            c = mTabSel - 1
+        If mTab = Index Then
+            c = mTab - 1
             Do Until c < 0
                 If mTabData(c).Visible And mTabData(c).Enabled Then
                     Exit Do
@@ -2379,7 +2356,7 @@ Public Property Let TabVisible(ByVal Index As Integer, ByVal nValue As Boolean)
                 c = c - 1
             Loop
             If c = -1 Then
-                c = mTabSel + 1
+                c = mTab + 1
                 Do Until c = mTabs
                     If mTabData(c).Visible And mTabData(c).Enabled Then
                         Exit Do
@@ -2388,7 +2365,7 @@ Public Property Let TabVisible(ByVal Index As Integer, ByVal nValue As Boolean)
                 Loop
             End If
             If (c < 0) Or (c > (mTabs - 1)) Then
-                c = mTabSel - 1
+                c = mTab - 1
                 Do Until c < 0
                     If mTabData(c).Visible Then
                         Exit Do
@@ -2396,7 +2373,7 @@ Public Property Let TabVisible(ByVal Index As Integer, ByVal nValue As Boolean)
                     c = c - 1
                 Loop
                 If c = -1 Then
-                    c = mTabSel + 1
+                    c = mTab + 1
                     Do Until c = mTabs
                         If mTabData(c).Visible Then
                             Exit Do
@@ -2407,12 +2384,12 @@ Public Property Let TabVisible(ByVal Index As Integer, ByVal nValue As Boolean)
             End If
             If (c > -1) And (c < mTabs) Then
                 TabSel = c
-                If mTabSel = c Then ' the change could had been canceled through the BeforeClick event, in that case TabSel woudn't change
+                If mTab = c Then ' the change could had been canceled through the BeforeClick event, in that case TabSel woudn't change
                     mTabData(Index).Visible = nValue
                     mTabData(Index).Selected = False
                 End If
             Else
-        '        mTabSel = -1
+        '        mTab = -1
                 mNoTabVisible = True
                 mTabData(Index).Visible = nValue
                 mTabData(Index).Selected = False
@@ -2425,7 +2402,7 @@ Public Property Let TabVisible(ByVal Index As Integer, ByVal nValue As Boolean)
             End If
         Else
             mTabData(Index).Visible = nValue
-            If (mTabSel < 0) Or (mTabSel > (mTabs - 1)) Then
+            If (mTab < 0) Or (mTab > (mTabs - 1)) Then
                 TabSel = Index
                 mTabData(Index).Selected = True
             End If
@@ -2439,18 +2416,18 @@ End Property
 
 
 ' Determines if the specified tab is enabled.
-Public Property Get TabEnabled(ByVal Index As Integer) As Boolean
+Public Property Get TabEnabled(ByVal Index As Long) As Boolean
 Attribute TabEnabled.VB_Description = "Determines if the specified tab is enabled."
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     TabEnabled = mTabData(Index).Enabled
 End Property
 
-Public Property Let TabEnabled(ByVal Index As Integer, ByVal nValue As Boolean)
+Public Property Let TabEnabled(ByVal Index As Long, ByVal nValue As Boolean)
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     If nValue <> mTabData(Index).Enabled Then
@@ -2463,19 +2440,19 @@ End Property
 
 
 ' Returns the text displayed on the specified tab.
-Public Property Get TabCaption(ByVal Index As Integer) As String
+Public Property Get TabCaption(ByVal Index As Long) As String
 Attribute TabCaption.VB_Description = "Returns the text displayed on the specified tab."
 Attribute TabCaption.VB_ProcData.VB_Invoke_Property = ";Texto"
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     TabCaption = mTabData(Index).Caption
 End Property
 
-Public Property Let TabCaption(ByVal Index As Integer, ByVal nValue As String)
+Public Property Let TabCaption(ByVal Index As Long, ByVal nValue As String)
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     If nValue <> mTabData(Index).Caption Then
@@ -2491,7 +2468,7 @@ Public Property Get TabToolTipText(ByVal Index As Variant) As String
 Attribute TabToolTipText.VB_Description = "Returns/sets the text that will be shown as tooltip text when the mouse pointer is over the specified tab."
 Attribute TabToolTipText.VB_ProcData.VB_Invoke_Property = ";Texto"
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     TabToolTipText = mTabData(Index).ToolTipText
@@ -2499,7 +2476,7 @@ End Property
 
 Public Property Let TabToolTipText(ByVal Index As Variant, ByVal nValue As String)
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     If nValue <> mTabData(Index).ToolTipText Then
@@ -2723,8 +2700,6 @@ Attribute FlatBarColorTabSel.VB_ProcData.VB_Invoke_Property = ";Apariencia"
 End Property
 
 Public Property Let FlatBarColorTabSel(ByVal nValue As OLE_COLOR)
-    Dim iWv As Boolean
-    
     If nValue <> mFlatBarColorTabSel Then
         If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         mFlatBarColorTabSel = nValue
@@ -2742,18 +2717,9 @@ Attribute FlatBarColorHighlight.VB_ProcData.VB_Invoke_Property = ";Apariencia"
 End Property
 
 Public Property Let FlatBarColorHighlight(ByVal nValue As OLE_COLOR)
-    Dim iWv As Boolean
-    
     If nValue <> mFlatBarColorHighlight Then
         If nValue = -1 Then
             nValue = mFlatBarColorHighlight_ColorAutomatic
-'        Else
-'            If nValue = mFlatBarColorHighlight_ColorAutomatic Then '13737351
-'                Stop
-'            End If
-'            If nValue = 13737351 Then
-'                Stop
-'            End If
         End If
         If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         mFlatBarColorHighlight = nValue
@@ -2772,8 +2738,6 @@ Attribute FlatBarColorInactive.VB_ProcData.VB_Invoke_Property = ";Apariencia"
 End Property
 
 Public Property Let FlatBarColorInactive(ByVal nValue As OLE_COLOR)
-    Dim iWv As Boolean
-    
     If nValue <> mFlatBarColorInactive Then
         If nValue = -1 Then
             nValue = mFlatBarColorInactive_ColorAutomatic
@@ -2795,8 +2759,6 @@ Attribute FlatTabsSeparationLineColor.VB_ProcData.VB_Invoke_Property = ";Aparien
 End Property
 
 Public Property Let FlatTabsSeparationLineColor(ByVal nValue As OLE_COLOR)
-    Dim iWv As Boolean
-    
     If nValue <> mFlatTabsSeparationLineColor Then
         If nValue = -1 Then
             nValue = mFlatTabsSeparationLineColor_ColorAutomatic
@@ -2818,8 +2780,6 @@ Attribute FlatBodySeparationLineColor.VB_ProcData.VB_Invoke_Property = ";Aparien
 End Property
 
 Public Property Let FlatBodySeparationLineColor(ByVal nValue As OLE_COLOR)
-    Dim iWv As Boolean
-    
     If nValue <> mFlatBodySeparationLineColor Then
         If nValue = -1 Then
             nValue = mFlatBodySeparationLineColor_ColorAutomatic
@@ -2841,8 +2801,6 @@ Attribute FlatBorderColor.VB_ProcData.VB_Invoke_Property = ";Apariencia"
 End Property
 
 Public Property Let FlatBorderColor(ByVal nValue As OLE_COLOR)
-    Dim iWv As Boolean
-    
     If nValue <> mFlatBorderColor Then
         If nValue = -1 Then
             nValue = mFlatBorderColor_ColorAutomatic
@@ -2864,8 +2822,6 @@ Attribute HighlightColor.VB_ProcData.VB_Invoke_Property = ";Apariencia"
 End Property
 
 Public Property Let HighlightColor(ByVal nValue As OLE_COLOR)
-    Dim iWv As Boolean
-    
     If nValue <> mHighlightColor Then
         If nValue = -1 Then
             nValue = mHighlightColor_ColorAutomatic
@@ -2887,8 +2843,6 @@ Attribute HighlightColorTabSel.VB_ProcData.VB_Invoke_Property = ";Apariencia"
 End Property
 
 Public Property Let HighlightColorTabSel(ByVal nValue As OLE_COLOR)
-    Dim iWv As Boolean
-    
     If nValue <> mHighlightColorTabSel Then
         If nValue = -1 Then
             nValue = mHighlightColorTabSel_ColorAutomatic
@@ -3096,24 +3050,6 @@ Public Property Let UseMaskColor(ByVal nValue As Boolean)
         DrawDelayed
     End If
 End Property
-
-'Public Property Get TabSelFontBold() As NTAutoYesNoConstants
-'    TabSelFontBold = mTabSelFontBold
-'End Property
-'
-'Public Property Let TabSelFontBold(ByVal nValue As NTAutoYesNoConstants)
-'    Dim iValue As NTAutoYesNoConstants
-'
-'    iValue = nValue
-'    If (iValue <> ntNo) And (iValue <> ntYNAuto) Then
-'        iValue = ntYes
-'    End If
-'    If iValue <> mTabSelFontBold Then
-'        mTabSelFontBold = iValue
-'        SetPropertyChanged "TabSelFontBold"
-'        DrawDelayed
-'    End If
-'End Property
 
 
 Public Property Get TabTransition() As NTTabTransitionConstants
@@ -3356,13 +3292,13 @@ Public Property Let ShowRowsInPerspective(ByVal nValue As NTAutoYesNoConstants)
 End Property
 
 
-Public Property Get TabSeparation() As Integer
+Public Property Get TabSeparation() As Long
 Attribute TabSeparation.VB_Description = "Returns/sets the number of pixels of separation between tabs."
 Attribute TabSeparation.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     TabSeparation = mTabSeparation
 End Property
 
-Public Property Let TabSeparation(ByVal nValue As Integer)
+Public Property Let TabSeparation(ByVal nValue As Long)
     If nValue < 0 Or nValue > 20 Then
         RaiseError 380, TypeName(Me) ' invalid property value
         Exit Property
@@ -3608,10 +3544,10 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, 
             End If
         Case WM_LBUTTONDBLCLK
             If Not MouseIsOverAContainedControl Then
-                iTab = mTabSel
+                iTab = mTab
                 Call ProcessMouseMove(vbLeftButton, 0, (lParam And &HFFFF&) * Screen_TwipsPerPixelX, (lParam \ &H10000 And &HFFFF&) * Screen_TwipsPerPixelX)
                 Call UserControl_MouseDown(vbLeftButton, 0, (lParam And &HFFFF&) * Screen_TwipsPerPixelX, (lParam \ &H10000 And &HFFFF&) * Screen_TwipsPerPixelX)
-                If mTabSel <> iTab Then
+                If mTab <> iTab Then
                     bConsume = True
                     IBSSubclass_WindowProc = 0
                     tmrCancelDoubleClick.Enabled = True
@@ -3626,10 +3562,10 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, 
             Call ProcessMouseMove(vbLeftButton, 0, (lParam And &HFFFF&) * Screen_TwipsPerPixelX, (lParam \ &H10000 And &HFFFF&) * Screen_TwipsPerPixelX)
         Case WM_LBUTTONDOWN ' UserControl message, only in design mode (Not Ambient.UserMode), to provide change of selected tab by clicking at design time
             If Not MouseIsOverAContainedControl Then
-                iTab = mTabSel
+                iTab = mTab
                 Call ProcessMouseMove(vbLeftButton, 0, (lParam And &HFFFF&) * Screen_TwipsPerPixelX, (lParam \ &H10000 And &HFFFF&) * Screen_TwipsPerPixelX)
                 Call UserControl_MouseDown(vbLeftButton, 0, (lParam And &HFFFF&) * Screen_TwipsPerPixelX, (lParam \ &H10000 And &HFFFF&) * Screen_TwipsPerPixelX)
-                If mTabSel <> iTab Then
+                If mTab <> iTab Then
                     bConsume = True
                     IBSSubclass_WindowProc = 0
                     mBtnDown = True
@@ -3812,7 +3748,7 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, 
     End Select
 End Function
 
-Private Function WindowIsTDIChild(nHwnd) As Boolean
+Private Function WindowIsTDIChild(ByVal nHwnd As Long) As Boolean
     Dim c As Long
     
     For c = 1 To mTabs - 1
@@ -3920,7 +3856,7 @@ Private Function GetContainedControlsPositionsStr() As String
 End Function
     
 
-Private Function IsMouseButtonPressed(nButton As NTMouseButtonsConstants) As Boolean
+Private Function IsMouseButtonPressed(ByVal nButton As NTMouseButtonsConstants) As Boolean
     Dim iButton As Long
     
     iButton = nButton
@@ -3978,7 +3914,7 @@ Private Sub tmrRestoreDropMode_Timer()
     ScreenToClient mUserControlHwnd, iPt
     
     t = GetTabAtXY(iPt.X * Screen_TwipsPerPixelX, iPt.Y * Screen_TwipsPerPixely)
-    If t = mTabSel Then
+    If t = mTab Then
         UserControl.OLEDropMode = ssOLEDropManual
         tmrRestoreDropMode.Enabled = False
     End If
@@ -4081,8 +4017,8 @@ Private Sub UserControl_AccessKeyPress(KeyAscii As Integer)
     Dim iChr As String
     Dim iPos As Long
     
-    iChr = LCase(Chr(KeyAscii))
-    iPos = InStr(mTabSel + 2, mAccessKeys, iChr)
+    iChr = LCase$(Chr$(KeyAscii))
+    iPos = InStr(mTab + 2, mAccessKeys, iChr)
     If iPos = 0 Then
         iPos = InStr(mAccessKeys, iChr)
     End If
@@ -4126,14 +4062,14 @@ Friend Sub StoreVisibleControlsInSelectedTab()
     Dim iCtlName As String
     
     On Error Resume Next
-    Set mTabData(mTabSel).Controls = New Collection
+    Set mTabData(mTab).Controls = New Collection
     For Each iCtl In UserControlContainedControls
         If TypeName(iCtl) = "Line" Then
             Err.Clear
             If iCtl.X1 > -mLeftThresholdHided Then
                 If Err.Number = 0 Then
                     iCtlName = ControlName(iCtl)
-                    mTabData(mTabSel).Controls.Add iCtlName, iCtlName
+                    mTabData(mTab).Controls.Add iCtlName, iCtlName
                 End If
             End If
         Else
@@ -4141,7 +4077,7 @@ Friend Sub StoreVisibleControlsInSelectedTab()
             If iCtl.Left > -mLeftThresholdHided Then
                 If Err.Number = 0 Then
                     iCtlName = ControlName(iCtl)
-                    mTabData(mTabSel).Controls.Add iCtlName, iCtlName
+                    mTabData(mTab).Controls.Add iCtlName, iCtlName
                 End If
             End If
         End If
@@ -4218,7 +4154,7 @@ Private Sub UserControl_InitProperties()
     End If
     On Error GoTo 0
     
-    mTabSel = 0
+    mTab = 0
     
     mTabsEndFreeSpace = cPropDef_TabsEndFreeSpace
     mSubclassingMethod = cPropDef_SubclassingMethod
@@ -4241,8 +4177,9 @@ Private Sub UserControl_InitProperties()
         mTabData(c).Enabled = True
         mTabData(c).Visible = True
         mTabData(c).Caption = "Tab " & CStr(c)
+        mTabData(c).OriginalIndex = c
     Next c
-    mTabData(mTabSel).Selected = True
+    mTabData(mTab).Selected = True
     mUseMaskColor = cPropDef_UseMaskColor
     mTabHeight = mDefaultTabHeight
     mIconAlignment = cPropDef_IconAlignment
@@ -4417,13 +4354,12 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
     Dim t As Long
     Dim iAgain As Boolean
     Dim iRow As Long
-    Dim iDo As Boolean
     Dim iHandled As Boolean
     
     RaiseEvent KeyDown(KeyCode, Shift)
     If KeyCode = vbKeyRight Then
         If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ssTabOrientationBottom) Then
-            t = mTabSel + 1
+            t = mTab + 1
             If t = mTabs Then t = 0
             Do Until mTabData(t).Enabled And mTabData(t).Visible
                 t = t + 1
@@ -4440,9 +4376,9 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
                 If (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftHorizontal) Then
                     iRow = 0
                 Else
-                    iRow = mTabData(mTabSel).RowPos - 1
+                    iRow = mTabData(mTab).RowPos - 1
                 End If
-                Do Until (mTabData(t).PosH = mTabData(mTabSel).PosH) And (mTabData(t).RowPos = iRow)
+                Do Until (mTabData(t).PosH = mTabData(mTab).PosH) And (mTabData(t).RowPos = iRow)
                     t = t - 1
                     If t = -1 Then t = mTabs - 1
                     Do Until mTabData(t).Enabled And mTabData(t).Visible
@@ -4463,7 +4399,7 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
         End If
     ElseIf KeyCode = vbKeyLeft Then
         If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ssTabOrientationBottom) Then
-            t = mTabSel - 1
+            t = mTab - 1
             If t = -1 Then t = mTabs - 1
             Do Until mTabData(t).Enabled And mTabData(t).Visible
                 t = t - 1
@@ -4478,11 +4414,11 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
         ElseIf (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftHorizontal) Or (mTabOrientation = ssTabOrientationRight) Or (mTabOrientation = ntTabOrientationRightHorizontal) Then
             If (mRows > 1) And ((mTabWidthStyle2 = ntTWFixed) Or (mTabWidthStyle2 = ntTWTabCaptionWidth)) Then
                 If (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftHorizontal) Then
-                    iRow = mTabData(mTabSel).RowPos - 1
+                    iRow = mTabData(mTab).RowPos - 1
                 Else
                     iRow = 0
                 End If
-                Do Until (mTabData(t).PosH = mTabData(mTabSel).PosH) And (mTabData(t).RowPos = iRow)
+                Do Until (mTabData(t).PosH = mTabData(mTab).PosH) And (mTabData(t).RowPos = iRow)
                     t = t - 1
                     If t = -1 Then t = mTabs - 1
                     Do Until mTabData(t).Enabled And mTabData(t).Visible
@@ -4504,14 +4440,14 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
     ElseIf (KeyCode = vbKeyDown And ((Shift And vbCtrlMask) = 0)) Then
         If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ssTabOrientationBottom) Then
             If (mRows > 1) And ((mTabWidthStyle2 = ntTWFixed) Or (mTabWidthStyle2 = ntTWTabCaptionWidth)) Then
-                t = mTabSel - 1
+                t = mTab - 1
                 If t = -1 Then t = mTabs - 1
                 If mTabOrientation = ssTabOrientationTop Then
                     iRow = 0
                 Else
-                    iRow = mTabData(mTabSel).RowPos - 1
+                    iRow = mTabData(mTab).RowPos - 1
                 End If
-                Do Until (mTabData(t).PosH = mTabData(mTabSel).PosH) And (mTabData(t).RowPos = iRow)
+                Do Until (mTabData(t).PosH = mTabData(mTab).PosH) And (mTabData(t).RowPos = iRow)
                     t = t - 1
                     If t = -1 Then t = mTabs - 1
                     Do Until mTabData(t).Enabled And mTabData(t).Visible
@@ -4529,7 +4465,7 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
         End If
         If Not iHandled Then
             If (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftHorizontal) Then
-                t = mTabSel - 1
+                t = mTab - 1
                 If t = -1 Then t = mTabs - 1
                 Do Until mTabData(t).Enabled And mTabData(t).Visible
                     t = t - 1
@@ -4542,7 +4478,7 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
                 TabSel = t
                 iHandled = True
             ElseIf (mTabOrientation = ssTabOrientationRight) Or (mTabOrientation = ntTabOrientationRightHorizontal) Then
-                t = mTabSel + 1
+                t = mTab + 1
                 If t = mTabs Then t = 0
                 Do Until mTabData(t).Enabled And mTabData(t).Visible
                     t = t + 1
@@ -4562,14 +4498,14 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
     ElseIf (KeyCode = vbKeyUp And ((Shift And vbCtrlMask) = 0)) Then
         If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ssTabOrientationBottom) Then
             If (mRows > 1) And ((mTabWidthStyle2 = ntTWFixed) Or (mTabWidthStyle2 = ntTWTabCaptionWidth)) Then
-                t = mTabSel - 1
+                t = mTab - 1
                 If t = -1 Then t = mTabs - 1
                 If mTabOrientation = ssTabOrientationTop Then
-                    iRow = mTabData(mTabSel).RowPos - 1
+                    iRow = mTabData(mTab).RowPos - 1
                 Else
                     iRow = 0
                 End If
-                Do Until (mTabData(t).PosH = mTabData(mTabSel).PosH) And (mTabData(t).RowPos = iRow)
+                Do Until (mTabData(t).PosH = mTabData(mTab).PosH) And (mTabData(t).RowPos = iRow)
                     t = t - 1
                     If t = -1 Then t = mTabs - 1
                     Do Until mTabData(t).Enabled And mTabData(t).Visible
@@ -4587,7 +4523,7 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
         End If
         If Not iHandled Then
             If (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftHorizontal) Then
-                t = mTabSel + 1
+                t = mTab + 1
                 If t = mTabs Then t = 0
                 Do Until mTabData(t).Enabled And mTabData(t).Visible
                     t = t + 1
@@ -4600,7 +4536,7 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
                 TabSel = t
                 iHandled = True
             ElseIf (mTabOrientation = ssTabOrientationRight) Or (mTabOrientation = ntTabOrientationRightHorizontal) Then
-                t = mTabSel - 1
+                t = mTab - 1
                 If t = -1 Then t = mTabs - 1
                 Do Until mTabData(t).Enabled And mTabData(t).Visible
                     t = t - 1
@@ -4618,7 +4554,7 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
             SetFocusToNextControlInSameContainer False
         End If
     ElseIf KeyCode = vbKeyTab And ((Shift And vbCtrlMask) > 0) And ((Shift And vbShiftMask) = 0) Then
-        t = mTabSel + 1
+        t = mTab + 1
         If t = mTabs Then t = 0
         Do Until mTabData(t).Enabled And mTabData(t).Visible
             t = t + 1
@@ -4630,7 +4566,7 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
         Loop
         TabSel = t
     ElseIf KeyCode = vbKeyTab And ((Shift And vbCtrlMask) > 0) And ((Shift And vbShiftMask) > 0) Then
-        t = mTabSel - 1
+        t = mTab - 1
         If t = -1 Then t = mTabs - 1
         Do Until mTabData(t).Enabled And mTabData(t).Visible
             t = t - 1
@@ -4643,7 +4579,7 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
         TabSel = t
     ElseIf (KeyCode = vbKeyPageDown And ((Shift And vbCtrlMask) > 0)) Then
         If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ssTabOrientationRight) Or (mTabOrientation = ntTabOrientationRightHorizontal) Then
-            t = mTabSel + 1
+            t = mTab + 1
             If t = mTabs Then t = 0
             Do Until mTabData(t).Enabled And mTabData(t).Visible
                 t = t + 1
@@ -4655,7 +4591,7 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
             Loop
             TabSel = t
         Else
-            t = mTabSel - 1
+            t = mTab - 1
             If t = -1 Then t = mTabs - 1
             Do Until mTabData(t).Enabled And mTabData(t).Visible
                 t = t - 1
@@ -4669,7 +4605,7 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
         End If
     ElseIf KeyCode = vbKeyPageUp And ((Shift And vbCtrlMask) > 0) Then
         If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ssTabOrientationRight) Or (mTabOrientation = ntTabOrientationRightHorizontal) Then
-            t = mTabSel - 1
+            t = mTab - 1
             If t = -1 Then t = mTabs - 1
             Do Until mTabData(t).Enabled And mTabData(t).Visible
                 t = t - 1
@@ -4681,7 +4617,7 @@ Private Sub UserControl_KeyDown(KeyCode As Integer, Shift As Integer)
             Loop
             TabSel = t
         Else
-            t = mTabSel + 1
+            t = mTab + 1
             If t = mTabs Then t = 0
             Do Until mTabData(t).Enabled And mTabData(t).Visible
                 t = t + 1
@@ -4810,8 +4746,8 @@ End Sub
 Private Sub UserControl_KeyPress(KeyAscii As Integer)
     If mDraggingATab Then
         If KeyAscii = vbKeyEscape Then
-            If mPreviousTabBeforeDragging <> mTabSel Then
-                MoveTab mTabSel, mPreviousTabBeforeDragging
+            If mPreviousTabBeforeDragging <> mTab Then
+                MoveTab mTab, mPreviousTabBeforeDragging
             End If
             DraggingATab = False
             Draw
@@ -4863,7 +4799,7 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Sing
             End If
             If (Not iTabIconClicked) Or iForwardClickToTab Then
                 If mTabData(mTabUnderMouse).Enabled Then
-                    If mTabSel <> mTabUnderMouse Then
+                    If mTab <> mTabUnderMouse Then
                         mHasFocus = True
                         mTabChangedFromAnotherRow = (mTabData(mTabUnderMouse).RowPos <> (mRows - 1))
                         mProcessingTabChange = True
@@ -4966,7 +4902,7 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
     Dim iCol As Long
     Dim iMouseOverIcon_Tab_Prev As Long
     Dim iBool As Boolean
-    Dim i As Integer
+    Dim i As Long
     Dim iTmpRC As RECT
     Static sXLast As Single
     Static sYLast As Single
@@ -4979,7 +4915,7 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
     ProcessMouseMove Button, Shift, iX, iY
     RaiseEvent MouseMove(Button, Shift, iX, iY)
     
-    If mTabUnderMouse = mTabSel Then
+    If mTabUnderMouse = mTab Then
         iCol = mIconColorTabSel
         iBool = (mIconColorMouseHoverTabSel <> iCol)
     Else
@@ -4987,7 +4923,7 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
         iBool = (mIconColorMouseHover <> iCol)
     End If
     If iBool Then
-        Static sTabOverIcon_Last As Integer
+        Static sTabOverIcon_Last As Long
         Dim iImo As Boolean
         Dim iTum As Long
         
@@ -4997,7 +4933,7 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
                 If iImo Then
                     mCurrentMousePointerIsHand = True
                 Else
-                    mCurrentMousePointerIsHand = (mTabUnderMouse <> mTabSel)
+                    mCurrentMousePointerIsHand = (mTabUnderMouse <> mTab)
                 End If
                 If mCurrentMousePointerIsHand Then
                     If GetCursor <> IDC_HAND Then
@@ -5036,7 +4972,7 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
                     
                     If mRows = 1 Then
                         If DraggingATab Then
-                            If (Abs(sXLast - iX) > (Screen.TwipsPerPixelX * (mTabData(mTabSel).TabRect.Right - mTabData(mTabSel).TabRect.Left) * 0.4)) Or (Abs(sYLast - iY) > (Screen.TwipsPerPixelY * (mTabData(mTabSel).TabRect.Bottom - mTabData(mTabSel).TabRect.Top) * 0.4)) Then
+                            If (Abs(sXLast - iX) > (Screen.TwipsPerPixelX * (mTabData(mTab).TabRect.Right - mTabData(mTab).TabRect.Left) * 0.4)) Or (Abs(sYLast - iY) > (Screen.TwipsPerPixelY * (mTabData(mTab).TabRect.Bottom - mTabData(mTab).TabRect.Top) * 0.4)) Then
                                 i = GetTabAtDropPoint
                                 sXLast = iX
                                 sYLast = iY
@@ -5048,14 +4984,14 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
                                     ElseIf mTDIMode = ntTDIModeForms Then
                                         If i = 0 Then i = 1
                                     End If
-                                    If mTabSel <> i Then
-                                        If (mTabSel > -1) And (i > -1) Then
-                                            'mMouseX = mMouseX - mTabData(mTabSel).TabRect.Left + mTabData(i).TabRect.Left
-                                            'mMouseY = mMouseY - mTabData(mTabSel).TabRect.Bottom + mTabData(i).TabRect.Bottom
-                                            iTmpRC = mTabData(mTabSel).TabRect
-                                            MoveTab mTabSel, i
-                                            mMouseX = mMouseX - iTmpRC.Left + mTabData(mTabSel).TabRect.Left
-                                            mMouseY = mMouseY - iTmpRC.Bottom + mTabData(mTabSel).TabRect.Bottom
+                                    If mTab <> i Then
+                                        If (mTab > -1) And (i > -1) Then
+                                            'mMouseX = mMouseX - mTabData(mTab).TabRect.Left + mTabData(i).TabRect.Left
+                                            'mMouseY = mMouseY - mTabData(mTab).TabRect.Bottom + mTabData(i).TabRect.Bottom
+                                            iTmpRC = mTabData(mTab).TabRect
+                                            MoveTab mTab, i
+                                            mMouseX = mMouseX - iTmpRC.Left + mTabData(mTab).TabRect.Left
+                                            mMouseY = mMouseY - iTmpRC.Bottom + mTabData(mTab).TabRect.Bottom
                                         End If
                                     End If
                                 End If
@@ -5129,7 +5065,7 @@ Private Function GetTabAtXY(X As Single, Y As Single) As Long
     End If
     iY = pScaleX(Y, vbTwips, vbPixels)
     
-    GetTabAtXY = mTabSel
+    GetTabAtXY = mTab
     For t = 0 To mTabs - 1
         With mTabData(t).TabRect
             If iX >= .Left Then
@@ -5147,7 +5083,7 @@ Private Function GetTabAtXY(X As Single, Y As Single) As Long
 End Function
 
 Private Sub ProcessMouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    Dim t As Integer
+    Dim t As Long
     Dim iX As Long
     Dim iY As Long
     
@@ -5158,18 +5094,18 @@ Private Sub ProcessMouseMove(Button As Integer, Shift As Integer, X As Single, Y
     iY = pScaleX(Y, vbTwips, vbPixels)
     
     ' first check for the active tab, because in some cases it is bigger and can overlap surrounding tabs
-    If (mTabSel > -1) And (mTabSel < mTabs) Then
-        With mTabData(mTabSel).TabRect
+    If (mTab > -1) And (mTab < mTabs) Then
+        With mTabData(mTab).TabRect
             If iX >= .Left Then
                 If iX <= .Right Then
                     If iY >= .Top Then
                         If iY <= .Bottom Then
-                            If mTabSel <> mTabUnderMouse Then
+                            If mTab <> mTabUnderMouse Then
                                 If mTabUnderMouse > -1 Then
                                     RaiseEvent_TabMouseLeave (mTabUnderMouse)
                                 End If
-                                RaiseEvent_TabMouseEnter (mTabSel)
-                                mTabUnderMouse = mTabSel
+                                RaiseEvent_TabMouseEnter (mTab)
+                                mTabUnderMouse = mTab
                                 tmrTabMouseLeave.Enabled = False
                                 tmrTabMouseLeave.Enabled = True
                             End If
@@ -5182,7 +5118,7 @@ Private Sub ProcessMouseMove(Button As Integer, Shift As Integer, X As Single, Y
     End If
     
     For t = 0 To mTabs - 1
-        If t <> mTabSel Then
+        If t <> mTab Then
             If mTabData(t).Visible And mTabData(t).Enabled Then
                 With mTabData(t).TabRect
                     If iX >= .Left Then
@@ -5217,11 +5153,8 @@ End Sub
 Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
     Dim iX As Single
     Dim iY As Single
-    Dim i As Integer
-    Dim iXp As Single
-    Dim iYp As Single
-    Dim iTabIconClicked As Boolean
-    Dim iForwardClickToTab As Boolean
+    Dim i As Long
+    
     iX = X * mXCorrection
     iY = Y * mYCorrection
     
@@ -5249,8 +5182,8 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single
                         ElseIf mTDIMode = ntTDIModeForms Then
                             If i = 0 Then i = 1
                         End If
-                        If (mTabSel > -1) And (i > -1) Then
-                            MoveTab mTabSel, i
+                        If (mTab > -1) And (i > -1) Then
+                            MoveTab mTab, i
                         End If
                     End If
                     DraggingATab = False
@@ -5263,13 +5196,13 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single
     mTabChangedFromAnotherRow = False
 End Sub
 
-Private Function GetTabAtDropPoint() As Integer
+Private Function GetTabAtDropPoint() As Long
     Dim c As Long
     Dim X As Single
     Dim Y  As Single
     
-    X = mMouseX2 - mMouseX + mTabData(mTabSel).TabRect.Left + (mTabData(mTabSel).TabRect.Right - mTabData(mTabSel).TabRect.Left) / 2
-    Y = mMouseY2 - mMouseY + mTabData(mTabSel).TabRect.Top + (mTabData(mTabSel).TabRect.Bottom - mTabData(mTabSel).TabRect.Top) / 2
+    X = mMouseX2 - mMouseX + mTabData(mTab).TabRect.Left + (mTabData(mTab).TabRect.Right - mTabData(mTab).TabRect.Left) / 2
+    Y = mMouseY2 - mMouseY + mTabData(mTab).TabRect.Top + (mTabData(mTab).TabRect.Bottom - mTabData(mTab).TabRect.Top) / 2
     
     For c = 0 To mTabs - 1
         If mTabData(c).Visible Then
@@ -5300,7 +5233,7 @@ Private Sub UserControl_OLEDragDrop(Data As DataObject, Effect As Long, Button A
     
     If Not mOLEDropOnOtherTabs Then
         t = GetTabAtXY(X, Y)
-        If t = mTabSel Then
+        If t = mTab Then
             RaiseEvent OLEDragDrop(Data, Effect, Button, Shift, X, Y)
         End If
     Else
@@ -5313,7 +5246,7 @@ Private Sub UserControl_OLEDragOver(Data As DataObject, Effect As Long, Button A
     
     If Not mOLEDropOnOtherTabs Then
         t = GetTabAtXY(X, Y)
-        If t <> mTabSel Then
+        If t <> mTab Then
             UserControl.OLEDropMode = ssOLEDropNone
             tmrRestoreDropMode.Enabled = True
         Else
@@ -5379,7 +5312,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     mEnabled = PropBag.ReadProperty("Enabled", True)
     mTabsPerRow = PropBag.ReadProperty("TabsPerRow", cPropDef_TabsPerRow)
     If mTabsPerRow < 1 Then mTabsPerRow = cPropDef_TabsPerRow
-    mTabSel = PropBag.ReadProperty("Tab", 0)
+    mTab = PropBag.ReadProperty("Tab", 0)
     mTabOrientation = PropBag.ReadProperty("TabOrientation", ssTabOrientationTop)
     mShowFocusRect = PropBag.ReadProperty("ShowFocusRect", cPropDef_ShowFocusRect)
     mWordWrap = PropBag.ReadProperty("WordWrap", cPropDef_WordWrap)
@@ -5516,9 +5449,12 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     
     If mTabs = 0 Then
         ReDim mTabData(-1 To -1)
-        mTabSel = -1
+        mTab = -1
     Else
         ReDim mTabData(mTabs - 1)
+        For c = 0 To mTabs - 1
+            mTabData(c).OriginalIndex = c
+        Next
     End If
     Set iAllCtlNames = New Collection
     mNoTabVisible = True
@@ -5575,7 +5511,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         End If
         If Not mTabData(c).IconFont Is Nothing Then mTabIconFontsEventsHandler.AddFont mTabData(c).IconFont, c
     Next c
-    mTabData(mTabSel).Selected = True
+    mTabData(mTab).Selected = True
     
     c2 = 1
     iBytes = PropBag.ReadProperty("Theme(" & CStr(c2) & ")", "")
@@ -5708,7 +5644,7 @@ Private Sub UserControl_Show()
             End If
             If iAuxLeft >= -mLeftThresholdHided Then
                 iCtlName = ControlName(iCtl)
-                If Not ControlIsInTab(iCtlName, mTabSel) Then
+                If Not ControlIsInTab(iCtlName, mTab) Then
                     If iIsLine Then
                         iCtl.X1 = iCtl.X1 - mLeftOffsetToHide
                         iCtl.X2 = iCtl.X2 - mLeftOffsetToHide
@@ -5762,7 +5698,7 @@ Private Sub UserControl_Show()
         Draw
         mFirstDraw = True
     End If
-    RaiseEvent TabSelChange
+    RaiseEvent TabChange
 End Sub
 
 Private Sub DoPendingLeftOffset()
@@ -5796,7 +5732,7 @@ Private Sub DoPendingLeftOffset()
 
 End Sub
 
-Private Function ControlIsInTab(nCtlName As String, nTab As Integer) As Boolean
+Private Function ControlIsInTab(nCtlName As String, ByVal nTab As Long) As Boolean
     Dim c As Long
     
     For c = 1 To mTabData(nTab).Controls.Count
@@ -5942,7 +5878,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     PropBag.WriteProperty "Font", mFont, Ambient.Font
     PropBag.WriteProperty "Enabled", mEnabled, True
     PropBag.WriteProperty "TabsPerRow", mTabsPerRow, cPropDef_TabsPerRow
-    PropBag.WriteProperty "Tab", mTabSel, 0
+    PropBag.WriteProperty "Tab", mTab, 0
     PropBag.WriteProperty "TabOrientation", mTabOrientation, ssTabOrientationTop
     PropBag.WriteProperty "ShowFocusRect", mShowFocusRect, cPropDef_ShowFocusRect
     PropBag.WriteProperty "WordWrap", mWordWrap, cPropDef_WordWrap
@@ -6166,7 +6102,7 @@ Private Sub Draw()
     
     mDrawing = True
     For t = 0 To mTabs - 1
-        mTabData(t).Selected = (t = mTabSel)
+        mTabData(t).Selected = (t = mTab)
     Next
     mControlIsThemed = mVisualStyles And (mBackStyle <> ntTransparent)
     If mControlIsThemed Then
@@ -6350,7 +6286,7 @@ Private Sub Draw()
         End If
     Next t
     
-    If (mVisibleTabs = 0) Or (mTabSel = -1) Then
+    If (mVisibleTabs = 0) Or (mTab = -1) Then
         Set UserControl.Picture = Nothing
         mTabBodyReset = True
         GoTo TheExit:
@@ -6744,7 +6680,7 @@ Private Sub Draw()
 
     ' Rows positions
     For t = 0 To mTabs - 1
-        mTabData(t).RowPos = (mRows - mTabData(t).Row - 1) + mTabData(mTabSel).Row
+        mTabData(t).RowPos = (mRows - mTabData(t).Row - 1) + mTabData(mTab).Row
         If mTabData(t).RowPos > (mRows - 1) Then mTabData(t).RowPos = mTabData(t).RowPos - mRows
     Next t
     
@@ -6979,7 +6915,7 @@ Private Sub Draw()
                     If mTabData(t).RowPos = iRow Then
                         iTabData = mTabData(t)
                         With iTabData.TabRect
-                            If t = mTabSel Then
+                            If t = mTab Then
                                 If (iTabExtraHeight > 0) And mHighlightAddExtraHeightTabSel Then
                                     .Top = iColumnLeftForHorizontalCaptions(iRow) - iTabExtraHeight
                                 Else
@@ -7031,7 +6967,7 @@ Private Sub Draw()
                                         End If
                                     End If
                                 End If
-                                If t = mTabSel Then
+                                If t = mTab Then
                                     If mControlIsThemed Then
                                         iLng = iLng + 1
                                     End If
@@ -7054,7 +6990,7 @@ Private Sub Draw()
                     If mTabData(t).RowPos = iRow Then
                         iTabData = mTabData(t)
                         With iTabData.TabRect
-                            If t = mTabSel Then
+                            If t = mTab Then
                                 If (iTabExtraHeight > 0) And mHighlightAddExtraHeightTabSel Then
                                     .Top = (mRows - 1) * iTabHeight - iTabExtraHeight
                                 Else
@@ -7128,7 +7064,7 @@ Private Sub Draw()
                                         End If
                                     End If
                                 End If
-                                If t = mTabSel Then
+                                If t = mTab Then
                                     If mControlIsThemed Then
                                         iLng = iLng + 1
                                     End If
@@ -7240,7 +7176,7 @@ Private Sub Draw()
         For t = 0 To mTabs - 1
             If mTabData(t).Visible Then
                 If mTabData(t).RowPos = iRow Then
-                    If t <> mTabSel Then
+                    If t <> mTab Then
                         If mTabData(t).RightTab And Not (mTabData(t).RowPos = mRows - 1) Then
                             iLng = 4
                             If mAppearanceIsPP Then
@@ -7266,13 +7202,13 @@ Private Sub Draw()
     
     ' Draw active tab
     If mAppearanceIsPP Then
-        mTabData(mTabSel).TabRect.Left = mTabData(mTabSel).TabRect.Left - 2
-        mTabData(mTabSel).TabRect.Right = mTabData(mTabSel).TabRect.Right + 2
+        mTabData(mTab).TabRect.Left = mTabData(mTab).TabRect.Left - 2
+        mTabData(mTab).TabRect.Right = mTabData(mTab).TabRect.Right + 2
     ElseIf (mTabAppearance2 = ntTATabbedDialog) Or (mTabAppearance2 = ntTATabbedDialogRounded) Then
-        mTabData(mTabSel).TabRect.Left = mTabData(mTabSel).TabRect.Left - 1
+        mTabData(mTab).TabRect.Left = mTabData(mTab).TabRect.Left - 1
     End If
-    DrawTab CLng(mTabSel)
-    DrawTabPicureAndCaption CLng(mTabSel)
+    DrawTab CLng(mTab)
+    DrawTabPicureAndCaption CLng(mTab)
     If mTabOrientation = ssTabOrientationBottom Then
         ' grip over the body
         If mHighlightFlatBar And (mFlatBarGripHeightDPIScaled > 0) Then
@@ -7507,8 +7443,6 @@ End Sub
 Private Sub TDIResizeFormContainers()
     Dim c As Long
     Dim iSM As Long
-    Dim iLeft As Long
-    Dim iTop As Long
     
     iSM = UserControl.ScaleMode
     UserControl.ScaleMode = vbTwips
@@ -7528,7 +7462,7 @@ Private Sub TDIResizeFormContainers()
     UserControl.ScaleMode = iSM
 End Sub
 
-Private Sub DrawTab(nTab As Long)
+Private Sub DrawTab(ByVal nTab As Long)
     Dim iCurv As Long
     Dim iLeftOffset As Long
     Dim iRightOffset As Long
@@ -7598,12 +7532,7 @@ Private Sub DrawTab(nTab As Long)
     
     If mAppearanceIsFlat Then
         Dim iFlatBarTopColor As Long
-        Dim iX As Long
-        Dim iY As Long
-        Dim iDistance As Single
         Dim iLineColor As Long
-        Dim iTabHeight As Long
-        Dim iAuxCorrection As Boolean
         Dim iFlatTabsSeparationLineColor As Long
         Dim iFlatBorderColor As Long
         Dim iFlatLeftRoundness As Long
@@ -7744,7 +7673,7 @@ Private Sub DrawTab(nTab As Long)
             iFlatRightLineColor = IIf(iActive And (mFlatBorderMode = ntBorderTabSel) Or (mFlatBorderMode = ntBorderTabs) And (mTabSeparationDPIScaled > 0), iFlatBorderColor, iFlatTabsSeparationLineColor)
         End If
       '  If iHighlighted Then
-        If IIf(nTab = mTabSel, mHighlightFlatBarTabSel, mHighlightFlatBar) And (iFlatBarPosition = ntBarPositionBottom) Then
+        If IIf(nTab = mTab, mHighlightFlatBarTabSel, mHighlightFlatBar) And (iFlatBarPosition = ntBarPositionBottom) Then
             iShowFlatBarBottom = (mFlatBarHeightDPIScaled > 0)
         End If
        ' End If
@@ -8333,15 +8262,12 @@ Private Sub DrawTab(nTab As Long)
     End With
 End Sub
 
-Private Sub DrawInactiveTabBodyPart(nLeft As Long, nTop As Long, ByVal nWidth As Long, nHeight As Long, nXShift As Long, nRowPos As Long, nSectionID_ForTesting As Long)
+Private Sub DrawInactiveTabBodyPart(ByVal nLeft As Long, ByVal nTop As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal nXShift As Long, ByVal nRowPos As Long, ByVal nSectionID_ForTesting As Long)
     Dim iDoRightLine As Boolean
     Dim iDoBottomLine As Boolean
     Dim iTesting As Boolean
     Dim iBackColorTabs As Long
-    Dim iX As Long
-    Dim iY As Long
     Dim iLineColor As Long
-    Dim iDistance As Single
     Dim iFlatBorderColor As Long
     
     If (nWidth < 1) Or (nHeight < 1) Or (nXShift > mTabBodyWidth) Then Exit Sub
@@ -8452,12 +8378,9 @@ Private Sub DrawInactiveTabBodyPart(nLeft As Long, nTop As Long, ByVal nWidth As
 End Sub
 
 
-Private Sub DrawBody(nScaleHeight As Long)
+Private Sub DrawBody(ByVal nScaleHeight As Long)
     Dim iLng As Long
-    Dim iX As Long
-    Dim iY As Long
     Dim iLineColor As Long
-    Dim iDistance As Single
     Dim iFlatBorderColor As Long
     Dim iFlatBodySeparationLineColor As Long
     Dim iColor As Long
@@ -8481,11 +8404,11 @@ Private Sub DrawBody(nScaleHeight As Long)
             iColor = iColor Xor 1
         End If
         If mAppearanceIsFlat Then
-            If mTabSel > -1 Then
-                iActiveTabIsLeft = mTabData(mTabSel).LeftTab
+            If mTab > -1 Then
+                iActiveTabIsLeft = mTabData(mTab).LeftTab
             End If
             iTopLeftCornerIsRounded = (mFlatBorderMode = ntBorderTabSel) And (mHighlightFlatDrawBorderTabSel Or (Not iActiveTabIsLeft))
-            FillCurvedGradient2 0, mTabBodyStart + iLng, mTabBodyWidth - 1, nScaleHeight - 1, iColor, iColor, IIf(iTopLeftCornerIsRounded And (mFlatRoundnessTopDPIScaled > 0) And (mFlatBodySeparationLineHeight = 1), mFlatRoundnessTopDPIScaled, 0), IIf(((mTabBodyWidth - mTabData(mTabSel).TabRect.Right) > 3) And ((mFlatBorderMode = ntBorderTabSel) Or ((mTabBodyWidth - mRightMostTabsRightPos(mRows - 1)) > 3)), mFlatRoundnessTopDPIScaled, 0), mFlatRoundnessBottomDPIScaled, mFlatRoundnessBottomDPIScaled
+            FillCurvedGradient2 0, mTabBodyStart + iLng, mTabBodyWidth - 1, nScaleHeight - 1, iColor, iColor, IIf(iTopLeftCornerIsRounded And (mFlatRoundnessTopDPIScaled > 0) And (mFlatBodySeparationLineHeight = 1), mFlatRoundnessTopDPIScaled, 0), IIf(((mTabBodyWidth - mTabData(mTab).TabRect.Right) > 3) And ((mFlatBorderMode = ntBorderTabSel) Or ((mTabBodyWidth - mRightMostTabsRightPos(mRows - 1)) > 3)), mFlatRoundnessTopDPIScaled, 0), mFlatRoundnessBottomDPIScaled, mFlatRoundnessBottomDPIScaled
         Else
             picDraw.Line (0, mTabBodyStart + iLng)-(mTabBodyWidth - 1, nScaleHeight - 1), iColor, BF
         End If
@@ -8558,9 +8481,9 @@ Private Sub DrawBody(nScaleHeight As Long)
             ' left line
             picDraw.Line (0, mTabBodyStart + IIf(iTopLeftCornerIsRounded And (mFlatBodySeparationLineHeight = 1), mFlatRoundnessTopDPIScaled, 0))-(0, nScaleHeight - 1 - mFlatRoundnessBottomDPIScaled), iFlatBorderColor
             ' top-right corner round
-            If ((mTabBodyWidth - mTabData(mTabSel).TabRect.Right) > 3) And ((mFlatBorderMode = ntBorderTabSel) Or ((mTabBodyWidth - mRightMostTabsRightPos(mRows - 1)) > 3)) Then
+            If ((mTabBodyWidth - mTabData(mTab).TabRect.Right) > 3) And ((mFlatBorderMode = ntBorderTabSel) Or ((mTabBodyWidth - mRightMostTabsRightPos(mRows - 1)) > 3)) Then
                 If (mFlatRoundnessTopDPIScaled > 0) And (mFlatBodySeparationLineHeight = 1) Then
-                    If ((mTabBodyWidth - mTabData(mTabSel).TabRect.Right) > 3) And mFlatBorderMode = ntBorderTabSel Then
+                    If ((mTabBodyWidth - mTabData(mTab).TabRect.Right) > 3) And mFlatBorderMode = ntBorderTabSel Then
                         iLineColor = iFlatBodySeparationLineColor
                     Else
                         iLineColor = iFlatBorderColor
@@ -8660,7 +8583,6 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     Dim iFlatBarHeightTop As Long
     Dim iFlatBarHeightBottom As Long
     Dim iAuxRect As RECT
-    Dim iLng2 As Long
     Dim iGMPrev As Long
     Dim iTx1 As XFORM
     Dim iGMPrev2 As Long
@@ -8704,7 +8626,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
         SetWorldTransform picDraw.hDC, iTx2
     End If
     
-    iActive = (nTab = mTabSel)
+    iActive = (nTab = mTab)
     If mCanReorderTabs Then
         If iActive Then
             If DraggingATab Then
@@ -9329,7 +9251,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     End If
 End Sub
 
-Private Function RotateRect90Degrees(nRect As RECT, Optional nCCW As Boolean, Optional nCenterX, Optional nCenterY) As RECT
+Private Function RotateRect90Degrees(nRect As RECT, Optional nCCW As Boolean, Optional nCenterX As Variant, Optional nCenterY As Variant) As RECT
     Dim iCenterX As Single
     Dim iCenterY As Single
     Const pi = 3.141592654
@@ -9360,7 +9282,7 @@ End Function
 ' The following procedure was taken from http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=56462&lngWId=1
 ' Kinda over-riden function for pFillCurvedGradientR, performs same job,
 ' but takes integers instead of Rect as parameter
-Private Sub FillCurvedGradient(ByVal lLeft As Long, ByVal lTop As Long, ByVal lRight As Long, ByVal lBottom As Long, ByVal lStartColor As Long, ByVal lEndColor As Long, Optional ByVal iCurveValue As Integer = -1, Optional bCurveLeft As Boolean = False, Optional bCurveRight As Boolean = False)
+Private Sub FillCurvedGradient(ByVal lLeft As Long, ByVal lTop As Long, ByVal lRight As Long, ByVal lBottom As Long, ByVal lStartColor As Long, ByVal lEndColor As Long, Optional ByVal iCurveValue As Long = -1, Optional bCurveLeft As Boolean = False, Optional bCurveRight As Boolean = False)
     Dim utRect As RECT
     
     utRect.Left = lLeft
@@ -9374,7 +9296,7 @@ End Sub
 ' The following procedure was taken from http://www.planet-source-code.com/vb/scripts/ShowCode.asp?txtCodeId=56462&lngWId=1
 ' function used to Fill a rectangular area by Gradient
 ' This function can draw using the curve value to generate a rounded rect kinda effect
-Private Sub FillCurvedGradientR(utRect As RECT, ByVal lStartColor As Long, ByVal lEndColor As Long, Optional ByVal iCurveValue As Integer = -1, Optional bCurveLeft As Boolean = False, Optional bCurveRight As Boolean = False)
+Private Sub FillCurvedGradientR(utRect As RECT, ByVal lStartColor As Long, ByVal lEndColor As Long, Optional ByVal iCurveValue As Long = -1, Optional bCurveLeft As Boolean = False, Optional bCurveRight As Boolean = False)
 
     Dim sngRedInc As Single, sngGreenInc As Single, sngBlueInc As Single
     Dim sngRed As Single, sngGreen As Single, sngBlue As Single
@@ -9477,8 +9399,6 @@ End Sub
 Private Sub FillCurvedGradient2(ByVal nLeft As Long, ByVal nTop As Long, ByVal nRight As Long, ByVal nBottom As Long, ByVal nStartColor As Long, ByVal nEndColor As Long, ByVal nCurveTopLeft As Long, ByVal nCurveTopRight As Long, Optional ByVal nCurveBottomLeft As Long, Optional ByVal nCurveBottomRight As Long)
     Dim sngRedInc As Single, sngGreenInc As Single, sngBlueInc As Single
     Dim sngRed As Single, sngGreen As Single, sngBlue As Single
-    Dim iCurvPixelsX As Single
-    Dim iCurvPixelsXInt As Long
     Dim iCurvPixelsTopY As Long
     Dim iCurvPixelsBottomY As Long
     Dim iCurvPixelsXLeft As Single
@@ -9671,7 +9591,7 @@ Private Sub FillCurvedGradient2(ByVal nLeft As Long, ByVal nTop As Long, ByVal n
     End If
 End Sub
 
-Private Sub DrawRoundedCorner(ByVal nCorner As NTCornerPositionConstants, ByVal nX As Long, ByVal nY As Long, ByVal nRoundness As Long, ByVal nColor As Long, Optional nSkipAtTop As Long)
+Private Sub DrawRoundedCorner(ByVal nCorner As NTCornerPositionConstants, ByVal nX As Long, ByVal nY As Long, ByVal nRoundness As Long, ByVal nColor As Long, Optional ByVal nSkipAtTop As Long)
     Dim iX As Long
     Dim iY As Long
     Dim iDistance As Single
@@ -9715,7 +9635,7 @@ Private Sub DrawRoundedCorner(ByVal nCorner As NTCornerPositionConstants, ByVal 
     End If
 End Sub
 
-Private Sub DrawTriangle(nTriangle() As POINTAPI, iColor As Long)
+Private Sub DrawTriangle(nTriangle() As POINTAPI, ByVal iColor As Long)
     Dim iBrush As Long
     Dim iPrevObj As Long
     
@@ -9727,7 +9647,7 @@ Private Sub DrawTriangle(nTriangle() As POINTAPI, iColor As Long)
     DeleteObject iBrush
 End Sub
 
-Private Sub DrawImage(ByVal lDestHDC As Long, ByVal lhBmp As Long, ByVal lTransColor As Long, ByVal iLeft As Integer, ByVal iTop As Integer, ByVal iWidth As Integer, ByVal iHeight As Integer, Optional nXOrigin As Long, Optional nYOrigin As Long)
+Private Sub DrawImage(ByVal lDestHDC As Long, ByVal lhBmp As Long, ByVal lTransColor As Long, ByVal nLeft As Long, ByVal nTop As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal nXOrigin As Long, Optional ByVal nYOrigin As Long)
     Dim lHDC As Long
     Dim lhBmpOld As Long
     Dim utBmp As BITMAP
@@ -9735,12 +9655,12 @@ Private Sub DrawImage(ByVal lDestHDC As Long, ByVal lhBmp As Long, ByVal lTransC
     lHDC = CreateCompatibleDC(lDestHDC)
     lhBmpOld = SelectObject(lHDC, lhBmp)
     Call GetObjectA(lhBmp, Len(utBmp), utBmp)
-    Call TransparentBlt(lDestHDC, iLeft, iTop, iWidth, iHeight, lHDC, nXOrigin, nYOrigin, iWidth, iHeight, lTransColor)
+    Call TransparentBlt(lDestHDC, nLeft, nTop, nWidth, nHeight, lHDC, nXOrigin, nYOrigin, nWidth, nHeight, lTransColor)
     Call SelectObject(lHDC, lhBmpOld)
     DeleteDC (lHDC)
 End Sub
 
-Private Function TranslatedColor(lOleColor As Long) As Long
+Private Function TranslatedColor(ByVal lOleColor As Long) As Long
     Dim lRGBColor As Long
     
     Call TranslateColor(lOleColor, 0, lRGBColor)
@@ -9748,17 +9668,17 @@ Private Function TranslatedColor(lOleColor As Long) As Long
 End Function
 
 'extract Red component from a color
-Private Function GetRedValue(RGBValue As Long) As Integer
+Private Function GetRedValue(ByVal RGBValue As Long) As Integer
     GetRedValue = RGBValue And &HFF
 End Function
 
 'extract Green component from a color
-Private Function GetGreenValue(RGBValue As Long) As Integer
+Private Function GetGreenValue(ByVal RGBValue As Long) As Integer
     GetGreenValue = ((RGBValue And &HFF00) / &H100) And &HFF
 End Function
 
 'extract Blue component from a color
-Private Function GetBlueValue(RGBValue As Long) As Integer
+Private Function GetBlueValue(ByVal RGBValue As Long) As Integer
     GetBlueValue = ((RGBValue And &HFF0000) / &H10000) And &HFF
 End Function
 
@@ -9951,7 +9871,6 @@ Private Sub SetColors()
     iCol = MixColors(mFlatBarColorTabSel, mFlatBarColorInactive, 60)
     ColorRGBToHLS iCol, iCol_H, iCol_L, iCol_S
     mFlatBarColorHighlight_ColorAutomatic = ColorHLSToRGB(iCol_H, iCol_L, iCol_S * 0.75)
-    'If mFlatBarColorHighlight_ColorAutomatic = 13737351 Then Stop
     If mFlatBarColorHighlight_IsAutomatic Then
         mFlatBarColorHighlight = mFlatBarColorHighlight_ColorAutomatic
     End If
@@ -9963,12 +9882,6 @@ Private Sub SetColors()
         mHighlightEffectColors_Light(c) = MixColors(mGlowColor, mBackColorTabs, 6 * c)
         mFlatBarHighlightEffectColors(c) = MixColors(mFlatBarColorHighlight, mFlatBarColorInactive, 10 * c)
     Next c
-'    mFlatGlowColor_Sel = MixColors(mGlowColor, mBackColorTabSel, 60)
-'    If mHighlightIntensity = ntHighlightIntensityStrong Then
-'        mGlowColor_Bk = mHighlightEffectColors_Strong(10) ' mGlowColor
-'    Else
-'        mGlowColor_Bk = mHighlightEffectColors_Light(10)
-'    End If
     
     ' Active Tab (TabSel) colors
     If mHandleHighContrastTheme And mHighContrastThemeOn Then
@@ -10218,7 +10131,7 @@ Private Sub EnsureDrawn()
     End If
 End Sub
 
-Private Sub RotatePic(picSrc As PictureBox, picDest As PictureBox, nDirection As NTRotatePicDirectionConstants)
+Private Sub RotatePic(picSrc As PictureBox, picDest As PictureBox, ByVal nDirection As NTRotatePicDirectionConstants)
     Dim pt(0 To 2) As POINTAPI
     Dim iHeight As Long
     Dim iWidth As Long
@@ -10289,7 +10202,7 @@ Private Function ToContainerSizeX(nValue As Variant, Optional nFromScale As Scal
     ToContainerSizeX = pScaleX(nValue, nFromScale, ContainerScaleMode)
 End Function
 
-Private Function FixRoundingError(nNumber As Single, Optional nDecimals As Long = 3) As Single
+Private Function FixRoundingError(nNumber As Single, Optional ByVal nDecimals As Long = 3) As Single
     Dim iNum As Single
     
     iNum = Round(nNumber * 10 ^ nDecimals) / 10 ^ nDecimals
@@ -10304,7 +10217,7 @@ Private Function FixRoundingError(nNumber As Single, Optional nDecimals As Long 
     End If
 End Function
     
-Private Sub SetControlsBackColor(nColor As Long, Optional nPrevColor As Long = -1)
+Private Sub SetControlsBackColor(ByVal nColor As Long, Optional ByVal nPrevColor As Long = -1)
     Dim iCtl As Object
     Dim iLng As Long
     Dim iCancel As Boolean
@@ -10414,7 +10327,7 @@ Private Sub SetControlsBackColor(nColor As Long, Optional nPrevColor As Long = -
     Err.Clear
 End Sub
 
-Private Sub SetControlsForeColor(nColor As Long, Optional nPrevColor As Long = -1)
+Private Sub SetControlsForeColor(ByVal nColor As Long, Optional ByVal nPrevColor As Long = -1)
     Dim iCtl As Object
     Dim iLng As Long
     Dim iCancel As Boolean
@@ -10511,13 +10424,13 @@ Attribute Refresh.VB_Description = "Redraws the control."
     If iWv Then UserControl.Refresh
 End Sub
 
-Private Sub RaiseEvent_TabMouseEnter(nTab As Integer)
+Private Sub RaiseEvent_TabMouseEnter(ByVal nTab As Long)
     If DraggingATab Then Exit Sub
     mTabData(nTab).Hovered = True
     RaiseEvent TabMouseEnter(nTab)
     mCurrentMousePointerIsHand = False
     If mTabMousePointerHand Then
-        If nTab <> mTabSel Then
+        If nTab <> mTab Then
             mCurrentMousePointerIsHand = True
             If GetCursor <> IDC_HAND Then
                 SetCursor mHandIconHandle
@@ -10549,7 +10462,7 @@ Private Sub RaiseEvent_TabMouseEnter(nTab As Integer)
     End If
 End Sub
 
-Private Sub RaiseEvent_TabMouseLeave(nTab As Integer)
+Private Sub RaiseEvent_TabMouseLeave(ByVal nTab As Long)
     mCurrentMousePointerIsHand = False
     If tmrHighlightEffect.Enabled Then
         tmrHighlightEffect.Enabled = False
@@ -10561,7 +10474,7 @@ Private Sub RaiseEvent_TabMouseLeave(nTab As Integer)
     End If
     mTabData(nTab).Hovered = False
     RaiseEvent TabMouseLeave(nTab)
-    If nTab <> mTabSel Then
+    If nTab <> mTab Then
         If (mHighlightGradient <> ntGradientNone) Or mAppearanceIsFlat Or mControlIsThemed Then PostDrawMessage
     End If
     mMouseIsOverIcon = False
@@ -10571,7 +10484,7 @@ Private Sub RaiseEvent_TabMouseLeave(nTab As Integer)
     Set mToolTipEx = Nothing
 End Sub
 
-Private Sub ShowTabTTT(nTab As Integer)
+Private Sub ShowTabTTT(ByVal nTab As Long)
     tmrShowTabTTT.Enabled = False
     tmrShowTabTTT.Enabled = True
     tmrShowTabTTT.Tag = nTab
@@ -10921,7 +10834,7 @@ Private Sub ResetCachedThemeImages()
     mTabBodyReset = True
 End Sub
 
-Private Function MeasureTabIconAndCaption(t As Long) As Long
+Private Function MeasureTabIconAndCaption(ByVal t As Long) As Long
     Dim iPicWidth As Long
     Dim iCaptionWidth As Long
     Dim iCaptionRect As RECT
@@ -10934,9 +10847,6 @@ Private Function MeasureTabIconAndCaption(t As Long) As Long
     If (Not mTabData(t).DoNotUseIconFont) And (mTabData(t).IconChar <> 0) Then
         Dim iIconCharacter As String
         Dim iIconCharRect As RECT
-        Dim iFontPrev As StdFont
-        Dim iIconColor As Long
-        Dim iForeColorPrev As Long
         Dim iIconFont As StdFont
         
         If mTabData(t).IconFont Is Nothing Then
@@ -11059,34 +10969,7 @@ Public Property Let ForceVisualStyles(ByVal nValue As Boolean)
     '
 End Property
 
-'Private Function IsAppThemeEnabled() As Boolean
-'    If GetComCtlVersion() >= 6 Then
-'        If IsThemeActive() <> 0 Then
-'            If IsAppThemed() <> 0 Then
-'                IsAppThemeEnabled = True
-'            ElseIf (GetThemeAppProperties() And STAP_ALLOW_CONTROLS) <> 0 Then
-'                IsAppThemeEnabled = True
-'            End If
-'        End If
-'    End If
-'End Function
-
-'Private Function GetComCtlVersion() As Long
-'    Static sValue As Long
-'
-'    If sValue = 0 Then
-'        Dim iVersion As DLLVERSIONINFO
-'        On Error Resume Next
-'        iVersion.cbSize = LenB(iVersion)
-'        If DllGetVersion(iVersion) = S_OK Then
-'            sValue = iVersion.dwMajor
-'        End If
-'        Err.Clear
-'    End If
-'    GetComCtlVersion = sValue
-'End Function
-
-Private Sub SetVisibleControls(iPreviousTab As Integer)
+Private Sub SetVisibleControls(ByVal iPreviousTab As Long)
     Dim iCtl As Object
     Dim iCtlName As Variant
     Dim iContainedControlsString As String
@@ -11155,8 +11038,8 @@ Private Sub SetVisibleControls(iPreviousTab As Integer)
     Next
     
     ' show controls in selected tab
-    If (mTabSel > -1) And (mTabSel < mTabs) Then
-        For Each iCtlName In mTabData(mTabSel).Controls
+    If (mTab > -1) And (mTab < mTabs) Then
+        For Each iCtlName In mTabData(mTab).Controls
             Set iCtl = GetContainedControlByName(iCtlName)
             If Not iCtl Is Nothing Then
                 On Error Resume Next
@@ -11212,10 +11095,10 @@ Private Sub SetVisibleControls(iPreviousTab As Integer)
                picTDIFormContainer(mTabData(iPreviousTab).Data).Visible = False
             End If
         End If
-        If mTabSel > -1 Then
-            If mTabData(mTabSel).Data > 0 Then
-                If (mTabData(mTabSel).Data >= picTDIFormContainer.LBound) And (mTabData(mTabSel).Data <= picTDIFormContainer.UBound) Then
-                    picTDIFormContainer(mTabData(mTabSel).Data).Visible = True
+        If mTab > -1 Then
+            If mTabData(mTab).Data > 0 Then
+                If (mTabData(mTab).Data >= picTDIFormContainer.LBound) And (mTabData(mTab).Data <= picTDIFormContainer.UBound) Then
+                    picTDIFormContainer(mTabData(mTab).Data).Visible = True
                 End If
             End If
         End If
@@ -11235,7 +11118,7 @@ Private Function GetControlHwnd2(nControl As Object) As Long
     GetControlHwnd2 = nControl.hWnd
 End Function
 
-Private Function IsControlInOtherTab(nCtlName As Variant, nTab As Integer) As Boolean
+Private Function IsControlInOtherTab(nCtlName As Variant, ByVal nTab As Long) As Boolean
     Dim t As Long
     Dim iStr As String
     
@@ -11554,28 +11437,7 @@ Private Sub SubclassControlsPainting()
     
 End Sub
 
-'Private Function GetContainedControlNameByHwnd(nHwnd As Long) As String ' used only  for debugging purposes
-'    Dim iCtl As Object
-'    Dim iHwnd As Long
-'
-'    On Error Resume Next
-'    For Each iCtl In UserControlContainedControls
-'        iHwnd = -1
-'        iHwnd = iCtl.hWndUserControl
-'        If iHwnd = nHwnd Then
-'            GetContainedControlNameByHwnd = iCtl.Name
-'            Exit For
-'        End If
-'        iHwnd = -1
-'        iHwnd = iCtl.hWnd
-'        If iHwnd = nHwnd Then
-'            GetContainedControlNameByHwnd = iCtl.Name
-'            Exit For
-'        End If
-'    Next
-'End Function
-
-Private Function GetContainerByHwnd(nHwnd As Long) As Object
+Private Function GetContainerByHwnd(ByVal nHwnd As Long) As Object
     Dim iParent As Object
     Dim iControls As Object
     Dim iCtl As Object
@@ -11721,7 +11583,7 @@ Private Sub SetAccessKeys()
         If mTabData(c).Enabled And mTabData(c).Visible Then
             iPos = InStr(mTabData(c).Caption, "&")
             If iPos > 0 Then
-                iChr = LCase(Mid$(mTabData(c).Caption, iPos + 1, 1))
+                iChr = LCase$(Mid$(mTabData(c).Caption, iPos + 1, 1))
                 If (iChr <> "") Then
                     iAsc = Asc(iChr)
                     If Not (((iAsc > 47) And (iAsc < 58)) Or ((iAsc > 96) And (iAsc < 123))) Then
@@ -11731,14 +11593,14 @@ Private Sub SetAccessKeys()
             End If
         End If
         iAK = iAK & iChr
-        If iChr = "" Then iChr = Chr(0)
+        If iChr = "" Then iChr = Chr$(0)
         mAccessKeys = mAccessKeys & iChr
     Next c
     UserControl.AccessKeys = iAK
     mAccessKeysSet = True
 End Sub
 
-Private Sub SetPicToUse(nTab As Long)
+Private Sub SetPicToUse(ByVal nTab As Long)
     Dim iTx As Single
     
     If mTabData(nTab).PicToUseSet Then Exit Sub
@@ -11814,7 +11676,7 @@ Private Sub SetPicToUse(nTab As Long)
     mTabData(nTab).PicToUseSet = True
 End Sub
 
-Private Function StretchPicNN(nPic As StdPicture, nFactor As Long) As StdPicture
+Private Function StretchPicNN(nPic As StdPicture, ByVal nFactor As Long) As StdPicture
     Dim iWidth As Long
     Dim iHeight As Long
     
@@ -11864,7 +11726,7 @@ Private Function PictureToGrayScale(nPic As StdPicture) As StdPicture
     picAux2.Cls
 End Function
 
-Private Function ToGray(nColor As Long) As Long
+Private Function ToGray(ByVal nColor As Long) As Long
     Dim iR As Long
     Dim iG As Long
     Dim iB As Long
@@ -11959,7 +11821,7 @@ End Sub
 
 Friend Property Get TabControlsNames(ByVal Index As Variant) As Object
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     Set TabControlsNames = mTabData(Index).Controls
@@ -11967,7 +11829,7 @@ End Property
 
 Friend Property Set TabControlsNames(ByVal Index As Variant, nValue As Object)
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     Set mTabData(Index).Controls = nValue
@@ -12024,7 +11886,7 @@ Friend Sub MakeContainedControlsInSelTabVisible()
     End If
     
     On Error Resume Next
-    For Each iCtlName In mTabData(mTabSel).Controls
+    For Each iCtlName In mTabData(mTab).Controls
         Set iCtl = GetContainedControlByName(iCtlName)
         If Not iCtl Is Nothing Then
             iIsLine = TypeName(iCtl) = "Line"
@@ -12195,7 +12057,7 @@ Private Sub CheckContainedControlsConsistency(Optional nCheckControlsThatChanged
         iStr = iAllCtInTabs(iCtlName)
         If iStr = "" Then ' the control is not placed on any tab
             ' place it in the visible tab
-            mTabData(mTabSel).Controls.Add iCtlName, iCtlName
+            mTabData(mTab).Controls.Add iCtlName, iCtlName
             Set iCtl = GetContainedControlByName(iCtlName)
             iIsLine = TypeName(iCtl) = "Line"
             If iIsLine Then
@@ -12410,7 +12272,7 @@ Private Sub RearrangeContainedControlsPositions()
     Err.Clear
 End Sub
 
-Public Property Get TabControls(nTab As Integer, Optional GetChilds As Boolean = True) As Collection
+Public Property Get TabControls(ByVal nTab As Long, Optional GetChilds As Boolean = True) As Collection
 Attribute TabControls.VB_Description = "Returns a collection of the controls that are inside a tab."
 Attribute TabControls.VB_ProcData.VB_Invoke_Property = ";Datos"
     Dim iCtlName As Variant
@@ -12610,7 +12472,7 @@ Private Sub SetDPI()
     mDPIScale = 1 / 96 * mDPIX
 End Sub
 
-Private Sub SetLeftOffsetToHide(nTwipsPerPixel As Long)
+Private Sub SetLeftOffsetToHide(ByVal nTwipsPerPixel As Long)
     If nTwipsPerPixel >= 6 Then
         mLeftOffsetToHide = 75000 ' compatible with original SSTab up to 250% DPI
         mLeftThresholdHided = 15000
@@ -12812,7 +12674,7 @@ Public Property Let ControlLeft(ByVal ControlName As String, ByVal Left As Singl
     End If
 End Property
 
-Public Sub ControlMove(ByVal nControlName As String, ByVal Left As Single, ByVal Top As Single, Optional ByVal Width, Optional ByVal Height, Optional IndexOfOtherTabToMoveTheControl As Integer = -1)
+Public Sub ControlMove(ByVal nControlName As String, ByVal Left As Single, ByVal Top As Single, Optional ByVal Width As Variant, Optional ByVal Height As Variant, Optional ByVal IndexOfOtherTabToMoveTheControl As Long = -1)
 Attribute ControlMove.VB_Description = "Replaces the ControlName.Move method. The difference is that it takes into account the Left offset of controls on inactive tabs."
     Dim iCtl As Object
     Dim iFound As Boolean
@@ -12903,14 +12765,14 @@ Attribute ControlMove.VB_Description = "Replaces the ControlName.Move method. Th
                 If iFound Then Exit For
             Next
             mTabData(IndexOfOtherTabToMoveTheControl).Controls.Add iCtlName, iCtlName
-            If (iAuxLeft < -mLeftThresholdHided) And (IndexOfOtherTabToMoveTheControl = mTabSel) Then
+            If (iAuxLeft < -mLeftThresholdHided) And (IndexOfOtherTabToMoveTheControl = mTab) Then
                 If iIsLine Then
                     iCtl.X1 = iCtl.X1 + mLeftOffsetToHide
                     iCtl.X2 = iCtl.X2 + mLeftOffsetToHide
                 Else
                     iCtl.Left = iCtl.Left + mLeftOffsetToHide
                 End If
-            ElseIf (iAuxLeft >= -mLeftThresholdHided) And (IndexOfOtherTabToMoveTheControl <> mTabSel) Then
+            ElseIf (iAuxLeft >= -mLeftThresholdHided) And (IndexOfOtherTabToMoveTheControl <> mTab) Then
                 If iIsLine Then
                     iCtl.X1 = iCtl.X1 - mLeftOffsetToHide
                     iCtl.X2 = iCtl.X2 - mLeftOffsetToHide
@@ -12922,7 +12784,7 @@ Attribute ControlMove.VB_Description = "Replaces the ControlName.Move method. Th
     End If
 End Sub
 
-Public Sub ControlSetTab(ByVal nControlName As String, ByVal nTab As Integer)
+Public Sub ControlSetTab(ByVal nControlName As String, ByVal nTab As Long)
 Attribute ControlSetTab.VB_Description = "Sets or change the tab where a contained control is."
     Dim iControlName As String
     Dim iCtl As Object
@@ -12982,9 +12844,6 @@ Private Sub SetAutoTabHeight()
         If (Not mTabData(t).DoNotUseIconFont) And (mTabData(t).IconChar <> 0) Then
             Dim iIconCharacter As String
             Dim iIconCharRect As RECT
-            Dim iFontPrev As StdFont
-            Dim iIconColor As Long
-            Dim iForeColorPrev As Long
             Dim iFlags As Long
             Dim iIconFont As StdFont
             Dim iIconPadding As Long
@@ -13196,7 +13055,7 @@ Private Sub SetCurrentTheme()
 End Sub
 
 Public Property Let Theme(ByVal nValue As String)
-    nValue = LCase$(Trim(nValue))
+    nValue = LCase$(Trim$(nValue))
     If nValue = "custom" Then Exit Property
     If mCurrentTheme Is Nothing Then SetCurrentTheme
     If nValue = mCurrentThemeName Then Exit Property
@@ -13236,38 +13095,38 @@ Friend Property Set Themes(ByVal nThemes As NewTabThemes)
 End Property
 
 
-Public Property Get TabData(ByVal Index As Integer) As Long
+Public Property Get TabData(ByVal Index As Long) As Long
 Attribute TabData.VB_Description = "Used to store any data in Long format, similar to ListBox's ItemData. If the tabs are reordered, it will keep this data for this tab."
 Attribute TabData.VB_ProcData.VB_Invoke_Property = ";Datos"
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     TabData = mTabData(Index).Data
 End Property
 
-Public Property Let TabData(ByVal Index As Integer, ByVal nValue As Long)
+Public Property Let TabData(ByVal Index As Long, ByVal nValue As Long)
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     mTabData(Index).Data = nValue
 End Property
 
 
-Public Property Get TabTag(ByVal Index As Integer) As String
+Public Property Get TabTag(ByVal Index As Long) As String
 Attribute TabTag.VB_Description = "Similar to a Tag property, but for each tab. You can store any string there. If the tabs are reordered, it will keep this data for this tab."
 Attribute TabTag.VB_ProcData.VB_Invoke_Property = ";Datos"
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     TabTag = mTabData(Index).Tag
 End Property
 
-Public Property Let TabTag(ByVal Index As Integer, ByVal nValue As String)
+Public Property Let TabTag(ByVal Index As Long, ByVal nValue As String)
     If (Index < 0) Or (Index >= mTabs) Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     mTabData(Index).Tag = nValue
@@ -13388,7 +13247,6 @@ Private Sub ShowPicCover()
 End Sub
 
 Private Sub HidePicCover()
-    Const LWA_ALPHA = &H2&
     Const WS_EX_LAYERED = &H80000
     Const GWL_EXSTYLE = (-20)
     Const WS_EX_TOOLWINDOW = &H80
@@ -13424,8 +13282,6 @@ Private Function GetAutomaticBackColorTabSel() As Long
     Dim iBackColorTabs_S As Integer
     Dim iBCol As Long
     Dim iCol_L As Integer
-    Dim iCol_S As Integer
-    Dim iCol_H As Integer
     
     If mStyle = ntStyleFlat Then
 
@@ -13637,30 +13493,12 @@ Private Sub SetPropertyChanged(Optional nPropertyName As String)
     End If
 End Sub
 
-'Private Function IsMouseOverIcon(nTab As Integer) As Boolean
-'    Dim iPt As POINTAPI
-'
-'    If nTab = -1 Then Exit Function
-'    GetCursorPos iPt
-'    ScreenToClient mUserControlHwnd, iPt
-'    If iPt.X >= mTabData(nTab).IconRect.Left Then
-'        If iPt.X <= mTabData(nTab).IconRect.Right Then
-'            If iPt.Y >= mTabData(nTab).IconRect.Top Then
-'                If iPt.Y <= mTabData(nTab).IconRect.Bottom Then
-'                    IsMouseOverIcon = True
-'                End If
-'            End If
-'        End If
-'    End If
-'End Function
-
-Public Sub MoveTab(CurrentIndex As Integer, NewIndex As Integer)
+Public Sub MoveTab(ByVal CurrentIndex As Long, ByVal NewIndex As Long)
 Attribute MoveTab.VB_Description = "Moves a tab to another position."
     Dim iCanceled As Boolean
     Dim iTempTabData As T_TabData
     Dim c As Long
     Dim iCurTab As Boolean
-    Dim iPrev As Integer
     Dim iRedraw As Boolean
     
     If NewIndex = CurrentIndex Then Exit Sub
@@ -13676,7 +13514,7 @@ Attribute MoveTab.VB_Description = "Moves a tab to another position."
     mMovingATab = True
     iRedraw = Redraw
     Redraw = False
-    iCurTab = (CurrentIndex = mTabSel)
+    iCurTab = (CurrentIndex = mTab)
     
     iTempTabData = mTabData(CurrentIndex)
     If NewIndex > CurrentIndex Then
@@ -13691,8 +13529,8 @@ Attribute MoveTab.VB_Description = "Moves a tab to another position."
         mTabData(NewIndex) = iTempTabData
     End If
     If iCurTab Then
-        mTabSel = -1
-        'SetVisibleControls mTabSel
+        mTab = -1
+        'SetVisibleControls mTab
         TabSel = NewIndex
         Draw
     Else
@@ -13703,7 +13541,7 @@ Attribute MoveTab.VB_Description = "Moves a tab to another position."
             End If
         Next
 '        For c = 0 To mTabs - 1
-'            mTabData(c).Selected = (c = mTabSel)
+'            mTabData(c).Selected = (c = mTab)
 '            mTabData(c).Hovered = False
 '        Next
         Draw
@@ -13746,15 +13584,15 @@ Private Property Let DraggingATab(nValue As Boolean)
     If mMovingATab Then Exit Property
     If nValue = mDraggingATab Then Exit Property
     
-    mDraggingATab = nValue And (mTabSel > -1)
+    mDraggingATab = nValue And (mTab > -1)
     If mDraggingATab Then
-        mPreviousTabBeforeDragging = mTabSel
+        mPreviousTabBeforeDragging = mTab
         ClientToScreen mUserControlHwnd, iPt
         
         iRc.Left = iPt.X
         iRc.Right = UserControl.ScaleX(UserControl.ScaleWidth, UserControl.ScaleMode, vbPixels) + iPt.X
-        iRc.Top = iPt.Y + mMouseY - mTabData(mTabSel).TabRect.Top
-        iRc.Bottom = mTabBodyRect.Top + iPt.Y + mMouseY - mTabData(mTabSel).TabRect.Bottom
+        iRc.Top = iPt.Y + mMouseY - mTabData(mTab).TabRect.Top
+        iRc.Bottom = mTabBodyRect.Top + iPt.Y + mMouseY - mTabData(mTab).TabRect.Bottom
         
         tmrTabDragging.Enabled = True
         'If Not mInIDE Then ClipCursor iRc
@@ -13952,7 +13790,6 @@ End Sub
 
 Private Sub ConfigureTDIModeOnce()
     Dim iFont As StdFont
-    Dim c As Long
     
     CanReorderTabs = True
     IconColorMouseHover = vbRed
@@ -14142,7 +13979,6 @@ Private Sub TDIStoreTab0ControlInfo()
     Dim ub As Long
     Dim i As Long
     Dim iCtl As Object
-    Dim iCtl0 As Object
     
     c = -1
     ub = 100
@@ -14169,7 +14005,7 @@ Private Sub TDIStoreTab0ControlInfo()
     End If
 End Sub
 
-Private Function TDIAddNewTab(Optional Position As Variant, Optional Focused As Boolean = True, Optional nTabType As NTTDINewTabTypeConstants = ntNewTabByClickingIcon, Optional nTabCaption As String = "") As Boolean
+Private Function TDIAddNewTab(Optional Position As Variant, Optional Focused As Boolean = True, Optional ByVal nTabType As NTTDINewTabTypeConstants = ntNewTabByClickingIcon, Optional nTabCaption As String = "") As Boolean
     Dim iCancel As Boolean
     Dim iLoadTabControls As Boolean
     
@@ -14201,7 +14037,7 @@ Private Function TDIAddNewTab(Optional Position As Variant, Optional Focused As 
     End If
 End Function
 
-Private Sub TDIPrepareNewTab(nTabCaption As String, nLoadTabControls As Boolean, Optional nPosition As Long = -1, Optional nFocused As Boolean = True)
+Private Sub TDIPrepareNewTab(nTabCaption As String, nLoadTabControls As Boolean, Optional ByVal nPosition As Long = -1, Optional nFocused As Boolean = True)
     Dim iRedraw As Boolean
     
     iRedraw = mRedraw
@@ -14254,8 +14090,6 @@ Private Sub TDILoadNewTabControls(ByVal nTabPosition As Long)
     Dim c As Long
     Dim iCtl As Object
     Dim iCtl0 As Object
-    Dim ub As Long
-    Dim i As Long
     Dim iAuxLeft As Long
     Dim iIsLine  As Boolean
     Dim iContainer As Object
@@ -14322,7 +14156,7 @@ Private Sub TDILoadNewTabControls(ByVal nTabPosition As Long)
     PropertyChanged False
 End Sub
 
-Public Function TDIGetTabIndexByTabNumber(ByVal nTabNumber As Long) As Integer
+Public Function TDIGetTabIndexByTabNumber(ByVal nTabNumber As Long) As Long
 Attribute TDIGetTabIndexByTabNumber.VB_Description = "When in TDI mode, it returns the Index of a tab given its number."
     Dim c As Long
     
@@ -14335,7 +14169,7 @@ Attribute TDIGetTabIndexByTabNumber.VB_Description = "When in TDI mode, it retur
     TDIGetTabIndexByTabNumber -1
 End Function
 
-Public Function TDIGetTabNumberByTabIndex(ByVal Index As Integer) As Long
+Public Function TDIGetTabNumberByTabIndex(ByVal Index As Long) As Long
 Attribute TDIGetTabNumberByTabIndex.VB_Description = "When in TDI mode, it returns the number of a tab given its Index."
     If (Index < 0) Or (Index >= mTabs) Then
         TDIGetTabNumberByTabIndex = -1
@@ -14344,7 +14178,7 @@ Attribute TDIGetTabNumberByTabIndex.VB_Description = "When in TDI mode, it retur
     TDIGetTabNumberByTabIndex = mTabData(Index).TDITabNumber
 End Function
 
-Private Sub TDIUnloadTabControls(nTabNumber As Long)
+Private Sub TDIUnloadTabControls(ByVal nTabNumber As Long)
     Dim iCtl As Object
     Dim c As Long
     
@@ -14383,15 +14217,13 @@ Friend Function IsParentEnabled() As Boolean
     IsParentEnabled = UserControl.Parent.Enabled
 End Function
 
-Friend Sub TDIPutFormIntoTab(nHwndForm As Long)
+Friend Sub TDIPutFormIntoTab(ByVal nHwndForm As Long)
     Const WS_CAPTION As Long = &HC00000
     Const WS_THICKFRAME As Long = &H40000
     Const GWL_STYLE As Long = (-16)
     Const WM_GETICON As Long = &H7F
     Const ICON_BIG As Long = 1
     Dim iIconHandle As Long
-    Dim iLeft As Long
-    Dim iTop As Long
     Dim iFormCaption As String
     
     mTDIAddingNewTabForForm = True
@@ -14424,7 +14256,7 @@ Friend Sub TDIPutFormIntoTab(nHwndForm As Long)
     mTDIAddingNewTabForForm = False
 End Sub
 
-Private Function CreatePicture(hImage As Long, nType As PictureTypeConstants) As IPictureDisp
+Private Function CreatePicture(ByVal hImage As Long, ByVal nType As PictureTypeConstants) As IPictureDisp
     'This function creates a picture object from a handle to a bitmap or a icon
     'hImage is the handle to the bitmap or icon
     'Type is the type of the image (can be either vbPicTypeBitmap or vbPicTypeIcon
@@ -14455,7 +14287,7 @@ Private Function CreatePicture(hImage As Long, nType As PictureTypeConstants) As
  
 End Function
 
-Private Function GetTDIModeFormsIndexOfTabFromFormHwnd(nHwndForm As Long) As Long
+Private Function GetTDIModeFormsIndexOfTabFromFormHwnd(ByVal nHwndForm As Long) As Long
     Dim c As Long
     
     GetTDIModeFormsIndexOfTabFromFormHwnd = -1
@@ -14515,12 +14347,12 @@ End Function
 Private Function GetWindowTitle(ByVal hWnd As Long) As String
     Dim Buffer As String
     
-    Buffer = String(GetWindowTextLength(hWnd) + 1, vbNullChar)
+    Buffer = String$(GetWindowTextLength(hWnd) + 1, vbNullChar)
     GetWindowText hWnd, StrPtr(Buffer), Len(Buffer)
     GetWindowTitle = Left$(Buffer, Len(Buffer) - 1)
 End Function
 
-Friend Sub TDIFormClosing(nHwndForm As Long)
+Friend Sub TDIFormClosing(ByVal nHwndForm As Long)
     Dim c As Long
     Dim i As Long
     Dim iDone As Boolean
@@ -14560,7 +14392,7 @@ Friend Sub TDIFormClosing(nHwndForm As Long)
     End If
 End Sub
 
-Friend Sub TDIFocusForm(nHwndForm As Long)
+Friend Sub TDIFocusForm(ByVal nHwndForm As Long)
     Dim c As Long
     Const WA_ACTIVE As Long = 1
     
@@ -14586,6 +14418,44 @@ Friend Sub ShowsModalForm()
     mShowingModalForm = True
 End Sub
     
+Public Function SetActiveTab(ByVal Find As Variant, Optional ByVal Method As NTFindTabMethodConstants = ntFindCaption) As Boolean
+Attribute SetActiveTab.VB_Description = "Sets the current ('selected' or 'active') tab by other means than its index."
+    Dim c As Long
+    
+    SetActiveTab = True
+    If Method = ntFindCaption Then
+        Find = LCase$(Find)
+        For c = 0 To mTabs - 1
+            If LCase$(mTabData(c).Caption) = Find Then
+                TabSel = c
+                Exit Function
+            End If
+        Next
+    ElseIf Method = ntFindOriginalIndex Then
+        For c = 0 To mTabs - 1
+            If mTabData(c).OriginalIndex = Find Then
+                TabSel = c
+                Exit Function
+            End If
+        Next
+    ElseIf Method = ntFindData Then
+        For c = 0 To mTabs - 1
+            If mTabData(c).Data = Find Then
+                TabSel = c
+                Exit Function
+            End If
+        Next
+    ElseIf Method = ntFindTag Then
+        For c = 0 To mTabs - 1
+            If mTabData(c).Tag = Find Then
+                TabSel = c
+                Exit Function
+            End If
+        Next
+    End If
+    SetActiveTab = False
+End Function
+
 'Tab is a reserved keyword in VB6, but you can remove that restriction.
 'To be able to compile with Tab property, you need to replace VBA6.DLL with this version: https://github.com/EduardoVB/NewTab/raw/main/control-source/lib/VBA6.DLL
 'VBA6.DLL is in VS6's installation folder, usually:
@@ -14593,13 +14463,13 @@ End Sub
 
 #Const COMPILE_WITH_TAB_PROPERTY = 0
 #If COMPILE_WITH_TAB_PROPERTY Then
-Public Property Get Tab() As Integer
-Attribute Tab.VB_Description = "Returns or sets the index of the current (""""selected"""" or """"active"""") tab."
+Public Property Get Tab() As Long
+Attribute Tab.VB_Description = "Returns or sets the current ('selected' or 'active') tab by its index."
 'Attribute Tab.VB_Description = "Returns or sets the index of the current (""selected"" or ""active"") tab."
     Tab = TabSel
 End Property
 
-Public Property Let Tab(ByVal nValue As Integer)
+Public Property Let Tab(ByVal nValue As Long)
     TabSel = nValue
 End Property
 #End If

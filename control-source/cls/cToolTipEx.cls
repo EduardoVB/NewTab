@@ -76,7 +76,7 @@ Private Const WS_EX_LAYOUTRTL = &H400000
 Private Const WM_SETFONT As Long = &H30
 
 Private Const MOUSEEVENTF_LEFTDOWN = &H2 ' Left button down
-Private Const MOUSEEVENTF_LEFTUP = &H4 ' Left button up
+'Private Const MOUSEEVENTF_LEFTUP = &H4 ' Left button up
 
 Public Event Closed()
 Public Event BeforeClose()

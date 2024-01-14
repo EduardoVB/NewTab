@@ -661,7 +661,6 @@ End Sub
 Public Function GetThemeStringFromControl(nCtl As NewTab, nAmbientBackColor As Long, nAmbientForeColor As Long, nAmbientFont As StdFont, Optional nHash As String) As String
     Dim iPropsStr() As String
     Dim ub As Long
-    Dim iStr As String
     Dim iTheme As NewTabTheme
     Dim iTakeAmbientColors As Boolean
     Dim c As Long

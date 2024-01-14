@@ -1,3 +1,8 @@
+2024-01-13 Changed to OLE version 7.0.
+2024-01-13 Added SetActiveTab method.
+2024-01-13 Changed most of the Integer properties to Long, and new NewTab events (not available in the original SSTab) from Integer to Long. Old original SSTab events were left As Integer.
+2024-01-13 Changed Event name TabSelChange to TabChange. If you used this event then you need to manually change its name in the event handler's code.
+2024-01-13 TabSel property is hidden now, it is kept for compatibility but is deprecated. Use the Tab property instead.
 2023-12-19 Fixes regarding tab-captions vertical centering.
 2023-12-14 Fixed bug in botton oriented tabs icon positions.
 2023-12-08 Changed to OLE version 6.0.

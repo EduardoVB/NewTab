@@ -3,7 +3,6 @@ Option Explicit
 
 Private Declare Function SetWindowsHookEx Lib "user32" Alias "SetWindowsHookExA" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hmod As Long, ByVal dwThreadId As Long) As Long
 Private Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Long) As Long
-Private Declare Function IsWindowEnabled Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function SetWindowSubclass Lib "comctl32" (ByVal hWnd As Long, ByVal pfnSubclass As Long, ByVal uIdSubclass As Long, ByVal dwRefData As Long) As Long
 Private Declare Function DefSubclassProc Lib "comctl32" (ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function RemoveWindowSubclass Lib "comctl32" (ByVal hWnd As Long, ByVal pfnSubclass As Long, ByVal uIdSubclass As Long) As Long
@@ -101,7 +100,7 @@ Private Function GetWindowClassName(nHwnd As Long) As String
     
     If nHwnd = 0 Then Exit Function
     
-    iClassName = Space(64)
+    iClassName = Space$(64)
     iSize = GetClassName(nHwnd, iClassName, Len(iClassName))
     GetWindowClassName = Left$(iClassName, iSize)
 End Function

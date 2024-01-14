@@ -65,7 +65,7 @@ Private Sub cmdOK_Click()
         SelectedControl = lstControls.Text
         iLng = InStr(SelectedControl, "[now")
         If iLng > 0 Then
-            SelectedControl = Trim(Left(SelectedControl, iLng - 1))
+            SelectedControl = Trim$(Left$(SelectedControl, iLng - 1))
         End If
     End If
     Unload Me

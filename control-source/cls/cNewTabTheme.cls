@@ -36,7 +36,7 @@ Private Sub MakeThemeString()
     
     For c = 1 To mData.Count
         Set iProp = mData(c)
-        mThemeString = mThemeString & IIf(mThemeString = "", "", "|") & iProp.Name & "=" & Trim(CStr(iProp.Value))
+        mThemeString = mThemeString & IIf(mThemeString = "", "", "|") & iProp.Name & "=" & Trim$(CStr(iProp.Value))
     Next
     mHash = GetThemeStringHash(mThemeString)
 End Sub

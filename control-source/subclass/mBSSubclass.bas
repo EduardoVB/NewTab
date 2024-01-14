@@ -77,20 +77,16 @@ Private Declare Function VirtualAlloc Lib "kernel32" (ByRef lpAddress As Long, B
 Private Declare Function VirtualFree Lib "kernel32.dll" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
 Private Declare Function VirtualProtect Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal flNewProtect As Long, ByRef lpflOldProtect As Long) As Long
 Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
-Private Declare Function FindWindow Lib "user32.dll" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As Long
-Private Declare Function SetWindowsHookEx Lib "user32" Alias "SetWindowsHookExA" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hMod As Long, ByVal dwThreadID As Long) As Long
-Private Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Long) As Long
-Private Declare Function CallNextHookEx Lib "user32" (ByVal hHook As Long, ByVal nCode As Long, ByVal wParam As Long, lParam As Any) As Long
 Private Declare Function GetClassName Lib "user32" Alias "GetClassNameA" (ByVal hWnd As Long, ByVal lpClassName As String, ByVal nMaxCount As Long) As Long
-Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function GetWindowText Lib "user32.dll" Alias "GetWindowTextA" (ByVal hWnd As Long, ByVal lpString As String, ByVal cch As Long) As Long
-Private Declare Function EnumThreadWindows Lib "user32" (ByVal dwThreadID As Long, ByVal lpfn As Long, ByVal lParam As Long) As Long
+Private Declare Function EnumThreadWindows Lib "user32" (ByVal dwThreadId As Long, ByVal lpfn As Long, ByVal lParam As Long) As Long
 Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
 Private Declare Function SetTimer Lib "user32" (ByVal hWnd As Long, ByVal nIDEvent As Long, ByVal uElapse As Long, ByVal lpTimerFunc As Long) As Long
 Private Declare Function KillTimer Lib "user32" (ByVal hWnd As Long, ByVal nIDEvent As Long) As Long
 Private Declare Function GetKeyState Lib "user32" (ByVal nVirtKey As Long) As Integer
 Private Declare Function GetWindow Lib "user32" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
-Private Const GW_HWNDFIRST As Long = 0
+
+'Private Const GW_HWNDFIRST As Long = 0
 Private Const GW_HWNDNEXT As Long = 2
 Private Const GW_CHILD As Long = 5
 
@@ -197,10 +193,6 @@ Private mTimerFindCodeWindowsHandle As Long
 Private mAllSubclassesRemoved As Boolean
 Private mIDEMainHwnd As Long
 #End If
-
-Public Property Get CurrentMessage() As Long
-    CurrentMessage = m_iCurrentMessage
-End Property
 
 Private Sub ErrRaise(e As Long)
     Dim sText As String, sSource As String
@@ -1050,22 +1042,22 @@ Private Function ThisRemoveProp(ByVal hWnd As Long, ByVal lpString As String) As
 End Function
 
 
-Private Function InIDE() As Boolean
-    Static sValue As Long
-    
-    If sValue = 0 Then
-        On Error Resume Next
-        Err.Clear
-        Debug.Assert "a"
-        If Err.Number = 13 Then
-            sValue = 1
-        Else
-            sValue = 2
-        End If
-        Err.Clear
-    End If
-    InIDE = sValue = 1
-End Function
+'Private Function InIDE() As Boolean
+'    Static sValue As Long
+'
+'    If sValue = 0 Then
+'        On Error Resume Next
+'        Err.Clear
+'        Debug.Assert "a"
+'        If Err.Number = 13 Then
+'            sValue = 1
+'        Else
+'            sValue = 2
+'        End If
+'        Err.Clear
+'    End If
+'    InIDE = sValue = 1
+'End Function
 
 Private Sub CheckPropsDatabase()
     Dim c As Long
@@ -1102,7 +1094,7 @@ Private Function InBreakMode() As Boolean
     Debug.Assert MakeTrue(iInIDE)
     If iInIDE Then
         Static InitDone As Boolean, VBAVersion As Long
-        Const vbmRun& = 1, vbmBreak& = 2
+        Const vbmBreak& = 2
         If Not InitDone Then
             InitDone = True
             VBAVersion = VBAEnvironment
@@ -1148,7 +1140,7 @@ Private Function VBAEnvironment() As Long
     End If
 End Function
 
-#If IDE_PROTECTION_ENABLED Then
+#If False Then
 
 Private Function GetMessageName(nMsg As Long) As String
    Dim Msg As String
@@ -1369,10 +1361,14 @@ Private Function GetMessageName(nMsg As Long) As String
       Case &H380: Msg = "WM_PENWINFIRST"
       Case &H38F: Msg = "WM_PENWINLAST"
       Case &H400: Msg = "WM_USER"
-      Case Else: Msg = "&H" & Hex(nMsg)
+      Case Else: Msg = "&H" & Hex$(nMsg)
    End Select
    GetMessageName = Msg
 End Function
+
+#End If
+
+#If IDE_PROTECTION_ENABLED Then
 
 Private Function GetIDEMainHwnd() As Long
     If mIDEMainHwnd = 0 Then EnumThreadWindows App.ThreadID, AddressOf EnumThreadProc_GetIDEMainWindow, 0&
@@ -1410,7 +1406,7 @@ Private Function GetWindowClassName(nHwnd As Long) As String
     
     If nHwnd = 0 Then Exit Function
     
-    iClassName = Space(64)
+    iClassName = Space$(64)
     iSize = GetClassName(nHwnd, iClassName, Len(iClassName))
     GetWindowClassName = Left$(iClassName, iSize)
 End Function
@@ -1419,10 +1415,10 @@ Private Function GetWindowCaption(nHwnd As Long) As String
     Dim iWinCaption As String
     Dim iRet As Long
     
-    iWinCaption = String(255, 0)
+    iWinCaption = String$(255, 0)
     iRet = GetWindowText(nHwnd, iWinCaption, 255)
     If iRet > 0 Then
-        GetWindowCaption = Left(iWinCaption, iRet)
+        GetWindowCaption = Left$(iWinCaption, iRet)
     End If
 End Function
 
@@ -1469,7 +1465,6 @@ Private Sub InitializeIDEProtection()
     If iInIDE Then
         Dim iHwndIDEMain As Long
         Dim iOldProtect As Long
-        Dim iLng As Long
         Const MEM_COMMIT As Long = &H1000
         Const PAGE_EXECUTE_READWRITE As Long = &H40
         Const MEM_RELEASE As Long = &H8000&
@@ -1752,7 +1747,7 @@ Private Sub TerminateIDEProtection()
 End Sub
 
 Private Function GetIATEntryAddress(ByVal nModule As String, ByVal nLibFncAddr As Long) As Long
-    Dim hMod As Long
+    Dim hmod As Long
     Dim lpIAT As Long
     Dim IATLen As Long
     Dim IATPos As Long
@@ -1760,14 +1755,14 @@ Private Function GetIATEntryAddress(ByVal nModule As String, ByVal nLibFncAddr A
     Dim PEHdr As IMAGE_OPTIONAL_HEADER32
     Const IMAGE_NT_SIGNATURE As Long = &H4550
     
-    hMod = GetModuleHandle(nModule)
-    If hMod = 0 Then Exit Function
+    hmod = GetModuleHandle(nModule)
+    If hmod = 0 Then Exit Function
     
     If nLibFncAddr = 0 Then Exit Function
-    CopyMemory DOSHdr, ByVal hMod, LenB(DOSHdr)
-    CopyMemory PEHdr, ByVal UnsignedAdd(hMod, DOSHdr.e_lfanew), LenB(PEHdr)
+    CopyMemory DOSHdr, ByVal hmod, LenB(DOSHdr)
+    CopyMemory PEHdr, ByVal UnsignedAdd(hmod, DOSHdr.e_lfanew), LenB(PEHdr)
     If PEHdr.Magic = IMAGE_NT_SIGNATURE Then
-        lpIAT = PEHdr.DataDirectory(15).VirtualAddress + hMod
+        lpIAT = PEHdr.DataDirectory(15).VirtualAddress + hmod
         IATLen = PEHdr.DataDirectory(15).Size
         IATPos = lpIAT
         Do Until CLongToULong(IATPos) >= CLongToULong(UnsignedAdd(lpIAT, IATLen))

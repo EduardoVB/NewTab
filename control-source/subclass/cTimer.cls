@@ -16,10 +16,6 @@ Private iInterval As Long
 Private ID As Long
 Private mTag As Variant
 
-' User can attach any Variant data they want to the Timer
-Public Item As Variant
-Attribute Item.VB_VarDescription = "Gets/sets a piece of additional data to store with the timer."
-
 Public Event ThatTime()
 
 ' SubTimer is independent of VBCore, so it hard codes error handling

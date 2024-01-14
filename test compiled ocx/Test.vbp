@@ -1,6 +1,6 @@
 Type=Exe
 Reference=*\G{00020430-0000-0000-C000-000000000046}#2.0#0#C:\Windows\SysWOW64\stdole2.tlb#OLE Automation
-Object={66E63055-5A66-4C79-9327-4BC077858695}#6.0#0; NewTab01.ocx
+Object={66E63055-5A66-4C79-9327-4BC077858695}#7.0#0; NewTab01.ocx
 Form=frmTDIControlsTest.frm
 Form=frmMain.frm
 Form=frmIcons.frm

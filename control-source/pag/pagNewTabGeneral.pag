@@ -743,20 +743,10 @@ Private Enum NTHighlightDropDownControlConstants
     ntHighlightModeTabSel = 1
 End Enum
 
-Private Declare Function SetCapture Lib "user32.dll" (ByVal hWnd As Long) As Long
-Private Declare Function ReleaseCapture Lib "user32.dll" () As Long
-Private Declare Function GetCapture Lib "user32" () As Long
-
-Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
 Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As Long, lprcUpdate As Any, ByVal hrgnUpdate As Long, ByVal fuRedraw As Long) As Long
 
 Private Const RDW_ALLCHILDREN = &H80
-Private Const RDW_INTERNALPAINT = &H2
 Private Const RDW_INVALIDATE = &H1
-Private Const RDW_UPDATENOW = &H100
-
-Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
-Private Const CB_SHOWDROPDOWN = &H14F
 
 Private mLoading As Boolean
 Private mTDIMode As Boolean
@@ -1298,8 +1288,6 @@ Private Sub PropertyPage_ApplyChanges()
         HighlightDropUp
     End If
     
-    Dim c As Long
-    
     On Error Resume Next
     SelectedControls(0).Redraw = False
     If Not mTDIMode Then
@@ -1669,16 +1657,8 @@ Private Sub txtTabHeight_Change()
     End If
 End Sub
 
-Private Sub txtTabHeight_GotFocus()
-    EnterTxt txtTabHeight
-End Sub
-
 Private Sub txtTabMaxWidth_Change()
     If Not mLoading Then Changed = True
-End Sub
-
-Private Sub txtTabMaxWidth_GotFocus()
-    EnterTxt txtTabMaxWidth
 End Sub
 
 Private Sub txtTabMinWidth_Change()
@@ -1709,68 +1689,20 @@ Private Sub txtFlatBodySeparationLineHeight_Change()
     If Not mLoading Then Changed = True
 End Sub
 
-Private Sub txtTabMinWidth_GotFocus()
-    EnterTxt txtTabMinWidth
-End Sub
-
-Private Sub txtFlatRoundnessTop_GotFocus()
-    EnterTxt txtFlatRoundnessTop
-End Sub
-
-Private Sub txtFlatRoundnessBottom_GotFocus()
-    EnterTxt txtFlatRoundnessBottom
-End Sub
-
-Private Sub txtFlatRoundnessTabs_GotFocus()
-    EnterTxt txtFlatRoundnessTabs
-End Sub
-
-Private Sub txtFlatBarHeight_GotFocus()
-    EnterTxt txtFlatBarHeight
-End Sub
-
-Private Sub txtFlatBarGripHeight_GotFocus()
-    EnterTxt txtFlatBarGripHeight
-End Sub
-
-Private Sub txtFlatBodySeparationLineHeight_GotFocus()
-    EnterTxt txtFlatBodySeparationLineHeight
-End Sub
-
 Private Sub txtTabs_Change()
     If Not mLoading Then Changed = True
-End Sub
-
-Private Sub txtTabs_GotFocus()
-    EnterTxt txtTabs
 End Sub
 
 Private Sub txtHighlightTabExtraHeight_Change()
     If Not mLoading Then Changed = True
 End Sub
 
-Private Sub txtHighlightTabExtraHeight_GotFocus()
-    EnterTxt txtHighlightTabExtraHeight
-End Sub
-
 Private Sub txtTabSeparation_Change()
     If Not mLoading Then Changed = True
 End Sub
 
-Private Sub txtTabSeparation_GotFocus()
-    EnterTxt txtTabSeparation
-End Sub
-
 Private Sub txtTabsPerRow_Change()
     If Not mLoading Then Changed = True
-End Sub
-
-Private Sub EnterTxt(nTextBox As Control)
-    'nTextBox.SelStart = Len(nTextBox.Text)
-End Sub
-    
-Private Sub txtTabsPerRow_GotFocus()
-    EnterTxt txtTabsPerRow
 End Sub
 
 Private Function IsMouseButtonPressed(nButton As NTMouseButtonsConstants) As Boolean

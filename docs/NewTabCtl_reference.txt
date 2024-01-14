@@ -65,7 +65,7 @@ CanReorderTabs property:
 
 Caption property:
 	Type: String
-	Returns or sets the caption of the currently selected tab by the TabSel property.
+	Returns or sets the caption of the currently selected tab by the Tab property.
 	Captions can have accelerators by adding "&" before the letter that will act as the accelerator.
 
 
@@ -473,7 +473,7 @@ RightToLeft property:
 
 
 Rows property:
-	Type: Integer (Default property, read only, not available at design time)
+	Type: Long (Default property, read only, not available at design time)
 	Returns the number of rows of tabs.
 	
 	The Rows property value can change its value when new tabs are dinamically added or, when TabWidthStyle is set to ssTWSFixed or ssTWSNonJustified and TabsPerRow was changed, or TabWidthStyle is set to ssTWSJustified and the Width of the control changed, the tab captions changed or the Font setting has changed.
@@ -522,8 +522,8 @@ SubclassingMethod property:
 
 
 Tab property:
-	Type: Integer
-	Returns or sets the index of the current (""selected"" or ""active"") tab.
+	Type: Long
+	Returns or sets the current ('selected' or 'active') tab by its index.
 
 
 TabAppearance property:
@@ -559,7 +559,7 @@ TabCaption property:
 	Type: String
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Integer
+	    In	Required	Index	As	Long
 	Returns or sets the caption of a tab identified by the Index parameter.
 	Captions can have accelerators by adding "&" before the letter that will act as the accelerator.
 
@@ -568,7 +568,7 @@ TabControls property:
 	Type: Collection (Read only)
 	
 	Additional parameter(s):
-	    In/Out	Required	nTab	As	Integer
+	    In	Required	nTab	As	Long
 	    In/Out	Optional	GetChilds	As	Boolean
 	Returns a collection of the controls that are inside a tab. The tab must be identified by the nTab parameter.
 	
@@ -581,15 +581,15 @@ TabData property:
 	Type: Long
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Integer
-	Used to store any data in Long format, similar to ListBox's ItemData. If the tabs are reordered, it will keep this data for this tab.
+	    In	Required	Index	As	Long
+	Used to store any data as a Long value, similar to ListBox's ItemData. If the tabs are reordered, it will keep this data for this tab.
 
 
 TabEnabled property:
 	Type: Boolean
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Integer
+	    In	Required	Index	As	Long
 	Returns or sets a value that determines whether the tab identified by the Index argument enabled.
 
 
@@ -698,19 +698,13 @@ TabPicture property:
 	Type: Picture
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Integer
+	    In	Required	Index	As	Long
 	Returns or sets the bitmap or icon to display on the tab specified by the Index argument.
 
 
 Tabs property:
-	Type: Integer
+	Type: Long
 	Returns or sets the total number of tabs.
-
-
-TabSel property:
-	Type: Integer
-	Returns or sets the current ("selected" or "active") tab.
-	It is an alias of Tab property.
 
 
 TabsEndFreeSpace property:
@@ -719,13 +713,13 @@ TabsEndFreeSpace property:
 
 
 TabSeparation property:
-	Type: Integer
+	Type: Long
 	Returns or sets the number of pixels of separation between tabs. The value must be between 0 (zero) and 20.
 	When the control has Windows visual styles (Windows "theme"), values less than two pixels are ignored, since the themed tabs have two pixels of separation by design.
 
 
 TabsPerRow property:
-	Type: Integer
+	Type: Long
 	Returns or sets the number of tabs for each row.
 	If TabWidthStyle property setting is other than ntTWFixed or ntTWTabCaptionWidth, this setting has no effect. If TabWidthStyle property is set to Auto, it has effect only for styles ssStyleTabbedDialog and ssStylePropertyPage.
 
@@ -734,7 +728,7 @@ TabTag property:
 	Type: String
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Integer
+	    In	Required	Index	As	Long
 	Similar to a Tag property, but for each tab. You can store any string there. If the tabs are reordered, it will keep this data for this tab.
 
 
@@ -756,7 +750,7 @@ TabVisible property:
 	Type: Boolean
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Integer
+	    In	Required	Index	As	Long
 	Returns or sets a value that determines whether the tab identified by the Index will be visible.
 
 
@@ -855,7 +849,7 @@ ControlMove method:
 	    In	Required	Top	As	Single
 	    In	Optional	Width	As	Variant
 	    In	Optional	Height	As	Variant
-	    In/Out	Optional	IndexOfOtherTabToMoveTheControl	As	Integer
+	    In	Optional	IndexOfOtherTabToMoveTheControl	As	Long	Default value: -1
 
 	Replaces the ControlName.Move method. The difference is that it takes into account the Left offset of controls on inactive tabs.
 
@@ -863,7 +857,7 @@ ControlMove method:
 ControlSetTab method:
 	Parameter(s):
 	    In	Required	nControlName	As	String
-	    In	Required	nTab	As	Integer
+	    In	Required	nTab	As	Long
 
 	Sets or change the tab where a contained control is.
 
@@ -916,8 +910,8 @@ IsThemed function:
 
 MoveTab method:
 	Parameter(s):
-	    In/Out	Required	CurrentIndex	As	Integer
-	    In/Out	Required	NewIndex	As	Integer
+	    In	Required	CurrentIndex	As	Long
+	    In	Required	NewIndex	As	Long
 
 	Moves a tab to another position.
 
@@ -928,6 +922,24 @@ Refresh method:
 	Redraws the control.
 
 
+SetActiveTab function:
+	Return Type:	Boolean
+	Parameter(s):
+	    In	Required	Find	As	Variant
+	    In	Optional	Method	As	NTFindTabMethodConstants	Default value: ntFindCaption (0)
+
+	Sets the current ('selected' or 'active') tab by other means than its index (that can be done with the Tab property).
+	If the tab is found its retuns True, otherwise it returns False.
+	
+	Find: find a tab with this data.
+	
+	Method parameter: where to look for the data to find.
+	ntFindCaption: searches for a tab with the TabCaption specified in the Find parameter.
+	ntFindOriginalIndex: searches for a tab that when it was created had that tab index.
+	ntFindData: searches for a tab with the TabData specified in the Find parameter.
+	ntFindTag: searches for a tab with the TabTag specified in the Find parameter.
+
+
 SetFocus method:
 	No parameters.
 
@@ -935,7 +947,7 @@ SetFocus method:
 
 
 TDIGetTabIndexByTabNumber function:
-	Return Type:	Integer
+	Return Type:	Long
 	Parameter(s):
 	    In	Required	nTabNumber	As	Long
 
@@ -945,7 +957,7 @@ TDIGetTabIndexByTabNumber function:
 TDIGetTabNumberByTabIndex function:
 	Return Type:	Long
 	Parameter(s):
-	    In	Required	Index	As	Integer
+	    In	Required	Index	As	Long
 
 	When in TDI mode, it returns the number of a tab given its Index.
 
@@ -961,18 +973,18 @@ Events:
 
 BeforeClick event:
 	Parameter(s):
-	    Info	CurrentTabSel	As	Integer
-	    Returns value	NewTabSel	As	Integer
+	    Info	CurrentTabSel	As	Long
+	    Returns value	NewTabSel	As	Long
 	    Returns value	Cancel	As	Boolean
-	Occurs when the current tab (TabSel) is about to change.
+	Occurs when the current tab (Tab) is about to change.
 	Use the BeforeClick event to validate the information on the old tab before actually generating a Click event that selects the new tab.
 	Setting the Cancel parameter to True allows you to prevent the change to the new tab selection.
 
 
 BeforeTabReorder event:
 	Parameter(s):
-	    Info	CurrentIndex	As	Integer
-	    Returns value	NewIndex	As	Integer
+	    Info	CurrentIndex	As	Long
+	    Returns value	NewIndex	As	Long
 	    Returns value	Cancel	As	Boolean
 	Occurs when before a tab is changed from one position to another. The action can be canceled using the Cancel parameter or the new position can be altered from the NewIndex parameter.
 
@@ -1002,7 +1014,7 @@ ChangeControlForeColor event:
 Click event:
 	Parameter(s):
 	    Info	PreviousTab	As	Integer
-	Occurs when the current tab (TabSel) changes.
+	Occurs when the current tab (Tab) changes.
 
 
 DblClick event:
@@ -1012,20 +1024,20 @@ DblClick event:
 
 IconClick event:
 	Parameter(s):
-	    Info	nTab	As	Integer
+	    Info	nTab	As	Long
 	    Returns value	ForwardClickToTab	As	Boolean
 	Occurs when the icon of the tab identified by the Index parameter is clicked (it doesn't work with pictures).
 
 
 IconMouseEnter event:
 	Parameter(s):
-	    Info	nTab	As	Integer
+	    Info	nTab	As	Long
 	Occurs when the mouse enters hovering over the icon (not the picture) of the tab identified by the Index parameter.
 
 
 IconMouseLeave event:
 	Parameter(s):
-	    Info	nTab	As	Integer
+	    Info	nTab	As	Long
 	Occurs when the mouse goes out after hovering over a tab icon (not picture).
 
 
@@ -1147,30 +1159,37 @@ TabBodyResize event:
 	This event is a proper place to position the contained controls.
 
 
+TabChange event:
+	No parameters.
+	Occurs after the selected (or "current") tab has already changed.
+	For the events that occur before, see BeforeClick and Click.
+	This event is also generated when the control is first shown.
+
+
 TabMouseEnter event:
 	Parameter(s):
-	    Info	nTab	As	Integer
+	    Info	nTab	As	Long
 	Occurs when the mouse pointer enters a tab, which is specified with the nTab parameter.
 
 
 TabMouseLeave event:
 	Parameter(s):
-	    Info	nTab	As	Integer
+	    Info	nTab	As	Long
 	Occurs after the mouse pointer leaves a tab, which is specified in the nTab parameter.
 
 
 TabReordered event:
 	Parameter(s):
-	    Info	CurrentIndex	As	Integer
-	    Info	OldIndex	As	Integer
+	    Info	CurrentIndex	As	Long
+	    Info	OldIndex	As	Long
 	Occurs when a tab changed its position. 
 	It can be due to an user action (see CanReorderTabs property) or by code (see MoveTab method).
 
 
 TabRightClick event:
 	Parameter(s):
-	    Info	nTab	As	Integer
-	    Info	Shift	As	Integer
+	    Info	nTab	As	Long
+	    Info	Shift	As	Long
 	    Info	X	As	Single
 	    Info	Y	As	Single
 	Occurs when the user clicks with the mouse right button on a tab.
@@ -1179,17 +1198,10 @@ TabRightClick event:
 	The X and Y parameters return a number that specifies the current position of the mouse pointer.
 
 
-TabSelChange event:
-	No parameters.
-	Occurs after the selected (or "current") tab has already changed.
-	For the events that occur before, see BeforeClick and Click.
-	This event is also generated when the control is first shown.
-
-
 TDIBeforeClosingTab event:
 	Parameter(s):
 	    Info	TabNumber	As	Long
-	    Info	IsLastTab	As	Variant
+	    Info	IsLastTab	As	Boolean
 	    Returns value	OpenNewOnLastClosed	As	Boolean
 	    Returns value	UnloadControls	As	Boolean
 	    Returns value	Cancel	As	Boolean
@@ -1215,7 +1227,7 @@ TDINewTabAdded event:
 TDITabClosed event:
 	Parameter(s):
 	    Info	TabNumber	As	Long
-	    Info	IsLastTab	As	Variant
+	    Info	IsLastTab	As	Boolean
 	It occurs after a tab was closed in TDI mode.
 
 
@@ -1311,6 +1323,13 @@ NTBackStyleConstants ENUMERATION
 	ntOpaque = 1
 	ntOpaqueTabSel = 2
 
+NTFindTabMethodConstants ENUMERATION
+
+	ntFindCaption = 0
+	ntFindOriginalIndex = 1
+	ntFindData = 2
+	ntFindTag = 3
+
 NTFlatBarPosition ENUMERATION
 
 	ntBarPositionTop = 0
@@ -1376,14 +1395,6 @@ NTOLEDropConstants ENUMERATION
 	ssOLEDropNone = 0
 	ssOLEDropManual = 1
 
-NTSeparationLineConstants ENUMERATION
-
-	ntLineNone = 0
-	ntLineLighter = 1
-	ntLineLight = 2
-	ntLineStrong = 3
-	ntLineStronger = 4
-
 NTStyleConstants ENUMERATION
 
 	ssStyleTabbedDialog = 0
@@ -1447,4 +1458,5 @@ NTTDINewTabTypeConstants ENUMERATION
 	ntDefaultTab = 0
 	ntNewTabByClickingIcon = 1
 	ntLastTabClosed = 2
+	ntTDIForm = 3
 

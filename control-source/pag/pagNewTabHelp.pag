@@ -80,5 +80,5 @@ End Sub
 
 Private Sub tmrInit_Timer()
     tmrInit.Enabled = False
-    txtHelp.Text = Replace$(txtText(0).Text & txtText(1).Text, Chr(1), vbTab)
+    txtHelp.Text = Replace$(txtText(0).Text & txtText(1).Text, Chr$(1), vbTab)
 End Sub

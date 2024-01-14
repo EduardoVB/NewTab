@@ -111,7 +111,7 @@ Begin VB.PropertyPage pagNewTabTabs
       Visible         =   0   'False
       Width           =   5410
    End
-   Begin VB.Timer tmrTabSelChanged 
+   Begin VB.Timer tmrTabChanged 
       Enabled         =   0   'False
       Interval        =   300
       Left            =   0
@@ -1009,10 +1009,6 @@ Private Declare Function DrawTextW Lib "user32" (ByVal hDC As Long, ByVal lpStr 
 Private Const DT_CALCRECT = &H400&
 Private Const DT_CENTER = &H1&
 Private Const DT_SINGLELINE = &H20&
-Private Const DT_VCENTER = &H4&
-Private Const DT_END_ELLIPSIS = &H8000&
-Private Const DT_MODIFYSTRING = &H10000
-Private Const DT_WORDBREAK = &H10&
 
 Private Const cMsgBugIcons As String = "Note: If you are going to load *.ico files, do it from the property window (not from here). There seems to be a bug in VB6 that cause them to lose the tabsparency." & vbCrLf & "This operation will be Canceled." & vbCrLf & "To load pictures for different tabs in the property window (the one that appears pressing F4 on a control), select the appropriate tab with the TabSel property and then load the picture in the Picture property (or Pic16, Pic20 and Pic24)."
 Private Const cCopyImageTTT As String = "Double click on the image to copy it to the clipboard"
@@ -1054,7 +1050,6 @@ Private mCharRows As Long
 Private mCharSelectableRows As Long
 Private mLastGetIconFontString As String
 Private mPreparingCharPics As Boolean
-Private mLastCharSelected As Long
 Private mChars() As Long
 Private mIconCharCurrentlySelectedInCharMap As Long
 Private mFontForCharMap As StdFont
@@ -1118,7 +1113,7 @@ Private Sub cmdBrowsePicture_Click()
     iDlg.Filter = "Bitmap files (*.bmp)|*.bmp"
     iDlg.ShowOpen
     If Not iDlg.Canceled Then
-        If LCase(Right(iDlg.FileName, 4)) = ".ico" Then
+        If LCase$(Right$(iDlg.FileName, 4)) = ".ico" Then
             MsgBox cMsgBugIcons, vbExclamation
             Exit Sub
         End If
@@ -1184,7 +1179,7 @@ Private Sub cmdBrowsePic16_Click()
     iDlg.Filter = "Bitmap files (*.bmp)|*.bmp"
     iDlg.ShowOpen
     If Not iDlg.Canceled Then
-        If LCase(Right(iDlg.FileName, 4)) = ".ico" Then
+        If LCase$(Right$(iDlg.FileName, 4)) = ".ico" Then
             MsgBox cMsgBugIcons, vbExclamation
             Exit Sub
         End If
@@ -1213,7 +1208,7 @@ Private Sub cmdBrowsePic20_Click()
     iDlg.Filter = "Bitmap files (*.bmp)|*.bmp"
     iDlg.ShowOpen
     If Not iDlg.Canceled Then
-        If LCase(Right(iDlg.FileName, 4)) = ".ico" Then
+        If LCase$(Right$(iDlg.FileName, 4)) = ".ico" Then
             MsgBox cMsgBugIcons, vbExclamation
             Exit Sub
         End If
@@ -1242,7 +1237,7 @@ Private Sub cmdBrowsePic24_Click()
     iDlg.Filter = "Bitmap files (*.bmp)|*.bmp"
     iDlg.ShowOpen
     If Not iDlg.Canceled Then
-        If LCase(Right(iDlg.FileName, 4)) = ".ico" Then
+        If LCase$(Right$(iDlg.FileName, 4)) = ".ico" Then
             MsgBox cMsgBugIcons, vbExclamation
             Exit Sub
         End If
@@ -1324,7 +1319,7 @@ Private Sub cmdInsertTab_Click()
         Set NewTab1.TabPic24(t) = mTabData(t).Pic24
         Set NewTab1.TabPicture(t) = mTabData(t).Picture
         Set NewTab1.TabIconFont(t) = mTabData(t).IconFont
-        NewTab1.TabIconCharHex(t) = "&H" & Hex(mTabData(t).IconChar) & "&"
+        NewTab1.TabIconCharHex(t) = "&H" & Hex$(mTabData(t).IconChar) & "&"
         NewTab1.TabIconLeftOffset(t) = mTabData(t).IconLeftOffset
         NewTab1.TabIconTopOffset(t) = mTabData(t).IconTopOffset
     Next
@@ -1507,7 +1502,7 @@ Private Sub cmdRemoveTab_Click()
         Set NewTab1.TabPic24(t) = mTabData(t).Pic24
         Set NewTab1.TabPicture(t) = mTabData(t).Picture
         Set NewTab1.TabIconFont(t) = mTabData(t).IconFont
-        NewTab1.TabIconCharHex(t) = "&H" & Hex(mTabData(t).IconChar) & "&"
+        NewTab1.TabIconCharHex(t) = "&H" & Hex$(mTabData(t).IconChar) & "&"
         NewTab1.TabIconLeftOffset(t) = mTabData(t).IconLeftOffset
         NewTab1.TabIconTopOffset(t) = mTabData(t).IconTopOffset
     Next
@@ -1675,10 +1670,10 @@ Private Sub NewTab1_Click(PreviousTab As Integer)
         mLoading = False
         
         If (NewTab1.Left + NewTab1.GetTabLeft(mTabSel) + NewTab1.GetTabWidth(mTabSel)) > PropertyPage.ScaleWidth Then
-            tmrTabSelChanged.Enabled = True
+            tmrTabChanged.Enabled = True
             NewTab1.Left = PropertyPage.ScaleWidth - (NewTab1.GetTabLeft(mTabSel) + NewTab1.GetTabWidth(mTabSel)) - 120
         ElseIf (NewTab1.Left + NewTab1.GetTabLeft(mTabSel)) < 0 Then
-            tmrTabSelChanged.Enabled = True
+            tmrTabChanged.Enabled = True
             NewTab1.Left = 120 - NewTab1.GetTabLeft(mTabSel)
         End If
     End If
@@ -1698,7 +1693,7 @@ Private Sub NewTab1_MouseDown(Button As Integer, Shift As Integer, X As Single, 
 End Sub
 
 Private Sub NewTab1_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
-    If Not tmrTabSelChanged.Enabled Then
+    If Not tmrTabChanged.Enabled Then
         If mEnableHorizontalDragging Then
             If Button = vbLeftButton Then
                 NewTab1.Left = NewTab1.Left + X - mXMouseDown
@@ -1715,7 +1710,7 @@ Private Sub NewTab1_MouseMove(Button As Integer, Shift As Integer, X As Single, 
 End Sub
 
 Private Sub picChar_Click(Index As Integer)
-    txtIconCharHex.Text = "&H" & Hex(Val(picChar(Index).Tag))
+    txtIconCharHex.Text = "&H" & Hex$(Val(picChar(Index).Tag))
 End Sub
 
 Private Sub picImgPic16_DblClick()
@@ -1768,7 +1763,6 @@ Private Sub PropertyPage_ApplyChanges()
     Dim t As Integer
     Dim iSC As NewTab
     Dim iDefaultIconFont As StdFont
-    Dim c As Long
     Dim iTabsPrev As Long
     
     Set iDefaultIconFont = New StdFont
@@ -1801,7 +1795,7 @@ Private Sub PropertyPage_ApplyChanges()
         Else
             Set iSC.TabIconFont(t) = CloneFont(mTabData(t).IconFont)
         End If
-        iSC.TabIconCharHex(t) = "&H" & Hex(mTabData(t).IconChar) & "&"
+        iSC.TabIconCharHex(t) = "&H" & Hex$(mTabData(t).IconChar) & "&"
         iSC.TabIconLeftOffset(t) = mTabData(t).IconLeftOffset
         iSC.TabIconTopOffset(t) = mTabData(t).IconTopOffset
     Next t
@@ -1840,7 +1834,7 @@ End Sub
 Private Sub PropertyPage_SelectionChanged()
     Dim t As Integer
     Dim iSC As NewTab
-    Dim iVar
+    Dim iVar As Variant
     Dim c As Long
     
     'Debug.Print PropertyPage.Name & " Start: " & Round(Timer, 2)
@@ -2045,7 +2039,7 @@ Private Sub DoShowTabData()
         picCharSelected.Cls
         DrawCharMapFromScrollPosition
     Else
-        txtIconCharHex.Text = "&H" & Hex(mTabData(t).IconChar)
+        txtIconCharHex.Text = "&H" & Hex$(mTabData(t).IconChar)
         cmdRemoveIconChar.Enabled = True
         If Not picCharSelected.Font Is mTabData(mTabSel).IconFont Then
             Set picCharSelected.Font = mTabData(mTabSel).IconFont
@@ -2066,7 +2060,7 @@ Private Sub DoShowTabData()
     Set NewTab1.TabPic24(t) = mTabData(t).Pic24
     Set NewTab1.TabPicture(t) = mTabData(t).Picture
     Set NewTab1.TabIconFont(t) = mTabData(t).IconFont
-    NewTab1.TabIconCharHex(t) = "&H" & Hex(mTabData(t).IconChar) & "&"
+    NewTab1.TabIconCharHex(t) = "&H" & Hex$(mTabData(t).IconChar) & "&"
     NewTab1.TabIconLeftOffset(t) = mTabData(t).IconLeftOffset
     NewTab1.TabIconTopOffset(t) = mTabData(t).IconTopOffset
     
@@ -2105,8 +2099,8 @@ Private Sub tmrClick_Timer()
     End If
 End Sub
 
-Private Sub tmrTabSelChanged_Timer()
-    tmrTabSelChanged.Enabled = False
+Private Sub tmrTabChanged_Timer()
+    tmrTabChanged.Enabled = False
 End Sub
 
 Private Sub txtIconLeftOffset_Change()
@@ -2368,14 +2362,13 @@ Private Sub DoDrawCharMapFromScrollPosition()
     For p = p To picChar.UBound
         picChar(p).Visible = False
     Next
-    lblMapFromTo.Caption = "Showing characters from &&H" & Hex(mFirstCharInMap) & " to &&H" & Hex(mLastCharInMap) & ":"
+    lblMapFromTo.Caption = "Showing characters from &&H" & Hex$(mFirstCharInMap) & " to &&H" & Hex$(mLastCharInMap) & ":"
     lblMapFromTo.Visible = True
 End Sub
 
 Private Sub DoScrollCharMapToSelected()
     Dim c As Long
     Dim s1 As Long
-    Dim s2 As Long
     Dim s3() As Long
     Dim s4 As Long
     Dim s As Long
@@ -2439,7 +2432,6 @@ Private Sub PrepareIconFontData()
     Dim iLow As Long
     Dim iTM As TEXTMETRICW
     Dim iStr As String
-    Dim c As Long
     Dim ub As Long
     
     Set mFontForCharMap = CloneFont(mTabData(mTabSel).IconFont)
@@ -2455,7 +2447,7 @@ Private Sub PrepareIconFontData()
     iStr = ChrU(32)
     GetGlyphIndicesW picCharSelected.hDC, StrPtr(iStr), Len(iStr), VarPtr(mSpaceGlyph), 0
     
-    mGlyphSet = GetGlyphSet(picCharSelected.hDC, mTabData(mTabSel).IconFont)
+    mGlyphSet = GetGlyphSet(picCharSelected.hDC)
     mCharCount = 0
     ub = 2000
     ReDim mChars(ub)
@@ -2486,7 +2478,7 @@ Private Sub PrepareIconFontData()
     ReDim Preserve mChars(mCharCount - 1)
 End Sub
 
-Private Function GetGlyphSet(ByVal nHdc As Long, ByVal f As Font) As GLYPHSET
+Private Function GetGlyphSet(ByVal nHdc As Long) As GLYPHSET
     Dim Data() As Byte, i As Long, j As Long
     Dim Result As Long, Count As Long
     Dim GS As GLYPHSET
@@ -2627,7 +2619,7 @@ Private Sub DrawChar(nCharCode As Long, nPic As PictureBox)
     iFlags = DT_SINGLELINE Or DT_CENTER
     DrawTextW nPic.hDC, StrPtr(iIconCharacter), -1, iIconCharRect, iFlags
     nPic.Tag = nCharCode
-    nPic.ToolTipText = "&H" & Hex(nCharCode) & " (" & nCharCode & ")"
+    nPic.ToolTipText = "&H" & Hex$(nCharCode) & " (" & nCharCode & ")"
 End Sub
 
 Private Function ChrU(ByVal nCharCodeU As Long) As String
