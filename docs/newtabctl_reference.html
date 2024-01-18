@@ -230,7 +230,7 @@ Backward compatible with SSTab (fully), and with SSTabEx (mostly).</p><br>
 <li class="toc1"><a href="#ilink136">FindTab</a><br>
 <li class="toc1"><a href="#ilink137">GetTabHeight</a><br>
 <li class="toc1"><a href="#ilink138">GetTabLeft</a><br>
-<li class="toc1"><a href="#ilink139">GetTabPositions</a><br>
+<li class="toc1"><a href="#ilink139">GetTabsOrder</a><br>
 <li class="toc1"><a href="#ilink140">GetTabTop</a><br>
 <li class="toc1"><a href="#ilink141">GetTabWidth</a><br>
 <li class="toc1"><a href="#ilink142">IsThemed</a><br>
@@ -238,7 +238,7 @@ Backward compatible with SSTab (fully), and with SSTabEx (mostly).</p><br>
 <li class="toc1"><a href="#ilink144">Refresh</a><br>
 <li class="toc1"><a href="#ilink145">SetActiveTab</a><br>
 <li class="toc1"><a href="#ilink146">SetFocus</a><br>
-<li class="toc1"><a href="#ilink147">SetTabPositions</a><br>
+<li class="toc1"><a href="#ilink147">SetTabsOrder</a><br>
 <li class="toc1"><a href="#ilink148">TDIGetTabIndexByTabNumber</a><br>
 <li class="toc1"><a href="#ilink149">TDIGetTabNumberByTabIndex</a><br>
 <li class="toc1"><a href="#ilink150">ZOrder</a><br>
@@ -1166,10 +1166,10 @@ Please read <a href="#ilink145">SetActiveTab</a> for an explanation of the param
 <h3>See Also:</h3><a href="#ilink140">GetTabTop</a> method<br>
 <a href="#ilink141">GetTabWidth</a> method<br>
 <a href="#ilink137">GetTabHeight</a> method</p><br>
-<a name="ilink139" /><h2><p class"section">GetTabPositions Method</p></h2></a>
+<a name="ilink139" /><h2><p class"section">GetTabsOrder Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>String</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspNo parameters.&nbsp&nbsp</td>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
-<p>Returns a string with data containing the tab positions (order) for later use with <a href="#ilink147">SetTabPositions</a>. <a href="#ilink12">CanReorderTabs</a> must be set to True.</p><br>
+<p>Returns a string with data containing the tab positions (order) for later use with <a href="#ilink147">SetTabsOrder</a>. <a href="#ilink12">CanReorderTabs</a> must be set to True.</p><br>
 <a name="ilink140" /><h2><p class"section">GetTabTop Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Single</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
@@ -1222,10 +1222,10 @@ This method is mainly useful when you don't know the position of the tab because
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbspNone.&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspNo parameters.&nbsp&nbsp</td>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Moves the focus to this control.</p><br>
-<a name="ilink147" /><h2><p class"section">SetTabPositions Method</p></h2></a>
+<a name="ilink147" /><h2><p class"section">SetTabsOrder Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbspNone.&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>PosData</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspString&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
-<p>Sets the tab positions (order) using data previously obtained with <a href="#ilink139">GetTabPositions</a>. <a href="#ilink12">CanReorderTabs</a> must be set to True.</p><br>
+<p>Sets the tab positions (order) using data previously obtained with <a href="#ilink139">GetTabsOrder</a>. <a href="#ilink12">CanReorderTabs</a> must be set to True.</p><br>
 <a name="ilink148" /><h2><p class"section">TDIGetTabIndexByTabNumber Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Long</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>nTabNumber</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>

@@ -10090,28 +10090,28 @@ End Function
 
 Public Property Get TabBodyLeft() As Single
 Attribute TabBodyLeft.VB_Description = "Returns the left of the tab body."
-Attribute TabBodyLeft.VB_ProcData.VB_Invoke_Property = ";Posición"
+Attribute TabBodyLeft.VB_ProcData.VB_Invoke_Property = ";Posici n"
     EnsureDrawn
     TabBodyLeft = FixRoundingError(UserControl.ScaleX(mTabBodyRect.Left, vbPixels, vbTwips))
 End Property
 
 Public Property Get TabBodyTop() As Single
 Attribute TabBodyTop.VB_Description = "Returns the space occupied by tabs, or where the tab body begins."
-Attribute TabBodyTop.VB_ProcData.VB_Invoke_Property = ";Posición"
+Attribute TabBodyTop.VB_ProcData.VB_Invoke_Property = ";Posici n"
     EnsureDrawn
     TabBodyTop = FixRoundingError(UserControl.ScaleY(mTabBodyRect.Top, vbPixels, vbTwips))
 End Property
 
 Public Property Get TabBodyWidth() As Single
 Attribute TabBodyWidth.VB_Description = "Returns the width of the tab body."
-Attribute TabBodyWidth.VB_ProcData.VB_Invoke_Property = ";Posición"
+Attribute TabBodyWidth.VB_ProcData.VB_Invoke_Property = ";Posici n"
     EnsureDrawn
     TabBodyWidth = FixRoundingError(UserControl.ScaleX(mTabBodyRect.Right - mTabBodyRect.Left, vbPixels, vbTwips))
 End Property
 
 Public Property Get TabBodyHeight() As Single
 Attribute TabBodyHeight.VB_Description = "Returns the height of the tab body."
-Attribute TabBodyHeight.VB_ProcData.VB_Invoke_Property = ";Posición"
+Attribute TabBodyHeight.VB_ProcData.VB_Invoke_Property = ";Posici n"
     EnsureDrawn
     TabBodyHeight = FixRoundingError(UserControl.ScaleY(mTabBodyRect.Bottom - mTabBodyRect.Top, vbPixels, vbTwips))
 End Property
@@ -12314,7 +12314,7 @@ End Property
 
 Public Property Get EndOfTabs() As Single
 Attribute EndOfTabs.VB_Description = "Returns and value that indicates where the last tab ends."
-Attribute EndOfTabs.VB_ProcData.VB_Invoke_Property = ";Posición"
+Attribute EndOfTabs.VB_ProcData.VB_Invoke_Property = ";Posici n"
     EnsureDrawn
     If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ssTabOrientationBottom) Then
         EndOfTabs = FixRoundingError(ToContainerSizeX(mEndOfTabs, vbPixels))
@@ -12582,14 +12582,14 @@ End Sub
 
 Public Property Get LeftOffsetToHide() As Long
 Attribute LeftOffsetToHide.VB_Description = "Returns the shift to the left in twips that it is using to hide the controls in not active tabs."
-Attribute LeftOffsetToHide.VB_ProcData.VB_Invoke_Property = ";Posición"
+Attribute LeftOffsetToHide.VB_ProcData.VB_Invoke_Property = ";Posici n"
     LeftOffsetToHide = mLeftOffsetToHide
 End Property
 
 
 Public Property Get ControlLeft(ByVal ControlName As String) As Single
 Attribute ControlLeft.VB_Description = "Returns/sets the left of the contained control whose name was provided by the ControlName parameter."
-Attribute ControlLeft.VB_ProcData.VB_Invoke_Property = ";Posición"
+Attribute ControlLeft.VB_ProcData.VB_Invoke_Property = ";Posici n"
     Dim iCtl As Object
     Dim iFound As Boolean
     Dim iWithIndex As Boolean
@@ -13676,7 +13676,7 @@ End Property
 
 Public Property Get Left() As Single
 Attribute Left.VB_Description = "Returns/sets the distance between the internal left edge of the control and the left edge of its container."
-Attribute Left.VB_ProcData.VB_Invoke_Property = ";Posición"
+Attribute Left.VB_ProcData.VB_Invoke_Property = ";Posici n"
     Left = Extender.Left
 End Property
 
@@ -13686,7 +13686,7 @@ End Property
 
 Public Property Get Top() As Single
 Attribute Top.VB_Description = "Returns/sets the distance between the internal top edge of the control and the top edge of its container."
-Attribute Top.VB_ProcData.VB_Invoke_Property = ";Posición"
+Attribute Top.VB_ProcData.VB_Invoke_Property = ";Posici n"
     Top = Extender.Top
 End Property
 
@@ -13696,7 +13696,7 @@ End Property
 
 Public Property Get Width() As Single
 Attribute Width.VB_Description = "Returns/sets the width of the control."
-Attribute Width.VB_ProcData.VB_Invoke_Property = ";Posición"
+Attribute Width.VB_ProcData.VB_Invoke_Property = ";Posici n"
     Width = Extender.Width
 End Property
 
@@ -13706,7 +13706,7 @@ End Property
 
 Public Property Get Height() As Single
 Attribute Height.VB_Description = "Returns/sets the height of the control."
-Attribute Height.VB_ProcData.VB_Invoke_Property = ";Posición"
+Attribute Height.VB_ProcData.VB_Invoke_Property = ";Posici n"
     Height = Extender.Height
 End Property
 
@@ -14467,24 +14467,24 @@ Attribute FindTab.VB_Description = "Finds a tab based on the values provided in 
 End Function
 
 
-Public Function GetTabPositions() As String
-Attribute GetTabPositions.VB_Description = "Returns a string with data containing the tab positions (order). CanReorderTabs must be set to True."
+Public Function GetTabsOrder() As String
+Attribute GetTabsOrder.VB_Description = "Returns a string with data containing the tabs order. CanReorderTabs must be set to True."
     Dim c As Long
     
     If mCanReorderTabs = False Then
-        RaiseError 1381, TypeName(Me), "GetTabPositions/SetTabPositions need CanReorderTabs property to True."
+        RaiseError 1381, TypeName(Me), "GetTabsOrder/SetTabsOrder need CanReorderTabs property to True."
         Exit Function
     End If
     
     For c = 0 To mTabs - 1
-        If c > 0 Then GetTabPositions = GetTabPositions & ","
-        GetTabPositions = GetTabPositions & mTabData(c).OriginalIndex
+        If c > 0 Then GetTabsOrder = GetTabsOrder & ","
+        GetTabsOrder = GetTabsOrder & mTabData(c).OriginalIndex
     Next
 End Function
 
 
-Public Sub SetTabPositions(ByVal PosData As String)
-Attribute SetTabPositions.VB_Description = "Sets the tab positions (order) using data previously obtained with GetTabPositions. CanReorderTabs must be set to True."
+Public Sub SetTabsOrder(ByVal PosData As String)
+Attribute SetTabsOrder.VB_Description = "Sets the tabs order using data previously obtained with GetTabsOrder. CanReorderTabs must be set to True."
     Dim iData() As String
     Dim c As Long
     Dim iAuxTabData() As T_TabData
@@ -14492,7 +14492,7 @@ Attribute SetTabPositions.VB_Description = "Sets the tab positions (order) using
     Dim oi As Long
     
     If mCanReorderTabs = False Then
-        RaiseError 1381, TypeName(Me), "GetTabPositions/SetTabPositions need CanReorderTabs property to True."
+        RaiseError 1381, TypeName(Me), "GetTabsOrder/SetTabsOrder need CanReorderTabs property to True."
         Exit Sub
     End If
     

@@ -1,4 +1,4 @@
-2024-01-18 Added GetTabPositions/SetTabPositions methods (CanReorderTabs must be True).
+2024-01-18 Added GetTabsOrder/SetTabsOrder methods (CanReorderTabs must be True).
 2024-01-18 Added FindTab method.
 2024-01-13 Changed to OLE version 7.0.
 2024-01-13 Added SetActiveTab method.
