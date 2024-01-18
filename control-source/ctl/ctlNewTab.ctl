@@ -14467,6 +14467,96 @@ Attribute FindTab.VB_Description = "Finds a tab based on the values provided in 
 End Function
 
 
+Public Function GetTabPositions() As String
+Attribute GetTabPositions.VB_Description = "Returns a string with data containing the tab positions (order). CanReorderTabs must be set to True."
+    Dim c As Long
+    
+    If mCanReorderTabs = False Then
+        RaiseError 1381, TypeName(Me), "GetTabPositions/SetTabPositions need CanReorderTabs property to True."
+        Exit Function
+    End If
+    
+    For c = 0 To mTabs - 1
+        If c > 0 Then GetTabPositions = GetTabPositions & ","
+        GetTabPositions = GetTabPositions & mTabData(c).OriginalIndex
+    Next
+End Function
+
+
+Public Sub SetTabPositions(ByVal PosData As String)
+Attribute SetTabPositions.VB_Description = "Sets the tab positions (order) using data previously obtained with GetTabPositions. CanReorderTabs must be set to True."
+    Dim iData() As String
+    Dim c As Long
+    Dim iAuxTabData() As T_TabData
+    Dim iSet() As Boolean
+    Dim oi As Long
+    
+    If mCanReorderTabs = False Then
+        RaiseError 1381, TypeName(Me), "GetTabPositions/SetTabPositions need CanReorderTabs property to True."
+        Exit Sub
+    End If
+    
+    ReDim iAuxTabData(mTabs - 1)
+    ReDim iSet(mTabs - 1)
+    
+    iData = Split(PosData, ",")
+    
+    For c = 0 To UBound(iData)
+        If c < mTabs Then
+            oi = FindTab(Val(iData(c)), ntFindOriginalIndex)
+            If oi > -1 Then
+                CopyTabData mTabData(oi), iAuxTabData(c)
+                iSet(c) = True
+            End If
+        End If
+    Next
+    
+    For c = 0 To mTabs - 1
+        If iSet(c) Then
+            CopyTabData iAuxTabData(c), mTabData(c)
+        End If
+    Next
+    
+    DrawDelayed
+End Sub
+
+Private Sub CopyTabData(nOrg As T_TabData, ByRef nDest As T_TabData)
+    nDest.Caption = nOrg.Caption
+    Set nDest.Controls = nOrg.Controls
+    nDest.Data = nOrg.Data
+    nDest.DoNotUseIconFont = nOrg.DoNotUseIconFont
+    nDest.Enabled = nOrg.Enabled
+    nDest.Hovered = nOrg.Hovered
+    nDest.IconAndCaptionWidth = nOrg.IconAndCaptionWidth
+    nDest.IconChar = nOrg.IconChar
+    Set nDest.IconFont = nOrg.IconFont
+    nDest.IconFontName = nOrg.IconFontName
+    nDest.IconLeftOffset = nOrg.IconLeftOffset
+    nDest.IconRect = nOrg.IconRect
+    nDest.IconTopOffset = nOrg.IconTopOffset
+    nDest.LeftTab = nOrg.LeftTab
+    nDest.OriginalIndex = nOrg.OriginalIndex
+    Set nDest.Pic16 = nOrg.Pic16
+    Set nDest.Pic20 = nOrg.Pic20
+    Set nDest.Pic24 = nOrg.Pic24
+    Set nDest.PicDisabled = nOrg.PicDisabled
+    nDest.PicDisabledSet = nOrg.PicDisabledSet
+    Set nDest.PicToUse = nOrg.PicToUse
+    Set nDest.Picture = nOrg.Picture
+    nDest.PosH = nOrg.PosH
+    nDest.RightTab = nOrg.RightTab
+    nDest.Row = nOrg.Row
+    nDest.RowPos = nOrg.RowPos
+    nDest.Selected = nOrg.Selected
+    nDest.TabRect = nOrg.TabRect
+    nDest.Tag = nOrg.Tag
+    nDest.TDITabNumber = nOrg.TDITabNumber
+    nDest.ToolTipText = nOrg.ToolTipText
+    nDest.TopTab = nOrg.TopTab
+    nDest.Visible = nOrg.Visible
+    nDest.Width = nOrg.Width
+End Sub
+
 'Tab is a reserved keyword in VB6, but you can remove that restriction.
 'To be able to compile with Tab property, you need to replace VBA6.DLL with this version: https://github.com/EduardoVB/NewTab/raw/main/control-source/lib/VBA6.DLL
 'VBA6.DLL is in VS6's installation folder, usually:

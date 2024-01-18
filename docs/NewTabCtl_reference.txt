@@ -897,6 +897,13 @@ GetTabLeft function:
 	Returns the left position of a tab.
 
 
+GetTabPositions function:
+	Return Type:	String
+	No parameters.
+
+	Returns a string with data containing the tab positions (order) for later use with SetTabPositions. CanReorderTabs must be set to True.
+
+
 GetTabTop function:
 	Return Type:	Single
 	Parameter(s):
@@ -959,6 +966,13 @@ SetFocus method:
 	No parameters.
 
 	Moves the focus to this control.
+
+
+SetTabPositions method:
+	Parameter(s):
+	    In	Required	PosData	As	String
+
+	Sets the tab positions (order) using data previously obtained with GetTabPositions. CanReorderTabs must be set to True.
 
 
 TDIGetTabIndexByTabNumber function:
