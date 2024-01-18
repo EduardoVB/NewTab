@@ -869,6 +869,18 @@ Drag method:
 	Begins, ends, or cancels a drag operation.
 
 
+FindTab function:
+	Return Type:	Long
+	Parameter(s):
+	    In	Required	Find	As	Variant
+	    In	Optional	Method	As	NTFindTabMethodConstants	Default value: ntFindCaption (0)
+
+	Finds a tab based on the values provided in the parameters and returns its index. If the tab is not found, it returns -1.
+	
+	This method is similar to SetActiveTab but it does not change the current tab.
+	Please read SetActiveTab for an explanation of the parameters.
+
+
 GetTabHeight function:
 	Return Type:	Single
 	Parameter(s):
@@ -930,6 +942,8 @@ SetActiveTab function:
 
 	Sets the current ('selected' or 'active') tab by other means than its index (that can be done with the Tab property).
 	If the tab is found its retuns True, otherwise it returns False.
+	
+	This method is mainly useful when you don't know the position of the tab because the user may have changed it due to the CanReorderTabs property set to True.
 	
 	Find parameter: find a tab with this data.
 	

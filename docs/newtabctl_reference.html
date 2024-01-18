@@ -96,7 +96,7 @@ Icons in tabs using icon fonts.<br>
 <a name="ilink1"><h1><p class="section">NewTab control</p></h1></a>
 <p>Tabbed control for VB6.<br>
 Backward compatible with SSTab (fully), and with SSTabEx (mostly).</p><br>
-<li class="toc1"><a href="#ilink5">Properties</a></li><li class="toc1"><a href="#ilink132">Methods</a></li><li class="toc1"><a href="#ilink148">Events</a></li><br><a name="ilink5" /><h2><p class="section">Properties</p></h2></a>
+<li class="toc1"><a href="#ilink5">Properties</a></li><li class="toc1"><a href="#ilink132">Methods</a></li><li class="toc1"><a href="#ilink149">Events</a></li><br><a name="ilink5" /><h2><p class="section">Properties</p></h2></a>
 <li class="toc1"><a href="#ilink6">AutoRelocateControls</a><br>
 <li class="toc1"><a href="#ilink7">AutoTabHeight</a><br>
 <li class="toc1"><a href="#ilink8">BackColor</a><br>
@@ -227,65 +227,66 @@ Backward compatible with SSTab (fully), and with SSTabEx (mostly).</p><br>
 <li class="toc1"><a href="#ilink133">ControlMove</a><br>
 <li class="toc1"><a href="#ilink134">ControlSetTab</a><br>
 <li class="toc1"><a href="#ilink135">Drag</a><br>
-<li class="toc1"><a href="#ilink136">GetTabHeight</a><br>
-<li class="toc1"><a href="#ilink137">GetTabLeft</a><br>
-<li class="toc1"><a href="#ilink138">GetTabTop</a><br>
-<li class="toc1"><a href="#ilink139">GetTabWidth</a><br>
-<li class="toc1"><a href="#ilink140">IsThemed</a><br>
-<li class="toc1"><a href="#ilink141">MoveTab</a><br>
-<li class="toc1"><a href="#ilink142">Refresh</a><br>
-<li class="toc1"><a href="#ilink143">SetActiveTab</a><br>
-<li class="toc1"><a href="#ilink144">SetFocus</a><br>
-<li class="toc1"><a href="#ilink145">TDIGetTabIndexByTabNumber</a><br>
-<li class="toc1"><a href="#ilink146">TDIGetTabNumberByTabIndex</a><br>
-<li class="toc1"><a href="#ilink147">ZOrder</a><br>
-<br><a name="ilink148" /><h2><p class="section">Events</p></h2></a>
-<li class="toc1"><a href="#ilink149">BeforeClick</a><br>
-<li class="toc1"><a href="#ilink150">BeforeTabReorder</a><br>
-<li class="toc1"><a href="#ilink151">ChangeControlBackColor</a><br>
-<li class="toc1"><a href="#ilink152">ChangeControlForeColor</a><br>
-<li class="toc1"><a href="#ilink153">Click</a><br>
-<li class="toc1"><a href="#ilink154">DblClick</a><br>
-<li class="toc1"><a href="#ilink155">IconClick</a><br>
-<li class="toc1"><a href="#ilink156">IconMouseEnter</a><br>
-<li class="toc1"><a href="#ilink157">IconMouseLeave</a><br>
-<li class="toc1"><a href="#ilink158">KeyDown</a><br>
-<li class="toc1"><a href="#ilink159">KeyPress</a><br>
-<li class="toc1"><a href="#ilink160">KeyUp</a><br>
-<li class="toc1"><a href="#ilink161">MouseDown</a><br>
-<li class="toc1"><a href="#ilink162">MouseMove</a><br>
-<li class="toc1"><a href="#ilink163">MouseUp</a><br>
-<li class="toc1"><a href="#ilink164">OLECompleteDrag</a><br>
-<li class="toc1"><a href="#ilink165">OLEDragDrop</a><br>
-<li class="toc1"><a href="#ilink166">OLEDragOver</a><br>
-<li class="toc1"><a href="#ilink167">OLEGiveFeedback</a><br>
-<li class="toc1"><a href="#ilink168">OLESetData</a><br>
-<li class="toc1"><a href="#ilink169">OLEStartDrag</a><br>
-<li class="toc1"><a href="#ilink170">Resize</a><br>
-<li class="toc1"><a href="#ilink171">RowsChange</a><br>
-<li class="toc1"><a href="#ilink172">TabBodyResize</a><br>
-<li class="toc1"><a href="#ilink173">TabChange</a><br>
-<li class="toc1"><a href="#ilink174">TabMouseEnter</a><br>
-<li class="toc1"><a href="#ilink175">TabMouseLeave</a><br>
-<li class="toc1"><a href="#ilink176">TabReordered</a><br>
-<li class="toc1"><a href="#ilink177">TabRightClick</a><br>
-<li class="toc1"><a href="#ilink178">TDIBeforeClosingTab</a><br>
-<li class="toc1"><a href="#ilink179">TDIBeforeNewTab</a><br>
-<li class="toc1"><a href="#ilink180">TDINewTabAdded</a><br>
-<li class="toc1"><a href="#ilink181">TDITabClosed</a><br>
+<li class="toc1"><a href="#ilink136">FindTab</a><br>
+<li class="toc1"><a href="#ilink137">GetTabHeight</a><br>
+<li class="toc1"><a href="#ilink138">GetTabLeft</a><br>
+<li class="toc1"><a href="#ilink139">GetTabTop</a><br>
+<li class="toc1"><a href="#ilink140">GetTabWidth</a><br>
+<li class="toc1"><a href="#ilink141">IsThemed</a><br>
+<li class="toc1"><a href="#ilink142">MoveTab</a><br>
+<li class="toc1"><a href="#ilink143">Refresh</a><br>
+<li class="toc1"><a href="#ilink144">SetActiveTab</a><br>
+<li class="toc1"><a href="#ilink145">SetFocus</a><br>
+<li class="toc1"><a href="#ilink146">TDIGetTabIndexByTabNumber</a><br>
+<li class="toc1"><a href="#ilink147">TDIGetTabNumberByTabIndex</a><br>
+<li class="toc1"><a href="#ilink148">ZOrder</a><br>
+<br><a name="ilink149" /><h2><p class="section">Events</p></h2></a>
+<li class="toc1"><a href="#ilink150">BeforeClick</a><br>
+<li class="toc1"><a href="#ilink151">BeforeTabReorder</a><br>
+<li class="toc1"><a href="#ilink152">ChangeControlBackColor</a><br>
+<li class="toc1"><a href="#ilink153">ChangeControlForeColor</a><br>
+<li class="toc1"><a href="#ilink154">Click</a><br>
+<li class="toc1"><a href="#ilink155">DblClick</a><br>
+<li class="toc1"><a href="#ilink156">IconClick</a><br>
+<li class="toc1"><a href="#ilink157">IconMouseEnter</a><br>
+<li class="toc1"><a href="#ilink158">IconMouseLeave</a><br>
+<li class="toc1"><a href="#ilink159">KeyDown</a><br>
+<li class="toc1"><a href="#ilink160">KeyPress</a><br>
+<li class="toc1"><a href="#ilink161">KeyUp</a><br>
+<li class="toc1"><a href="#ilink162">MouseDown</a><br>
+<li class="toc1"><a href="#ilink163">MouseMove</a><br>
+<li class="toc1"><a href="#ilink164">MouseUp</a><br>
+<li class="toc1"><a href="#ilink165">OLECompleteDrag</a><br>
+<li class="toc1"><a href="#ilink166">OLEDragDrop</a><br>
+<li class="toc1"><a href="#ilink167">OLEDragOver</a><br>
+<li class="toc1"><a href="#ilink168">OLEGiveFeedback</a><br>
+<li class="toc1"><a href="#ilink169">OLESetData</a><br>
+<li class="toc1"><a href="#ilink170">OLEStartDrag</a><br>
+<li class="toc1"><a href="#ilink171">Resize</a><br>
+<li class="toc1"><a href="#ilink172">RowsChange</a><br>
+<li class="toc1"><a href="#ilink173">TabBodyResize</a><br>
+<li class="toc1"><a href="#ilink174">TabChange</a><br>
+<li class="toc1"><a href="#ilink175">TabMouseEnter</a><br>
+<li class="toc1"><a href="#ilink176">TabMouseLeave</a><br>
+<li class="toc1"><a href="#ilink177">TabReordered</a><br>
+<li class="toc1"><a href="#ilink178">TabRightClick</a><br>
+<li class="toc1"><a href="#ilink179">TDIBeforeClosingTab</a><br>
+<li class="toc1"><a href="#ilink180">TDIBeforeNewTab</a><br>
+<li class="toc1"><a href="#ilink181">TDINewTabAdded</a><br>
+<li class="toc1"><a href="#ilink182">TDITabClosed</a><br>
 
 <br><br><br><h1>Properties</h1><br><a name="ilink6" /><h2><p class"section">AutoRelocateControls Property</p></h2></a>
-<p>Type: <b><a href="#ilink195">NTAutoRelocateControlsConstants</a></b></p>
+<p>Type: <b><a href="#ilink196">NTAutoRelocateControlsConstants</a></b></p>
 <h3>Description:</h3>
 <p>Returns or sets a value that determines if the contained controls will be automatically relocated when the tab body changes in size or position.<br>
 <br>
 Values:<br>
 <b>ntRelocateOnTabOrientationChange</b>: The contained controls will be automatically relocated when <a href="#ilink106">TabOrientation</a> changes.<br>
 <b>ntRelocateAlways</b>: The contained controls will be automatically relocated when <a href="#ilink106">TabOrientation</a> changes and also when the tab space changes in height.<br>
-<b>ntRelocateNever</b>:  The contained controls will never be automatically relocated. Choose this value if you are relocating the controls by code in the Form_Resize or <a href="#ilink172">TabBodyResize</a> events.<br>
+<b>ntRelocateNever</b>:  The contained controls will never be automatically relocated. Choose this value if you are relocating the controls by code in the Form_Resize or <a href="#ilink173">TabBodyResize</a> events.<br>
 <br>
 <h3>See Also:</h3><a href="#ilink7">AutoTabHeight</a> property<br>
-<a href="#ilink172">TabBodyResize</a> event</p><br>
+<a href="#ilink173">TabBodyResize</a> event</p><br>
 <a name="ilink7" /><h2><p class"section">AutoTabHeight Property</p></h2></a>
 <p>Type: <b>Boolean</b></p>
 <h3>Description:</h3>
@@ -294,7 +295,7 @@ If the property <a href="#ilink98">TabHeight</a> is manually set, <b>AutoTabHeig
 For newly added controls, its default it <b>True</b>, but if you are updating from a previous version or an SSTab control, it will be set to <b>False</b>.<br>
 <br>
 <h3>See Also:</h3><a href="#ilink98">TabHeight</a> property<br>
-<a href="#ilink172">TabBodyResize</a> event</p><br>
+<a href="#ilink173">TabBodyResize</a> event</p><br>
 <a name="ilink8" /><h2><p class"section">BackColor Property</p></h2></a>
 <p>Type: <b>Long</b></p>
 <h3>Description:</h3>
@@ -330,7 +331,7 @@ When the control is themed, this property value has no effect.<br>
 <a href="#ilink50">HighlightModeTabSel</a> property<br>
 <a href="#ilink47">HighlightColorTabSel</a> property</p><br>
 <a name="ilink11" /><h2><p class"section">BackStyle Property</p></h2></a>
-<p>Type: <b><a href="#ilink197">NTBackStyleConstants</a></b></p>
+<p>Type: <b><a href="#ilink198">NTBackStyleConstants</a></b></p>
 <h3>Description:</h3>
 <p>Returns or sets the a value that determines whether the background will be opaque or transparent.<br>
 <br>
@@ -340,8 +341,8 @@ When the control is themed, this property value has no effect.<br>
 <h3>Description:</h3>
 <p>Returns or sets a value that determines whether the user will be able to change tab positions by dragging them with the mouse.<br>
 <br>
-<h3>See Also:</h3><a href="#ilink150">BeforeTabReorder</a> event<br>
-<a href="#ilink176">TabReordered</a> event</p><br>
+<h3>See Also:</h3><a href="#ilink151">BeforeTabReorder</a> event<br>
+<a href="#ilink177">TabReordered</a> event</p><br>
 <a name="ilink13" /><h2><p class"section">Caption Property</p></h2></a>
 <p>Type: <b>String</b></p>
 <h3>Description:</h3>
@@ -360,7 +361,7 @@ If <b>ChangeControlsBackColor</b> is <b>True</b>, and the control is not themed,
 If <b>ChangeControlsBackColor</b> is <b>True</b>, and the control is themed, only the controls that has the <b>BackColor</b> property value set to the same color of <a href="#ilink10">BackColorTabSel</a> are changed.<br>
 <br>
 <h3>See Also:</h3><a href="#ilink15">ChangeControlsForeColor</a> property<br>
-<a href="#ilink151">ChangeControlBackColor</a> event<br>
+<a href="#ilink152">ChangeControlBackColor</a> event<br>
 </p><br>
 <a name="ilink15" /><h2><p class"section">ChangeControlsForeColor Property</p></h2></a>
 <p>Type: <b>Boolean</b></p>
@@ -372,7 +373,7 @@ If <b>ChangeControlsForeColor</b> is <b>True</b>, and the control is not themed,
 If <b>ChangeControlsBackColor</b> is <b>True</b>, and the control is themed, only the controls that has the <b>ForeColor</b> property value set to the same color of <a href="#ilink42">ForeColorTabSel</a> are changed.<br>
 <br>
 <h3>See Also:</h3><a href="#ilink14">ChangeControlsBackColor</a> property<br>
-<a href="#ilink152">ChangeControlForeColor</a> event<br>
+<a href="#ilink153">ChangeControlForeColor</a> event<br>
 </p><br>
 <a name="ilink16" /><h2><p class"section">Container Property</p></h2></a>
 <p>Type: <b>Object</b></p>
@@ -418,10 +419,10 @@ It is not available at design time, and is read-only at run time.<br>
 <a href="#ilink92">TabBodyTop</a> property<br>
 <a href="#ilink93">TabBodyWidth</a> property<br>
 <a href="#ilink90">TabBodyHeight</a> property<br>
-<a href="#ilink137">GetTabLeft</a> method<br>
-<a href="#ilink138">GetTabTop</a> method<br>
-<a href="#ilink139">GetTabWidth</a> method<br>
-<a href="#ilink136">GetTabHeight</a> method</p><br>
+<a href="#ilink138">GetTabLeft</a> method<br>
+<a href="#ilink139">GetTabTop</a> method<br>
+<a href="#ilink140">GetTabWidth</a> method<br>
+<a href="#ilink137">GetTabHeight</a> method</p><br>
 <a name="ilink23" /><h2><p class"section">FlatBarColorHighlight Property</p></h2></a>
 <p>Type: <b>Long</b></p>
 <h3>Description:</h3>
@@ -443,7 +444,7 @@ It is not available at design time, and is read-only at run time.<br>
 <h3>Description:</h3>
 <p>Returns or sets the height in pixels of the bar in flat style.</p><br>
 <a name="ilink28" /><h2><p class"section">FlatBarPosition Property</p></h2></a>
-<p>Type: <b><a href="#ilink199">NTFlatBarPosition</a></b></p>
+<p>Type: <b><a href="#ilink200">NTFlatBarPosition</a></b></p>
 <h3>Description:</h3>
 <p>Returns or sets the position of the bar in flat style. It can be at the top (<b>ntBarPositionTop</b>)  or at the bottom (<b>ntBarPositionBottom</b>).</p><br>
 <a name="ilink29" /><h2><p class"section">FlatBodySeparationLineColor Property</p></h2></a>
@@ -459,7 +460,7 @@ It is not available at design time, and is read-only at run time.<br>
 <h3>Description:</h3>
 <p>Returns or sets the color of the border in flat style.</p><br>
 <a name="ilink32" /><h2><p class"section">FlatBorderMode Property</p></h2></a>
-<p>Type: <b><a href="#ilink200">NTFlatBorderModeConstants</a></b></p>
+<p>Type: <b><a href="#ilink201">NTFlatBorderModeConstants</a></b></p>
 <h3>Description:</h3>
 <p>Returns or sets the way the border will be drawn in flat style.<br>
 It may be around the selected tab (<b>ntBorderTabSel</b>) or all the control (<b>ntBorderTabs</b>).</p><br>
@@ -608,7 +609,7 @@ When the control is themed, this setting is mostly ignored, the only flags that 
 <h3>Description:</h3>
 <p>Returns the Windows handle of the control.</p><br>
 <a name="ilink53" /><h2><p class"section">IconAlignment Property</p></h2></a>
-<p>Type: <b><a href="#ilink202">NTIconAlignmentConstants</a></b></p>
+<p>Type: <b><a href="#ilink203">NTIconAlignmentConstants</a></b></p>
 <h3>Description:</h3>
 <p>Returns or sets the alignment of the icon (or picture) with respect of the tab caption.</p><br>
 <a name="ilink54" /><h2><p class"section">IconCharHex Property</p></h2></a>
@@ -628,7 +629,7 @@ When the control is themed, this setting is mostly ignored, the only flags that 
 <a href="#ilink56">IconColorMouseHover</a> property<br>
 <a href="#ilink59">IconColorTabSel</a> property<br>
 <a href="#ilink60">IconFont</a> property<br>
-<a href="#ilink155">IconClick</a> event</p><br>
+<a href="#ilink156">IconClick</a> event</p><br>
 <a name="ilink56" /><h2><p class"section">IconColorMouseHover Property</p></h2></a>
 <p>Type: <b>Long</b></p>
 <h3>Description:</h3>
@@ -710,7 +711,7 @@ When <a href="#ilink119">TabWidthStyle</a> is set to other than <b>ntTWTabCaptio
 <h3>Description:</h3>
 <p>Returns or sets the icon used as the mouse pointer when the <a href="#ilink68">MousePointer</a> property is set to 99 (custom).</p><br>
 <a name="ilink68" /><h2><p class"section">MousePointer Property</p></h2></a>
-<p>Type: <b><a href="#ilink203">NTMousePointerConstants</a></b></p>
+<p>Type: <b><a href="#ilink204">NTMousePointerConstants</a></b></p>
 <h3>Description:</h3>
 <p>Returns or sets the type of mouse pointer displayed when over the control.</p><br>
 <a name="ilink69" /><h2><p class"section">MouseTab Property</p></h2></a>
@@ -726,7 +727,7 @@ When <a href="#ilink119">TabWidthStyle</a> is set to other than <b>ntTWTabCaptio
 <h3>Description:</h3>
 <p>Returns the control instance without the extender.</p><br>
 <a name="ilink72" /><h2><p class"section">OLEDropMode Property</p></h2></a>
-<p>Type: <b><a href="#ilink204">NTOLEDropConstants</a></b></p>
+<p>Type: <b><a href="#ilink205">NTOLEDropConstants</a></b></p>
 <h3>Description:</h3>
 <p>Returns/sets how a target component handles drop operations.</p><br>
 <a name="ilink73" /><h2><p class"section">OLEDropOnOtherTabs Property</p></h2></a>
@@ -792,8 +793,8 @@ If <a href="#ilink54">IconCharHex</a> property value is set, anything in this <b
 <p>Returns the number of rows of tabs.<br>
 <br>
 The <b>Rows</b> property value can change its value when new tabs are dinamically added or, when <a href="#ilink119">TabWidthStyle</a> is set to <b>ssTWSFixed</b> or <b>ssTWSNonJustified</b> and <a href="#ilink114">TabsPerRow</a> was changed, or <a href="#ilink119">TabWidthStyle</a> is set to <b>ssTWSJustified</b> and the <b>Width</b> of the control changed, the tab captions changed or the <a href="#ilink39">Font</a> setting has changed.<br>
-You can use the <a href="#ilink172">TabBodyResize</a> event to properly set the position of the contained controls.<br>
-The <a href="#ilink171">RowsChange</a> notifies of the change of this property.<br>
+You can use the <a href="#ilink173">TabBodyResize</a> event to properly set the position of the contained controls.<br>
+The <a href="#ilink172">RowsChange</a> notifies of the change of this property.<br>
 </p><br>
 <a name="ilink82" /><h2><p class"section">ShowDisabledState Property</p></h2></a>
 <p>Type: <b>Boolean</b> (Not available at design time)</p>
@@ -805,7 +806,7 @@ If has no effect when the control is themed (<a href="#ilink86">Style</a> = <b>n
 <h3>Description:</h3>
 <p>Returns or sets a value that determines if the focus rectangle is visible on a tab when the tab gets the focus.</p><br>
 <a name="ilink84" /><h2><p class"section">ShowRowsInPerspective Property</p></h2></a>
-<p>Type: <b><a href="#ilink196">NTAutoYesNoConstants</a></b></p>
+<p>Type: <b><a href="#ilink197">NTAutoYesNoConstants</a></b></p>
 <h3>Description:</h3>
 <p>Returns or sets a value that determines when the control has more that one row of tabs, if they will be drawn changing the horizontal position on each row.<br>
 <br>
@@ -818,7 +819,7 @@ If the value is <b>ssYNAuto</b>, the behavior will be determined by the <a href=
 <p>Returns or sets a value that determines if the edges will be displayed with less contrast: lighter and more colored.<br>
 With styles Flat and Windows it has no effect.</p><br>
 <a name="ilink86" /><h2><p class"section">Style Property</p></h2></a>
-<p>Type: <b><a href="#ilink205">NTStyleConstants</a></b></p>
+<p>Type: <b><a href="#ilink206">NTStyleConstants</a></b></p>
 <h3>Description:</h3>
 <p>Returns or sets the style of the tabs.<br>
 <br>
@@ -829,7 +830,7 @@ The changes are internal, they are not reflected on these properties values (the
 It also can set if the control will have Windows Styles (the Windows "theme" look) or alrernatively a Flat appearance that unlocks other properties.<br>
 </p><br>
 <a name="ilink87" /><h2><p class"section">SubclassingMethod Property</p></h2></a>
-<p>Type: <b><a href="#ilink206">NTSubclassingMethodConstants</a></b></p>
+<p>Type: <b><a href="#ilink207">NTSubclassingMethodConstants</a></b></p>
 <h3>Description:</h3>
 <p>Returns/sets the sublassing method, what to subclass (only the UserControl or the Form too) and if the subclassing will be enabled at all. If subclassing is disabled or partially disabled some features may not work. This property is provided in case of incompatibility with other third party controls.</p><br>
 <a name="ilink88" /><h2><p class"section">Tab Property</p></h2></a>
@@ -837,11 +838,11 @@ It also can set if the control will have Windows Styles (the Windows "theme" loo
 <h3>Description:</h3>
 <p>Returns or sets the current ('selected' or 'active') tab by its index.<br>
 <br>
-<h3>See Also:</h3><a href="#ilink143">SetActiveTab</a> method<br>
-<a href="#ilink173">TabChange</a> event<br>
+<h3>See Also:</h3><a href="#ilink144">SetActiveTab</a> method<br>
+<a href="#ilink174">TabChange</a> event<br>
 </p><br>
 <a name="ilink89" /><h2><p class"section">TabAppearance Property</p></h2></a>
-<p>Type: <b><a href="#ilink207">NTTabAppearanceConstants</a></b></p>
+<p>Type: <b><a href="#ilink208">NTTabAppearanceConstants</a></b></p>
 <h3>Description:</h3>
 <p>Returns or sets a value that determines the appearance of the tabs. When the control is themed, the theme defines the appearance.<br>
 </p><br>
@@ -972,7 +973,7 @@ In the case when <a href="#ilink119">TabWidthStyle</a> setting is <b>ntTWTabStri
 <h3>Description:</h3>
 <p>Returns or sets a value that determines if the mouse pointer over tabs will be the hand.</p><br>
 <a name="ilink106" /><h2><p class"section">TabOrientation Property</p></h2></a>
-<p>Type: <b><a href="#ilink208">NTTabOrientationConstants</a></b></p>
+<p>Type: <b><a href="#ilink209">NTTabOrientationConstants</a></b></p>
 <h3>Description:</h3>
 <p>Returns or sets a value that determines on which side of the control the tabs will appear.</p><br>
 <a name="ilink107" /><h2><p class"section">TabPic16 Property</p></h2></a>
@@ -1038,7 +1039,7 @@ If <a href="#ilink119">TabWidthStyle</a> property setting is other than <b>ntTWF
 If the tab has not a <a href="#ilink116">TabToolTipText</a> set, it will show the control <b>ToolTipText</b>, if there is any text set on that property.<br>
 </p><br>
 <a name="ilink117" /><h2><p class"section">TabTransition Property</p></h2></a>
-<p>Type: <b><a href="#ilink209">NTTabTransitionConstants</a></b></p>
+<p>Type: <b><a href="#ilink210">NTTabTransitionConstants</a></b></p>
 <h3>Description:</h3>
 <p>Returns or sets a value that determines whether the transition between tabs will be with an effect that smooths the transition (and its speed).</p><br>
 <a name="ilink118" /><h2><p class"section">TabVisible Property</p></h2></a>
@@ -1048,7 +1049,7 @@ If the tab has not a <a href="#ilink116">TabToolTipText</a> set, it will show th
 <br>
 <h3>See Also:</h3><a href="#ilink97">TabEnabled</a> property</p><br>
 <a name="ilink119" /><h2><p class"section">TabWidthStyle Property</p></h2></a>
-<p>Type: <b><a href="#ilink210">NTTabWidthStyleConstants</a></b></p>
+<p>Type: <b><a href="#ilink211">NTTabWidthStyleConstants</a></b></p>
 <h3>Description:</h3>
 <p>Returns or sets a value that determines the justification or width of the tabs.<br>
 <br>
@@ -1067,7 +1068,7 @@ Also <a href="#ilink104">TabMinWidth</a> and <a href="#ilink103">TabMaxWidth</a>
 <h3>Description:</h3>
 <p>Returns or sets an expression that stores any extra data needed for your program.</p><br>
 <a name="ilink121" /><h2><p class"section">TDIMode Property</p></h2></a>
-<p>Type: <b><a href="#ilink211">NTTDIModeConstants</a></b></p>
+<p>Type: <b><a href="#ilink212">NTTDIModeConstants</a></b></p>
 <h3>Description:</h3>
 <p>Returns/sets a value that determines if the control will be used for TDI (tabbed document interface) and which mode (controls or forms). The control behavior changes significantly in this mode because some things are automated.<br>
 <br>
@@ -1139,56 +1140,65 @@ In a control that its size and/or the tab texts change dinamically, to make sure
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbspNone.&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In/Out&nbsp&nbsp</td>    <td>&nbsp&nbspOptional&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Action</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Begins, ends, or cancels a drag operation.</p><br>
-<a name="ilink136" /><h2><p class"section">GetTabHeight Method</p></h2></a>
+<a name="ilink136" /><h2><p class"section">FindTab Method</p></h2></a>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Long</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Find</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspOptional&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Method</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbsp<a href="#ilink199">NTFindTabMethodConstants</a>&nbsp&nbsp</td>    <td>&nbsp&nbspDefault value: ntFindCaption (0)&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<h3>Description:</h3>
+<p>Finds a tab based on the values provided in the parameters and returns its index. If the tab is not found, it returns -1.<br>
+<br>
+This method is similar to <a href="#ilink144">SetActiveTab</a> but it does not change the current tab.<br>
+Please read <a href="#ilink144">SetActiveTab</a> for an explanation of the parameters.</p><br>
+<a name="ilink137" /><h2><p class"section">GetTabHeight Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Single</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Returns the height of a tab.<br>
 <br>
-<h3>See Also:</h3><a href="#ilink137">GetTabLeft</a> method<br>
-<a href="#ilink138">GetTabTop</a> method<br>
-<a href="#ilink139">GetTabWidth</a> method<br>
+<h3>See Also:</h3><a href="#ilink138">GetTabLeft</a> method<br>
+<a href="#ilink139">GetTabTop</a> method<br>
+<a href="#ilink140">GetTabWidth</a> method<br>
 </p><br>
-<a name="ilink137" /><h2><p class"section">GetTabLeft Method</p></h2></a>
+<a name="ilink138" /><h2><p class"section">GetTabLeft Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Single</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Returns the left position of a tab.<br>
 <br>
-<h3>See Also:</h3><a href="#ilink138">GetTabTop</a> method<br>
-<a href="#ilink139">GetTabWidth</a> method<br>
-<a href="#ilink136">GetTabHeight</a> method</p><br>
-<a name="ilink138" /><h2><p class"section">GetTabTop Method</p></h2></a>
+<h3>See Also:</h3><a href="#ilink139">GetTabTop</a> method<br>
+<a href="#ilink140">GetTabWidth</a> method<br>
+<a href="#ilink137">GetTabHeight</a> method</p><br>
+<a name="ilink139" /><h2><p class"section">GetTabTop Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Single</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Returns the top position of a tab.<br>
 <br>
-<h3>See Also:</h3><a href="#ilink137">GetTabLeft</a> method<br>
-<a href="#ilink139">GetTabWidth</a> method<br>
-<a href="#ilink136">GetTabHeight</a> method</p><br>
-<a name="ilink139" /><h2><p class"section">GetTabWidth Method</p></h2></a>
+<h3>See Also:</h3><a href="#ilink138">GetTabLeft</a> method<br>
+<a href="#ilink140">GetTabWidth</a> method<br>
+<a href="#ilink137">GetTabHeight</a> method</p><br>
+<a name="ilink140" /><h2><p class"section">GetTabWidth Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Single</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Returns the width of a tab.<br>
 <br>
-<h3>See Also:</h3><a href="#ilink137">GetTabLeft</a> method<br>
-<a href="#ilink138">GetTabTop</a> method<br>
-<a href="#ilink136">GetTabHeight</a> method</p><br>
-<a name="ilink140" /><h2><p class"section">IsThemed Method</p></h2></a>
+<h3>See Also:</h3><a href="#ilink138">GetTabLeft</a> method<br>
+<a href="#ilink139">GetTabTop</a> method<br>
+<a href="#ilink137">GetTabHeight</a> method</p><br>
+<a name="ilink141" /><h2><p class"section">IsThemed Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Boolean</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspNo parameters.&nbsp&nbsp</td>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Returns a boolean value indicating whether the Windows visual styles are applied to the control or not.</p><br>
-<a name="ilink141" /><h2><p class"section">MoveTab Method</p></h2></a>
+<a name="ilink142" /><h2><p class"section">MoveTab Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbspNone.&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>CurrentIndex</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>NewIndex</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Moves a tab to another position.</p><br>
-<a name="ilink142" /><h2><p class"section">Refresh Method</p></h2></a>
+<a name="ilink143" /><h2><p class"section">Refresh Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbspNone.&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspNo parameters.&nbsp&nbsp</td>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Redraws the control.</p><br>
-<a name="ilink143" /><h2><p class"section">SetActiveTab Method</p></h2></a>
-<p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Boolean</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Find</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspOptional&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Method</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbsp<a href="#ilink198">NTFindTabMethodConstants</a>&nbsp&nbsp</td>    <td>&nbsp&nbspDefault value: ntFindCaption (0)&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<a name="ilink144" /><h2><p class"section">SetActiveTab Method</p></h2></a>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Boolean</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Find</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspOptional&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Method</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbsp<a href="#ilink199">NTFindTabMethodConstants</a>&nbsp&nbsp</td>    <td>&nbsp&nbspDefault value: ntFindCaption (0)&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Sets the current ('selected' or 'active') tab by other means than its index (that can be done with the <a href="#ilink88">Tab</a> property).<br>
 If the tab is found its retuns <b>True</b>, otherwise it returns <b>False</b>.<br>
+<br>
+This method is mainly useful when you don't know the position of the tab because the user may have changed it due to the <a href="#ilink12">CanReorderTabs</a> property set to <b>True</b>.<br>
 <br>
 <b>Find</b> parameter: find a tab with this data.<br>
 <br>
@@ -1199,37 +1209,38 @@ If the tab is found its retuns <b>True</b>, otherwise it returns <b>False</b>.<b
 <b>ntFindData</b>: searches for a tab with the <a href="#ilink96">TabData</a> specified in the <b>Find</b> parameter.<br>
 <b>ntFindTag</b>: searches for a tab with the <a href="#ilink115">TabTag</a> specified in the <b>Find</b> parameter.<br>
 <br>
-<h3>See Also:</h3><a href="#ilink88">Tab</a> property<br>
-<a href="#ilink173">TabChange</a> event</p><br>
-<a name="ilink144" /><h2><p class"section">SetFocus Method</p></h2></a>
+<h3>See Also:</h3><a href="#ilink136">FindTab</a> method<br>
+<a href="#ilink88">Tab</a> property<br>
+<a href="#ilink174">TabChange</a> event</p><br>
+<a name="ilink145" /><h2><p class"section">SetFocus Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbspNone.&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspNo parameters.&nbsp&nbsp</td>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Moves the focus to this control.</p><br>
-<a name="ilink145" /><h2><p class"section">TDIGetTabIndexByTabNumber Method</p></h2></a>
+<a name="ilink146" /><h2><p class"section">TDIGetTabIndexByTabNumber Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Long</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>nTabNumber</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>When in TDI mode, it returns the Index of a tab given its number.</p><br>
-<a name="ilink146" /><h2><p class"section">TDIGetTabNumberByTabIndex Method</p></h2></a>
+<a name="ilink147" /><h2><p class"section">TDIGetTabNumberByTabIndex Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Long</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>When in TDI mode, it returns the number of a tab given its Index.</p><br>
-<a name="ilink147" /><h2><p class"section">ZOrder Method</p></h2></a>
+<a name="ilink148" /><h2><p class"section">ZOrder Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbspNone.&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In/Out&nbsp&nbsp</td>    <td>&nbsp&nbspOptional&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Position</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Places the control at the front or back of the z-order within its graphical level.</p><br>
 
-<br><br><br><h1>Events</h1><br><a name="ilink149" /><h2><p class"section">BeforeClick Event</p></h2></a>
+<br><br><br><h1>Events</h1><br><a name="ilink150" /><h2><p class"section">BeforeClick Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>CurrentTabSel</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>NewTabSel</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Cancel</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Occurs when the current tab (<a href="#ilink88">Tab</a>) is about to change.<br>
-Use the <b>BeforeClick</b> event to validate the information on the old tab before actually generating a <a href="#ilink153">Click</a> event that selects the new tab.<br>
+Use the <b>BeforeClick</b> event to validate the information on the old tab before actually generating a <a href="#ilink154">Click</a> event that selects the new tab.<br>
 Setting the <b>Cancel</b> parameter to <b>True</b> allows you to prevent the change to the new tab selection.<br>
 </p><br>
-<a name="ilink150" /><h2><p class"section">BeforeTabReorder Event</p></h2></a>
+<a name="ilink151" /><h2><p class"section">BeforeTabReorder Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>CurrentIndex</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>NewIndex</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Cancel</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Occurs when before a tab is changed from one position to another. The action can be canceled using the Cancel parameter or the new position can be altered from the NewIndex parameter.</p><br>
-<a name="ilink151" /><h2><p class"section">ChangeControlBackColor Event</p></h2></a>
+<a name="ilink152" /><h2><p class"section">ChangeControlBackColor Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>ControlName</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspString&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>ControlTypeName</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspString&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Cancel</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>When <a href="#ilink14">ChangeControlsBackColor</a> property is set to <b>True</b>, allows you to determine individually which controls will have their background changed (or not).<br>
@@ -1238,9 +1249,9 @@ The ControlName parameter specifies the name of the control, to avoid changing a
 The <b>ControlTypeName</b> parameter specifies the type of the control (for example "CommandButton" or "Label"), this allow you to handle a whole class of controls without writing each name.<br>
 <br>
 <h3>See Also:</h3><a href="#ilink14">ChangeControlsBackColor</a> property<br>
-<a href="#ilink152">ChangeControlForeColor</a> event<br>
+<a href="#ilink153">ChangeControlForeColor</a> event<br>
 </p><br>
-<a name="ilink152" /><h2><p class"section">ChangeControlForeColor Event</p></h2></a>
+<a name="ilink153" /><h2><p class"section">ChangeControlForeColor Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>ControlName</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspString&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>ControlTypeName</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspString&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Cancel</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>When <a href="#ilink15">ChangeControlsForeColor</a> property is set to <b>True</b>, allows you to determine individually which controls will have their text color changed (or not).<br>
@@ -1249,90 +1260,90 @@ The ControlName parameter specifies the name of the control, to avoid changing a
 The <b>ControlTypeName</b> parameter specifies the type of the control (for example "CommandButton" or "Label"), this allow you to handle a whole class of controls without writing each name.<br>
 <br>
 <h3>See Also:</h3><a href="#ilink15">ChangeControlsForeColor</a> property<br>
-<a href="#ilink151">ChangeControlBackColor</a> event<br>
+<a href="#ilink152">ChangeControlBackColor</a> event<br>
 </p><br>
-<a name="ilink153" /><h2><p class"section">Click Event</p></h2></a>
+<a name="ilink154" /><h2><p class"section">Click Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>PreviousTab</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspInteger&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Occurs when the current tab (<a href="#ilink88">Tab</a>) changes.<br>
 <br>
-<h3>See Also:</h3><a href="#ilink149">BeforeClick</a> event<br>
-<a href="#ilink173">TabChange</a> event<br>
-<a href="#ilink177">TabRightClick</a> event<br>
-<a href="#ilink155">IconClick</a> event<br>
-<a href="#ilink143">SetActiveTab</a> method</p><br>
-<a name="ilink154" /><h2><p class"section">DblClick Event</p></h2></a>
+<h3>See Also:</h3><a href="#ilink150">BeforeClick</a> event<br>
+<a href="#ilink174">TabChange</a> event<br>
+<a href="#ilink178">TabRightClick</a> event<br>
+<a href="#ilink156">IconClick</a> event<br>
+<a href="#ilink144">SetActiveTab</a> method</p><br>
+<a name="ilink155" /><h2><p class"section">DblClick Event</p></h2></a>
 <p>No parameters.</p>
 <h3>Description:</h3>
 <p>Occurs when the user presses and releases a mouse button and then presses and releases it again over the control.</p><br>
-<a name="ilink155" /><h2><p class"section">IconClick Event</p></h2></a>
+<a name="ilink156" /><h2><p class"section">IconClick Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>nTab</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>ForwardClickToTab</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Occurs when the icon of the tab identified by the Index parameter is clicked (it doesn't work with pictures).</p><br>
-<a name="ilink156" /><h2><p class"section">IconMouseEnter Event</p></h2></a>
+<a name="ilink157" /><h2><p class"section">IconMouseEnter Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>nTab</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Occurs when the mouse enters hovering over the icon (not the picture) of the tab identified by the Index parameter.</p><br>
-<a name="ilink157" /><h2><p class"section">IconMouseLeave Event</p></h2></a>
+<a name="ilink158" /><h2><p class"section">IconMouseLeave Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>nTab</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Occurs when the mouse goes out after hovering over a tab icon (not picture).</p><br>
-<a name="ilink158" /><h2><p class"section">KeyDown Event</p></h2></a>
+<a name="ilink159" /><h2><p class"section">KeyDown Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>KeyCode</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspInteger&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Shift</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspInteger&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Occurs when the user presses a key while an control has the focus.</p><br>
-<a name="ilink159" /><h2><p class"section">KeyPress Event</p></h2></a>
+<a name="ilink160" /><h2><p class"section">KeyPress Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>KeyAscii</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspInteger&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Occurs when the user presses and releases an ANSI key.</p><br>
-<a name="ilink160" /><h2><p class"section">KeyUp Event</p></h2></a>
+<a name="ilink161" /><h2><p class"section">KeyUp Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>KeyCode</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspInteger&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Shift</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspInteger&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Occurs when the user releases a key after pressing it while an control has the focus.</p><br>
-<a name="ilink161" /><h2><p class"section">MouseDown Event</p></h2></a>
+<a name="ilink162" /><h2><p class"section">MouseDown Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Button</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspInteger&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Shift</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspInteger&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>X</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspSingle&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Y</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspSingle&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Occurs when the user presses a mouse button being the mouse over the control.</p><br>
-<a name="ilink162" /><h2><p class"section">MouseMove Event</p></h2></a>
+<a name="ilink163" /><h2><p class"section">MouseMove Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Button</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspInteger&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Shift</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspInteger&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>X</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspSingle&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Y</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspSingle&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Occurs when the user moves the mouse over the control.</p><br>
-<a name="ilink163" /><h2><p class"section">MouseUp Event</p></h2></a>
+<a name="ilink164" /><h2><p class"section">MouseUp Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Button</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspInteger&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Shift</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspInteger&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>X</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspSingle&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Y</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspSingle&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Occurs when the user releases the mouse button after pressing it being the mouse over the control.</p><br>
-<a name="ilink164" /><h2><p class"section">OLECompleteDrag Event</p></h2></a>
+<a name="ilink165" /><h2><p class"section">OLECompleteDrag Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Effect</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Occurs when a source component is dropped onto a target component, informing the source component that a drag action was either performed or canceled.</p><br>
-<a name="ilink165" /><h2><p class"section">OLEDragDrop Event</p></h2></a>
+<a name="ilink166" /><h2><p class"section">OLEDragDrop Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Data</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspDataObject&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Effect</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Button</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspInteger&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Shift</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspInteger&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>X</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspSingle&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Y</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspSingle&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Occurs when a source component is dropped onto a target component when the source component determines that a drop can occur.<br>
 This event occurs only if <a href="#ilink72">OLEDropMode</a> is set to 1 (Manual).</p><br>
-<a name="ilink166" /><h2><p class"section">OLEDragOver Event</p></h2></a>
+<a name="ilink167" /><h2><p class"section">OLEDragOver Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Data</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspDataObject&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Effect</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Button</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspInteger&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Shift</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspInteger&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>X</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspSingle&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Y</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspSingle&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>State</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspInteger&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Occurs when one component is dragged over another.</p><br>
-<a name="ilink167" /><h2><p class"section">OLEGiveFeedback Event</p></h2></a>
+<a name="ilink168" /><h2><p class"section">OLEGiveFeedback Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Effect</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>DefaultCursors</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
-<p>Occurs after every <a href="#ilink166">OLEDragOver</a> event. <b>OLEGiveFeedback</b> allows the source component to provide visual feedback to the user, such as changing the mouse cursor to indicate what will happen if the user drops the object, or provide visual feedback on the selection (in the source component) to indicate what will happen.</p><br>
-<a name="ilink168" /><h2><p class"section">OLESetData Event</p></h2></a>
+<p>Occurs after every <a href="#ilink167">OLEDragOver</a> event. <b>OLEGiveFeedback</b> allows the source component to provide visual feedback to the user, such as changing the mouse cursor to indicate what will happen if the user drops the object, or provide visual feedback on the selection (in the source component) to indicate what will happen.</p><br>
+<a name="ilink169" /><h2><p class"section">OLESetData Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Data</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspDataObject&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>DataFormat</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspInteger&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Occurs on a source component when a target component performs the <b>GetData</b> method on the source's <b>DataObject</b> object, but before the data for the specified format has been loaded.</p><br>
-<a name="ilink169" /><h2><p class"section">OLEStartDrag Event</p></h2></a>
+<a name="ilink170" /><h2><p class"section">OLEStartDrag Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Data</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspDataObject&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>AllowedEffects</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Occurs when a component's OLEDrag method is performed, or when a component initiates an OLE drag/drop operation when the OLEDragMode property is set to Automatic.</p><br>
-<a name="ilink170" /><h2><p class"section">Resize Event</p></h2></a>
+<a name="ilink171" /><h2><p class"section">Resize Event</p></h2></a>
 <p>No parameters.</p>
 <h3>Description:</h3>
 <p>Occurs when the control is first drawn or when its size changes.<br>
 <br>
-<h3>See Also:</h3><a href="#ilink172">TabBodyResize</a> event</p><br>
-<a name="ilink171" /><h2><p class"section">RowsChange Event</p></h2></a>
+<h3>See Also:</h3><a href="#ilink173">TabBodyResize</a> event</p><br>
+<a name="ilink172" /><h2><p class"section">RowsChange Event</p></h2></a>
 <p>No parameters.</p>
 <h3>Description:</h3>
 <p>Occurs when the control is first drawn and when the <a href="#ilink81">Rows</a> property changes its value.<br>
@@ -1340,92 +1351,92 @@ The <a href="#ilink81">Rows</a> property value can change its value when new tab
 You can use this event along with <a href="#ilink92">TabBodyTop</a> to properly set the Top (or use <a href="#ilink91">TabBodyLeft</a>, depending on <a href="#ilink106">TabOrientation</a>) of the contained controls.<br>
 But if <a href="#ilink6">AutoRelocateControls</a> is set to <b>True</b>, that's is already done automaticaly.<br>
 <br>
-<h3>See Also:</h3><a href="#ilink172">TabBodyResize</a> event</p><br>
-<a name="ilink172" /><h2><p class"section">TabBodyResize Event</p></h2></a>
+<h3>See Also:</h3><a href="#ilink173">TabBodyResize</a> event</p><br>
+<a name="ilink173" /><h2><p class"section">TabBodyResize Event</p></h2></a>
 <p>No parameters.</p>
 <h3>Description:</h3>
 <p>Occurs when the tab body changes its size.<br>
 The size and position of the tab body are referenced by the properties <a href="#ilink91">TabBodyLeft</a>, <a href="#ilink92">TabBodyTop</a>, <a href="#ilink93">TabBodyWidth</a> and <a href="#ilink90">TabBodyHeight</a>.<br>
 <b>This event is a proper place to position the contained controls.</b><br>
 </p><br>
-<a name="ilink173" /><h2><p class"section">TabChange Event</p></h2></a>
+<a name="ilink174" /><h2><p class"section">TabChange Event</p></h2></a>
 <p>No parameters.</p>
 <h3>Description:</h3>
 <p>Occurs after the selected (or "current") tab has already changed.<br>
-For the events that occur before, see <a href="#ilink149">BeforeClick</a> and <a href="#ilink153">Click</a>.<br>
+For the events that occur before, see <a href="#ilink150">BeforeClick</a> and <a href="#ilink154">Click</a>.<br>
 This event is also generated when the control is first shown.<br>
 <br>
 <h3>See Also:</h3><a href="#ilink88">Tab</a> property<br>
-<a href="#ilink143">SetActiveTab</a> method<br>
+<a href="#ilink144">SetActiveTab</a> method<br>
 <br>
 </p><br>
-<a name="ilink174" /><h2><p class"section">TabMouseEnter Event</p></h2></a>
+<a name="ilink175" /><h2><p class"section">TabMouseEnter Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>nTab</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Occurs when the mouse pointer enters a tab, which is specified with the nTab parameter.<br>
 <br>
-<h3>See Also:</h3><a href="#ilink175">TabMouseLeave</a> event</p><br>
-<a name="ilink175" /><h2><p class"section">TabMouseLeave Event</p></h2></a>
+<h3>See Also:</h3><a href="#ilink176">TabMouseLeave</a> event</p><br>
+<a name="ilink176" /><h2><p class"section">TabMouseLeave Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>nTab</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Occurs after the mouse pointer leaves a tab, which is specified in the nTab parameter.<br>
 <br>
-<h3>See Also:</h3><a href="#ilink174">TabMouseEnter</a> event</p><br>
-<a name="ilink176" /><h2><p class"section">TabReordered Event</p></h2></a>
+<h3>See Also:</h3><a href="#ilink175">TabMouseEnter</a> event</p><br>
+<a name="ilink177" /><h2><p class"section">TabReordered Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>CurrentIndex</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>OldIndex</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Occurs when a tab changed its position. <br>
-It can be due to an user action (see <a href="#ilink12">CanReorderTabs</a> property) or by code (see <a href="#ilink141">MoveTab</a> method).</p><br>
-<a name="ilink177" /><h2><p class"section">TabRightClick Event</p></h2></a>
+It can be due to an user action (see <a href="#ilink12">CanReorderTabs</a> property) or by code (see <a href="#ilink142">MoveTab</a> method).</p><br>
+<a name="ilink178" /><h2><p class"section">TabRightClick Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>nTab</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Shift</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>X</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspSingle&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Y</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspSingle&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Occurs when the user clicks with the mouse right button on a tab.<br>
 The tab is specified in the <b>nTab</b> parameter.<br>
 The <b>Shift</b> parameter indicates the state of  the SHIFT, CTRL, and ALT keys.<br>
 The <b>X</b> and <b>Y</b> parameters return a number that specifies the current position of the mouse pointer.</p><br>
-<a name="ilink178" /><h2><p class"section">TDIBeforeClosingTab Event</p></h2></a>
+<a name="ilink179" /><h2><p class"section">TDIBeforeClosingTab Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabNumber</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IsLastTab</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>OpenNewOnLastClosed</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>UnloadControls</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Cancel</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>It occurs before closing a tab in TDI mode.<br>
 <br>
 <h3>See Also:</h3><a href="#ilink121">TDIMode</a> property<br>
-<a href="#ilink181">TDITabClosed</a> event<br>
+<a href="#ilink182">TDITabClosed</a> event<br>
 </p><br>
-<a name="ilink179" /><h2><p class"section">TDIBeforeNewTab Event</p></h2></a>
-<p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabType</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbsp<a href="#ilink212">NTTDINewTabTypeConstants</a>&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabNumber</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabCaption</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspString&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>LoadControls</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Cancel</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<a name="ilink180" /><h2><p class"section">TDIBeforeNewTab Event</p></h2></a>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabType</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbsp<a href="#ilink213">NTTDINewTabTypeConstants</a>&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabNumber</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabCaption</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspString&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>LoadControls</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Cancel</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>It occurs before opening a new tab in TDI mode.<br>
 <br>
 <h3>See Also:</h3><a href="#ilink121">TDIMode</a> property<br>
-<a href="#ilink180">TDINewTabAdded</a> event</p><br>
-<a name="ilink180" /><h2><p class"section">TDINewTabAdded Event</p></h2></a>
+<a href="#ilink181">TDINewTabAdded</a> event</p><br>
+<a name="ilink181" /><h2><p class"section">TDINewTabAdded Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabNumber</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>It occurs after a new tab was opened in TDI mode.<br>
 <br>
 <h3>See Also:</h3><a href="#ilink121">TDIMode</a> property<br>
-<a href="#ilink179">TDIBeforeNewTab</a> event</p><br>
-<a name="ilink181" /><h2><p class"section">TDITabClosed Event</p></h2></a>
+<a href="#ilink180">TDIBeforeNewTab</a> event</p><br>
+<a name="ilink182" /><h2><p class"section">TDITabClosed Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabNumber</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IsLastTab</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>It occurs after a tab was closed in TDI mode.<br>
 <br>
 <h3>See Also:</h3><a href="#ilink121">TDIMode</a> property<br>
-<a href="#ilink178">TDIBeforeClosingTab</a> event<br>
+<a href="#ilink179">TDIBeforeClosingTab</a> event<br>
 </p><br>
 </body>
 </html>
 <a name="ilink2"><h1><p class="section">NewTabTheme object</p></h1></a>
 <p>"Themes" are a set of property settings stored together.<br>
 They are mostly about appeaarance, but it can affect behavior also with some properties.</p><br>
-<br><br><br><h1>Properties</h1><br><li class="toc1"><a href="#ilink183">Custom</a><br>
-<li class="toc1"><a href="#ilink184">Name</a><br>
+<br><br><br><h1>Properties</h1><br><li class="toc1"><a href="#ilink184">Custom</a><br>
+<li class="toc1"><a href="#ilink185">Name</a><br>
 <br><br><br>
-<a name="ilink183" /><h2><p class"section">Custom Property</p></h2></a>
+<a name="ilink184" /><h2><p class"section">Custom Property</p></h2></a>
 <p>Type: <b>Boolean</b> (Read only)</p>
 <h3>Description:</h3>
 <p>Returns whether this theme is custom or built-in by default.</p><br>
-<a name="ilink184" /><h2><p class"section">Name Property</p></h2></a>
+<a name="ilink185" /><h2><p class"section">Name Property</p></h2></a>
 <p>Type: <b>String</b> (Read only)</p>
 <h3>Description:</h3>
 <p>Returns the name of the theme.</p><br>
@@ -1434,51 +1445,51 @@ They are mostly about appeaarance, but it can affect behavior also with some pro
 <a name="ilink3"><h1><p class="section">NewTabThemes object</p></h1></a>
 <p>Returns the colection of "Themes".<br>
 Use the names of the themes to set one into the <a href="#ilink122">Theme</a> property.</p><br>
-<li class="toc1"><a href="#ilink185">Properties</a></li><li class="toc1"><a href="#ilink188">Methods</a></li><li class="toc1"><a href="#ilink192">Events</a></li><br><a name="ilink185" /><h2><p class="section">Properties</p></h2></a>
-<li class="toc1"><a href="#ilink186">Count</a><br>
-<li class="toc1"><a href="#ilink187">Item</a><br>
-<br><a name="ilink188" /><h2><p class="section">Methods</p></h2></a>
-<li class="toc1"><a href="#ilink189">Exists</a><br>
-<li class="toc1"><a href="#ilink190">Remove</a><br>
-<li class="toc1"><a href="#ilink191">Rename</a><br>
-<br><a name="ilink192" /><h2><p class="section">Events</p></h2></a>
-<li class="toc1"><a href="#ilink193">ThemeRemoved</a><br>
-<li class="toc1"><a href="#ilink194">ThemeRenamed</a><br>
+<li class="toc1"><a href="#ilink186">Properties</a></li><li class="toc1"><a href="#ilink189">Methods</a></li><li class="toc1"><a href="#ilink193">Events</a></li><br><a name="ilink186" /><h2><p class="section">Properties</p></h2></a>
+<li class="toc1"><a href="#ilink187">Count</a><br>
+<li class="toc1"><a href="#ilink188">Item</a><br>
+<br><a name="ilink189" /><h2><p class="section">Methods</p></h2></a>
+<li class="toc1"><a href="#ilink190">Exists</a><br>
+<li class="toc1"><a href="#ilink191">Remove</a><br>
+<li class="toc1"><a href="#ilink192">Rename</a><br>
+<br><a name="ilink193" /><h2><p class="section">Events</p></h2></a>
+<li class="toc1"><a href="#ilink194">ThemeRemoved</a><br>
+<li class="toc1"><a href="#ilink195">ThemeRenamed</a><br>
 
-<br><br><br><h1>Properties</h1><br><a name="ilink186" /><h2><p class"section">Count Property</p></h2></a>
+<br><br><br><h1>Properties</h1><br><a name="ilink187" /><h2><p class"section">Count Property</p></h2></a>
 <p>Type: <b>Long</b> (Read only)</p>
 <h3>Description:</h3>
 <p>Returns the number of themes in the collection.</p><br>
-<a name="ilink187" /><h2><p class"section">Item Property</p></h2></a>
+<a name="ilink188" /><h2><p class"section">Item Property</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b><a href="#ilink2">NewTabTheme</a></b> (Default property, read only)&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IndexOrKey</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Returns a NewTabTheme object.</p><br>
 
-<br><br><br><h1>Methods</h1><br><a name="ilink189" /><h2><p class"section">Exists Method</p></h2></a>
+<br><br><br><h1>Methods</h1><br><a name="ilink190" /><h2><p class"section">Exists Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Boolean</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>nThemeName</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspString&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Returns True if the theme exists in the collection.</p><br>
-<a name="ilink190" /><h2><p class"section">Remove Method</p></h2></a>
+<a name="ilink191" /><h2><p class"section">Remove Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbspNone.&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>nThemeName</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspString&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Removes a theme from the collection.</p><br>
-<a name="ilink191" /><h2><p class"section">Rename Method</p></h2></a>
+<a name="ilink192" /><h2><p class"section">Rename Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbspNone.&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>nOldThemeName</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspString&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>nNewThemeName</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspString&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Renames a theme.</p><br>
 
-<br><br><br><h1>Events</h1><br><a name="ilink193" /><h2><p class"section">ThemeRemoved Event</p></h2></a>
+<br><br><br><h1>Events</h1><br><a name="ilink194" /><h2><p class"section">ThemeRemoved Event</p></h2></a>
 <p>No parameters.</p>
 <h3>Description:</h3>
 <p>Occurs after a theme has been removed.</p><br>
-<a name="ilink194" /><h2><p class"section">ThemeRenamed Event</p></h2></a>
+<a name="ilink195" /><h2><p class"section">ThemeRenamed Event</p></h2></a>
 <p>No parameters.</p>
 <h3>Description:</h3>
 <p>Occurs after a theme has ben renamed.</p><br>
 </body>
 </html>
 <a name="ilink4"><h1><p class="section">NewTabCtl Enumerations</p></h1></a>
-<li class="toc1"><a href="#ilink195">NTAutoRelocateControlsConstants</a></li><li class="toc1"><a href="#ilink196">NTAutoYesNoConstants</a></li><li class="toc1"><a href="#ilink197">NTBackStyleConstants</a></li><li class="toc1"><a href="#ilink198">NTFindTabMethodConstants</a></li><li class="toc1"><a href="#ilink199">NTFlatBarPosition</a></li><li class="toc1"><a href="#ilink200">NTFlatBorderModeConstants</a></li><li class="toc1"><a href="#ilink201">NTHighlightModeFlagsConstants</a></li><li class="toc1"><a href="#ilink202">NTIconAlignmentConstants</a></li><li class="toc1"><a href="#ilink203">NTMousePointerConstants</a></li><li class="toc1"><a href="#ilink204">NTOLEDropConstants</a></li><li class="toc1"><a href="#ilink205">NTStyleConstants</a></li><li class="toc1"><a href="#ilink206">NTSubclassingMethodConstants</a></li><li class="toc1"><a href="#ilink207">NTTabAppearanceConstants</a></li><li class="toc1"><a href="#ilink208">NTTabOrientationConstants</a></li><li class="toc1"><a href="#ilink209">NTTabTransitionConstants</a></li><li class="toc1"><a href="#ilink210">NTTabWidthStyleConstants</a></li><li class="toc1"><a href="#ilink211">NTTDIModeConstants</a></li><li class="toc1"><a href="#ilink212">NTTDINewTabTypeConstants</a></li><br><a name="ilink195" /><h2><p class"section">NTAutoRelocateControlsConstants</h2></p></h2></a>
+<li class="toc1"><a href="#ilink196">NTAutoRelocateControlsConstants</a></li><li class="toc1"><a href="#ilink197">NTAutoYesNoConstants</a></li><li class="toc1"><a href="#ilink198">NTBackStyleConstants</a></li><li class="toc1"><a href="#ilink199">NTFindTabMethodConstants</a></li><li class="toc1"><a href="#ilink200">NTFlatBarPosition</a></li><li class="toc1"><a href="#ilink201">NTFlatBorderModeConstants</a></li><li class="toc1"><a href="#ilink202">NTHighlightModeFlagsConstants</a></li><li class="toc1"><a href="#ilink203">NTIconAlignmentConstants</a></li><li class="toc1"><a href="#ilink204">NTMousePointerConstants</a></li><li class="toc1"><a href="#ilink205">NTOLEDropConstants</a></li><li class="toc1"><a href="#ilink206">NTStyleConstants</a></li><li class="toc1"><a href="#ilink207">NTSubclassingMethodConstants</a></li><li class="toc1"><a href="#ilink208">NTTabAppearanceConstants</a></li><li class="toc1"><a href="#ilink209">NTTabOrientationConstants</a></li><li class="toc1"><a href="#ilink210">NTTabTransitionConstants</a></li><li class="toc1"><a href="#ilink211">NTTabWidthStyleConstants</a></li><li class="toc1"><a href="#ilink212">NTTDIModeConstants</a></li><li class="toc1"><a href="#ilink213">NTTDINewTabTypeConstants</a></li><br><a name="ilink196" /><h2><p class"section">NTAutoRelocateControlsConstants</h2></p></h2></a>
 <p></p><br>
 <table class="table table2">
   <tr>
@@ -1494,7 +1505,7 @@ Use the names of the themes to set one into the <a href="#ilink122">Theme</a> pr
     <td>2    </td>
   </tr>
 </table>
-<br><a name="ilink196" /><h2><p class"section">NTAutoYesNoConstants</h2></p></h2></a>
+<br><a name="ilink197" /><h2><p class"section">NTAutoYesNoConstants</h2></p></h2></a>
 <p></p><br>
 <table class="table table2">
   <tr>
@@ -1510,7 +1521,7 @@ Use the names of the themes to set one into the <a href="#ilink122">Theme</a> pr
     <td>2    </td>
   </tr>
 </table>
-<br><a name="ilink197" /><h2><p class"section">NTBackStyleConstants</h2></p></h2></a>
+<br><a name="ilink198" /><h2><p class"section">NTBackStyleConstants</h2></p></h2></a>
 <p></p><br>
 <table class="table table2">
   <tr>
@@ -1526,7 +1537,7 @@ Use the names of the themes to set one into the <a href="#ilink122">Theme</a> pr
     <td>2    </td>
   </tr>
 </table>
-<br><a name="ilink198" /><h2><p class"section">NTFindTabMethodConstants</h2></p></h2></a>
+<br><a name="ilink199" /><h2><p class"section">NTFindTabMethodConstants</h2></p></h2></a>
 <p></p><br>
 <table class="table table2">
   <tr>
@@ -1546,7 +1557,7 @@ Use the names of the themes to set one into the <a href="#ilink122">Theme</a> pr
     <td>3    </td>
   </tr>
 </table>
-<br><a name="ilink199" /><h2><p class"section">NTFlatBarPosition</h2></p></h2></a>
+<br><a name="ilink200" /><h2><p class"section">NTFlatBarPosition</h2></p></h2></a>
 <p></p><br>
 <table class="table table2">
   <tr>
@@ -1558,7 +1569,7 @@ Use the names of the themes to set one into the <a href="#ilink122">Theme</a> pr
     <td>1    </td>
   </tr>
 </table>
-<br><a name="ilink200" /><h2><p class"section">NTFlatBorderModeConstants</h2></p></h2></a>
+<br><a name="ilink201" /><h2><p class"section">NTFlatBorderModeConstants</h2></p></h2></a>
 <p></p><br>
 <table class="table table2">
   <tr>
@@ -1570,7 +1581,7 @@ Use the names of the themes to set one into the <a href="#ilink122">Theme</a> pr
     <td>1    </td>
   </tr>
 </table>
-<br><a name="ilink201" /><h2><p class"section">NTHighlightModeFlagsConstants</h2></p></h2></a>
+<br><a name="ilink202" /><h2><p class"section">NTHighlightModeFlagsConstants</h2></p></h2></a>
 <p></p><br>
 <table class="table table2">
   <tr>
@@ -1634,7 +1645,7 @@ Use the names of the themes to set one into the <a href="#ilink122">Theme</a> pr
     <td>1023    </td>
   </tr>
 </table>
-<br><a name="ilink202" /><h2><p class"section">NTIconAlignmentConstants</h2></p></h2></a>
+<br><a name="ilink203" /><h2><p class"section">NTIconAlignmentConstants</h2></p></h2></a>
 <p></p><br>
 <table class="table table2">
   <tr>
@@ -1674,7 +1685,7 @@ Use the names of the themes to set one into the <a href="#ilink122">Theme</a> pr
     <td>8    </td>
   </tr>
 </table>
-<br><a name="ilink203" /><h2><p class"section">NTMousePointerConstants</h2></p></h2></a>
+<br><a name="ilink204" /><h2><p class"section">NTMousePointerConstants</h2></p></h2></a>
 <p></p><br>
 <table class="table table2">
   <tr>
@@ -1746,7 +1757,7 @@ Use the names of the themes to set one into the <a href="#ilink122">Theme</a> pr
     <td>99    </td>
   </tr>
 </table>
-<br><a name="ilink204" /><h2><p class"section">NTOLEDropConstants</h2></p></h2></a>
+<br><a name="ilink205" /><h2><p class"section">NTOLEDropConstants</h2></p></h2></a>
 <p></p><br>
 <table class="table table2">
   <tr>
@@ -1758,7 +1769,7 @@ Use the names of the themes to set one into the <a href="#ilink122">Theme</a> pr
     <td>1    </td>
   </tr>
 </table>
-<br><a name="ilink205" /><h2><p class"section">NTStyleConstants</h2></p></h2></a>
+<br><a name="ilink206" /><h2><p class"section">NTStyleConstants</h2></p></h2></a>
 <p></p><br>
 <table class="table table2">
   <tr>
@@ -1782,7 +1793,7 @@ Use the names of the themes to set one into the <a href="#ilink122">Theme</a> pr
     <td>4    </td>
   </tr>
 </table>
-<br><a name="ilink206" /><h2><p class"section">NTSubclassingMethodConstants</h2></p></h2></a>
+<br><a name="ilink207" /><h2><p class"section">NTSubclassingMethodConstants</h2></p></h2></a>
 <p></p><br>
 <table class="table table2">
   <tr>
@@ -1806,7 +1817,7 @@ Use the names of the themes to set one into the <a href="#ilink122">Theme</a> pr
     <td>4    </td>
   </tr>
 </table>
-<br><a name="ilink207" /><h2><p class"section">NTTabAppearanceConstants</h2></p></h2></a>
+<br><a name="ilink208" /><h2><p class"section">NTTabAppearanceConstants</h2></p></h2></a>
 <p></p><br>
 <table class="table table2">
   <tr>
@@ -1834,7 +1845,7 @@ Use the names of the themes to set one into the <a href="#ilink122">Theme</a> pr
     <td>5    </td>
   </tr>
 </table>
-<br><a name="ilink208" /><h2><p class"section">NTTabOrientationConstants</h2></p></h2></a>
+<br><a name="ilink209" /><h2><p class"section">NTTabOrientationConstants</h2></p></h2></a>
 <p></p><br>
 <table class="table table2">
   <tr>
@@ -1862,7 +1873,7 @@ Use the names of the themes to set one into the <a href="#ilink122">Theme</a> pr
     <td>5    </td>
   </tr>
 </table>
-<br><a name="ilink209" /><h2><p class"section">NTTabTransitionConstants</h2></p></h2></a>
+<br><a name="ilink210" /><h2><p class"section">NTTabTransitionConstants</h2></p></h2></a>
 <p></p><br>
 <table class="table table2">
   <tr>
@@ -1890,7 +1901,7 @@ Use the names of the themes to set one into the <a href="#ilink122">Theme</a> pr
     <td>5    </td>
   </tr>
 </table>
-<br><a name="ilink210" /><h2><p class"section">NTTabWidthStyleConstants</h2></p></h2></a>
+<br><a name="ilink211" /><h2><p class"section">NTTabWidthStyleConstants</h2></p></h2></a>
 <p></p><br>
 <table class="table table2">
   <tr>
@@ -1918,7 +1929,7 @@ Use the names of the themes to set one into the <a href="#ilink122">Theme</a> pr
     <td>5    </td>
   </tr>
 </table>
-<br><a name="ilink211" /><h2><p class"section">NTTDIModeConstants</h2></p></h2></a>
+<br><a name="ilink212" /><h2><p class"section">NTTDIModeConstants</h2></p></h2></a>
 <p></p><br>
 <table class="table table2">
   <tr>
@@ -1934,7 +1945,7 @@ Use the names of the themes to set one into the <a href="#ilink122">Theme</a> pr
     <td>2    </td>
   </tr>
 </table>
-<br><a name="ilink212" /><h2><p class"section">NTTDINewTabTypeConstants</h2></p></h2></a>
+<br><a name="ilink213" /><h2><p class"section">NTTDINewTabTypeConstants</h2></p></h2></a>
 <p></p><br>
 <table class="table table2">
   <tr>

@@ -1,3 +1,4 @@
+2024-01-17 Added FindTab method.
 2024-01-13 Changed to OLE version 7.0.
 2024-01-13 Added SetActiveTab method.
 2024-01-13 Changed most of the Integer properties to Long, and new NewTab events (not available in the original SSTab) from Integer to Long. Old original SSTab events were left As Integer.

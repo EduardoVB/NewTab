@@ -14420,41 +14420,52 @@ End Sub
     
 Public Function SetActiveTab(ByVal Find As Variant, Optional ByVal Method As NTFindTabMethodConstants = ntFindCaption) As Boolean
 Attribute SetActiveTab.VB_Description = "Sets the current ('selected' or 'active') tab by other means than its index."
+    Dim t As Long
+    
+    t = FindTab(Find, Method)
+    If t > -1 Then
+        TabSel = t
+        SetActiveTab = True
+    End If
+End Function
+
+Public Function FindTab(ByVal Find As Variant, Optional ByVal Method As NTFindTabMethodConstants = ntFindCaption) As Long
+Attribute FindTab.VB_Description = "Finds a tab based on the values provided in the parameters and returns its index. If the tab is not found, it returns -1."
     Dim c As Long
     
-    SetActiveTab = True
+    FindTab = -1
     If Method = ntFindCaption Then
         Find = LCase$(Find)
         For c = 0 To mTabs - 1
             If LCase$(mTabData(c).Caption) = Find Then
-                TabSel = c
+                FindTab = c
                 Exit Function
             End If
         Next
     ElseIf Method = ntFindOriginalIndex Then
         For c = 0 To mTabs - 1
             If mTabData(c).OriginalIndex = Find Then
-                TabSel = c
+                FindTab = c
                 Exit Function
             End If
         Next
     ElseIf Method = ntFindData Then
         For c = 0 To mTabs - 1
             If mTabData(c).Data = Find Then
-                TabSel = c
+                FindTab = c
                 Exit Function
             End If
         Next
     ElseIf Method = ntFindTag Then
         For c = 0 To mTabs - 1
             If mTabData(c).Tag = Find Then
-                TabSel = c
+                FindTab = c
                 Exit Function
             End If
         Next
     End If
-    SetActiveTab = False
 End Function
+
 
 'Tab is a reserved keyword in VB6, but you can remove that restriction.
 'To be able to compile with Tab property, you need to replace VBA6.DLL with this version: https://github.com/EduardoVB/NewTab/raw/main/control-source/lib/VBA6.DLL
