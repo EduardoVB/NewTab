@@ -14557,6 +14557,23 @@ Private Sub CopyTabData(nOrg As T_TabData, ByRef nDest As T_TabData)
     nDest.Width = nOrg.Width
 End Sub
 
+
+Public Function GetThemeData() As String
+Attribute GetThemeData.VB_Description = "Returns a string with the current theme data. It can be later applied with SetThemeData."
+    GetThemeData = GetThemeStringFromControl(Me, Ambient.BackColor, Ambient.ForeColor, Ambient.Font)
+End Function
+
+
+Public Sub SetThemeData(ByVal nThemeData As String)
+Attribute SetThemeData.VB_Description = "Applies a theme from data contained in a String. That string can be obtained with GetThemeData."
+    Dim iTheme As NewTabTheme
+    
+    Set iTheme = New NewTabTheme
+    iTheme.ThemeString = nThemeData
+    ApplyThemeToControl iTheme.Data, Me, Ambient.BackColor, Ambient.ForeColor, Ambient.Font
+End Sub
+
+
 'Tab is a reserved keyword in VB6, but you can remove that restriction.
 'To be able to compile with Tab property, you need to replace VBA6.DLL with this version: https://github.com/EduardoVB/NewTab/raw/main/control-source/lib/VBA6.DLL
 'VBA6.DLL is in VS6's installation folder, usually:

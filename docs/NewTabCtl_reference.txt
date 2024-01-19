@@ -920,6 +920,13 @@ GetTabWidth function:
 	Returns the width of a tab.
 
 
+GetThemeData function:
+	Return Type:	String
+	No parameters.
+
+	Returns a string with the current theme data. It can be later applied with SetThemeData.
+
+
 IsThemed function:
 	Return Type:	Boolean
 	No parameters.
@@ -973,6 +980,13 @@ SetTabsOrder method:
 	    In	Required	PosData	As	String
 
 	Sets the tab positions (order) using data previously obtained with GetTabsOrder. CanReorderTabs must be set to True.
+
+
+SetThemeData method:
+	Parameter(s):
+	    In	Required	nThemeData	As	String
+
+	Applies a theme from data contained in a String. That string can be obtained with GetThemeData.
 
 
 TDIGetTabIndexByTabNumber function:

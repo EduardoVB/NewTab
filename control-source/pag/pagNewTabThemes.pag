@@ -544,10 +544,8 @@ Private Sub chkSaveInControl_Click()
         iTheme.Name = iName
         mThemesControl.Add iTheme
         Set mCurrentSettings = iTheme
-        Debug.Print "Change name", mSelectedSettingsHash, GetSelectedTheme.Hash, mLoadTimeThemeHash, mCurrentSettings.Hash
         LoadThemes
     Else
-        Debug.Print "remove 1", mSelectedSettingsHash, GetSelectedTheme.Hash, mLoadTimeThemeHash, mCurrentSettings.Hash
         If (chkSaveInFile.Value = vbUnchecked) And (chkSaveInRegistry.Value = vbUnchecked) Then
             MsgBox "Since this Theme is not currently saved anywhere else, it will be deleted permanently." & vbCrLf & "The changes will be applied when you accept the property page changes."
             mSelectedSettingsHash = mLoadTimeThemeHash
@@ -847,7 +845,6 @@ Private Sub PropertyPage_SelectionChanged()
     Dim iTheme As NewTabTheme
     Dim iTheme2 As NewTabTheme
     
-    'Debug.Print PropertyPage.Name & " Start: " & Round(Timer, 2)
     mLoading = True
     If TypeName(SelectedControls(0)) <> "NewTab" Then Exit Sub
     Set iCtl = SelectedControls(0)
@@ -934,7 +931,6 @@ Private Sub PropertyPage_SelectionChanged()
     mThemesFile_Changed = False
     mThemesRegistry_Changed = False
     
-    'Debug.Print PropertyPage.Name & " End: " & Round(Timer, 2)
     mLoading = False
 End Sub
 
