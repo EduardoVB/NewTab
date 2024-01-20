@@ -348,7 +348,9 @@ When the control is themed, this property value has no effect.<br>
 <h3>See Also:</h3><a href="#ilink155">BeforeTabReorder</a> event<br>
 <a href="#ilink181">TabReordered</a> event<br>
 <a href="#ilink139">GetTabsOrder</a> method<br>
-<a href="#ilink148">SetTabsOrder</a> method</p><br>
+<a href="#ilink148">SetTabsOrder</a> method<br>
+<a href="#ilink136">FindTab</a> method<br>
+<a href="#ilink146">SetActiveTab</a> method</p><br>
 <a name="ilink13" /><h2><p class"section">Caption Property</p></h2></a>
 <p>Type: <b>String</b></p>
 <h3>Description:</h3>
@@ -1193,7 +1195,9 @@ Please read <a href="#ilink146">SetActiveTab</a> for an explanation of the param
 <a name="ilink142" /><h2><p class"section">GetThemeData Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>String</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspNo parameters.&nbsp&nbsp</td>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
-<p>Returns a string with the current theme data. It can be later applied with <a href="#ilink149">SetThemeData</a>.</p><br>
+<p>Returns a string with the current theme data. It can be later applied with <a href="#ilink149">SetThemeData</a>.<br>
+<br>
+<h3>See Also:</h3><a href="#ilink122">Theme</a> property</p><br>
 <a name="ilink143" /><h2><p class"section">IsThemed Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Boolean</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspNo parameters.&nbsp&nbsp</td>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
@@ -1237,7 +1241,9 @@ This method is mainly useful when you don't know the position of the tab because
 <a name="ilink149" /><h2><p class"section">SetThemeData Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbspNone.&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>nThemeData</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspString&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
-<p>Applies a theme from data contained in a String. That string can be obtained with <a href="#ilink142">GetThemeData</a>.</p><br>
+<p>Applies a theme from data contained in a String. That string can be obtained with <a href="#ilink142">GetThemeData</a>.<br>
+<br>
+<h3>See Also:</h3><a href="#ilink122">Theme</a> property</p><br>
 <a name="ilink150" /><h2><p class"section">TDIGetTabIndexByTabNumber Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Long</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>nTabNumber</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
