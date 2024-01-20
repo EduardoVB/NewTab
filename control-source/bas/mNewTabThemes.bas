@@ -404,12 +404,15 @@ Public Sub ApplyThemeToControl(ByRef nThemeData As Collection, nCtl As NewTab, n
     nCtl.Redraw = False
     nCtl.SetDefaultPropertyValues True
     
+    If PropertyExists("BackColor") Then nCtl.BackColor = GetPropertyValue("BackColor")
+    If PropertyExists("ForeColor") Then nCtl.ForeColor = GetPropertyValue("ForeColor")
+    
     Set iProp = Nothing
     On Error Resume Next
     Set iProp = nThemeData("IconColorTabSel")
     On Error GoTo 0
     If iProp Is Nothing Then
-        nCtl.IconColorTabSel = nAmbientForeColor
+        nCtl.IconColorTabSel = nCtl.ForeColor
     Else
         If iProp.Value = "F" Then nCtl.IconColorTabSel = nAmbientForeColor Else nCtl.IconColorTabSel = Val(iProp.Value)
     End If
@@ -418,13 +421,13 @@ Public Sub ApplyThemeToControl(ByRef nThemeData As Collection, nCtl As NewTab, n
     Set iProp = nThemeData("IconColorTabHighlighted")
     On Error GoTo 0
     If iProp Is Nothing Then
-        nCtl.IconColorTabHighlighted = nAmbientForeColor
+        nCtl.IconColorTabHighlighted = nCtl.ForeColor
     Else
         If iProp.Value = "F" Then nCtl.IconColorTabHighlighted = nAmbientForeColor Else nCtl.IconColorTabHighlighted = Val(iProp.Value)
     End If
     If nCtl.TDIMode = ntTDIModeNone Then
         If iProp Is Nothing Then
-            nCtl.IconColorMouseHover = nAmbientForeColor
+            nCtl.IconColorMouseHover = nCtl.ForeColor
         Else
             If iProp.Value = "F" Then nCtl.IconColorMouseHover = nAmbientForeColor Else nCtl.IconColorMouseHover = Val(iProp.Value)
         End If
@@ -433,17 +436,15 @@ Public Sub ApplyThemeToControl(ByRef nThemeData As Collection, nCtl As NewTab, n
         Set iProp = nThemeData("ForeColorTabSel")
         On Error GoTo 0
         If iProp Is Nothing Then
-            nCtl.IconColorMouseHoverTabSel = nAmbientForeColor
+            nCtl.IconColorMouseHoverTabSel = nCtl.ForeColor
         Else
             If iProp.Value = "F" Then nCtl.IconColorMouseHoverTabSel = nAmbientForeColor Else nCtl.IconColorMouseHoverTabSel = Val(iProp.Value)
         End If
     End If
     
-    If PropertyExists("BackColor") Then nCtl.BackColor = GetPropertyValue("BackColor")
     If PropertyExists("BackColorTabs") Then nCtl.BackColorTabs = GetPropertyValue("BackColorTabs") Else nCtl.BackColorTabs = nCtl.BackColor
-    If PropertyExists("BackColorTabSel") Then nCtl.BackColorTabSel = GetPropertyValue("BackColorTabSel")
+    If PropertyExists("BackColorTabSel") Then nCtl.BackColorTabSel = GetPropertyValue("BackColorTabSel") Else nCtl.BackColorTabSel = nCtl.BackColor
     
-    If PropertyExists("ForeColor") Then nCtl.ForeColor = GetPropertyValue("ForeColor")
     If PropertyExists("ForeColorTabSel") Then nCtl.ForeColorTabSel = GetPropertyValue("ForeColorTabSel") Else nCtl.ForeColorTabSel = nCtl.ForeColor
     If PropertyExists("ForeColorHighlighted") Then nCtl.ForeColorHighlighted = GetPropertyValue("ForeColorHighlighted") Else nCtl.ForeColorHighlighted = nCtl.ForeColor
     If PropertyExists("FlatTabBorderColorHighlight") Then nCtl.FlatTabBorderColorHighlight = GetPropertyValue("FlatTabBorderColorHighlight") Else nCtl.FlatTabBorderColorHighlight = nCtl.ForeColor
