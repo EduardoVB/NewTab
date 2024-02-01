@@ -598,9 +598,9 @@ TabFixedWidth property:
 	
 	Additional parameter(s):
 	    In	Required	Index	As	Long
-	Returns/sets a fixed width for a tab. To set it for its automatic width (according to the TabWidthStyle setting), set it to 0.
+	Returns/sets a fixed width for a tab. To set it for its automatic width (according to the TabWidthStyle setting), set it to 0 (zero).
 	
-	Note: you can use the GetTabWidth function (or GetTabHeight for vertical orientations) for getting the normal size of the tab. That must be done before setting the fixed size with TabFixedWidth.
+	Note: you can use the GetTabWidth function (or GetTabHeight for vertical orientations) for getting the normal size of the tab. That must be done while TabFixedWidth is set to 0 (zero).
 
 
 TabHeight property:
