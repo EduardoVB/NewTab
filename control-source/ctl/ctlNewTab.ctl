@@ -806,6 +806,7 @@ Private Type T_TabData
     Data As Long
     TDITabNumber As Long
     OriginalIndex As Long
+    FixedWidth As Long
 End Type
 
 Private Const cRowPerspectiveSpace As Long = 150&  ' in Twips
@@ -965,7 +966,7 @@ Attribute mForm.VB_VarHelpID = -1
 Private mFirstDraw As Boolean
 Private mUserControlShown As Boolean
 Private mTabBodyRect_Prev As RECT
-Private mEnsureDrawn As Boolean
+Private mEnsuringDrawn As Boolean
 Private mDPIX As Long
 Private mDPIY As Long
 Private mXCorrection As Single
@@ -6075,7 +6076,7 @@ Private Sub Draw()
     If mTabBodyResizeEventPending Then RaiseEvent_TabBodyResize
     If Not mRedraw Then
         mNeedToDraw = True
-        If Not mEnsureDrawn Then
+        If Not mEnsuringDrawn Then
             Exit Sub
         End If
     End If
@@ -6976,7 +6977,9 @@ Private Sub Draw()
                                     .Right = iLng - IIf(mControlIsThemed, mThemedTabBodyRightShadowPixels - 2, 0)
                                 End If
                             End If
-                            
+                            If iTabData.FixedWidth <> 0 Then
+                                .Right = .Left + iTabData.FixedWidth
+                            End If
                         End With
                         mTabData(t) = iTabData
                     End If
@@ -7072,6 +7075,10 @@ Private Sub Draw()
                                 If Abs(.Right - iLng) < 6 Then
                                     .Right = iLng - IIf(mControlIsThemed, mThemedTabBodyRightShadowPixels - 2, 0)
                                 End If
+                            End If
+                            If iTabData.FixedWidth <> 0 Then
+                                .Right = .Left + iTabData.FixedWidth
+                                iTabLeft = .Right + 1
                             End If
                         End With
                         mTabData(t) = iTabData
@@ -8869,8 +8876,8 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     iMeasureRect.Bottom = iMeasureRect.Top + 5
     
     iFlags = DT_CALCRECT Or DT_SINGLELINE Or DT_CENTER
-    iCaption = iTabData.Caption
-    DrawTextW picDraw.hDC, StrPtr(iCaption & IIf(picDraw.Font.Italic, "  ", "")), -1, iMeasureRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
+    iCaption = iTabData.Caption & IIf(picDraw.Font.Italic, "  ", "")
+    DrawTextW picDraw.hDC, StrPtr(iCaption), -1, iMeasureRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
     iMeasureWidth = (iMeasureRect.Right - iMeasureRect.Left)
     
     If iDrawIcon Then
@@ -8927,9 +8934,9 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     Else
         iFlags = DT_CALCRECT Or DT_SINGLELINE Or DT_END_ELLIPSIS Or DT_MODIFYSTRING
     End If
-    iCaption = iTabData.Caption
+    iCaption = iTabData.Caption & IIf(picDraw.Font.Italic, "  ", "")
 
-    DrawTextW picDraw.hDC, StrPtr(iCaption & IIf(picDraw.Font.Italic, "  ", "")), -1, iMeasureRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
+    DrawTextW picDraw.hDC, StrPtr(iCaption & IIf(iFlags And DT_MODIFYSTRING, "    ", "")), IIf(iFlags And DT_MODIFYSTRING, Len(iCaption), -1), iMeasureRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
 '    If nTab = 0 Then Stop
     iMeasureWidth = (iMeasureRect.Right - iMeasureRect.Left)
     iMeasureHeight = (iMeasureRect.Bottom - iMeasureRect.Top)
@@ -9139,7 +9146,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
         iCaptionRect.Top = iCaptionRect.Top - iTabCenterY
     End If
     
-    DrawTextW picDraw.hDC, StrPtr(iCaption), -1, iCaptionRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
+    DrawTextW picDraw.hDC, StrPtr(iCaption & IIf(iFlags And DT_MODIFYSTRING, "    ", "")), IIf(iFlags And DT_MODIFYSTRING, Len(iCaption), -1), iCaptionRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
     
     If mTDIMode = ntTDIModeForms Then
         If mTabData(nTab).Data <> 0 Then
@@ -10120,14 +10127,14 @@ Private Sub EnsureDrawn()
     Dim c  As Long
     
     If (Not mFirstDraw) Or tmrDraw.Enabled Or mDrawMessagePosted Then
-        mEnsureDrawn = True
+        mEnsuringDrawn = True
         Draw
         Do Until Not (mDrawMessagePosted Or tmrDraw.Enabled)
             Draw
             c = c + 1
             If c > 5 Then Exit Do
         Loop
-        mEnsureDrawn = False
+        mEnsuringDrawn = False
     End If
 End Sub
 
@@ -14555,6 +14562,7 @@ Private Sub CopyTabData(nOrg As T_TabData, ByRef nDest As T_TabData)
     nDest.TopTab = nOrg.TopTab
     nDest.Visible = nOrg.Visible
     nDest.Width = nOrg.Width
+    nDest.FixedWidth = nOrg.FixedWidth
 End Sub
 
 
@@ -14572,6 +14580,32 @@ Attribute SetThemeData.VB_Description = "Applies a theme from data contained in 
     iTheme.ThemeString = nThemeData
     ApplyThemeToControl iTheme.Data, Me, Ambient.BackColor, Ambient.ForeColor, Ambient.Font
 End Sub
+
+
+Public Property Get TabFixedWidth(ByVal Index As Long) As Long
+Attribute TabFixedWidth.VB_Description = "Returns/sets a fixed width for a tab. To set it for its automatic width (according to the TabWidthStyle setting), set it to 0."
+    If (Index < 0) Or (Index >= mTabs) Then
+        RaiseError 381, TypeName(Me) ' invalid property array index
+        Exit Property
+    End If
+    TabFixedWidth = UserControl.ScaleX(mTabData(Index).FixedWidth, vbPixels, vbTwips)
+End Property
+
+Public Property Let TabFixedWidth(ByVal Index As Long, ByVal nValue As Long)
+    If (Index < 0) Or (Index >= mTabs) Then
+        RaiseError 381, TypeName(Me) ' invalid property array index
+        Exit Property
+    End If
+    If nValue <> mTabData(Index).FixedWidth Then
+        If (nValue < 0) Then
+            RaiseError 380, TypeName(Me) ' invalid property value
+            Exit Property
+        End If
+    End If
+    
+    mTabData(Index).FixedWidth = UserControl.ScaleX(nValue, vbTwips, vbPixels)
+    DrawDelayed
+End Property
 
 
 'Tab is a reserved keyword in VB6, but you can remove that restriction.
