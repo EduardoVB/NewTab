@@ -1,9 +1,9 @@
 VERSION 5.00
-Object = "{66E63055-5A66-4C79-9327-4BC077858695}#3.0#0"; "NewTab01.ocx"
+Object = "{66E63055-5A66-4C79-9327-4BC077858695}#7.0#0"; "NewTab01.ocx"
 Begin VB.Form frmMain 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "NewTab sample"
-   ClientHeight    =   4716
+   ClientHeight    =   5040
    ClientLeft      =   1524
    ClientTop       =   1932
    ClientWidth     =   5844
@@ -17,11 +17,18 @@ Begin VB.Form frmMain
       Strikethrough   =   0   'False
    EndProperty
    LinkTopic       =   "Form1"
-   LockControls    =   -1  'True
    MaxButton       =   0   'False
    MinButton       =   0   'False
-   ScaleHeight     =   4716
+   ScaleHeight     =   5040
    ScaleWidth      =   5844
+   Begin VB.CommandButton Command3 
+      Caption         =   "All current default themes in one sight"
+      Height          =   370
+      Left            =   360
+      TabIndex        =   5
+      Top             =   4560
+      Width           =   5130
+   End
    Begin VB.CommandButton Command2 
       Caption         =   "Check some tabs with fonts icons"
       Height          =   370
@@ -99,6 +106,10 @@ End Sub
 
 Private Sub Command2_Click()
     frmIcons.Show vbModal
+End Sub
+
+Private Sub Command3_Click()
+    frmAllThemes.Show vbModal
 End Sub
 
 Private Sub Form_Load()

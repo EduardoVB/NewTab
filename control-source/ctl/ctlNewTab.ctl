@@ -1097,6 +1097,8 @@ Private mReSelTab As Boolean
 Private WithEvents mTabIconFontsEventsHandler As cFontEventHandlers
 Attribute mTabIconFontsEventsHandler.VB_VarHelpID = -1
 Private mChangingHighContrastTheme As Boolean
+Private mControlsForeColor_PrevColor As Long
+Private mSettingBackColorTabSelFromBackColorTabs As Boolean
 
 ' Colors
 Private m3DDKShadow As Long
@@ -1376,7 +1378,7 @@ Public Property Let ForeColorTabSel(ByVal nValue As OLE_COLOR)
                 IconColorTabSel = nValue
             End If
             If mChangeControlsForeColor Then
-                SetControlsForeColor mForeColorTabSel, iPrev
+                SetControlsProperForeColor IIf(mControlsForeColor_PrevColor = -1, iPrev, mControlsForeColor_PrevColor)
             End If
             If mTDIMode <> ntTDIModeNone Then
                 If Not mAmbientUserMode Then lblTDILabel.ForeColor = mForeColorTabSel
@@ -1387,6 +1389,22 @@ Public Property Let ForeColorTabSel(ByVal nValue As OLE_COLOR)
     End If
 End Property
 
+Private Sub SetControlsProperForeColor(Optional nPrevColor As Long = -1)
+    If ColorsHaveEnoughContrast(mBackColorTabSel, mForeColorTabSel) Then
+        SetControlsForeColor mForeColorTabSel, nPrevColor
+    ElseIf ColorsHaveEnoughContrast(mBackColorTabSel, mForeColor) Then
+        SetControlsForeColor mForeColor, nPrevColor
+        'Debug.Print Extender.Index
+    ElseIf ColorsHaveEnoughContrast(mBackColorTabSel, Ambient.ForeColor) Then
+        SetControlsForeColor Ambient.ForeColor, nPrevColor
+    ElseIf ColorsHaveEnoughContrast(mBackColorTabSel, mForeColorTabSel, 80) Then
+        SetControlsForeColor mForeColorTabSel, nPrevColor
+    ElseIf ColorsHaveEnoughContrast(mBackColorTabSel, mForeColor, 80) Then
+        SetControlsForeColor mForeColor, nPrevColor
+    ElseIf ColorsHaveEnoughContrast(mBackColorTabSel, Ambient.ForeColor, 80) Then
+        SetControlsForeColor Ambient.ForeColor, nPrevColor
+    End If
+End Sub
 
 Public Property Get ForeColorHighlighted() As OLE_COLOR
     If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
@@ -2616,7 +2634,9 @@ Public Property Let BackColorTabs(ByVal nValue As OLE_COLOR)
             If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
                 mHandleHighContrastTheme_OrigBackColorTabs = nValue
                 If (mBackColorTabSel = iPrev) And (mBackColorTabSel <> nValue) Then
+                    mSettingBackColorTabSelFromBackColorTabs = True
                     BackColorTabSel = nValue
+                    mSettingBackColorTabSelFromBackColorTabs = False
                 End If
             Else
                 mBackColorTabs = nValue
@@ -2625,7 +2645,9 @@ Public Property Let BackColorTabs(ByVal nValue As OLE_COLOR)
                 iWv = IsWindowVisible(mUserControlHwnd) <> 0
                 If iWv Then SendMessage mUserControlHwnd, WM_SETREDRAW, False, 0&
                 If ((mBackColorTabSel = iPrev) Or mBackColorTabSel_IsAutomatic) And (mBackColorTabSel <> nValue) And (mBackStyle = ntOpaque) Then
+                    mSettingBackColorTabSelFromBackColorTabs = True
                     BackColorTabSel = nValue
+                    mSettingBackColorTabSelFromBackColorTabs = False
                 Else
                     Draw
                 End If
@@ -2659,7 +2681,7 @@ Public Property Let BackColorTabSel(ByVal nValue As OLE_COLOR)
         If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
         If Not mChangingHighContrastTheme Then
             'mBackColorTabSel_IsAutomatic = (nValue = BackColorTabs) Or (nValue = GetAutomaticBackColorTabSel)
-            mBackColorTabSel_IsAutomatic = (nValue = -1) Or (nValue = GetAutomaticBackColorTabSel)
+            mBackColorTabSel_IsAutomatic = (nValue = -1) Or (nValue = GetAutomaticBackColorTabSel) Or mSettingBackColorTabSelFromBackColorTabs
             If mBackColorTabSel_IsAutomatic Then nValue = GetAutomaticBackColorTabSel
         End If
         If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn And (Not mChangingHighContrastTheme) Then
@@ -2680,6 +2702,9 @@ Public Property Let BackColorTabSel(ByVal nValue As OLE_COLOR)
                 If iWv Then SendMessage mUserControlHwnd, WM_SETREDRAW, False, 0&
                 If mChangeControlsBackColor Then
                     SetControlsBackColor IIf((Not Enabled) And mShowDisabledState, mBackColorTabSelDisabled, mBackColorTabSel), iPrev
+                    If mChangeControlsForeColor Then
+                        SetControlsProperForeColor
+                    End If
                 End If
                 mSubclassControlsPaintingPending = True
                 mRepaintSubclassedControls = True
@@ -3355,9 +3380,9 @@ Public Property Let ChangeControlsForeColor(ByVal nValue As Boolean)
         iWv = IsWindowVisible(mUserControlHwnd) <> 0
         If iWv Then SendMessage mUserControlHwnd, WM_SETREDRAW, False, 0&
         If Not mChangeControlsForeColor Then
-            SetControlsForeColor vbButtonText, mForeColorTabSel
+            SetControlsForeColor vbButtonText, IIf(mControlsForeColor_PrevColor = -1, mForeColorTabSel, mControlsForeColor_PrevColor)
         Else
-            SetControlsForeColor mForeColorTabSel
+            SetControlsProperForeColor
         End If
         mSubclassControlsPaintingPending = True
         mRepaintSubclassedControls = True
@@ -3816,7 +3841,7 @@ Private Sub tmrCheckContainedControlsAdditionDesignTime_Timer()
     If UserControlContainedControlsCount <> mLastContainedControlsCount Then
         mLastContainedControlsCount = UserControlContainedControlsCount
         SetControlsBackColor mBackColorTabSel
-        SetControlsForeColor mForeColorTabSel
+        SetControlsProperForeColor
         If mControlIsThemed Or (mBackStyle = ntTransparent) Then
             mSubclassControlsPaintingPending = True
             RedrawWindow mUserControlHwnd, ByVal 0&, 0&, RDW_INVALIDATE Or RDW_ALLCHILDREN
@@ -4136,6 +4161,7 @@ Private Sub UserControl_Initialize()
     mMouseIsOverIcon_Tab = -1
     mTabIconDistanceToCaptionDPIScaled = cTabIconDistanceToCaption * mDPIScale
     mIconClickExtendDPIScaled = cIconClickExtend * mDPIScale
+    mControlsForeColor_PrevColor = -1
 End Sub
 
 Private Sub UserControl_InitProperties()
@@ -4342,7 +4368,7 @@ Friend Sub SetDefaultPropertyValues(Optional nSetControlsColors As Boolean)
     UserControl.BackColor = mBackColor
     If nSetControlsColors Then
         SetControlsBackColor IIf(mEnabled Or Not mShowDisabledState, mBackColorTabSel, mBackColorTabSelDisabled), iBackColor_Prev
-        SetControlsForeColor mForeColorTabSel, iForeColor_Prev
+        SetControlsProperForeColor IIf(mControlsForeColor_PrevColor = -1, iForeColor_Prev, mControlsForeColor_PrevColor)
     End If
     mNeedToDraw = True
 End Sub
@@ -5677,7 +5703,7 @@ Private Sub UserControl_Show()
     End If
     If mChangeControlsForeColor Then
         If Not mChangedControlsForeColor Then
-            SetControlsForeColor mForeColorTabSel
+            SetControlsProperForeColor
             mChangedControlsForeColor = True
         End If
     End If
@@ -7576,7 +7602,11 @@ Private Sub DrawTab(ByVal nTab As Long)
             Else
                 iFlatBarTopHeight = 1
                 If (iHighlightGradient <> ntGradientNone) Then
-                    iFlatBarTopColor = mFlatBarGlowColor
+                    If iHighlightGradient = ntGradientDouble Then
+                        iFlatBarTopColor = iBackColorTabs2
+                    Else
+                        iFlatBarTopColor = iHighlightColor
+                    End If
                 Else
                     iFlatBarTopColor = iFlatTabsSeparationLineColor
                 End If
@@ -8064,7 +8094,11 @@ Private Sub DrawTab(ByVal nTab As Long)
                 If iHighlightFlatDrawBorder Then
                     picDraw.Line (.Right, .Top + iTopOffset + iFlatRightRoundness)-(.Right, .Bottom - iFlatRightRoundness + 1), iHighlightFlatDrawBorder_Color
                 ElseIf Not ((iFlatRightLineColor = mBackColorTabs2) And iTabData.RightTab And (iFlatRightRoundness > 0)) Then
-                    picDraw.Line (.Right, .Top + iTopOffset + iFlatRightRoundness)-(.Right, .Bottom + iBottomOffset + iExtI), iFlatRightLineColor
+                    If ((iHighlightGradient = ntGradientPlain) Or (iHighlightGradient = ntGradientSimple)) And iHighlighted And (Not iActive) And (mHighlightFlatBar Or mHighlightFlatBarTabSel) Then
+                        picDraw.Line (.Right, .Top + iTopOffset + iFlatRightRoundness)-(.Right, .Bottom + iBottomOffset + iExtI), iHighlightColor
+                    Else
+                        picDraw.Line (.Right, .Top + iTopOffset + iFlatRightRoundness)-(.Right, .Bottom + iBottomOffset + iExtI), iFlatRightLineColor
+                    End If
                 End If
             Else
                 picDraw.Line (.Right, .Top + 4)-(.Right, .Bottom + iExtI), i3DDKShadow
@@ -8104,7 +8138,11 @@ Private Sub DrawTab(ByVal nTab As Long)
                 If iHighlightFlatDrawBorder Then
                     picDraw.Line (.Left + iLeftOffset, .Top + iTopOffset + iFlatLeftRoundness)-(.Left + iLeftOffset, .Bottom - iFlatLeftRoundness + 1), iHighlightFlatDrawBorder_Color
                 ElseIf iFlatLeftLineColor <> mBackColorTabs2 Then
-                    picDraw.Line (.Left + iLeftOffset, .Top + iTopOffset + iFlatLeftRoundness)-(.Left + iLeftOffset, .Bottom + iBottomOffset + iExtI), iFlatLeftLineColor
+                    If ((iHighlightGradient = ntGradientPlain) Or (iHighlightGradient = ntGradientSimple)) And iHighlighted And (Not iActive) And (mHighlightFlatBar Or mHighlightFlatBarTabSel) Then
+                        picDraw.Line (.Left + iLeftOffset, .Top + iTopOffset + iFlatLeftRoundness)-(.Left + iLeftOffset, .Bottom + iBottomOffset + iExtI), iHighlightColor
+                    Else
+                        picDraw.Line (.Left + iLeftOffset, .Top + iTopOffset + iFlatLeftRoundness)-(.Left + iLeftOffset, .Bottom + iBottomOffset + iExtI), iFlatLeftLineColor
+                    End If
                 End If
             Else
                 If iRoundedTabs Then
@@ -8168,7 +8206,11 @@ Private Sub DrawTab(ByVal nTab As Long)
                     If iHighlightFlatDrawBorder Then
                         iLineColor = iHighlightFlatDrawBorder_Color
                     Else
-                        iLineColor = IIf((mFlatBorderMode = ntBorderTabs) Or iActive, iFlatBorderColor, iFlatTabsSeparationLineColor)
+                        If ((iHighlightGradient = ntGradientPlain) Or (iHighlightGradient = ntGradientSimple)) And iHighlighted And (Not iActive) And (mHighlightFlatBar Or mHighlightFlatBarTabSel) Then
+                            iLineColor = IIf((mFlatBorderMode = ntBorderTabs) Or iActive, iFlatBorderColor, iHighlightColor)
+                        Else
+                            iLineColor = IIf((mFlatBorderMode = ntBorderTabs) Or iActive, iFlatBorderColor, iFlatTabsSeparationLineColor)
+                        End If
                     End If
                     If iLineColor <> mBackColorTabs2 Then
                         DrawRoundedCorner ntCornerTopRight, .Right + iRightOffset, .Top + iTopOffset, iFlatRightRoundness, iLineColor, iFlatBarTopHeight
@@ -8221,7 +8263,11 @@ Private Sub DrawTab(ByVal nTab As Long)
                     If iHighlightFlatDrawBorder Then
                         iLineColor = iHighlightFlatDrawBorder_Color
                     Else
-                        iLineColor = IIf((mFlatBorderMode = ntBorderTabs) Or (iActive And (mFlatBorderMode = ntBorderTabSel)), iFlatBorderColor, iFlatTabsSeparationLineColor)
+                        If ((iHighlightGradient = ntGradientPlain) Or (iHighlightGradient = ntGradientSimple)) And iHighlighted And (Not iActive) And (mHighlightFlatBar Or mHighlightFlatBarTabSel) Then
+                            iLineColor = IIf((mFlatBorderMode = ntBorderTabs) Or iActive, iFlatBorderColor, iHighlightColor)
+                        Else
+                            iLineColor = IIf((mFlatBorderMode = ntBorderTabs) Or (iActive And (mFlatBorderMode = ntBorderTabSel)), iFlatBorderColor, iFlatTabsSeparationLineColor)
+                        End If
                     End If
                     If iLineColor <> mBackColorTabs2 Then
                         DrawRoundedCorner ntCornerTopleft, .Left + iLeftOffset, .Top + iTopOffset, iFlatLeftRoundness, iLineColor, iFlatBarTopHeight
@@ -8655,7 +8701,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
                 Else
                     iFlatBarHeightTop = mFlatBarHeightDPIScaled
                 End If
-                If (mHighlightFlatBarWithGrip And (Not iActive) And iTabData.Hovered) Or (mHighlightFlatBarWithGripTabSel And iActive) Then
+                If (mHighlightFlatBarWithGrip And (Not iActive) And iTabData.Hovered And mAmbientUserMode) Or (mHighlightFlatBarWithGripTabSel And iActive) Then
                     If mFlatBarGripHeightDPIScaled < 0 Then
                         If mTabOrientation = ssTabOrientationBottom Then
                             iFlatBarHeightBottom = iFlatBarHeightBottom - Abs(mFlatBarGripHeightDPIScaled) - 1
@@ -8694,7 +8740,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
         iGrayText = mGrayText_Sel
     Else
         iBackColorTabs2 = mBackColorTabs2
-        If iTabData.Hovered And Not DraggingATab Then
+        If iTabData.Hovered And mAmbientUserMode And Not DraggingATab Then
             iForeColor = mForeColorHighlighted
         Else
             iForeColor = mForeColor
@@ -8705,7 +8751,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
                     iIconColor = mIconColorMouseHover
                 Else
                     'iIconColor = vbGreen 'mIconColorMouseHover
-                    If iTabData.Hovered Then
+                    If iTabData.Hovered And mAmbientUserMode Then
                         iIconColor = mIconColorTabHighlighted
                     Else
                         iIconColor = mIconColor
@@ -8719,7 +8765,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
                 End If
             End If
         Else
-            If iTabData.Hovered Then
+            If iTabData.Hovered And mAmbientUserMode Then
                 iIconColor = mIconColorTabHighlighted
             Else
                 iIconColor = mIconColor
@@ -8750,12 +8796,12 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
         picDraw.FontBold = mFont.Bold Or mHighlightCaptionBoldTabSel
         picDraw.FontUnderLine = mFont.Underline Or mHighlightCaptionUnderlinedTabSel
     Else
-        If iTabData.Hovered And mHighlightCaptionBold Then
+        If iTabData.Hovered And mAmbientUserMode And mHighlightCaptionBold Then
             picDraw.FontBold = True
         Else
             picDraw.FontBold = mFont.Bold
         End If
-        If iTabData.Hovered And mHighlightCaptionUnderlined Then
+        If iTabData.Hovered And mAmbientUserMode And mHighlightCaptionUnderlined Then
             picDraw.FontUnderLine = True
         Else
             picDraw.FontUnderLine = mFont.Underline
@@ -10335,6 +10381,13 @@ Private Sub SetControlsBackColor(ByVal nColor As Long, Optional ByVal nPrevColor
 End Sub
 
 Private Sub SetControlsForeColor(ByVal nColor As Long, Optional ByVal nPrevColor As Long = -1)
+    If nColor <> mControlsForeColor_PrevColor Then
+        SetControlsForeColor2 nColor, nPrevColor
+        mControlsForeColor_PrevColor = nColor
+    End If
+End Sub
+
+Private Sub SetControlsForeColor2(ByVal nColor As Long, Optional ByVal nPrevColor As Long = -1)
     Dim iCtl As Object
     Dim iLng As Long
     Dim iCancel As Boolean
@@ -10419,7 +10472,7 @@ Attribute Refresh.VB_Description = "Redraws the control."
         SetControlsBackColor mBackColorTabSel
     End If
     If mChangeControlsForeColor Then
-        SetControlsForeColor mForeColorTabSel
+        SetControlsProperForeColor
     End If
     StoreControlsTabStop
     mRedraw = True
@@ -10997,7 +11050,7 @@ Private Sub SetVisibleControls(ByVal iPreviousTab As Long)
     If (Not mAmbientUserMode) And mChangeControlsForeColor And (mForeColorTabSel <> vbButtonText) Then
         iContainedControlsString = GetContainedControlsString
         If iContainedControlsString <> mLastContainedControlsString Then
-            SetControlsForeColor mForeColorTabSel
+            SetControlsProperForeColor
         End If
     End If
     
@@ -11283,7 +11336,7 @@ Private Sub SubclassControlsPainting()
     End If
     If mChangeControlsForeColor Then
         If Not mChangedControlsForeColor Then
-            SetControlsForeColor mForeColorTabSel
+            SetControlsProperForeColor
             mChangedControlsForeColor = True
         End If
     End If
@@ -11345,7 +11398,7 @@ Private Sub SubclassControlsPainting()
                                 If iCtlTypeName = "Frame" Then
                                     mSubclassedFramesHwnds.Add iHwnd, CStr(iHwnd)
                                 End If
-                            ElseIf iCtlTypeName = "Label" Then
+                            ElseIf (iCtlTypeName = "Label") Or (iCtlTypeName = "LabelW") Then
                                 If iCtl.BackStyle = 1 Then ' solid
                                     If iSubclassTheControls Then
                                         iBKColor = -1
@@ -11390,7 +11443,7 @@ Private Sub SubclassControlsPainting()
                                 If iCtlTypeName = "Frame" Then
                                     mSubclassedFramesHwnds.Add iHwnd, CStr(iHwnd)
                                 End If
-                            ElseIf iCtlTypeName = "Label" Then
+                            ElseIf (iCtlTypeName = "Label") Or (iCtlTypeName = "LabelW") Then
                                 If iCtl.BackStyle = 1 Then ' solid
                                     If iSubclassTheControls Then
                                         iBKColor = -1
@@ -14607,6 +14660,23 @@ Public Property Let TabFixedWidth(ByVal Index As Long, ByVal nValue As Long)
     DrawDelayed
 End Property
 
+Private Function ColorsHaveEnoughContrast(ByVal nColor1 As Long, ByVal nColor2 As Long, Optional ByVal Threshold As Long = 120) As Boolean
+    Dim h1 As Integer
+    Dim l1 As Integer
+    Dim s1 As Integer
+    Dim h2 As Integer
+    Dim l2 As Integer
+    Dim s2 As Integer
+    Dim c1 As Long
+    Dim c2 As Long
+    
+    TranslateColor nColor1, 0&, c1
+    TranslateColor nColor2, 0&, c2
+    
+    ColorRGBToHLS c1, h1, l1, s1
+    ColorRGBToHLS c2, h2, l2, s2
+    ColorsHaveEnoughContrast = Abs(l1 - l2) > Threshold
+End Function
 
 'Tab is a reserved keyword in VB6, but you can remove that restriction.
 'To be able to compile with Tab property, you need to replace VBA6.DLL with this version: https://github.com/EduardoVB/NewTab/raw/main/control-source/lib/VBA6.DLL

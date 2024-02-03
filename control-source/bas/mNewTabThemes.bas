@@ -46,10 +46,10 @@ Private Const cThemeString_Buttons4                      As String = "BackColorT
 Private Const cThemeString_Buttons5                      As String = "BackColorTabSel=-2147483633|BackColorTabs=12766860|FlatBarColorHighlight=7699508|FlatBarColorInactive=12766860|FlatBarColorTabSel=7699508|FlatBarGripHeight=0|FlatBarHeight=5|FlatBodySeparationLineColor=7699508|FlatBorderColor=7699508|FlatBorderMode=1|FlatRoundnessBottom=4|FlatRoundnessTabs=4|FlatRoundnessTop=4|FlatTabsSeparationLineColor=-2147483633|HighlightColor=12766860|HighlightColorTabSel=-2147483633|HighlightMode=196|HighlightModeTabSel=64|Style=3|TabMousePointerHand=-1|TabSeparation=8"
 Private Const cThemeString_Buttons6                      As String = "BackColorTabSel=16777215|BackColorTabs=12766860|FlatBarColorHighlight=7699508|FlatBarColorInactive=12766860|FlatBarColorTabSel=7699508|FlatBarGripHeight=0|FlatBarHeight=5|FlatBodySeparationLineColor=7699508|FlatBorderColor=7699508|FlatBorderMode=1|FlatRoundnessBottom=4|FlatRoundnessTabs=4|FlatRoundnessTop=4|FlatTabsSeparationLineColor=-2147483633|HighlightColor=12766860|HighlightColorTabSel=-2147483633|HighlightMode=196|HighlightModeTabSel=64|Style=3|TabMousePointerHand=-1|TabSeparation=8"
 Private Const cThemeString_Buttons7                      As String = "BackColorTabSel=-2147483633|BackColorTabs=10646340|FlatBarColorHighlight=4228799|FlatBarColorInactive=10646340|FlatBarColorTabSel=10646340|FlatBarPosition=1|FlatBodySeparationLineColor=7434609|FlatBodySeparationLineHeight=0|FlatBorderColor=-2147483633|FlatRoundnessBottom=0|FlatRoundnessTop=0|FlatTabsSeparationLineColor=7434609|ForeColor=16777215|ForeColorTabSel=0|HighlightColor=10646340|HighlightColorTabSel=-2147483633|HighlightMode=196|HighlightModeTabSel=196|IconColorTabSel=0|Style=3|TabMousePointerHand=-1|TabSeparation=8"
-Private Const cThemeString_Buttons8                      As String = "BackColorTabSel=-2147483633|BackColorTabs=10316098|FlatBarColorHighlight=1729514|FlatBarColorInactive=10316098|FlatBarColorTabSel=10316098|FlatBarPosition=1|FlatBodySeparationLineColor=7171437|FlatBodySeparationLineHeight=0|FlatBorderColor=-2147483633|FlatRoundnessBottom=0|FlatRoundnessTabs=8|FlatRoundnessTop=0|FlatTabsSeparationLineColor=7171437|Font.Bold=0|Font.Italic=0|Font.Name=Segoe UI|Font.Size=12|Font.Underline=0|Font.Weight=400|ForeColor=16777215|ForeColorTabSel=0|HighlightColor=10316098|HighlightColorTabSel=-2147483633|HighlightMode=196|HighlightModeTabSel=196|IconColorTabSel=0|Style=3|TabMousePointerHand=-1|TabSeparation=8|TabWidthStyle=1"
-Private Const cThemeString_Buttons9                      As String = "BackColorTabSel=-2147483633|BackColorTabs=8804407|FlatBarColorHighlight=1729514|FlatBarColorInactive=8804407|FlatBarColorTabSel=8804407|FlatBarPosition=1|FlatBodySeparationLineColor=6184542|FlatBodySeparationLineHeight=0|FlatBorderColor=-2147483633|FlatRoundnessBottom=0|FlatRoundnessTabs=8|FlatRoundnessTop=0|FlatTabsSeparationLineColor=6184542|Font.Bold=0|Font.Italic=0|Font.Name=Segoe UI|Font.Size=12|Font.Underline=0|Font.Weight=400|ForeColor=16777215|ForeColorTabSel=0|HighlightColor=8804407|HighlightColorTabSel=-2147483633|HighlightMode=196|HighlightModeTabSel=196|IconColorTabSel=0|Style=3|TabMousePointerHand=-1|TabSeparation=8|TabWidthStyle=1"
-Private Const cThemeString_Buttons10                     As String = "BackColorTabSel=16775410|BackColorTabs=7742876|FlatBarColorHighlight=5751007|FlatBarColorInactive=7742876|FlatBarColorTabSel=7742876|FlatBarPosition=1|FlatBodySeparationLineColor=7829367|FlatBodySeparationLineHeight=0|FlatBorderColor=-2147483633|FlatRoundnessBottom=0|FlatRoundnessTabs=8|FlatRoundnessTop=0|FlatTabsSeparationLineColor=7829367|Font.Bold=0|Font.Italic=0|Font.Name=Segoe UI|Font.Size=12|Font.Underline=0|Font.Weight=400|ForeColor=16777215|ForeColorTabSel=0|HighlightColor=7742876|HighlightColorTabSel=-2147483633|HighlightMode=196|HighlightModeTabSel=196|IconColorTabSel=0|Style=3|TabMousePointerHand=-1|TabSeparation=8|TabWidthStyle=1"
-Private Const cThemeString_Buttons11                     As String = "BackColorTabSel=16775410|BackColorTabs=6955405|FlatBarColorHighlight=1283056|FlatBarColorInactive=6955405|FlatBarColorTabSel=6955405|FlatBarPosition=1|FlatBodySeparationLineColor=7039851|FlatBodySeparationLineHeight=0|FlatBorderColor=-2147483633|FlatRoundnessBottom=0|FlatRoundnessTabs=8|FlatRoundnessTop=0|FlatTabsSeparationLineColor=7039851|Font.Bold=0|Font.Italic=0|Font.Name=Segoe UI|Font.Size=12|Font.Underline=0|Font.Weight=400|ForeColor=16777215|ForeColorTabSel=0|HighlightColor=6955405|HighlightColorTabSel=-2147483633|HighlightMode=196|HighlightModeTabSel=196|IconColorTabSel=0|Style=3|TabMousePointerHand=-1|TabSeparation=8|TabWidthStyle=1"
+Private Const cThemeString_Buttons8                      As String = "BackColorTabSel=-2147483633|BackColorTabs=10316098|FlatBarColorHighlight=1729514|FlatBarColorInactive=10316098|FlatBarColorTabSel=10316098|FlatBarPosition=1|FlatBodySeparationLineColor=7171437|FlatBodySeparationLineHeight=0|FlatBorderColor=-2147483633|FlatRoundnessBottom=0|FlatRoundnessTabs=8|FlatRoundnessTop=0|FlatTabsSeparationLineColor=7171437|ForeColor=16777215|ForeColorTabSel=0|HighlightColor=10316098|HighlightColorTabSel=-2147483633|HighlightMode=196|HighlightModeTabSel=196|IconColorTabSel=0|Style=3|TabMousePointerHand=-1|TabSeparation=8|TabWidthStyle=1"
+Private Const cThemeString_Buttons9                      As String = "BackColorTabSel=-2147483633|BackColorTabs=8804407|FlatBarColorHighlight=1729514|FlatBarColorInactive=8804407|FlatBarColorTabSel=8804407|FlatBarPosition=1|FlatBodySeparationLineColor=6184542|FlatBodySeparationLineHeight=0|FlatBorderColor=-2147483633|FlatRoundnessBottom=0|FlatRoundnessTabs=8|FlatRoundnessTop=0|FlatTabsSeparationLineColor=6184542|ForeColor=16777215|ForeColorTabSel=0|HighlightColor=8804407|HighlightColorTabSel=-2147483633|HighlightMode=196|HighlightModeTabSel=196|IconColorTabSel=0|Style=3|TabMousePointerHand=-1|TabSeparation=8|TabWidthStyle=1"
+Private Const cThemeString_Buttons10                     As String = "BackColorTabSel=16775410|BackColorTabs=7742876|FlatBarColorHighlight=5751007|FlatBarColorInactive=7742876|FlatBarColorTabSel=7742876|FlatBarPosition=1|FlatBodySeparationLineColor=7829367|FlatBodySeparationLineHeight=0|FlatBorderColor=-2147483633|FlatRoundnessBottom=0|FlatRoundnessTabs=8|FlatRoundnessTop=0|FlatTabsSeparationLineColor=7829367|ForeColor=16777215|ForeColorTabSel=0|HighlightColor=7742876|HighlightColorTabSel=-2147483633|HighlightMode=196|HighlightModeTabSel=196|IconColorTabSel=0|Style=3|TabMousePointerHand=-1|TabSeparation=8|TabWidthStyle=1"
+Private Const cThemeString_Buttons11                     As String = "BackColorTabSel=16775410|BackColorTabs=6955405|FlatBarColorHighlight=1283056|FlatBarColorInactive=6955405|FlatBarColorTabSel=6955405|FlatBarPosition=1|FlatBodySeparationLineColor=7039851|FlatBodySeparationLineHeight=0|FlatBorderColor=-2147483633|FlatRoundnessBottom=0|FlatRoundnessTabs=8|FlatRoundnessTop=0|FlatTabsSeparationLineColor=7039851|ForeColor=16777215|ForeColorTabSel=0|HighlightColor=6955405|HighlightColorTabSel=-2147483633|HighlightMode=196|HighlightModeTabSel=196|IconColorTabSel=0|Style=3|TabMousePointerHand=-1|TabSeparation=8|TabWidthStyle=1"
 Private Const cThemeString_WebLinks                      As String = "BackColorTabs=16250871|FlatBarColorHighlight=16250871|FlatBarColorInactive=16250871|FlatBarColorTabSel=16731706|FlatBarHeight=4|FlatBarPosition=1|FlatBodySeparationLineColor=14869218|FlatBorderColor=16250871|FlatRoundnessBottom=0|FlatRoundnessTop=0|FlatTabsSeparationLineColor=16250871|ForeColorHighlighted=16731706|ForeColorTabSel=16777215|HighlightColor=16477710|HighlightColorTabSel=16477710|HighlightMode=32|HighlightModeTabSel=20|IconColorTabHighlighted=16731706|IconColorTabSel=16777215|Style=3|TabMousePointerHand=-1"
 Private Const cThemeString_WebLinks2                     As String = "BackColorTabs=16250871|FlatBarColorHighlight=16250871|FlatBarColorInactive=16250871|FlatBarColorTabSel=16731706|FlatBarHeight=4|FlatBarPosition=1|FlatBodySeparationLineColor=14869218|FlatBorderColor=16731706|FlatBorderMode=1|FlatRoundnessTabs=8|FlatTabsSeparationLineColor=16250871|ForeColorHighlighted=16731706|ForeColorTabSel=16777215|HighlightColor=16477710|HighlightColorTabSel=16477710|HighlightMode=16|HighlightModeTabSel=20|IconColorTabHighlighted=16731706|IconColorTabSel=16777215|Style=3|TabMousePointerHand=-1"
 Private Const cThemeString_AnotherButtonLight            As String = "BackColor=16250871|FlatBarColorTabSel=16546371|FlatBarHeight=0|FlatBodySeparationLineColor=16777215|FlatBodySeparationLineHeight=0|FlatBorderColor=16777215|FlatBorderMode=1|FlatRoundnessBottom=0|FlatRoundnessTabs=4|FlatRoundnessTop=0|FlatTabBorderColorHighlight=8603431|FlatTabBorderColorTabSel=15492185|FlatTabsSeparationLineColor=16777215|ForeColor=0|HighlightColor=15461355|HighlightMode=12|HighlightModeTabSel=512|Style=3|TabMousePointerHand=-1"
@@ -290,6 +290,7 @@ Public Sub CopyControlProperties(nCtlSrc As NewTab, nCtlDest As NewTab)
     
     nCtlDest.SetDefaultPropertyValues True
     
+    nCtlDest.Style = nCtlSrc.Style
     nCtlDest.BackColor = nCtlSrc.BackColor
     nCtlDest.BackColorTabs = nCtlSrc.BackColorTabs
     If Not nCtlSrc.BackColorTabSel_IsAutomatic Then nCtlDest.BackColorTabSel = nCtlSrc.BackColorTabSel
@@ -313,7 +314,6 @@ Public Sub CopyControlProperties(nCtlSrc As NewTab, nCtlDest As NewTab)
     If Not nCtlSrc.HighlightColor_IsAutomatic Then nCtlDest.HighlightColor = nCtlSrc.HighlightColor
     If Not nCtlSrc.HighlightColorTabSel_IsAutomatic Then nCtlDest.HighlightColorTabSel = nCtlSrc.HighlightColorTabSel
     
-    nCtlDest.Style = nCtlSrc.Style
     nCtlDest.TabAppearance = nCtlSrc.TabAppearance
     nCtlDest.ShowRowsInPerspective = nCtlSrc.ShowRowsInPerspective
     nCtlDest.BackStyle = nCtlSrc.BackStyle
@@ -342,7 +342,7 @@ Public Sub CopyControlProperties(nCtlSrc As NewTab, nCtlDest As NewTab)
     nCtlDest.SoftEdges = nCtlSrc.SoftEdges
     nCtlDest.TabMousePointerHand = nCtlSrc.TabMousePointerHand
     nCtlDest.MaskColor = nCtlSrc.MaskColor
-    Set nCtlDest.Font = nCtlSrc.Font
+    Set nCtlDest.Font = CloneFont(nCtlSrc.Font)
 '    nCtlDest.Font.Name = nCtlSrc.Font.Name
 '    nCtlDest.Font.Size = nCtlSrc.Font.Size
 '    nCtlDest.Font.Bold = nCtlSrc.Font.Bold
@@ -360,6 +360,11 @@ Public Sub CopyControlProperties(nCtlSrc As NewTab, nCtlDest As NewTab)
     
     nCtlDest.Redraw = iRedraw
 End Sub
+
+Private Function CloneFont(nOrigFont As iFont) As StdFont
+    If nOrigFont Is Nothing Then Exit Function
+    nOrigFont.Clone CloneFont
+End Function
 
 Public Function GetDefaultThemes() As NewTabThemes
     If mDefaultThemes Is Nothing Then
@@ -443,7 +448,7 @@ Public Sub ApplyThemeToControl(ByRef nThemeData As Collection, nCtl As NewTab, n
     End If
     
     If PropertyExists("BackColorTabs") Then nCtl.BackColorTabs = GetPropertyValue("BackColorTabs") Else nCtl.BackColorTabs = nCtl.BackColor
-    If PropertyExists("BackColorTabSel") Then nCtl.BackColorTabSel = GetPropertyValue("BackColorTabSel") Else nCtl.BackColorTabSel = nCtl.BackColor
+    If PropertyExists("BackColorTabSel") Then nCtl.BackColorTabSel = GetPropertyValue("BackColorTabSel") Else nCtl.BackColorTabSel = nCtl.BackColorTabs
     
     If PropertyExists("ForeColorTabSel") Then nCtl.ForeColorTabSel = GetPropertyValue("ForeColorTabSel") Else nCtl.ForeColorTabSel = nCtl.ForeColor
     If PropertyExists("ForeColorHighlighted") Then nCtl.ForeColorHighlighted = GetPropertyValue("ForeColorHighlighted") Else nCtl.ForeColorHighlighted = nCtl.ForeColor
@@ -640,18 +645,18 @@ Public Sub ApplyThemeToControl(ByRef nThemeData As Collection, nCtl As NewTab, n
 '                nCtl.Font.Italic = nAmbientFont.Italic
 '                nCtl.Font.Underline = nAmbientFont.Underline
 '                nCtl.Font.Weight = nAmbientFont.Weight
-            Case "Font.Name"
-                nCtl.Font.Name = iProp.Value
-            Case "Font.Size"
-                nCtl.Font.Size = Val(iProp.Value)
-            Case "Font.Bold"
-                nCtl.Font.Bold = CBool(Val(iProp.Value))
-           Case "Font.Italic"
-                nCtl.Font.Italic = CBool(Val(iProp.Value))
-            Case "Font.Underline"
-                nCtl.Font.Underline = CBool(Val(iProp.Value))
-            Case "Font.Weight"
-                nCtl.Font.Weight = Val(iProp.Value)
+'            Case "Font.Name"
+'                nCtl.Font.Name = iProp.Value
+'            Case "Font.Size"
+'                nCtl.Font.Size = Val(iProp.Value)
+'            Case "Font.Bold"
+'                nCtl.Font.Bold = CBool(Val(iProp.Value))
+'            Case "Font.Italic"
+'                nCtl.Font.Italic = CBool(Val(iProp.Value))
+'            Case "Font.Underline"
+'                nCtl.Font.Underline = CBool(Val(iProp.Value))
+'            Case "Font.Weight"
+'                nCtl.Font.Weight = Val(iProp.Value)
         End Select
     Next
     nCtl.Redraw = iRedraw
@@ -858,14 +863,14 @@ Public Function GetThemeStringFromControl(nCtl As NewTab, nAmbientBackColor As L
     End If
     
     ' font
-    If Not FontsAreEqual(nAmbientFont, nCtl.Font) Then
-        AddPropStrToArray iPropsStr, c, "Font.Name", nCtl.Font.Name
-        AddPropStrToArray iPropsStr, c, "Font.Size", Val(Str$(nCtl.Font.Size))
-        AddPropStrToArray iPropsStr, c, "Font.Bold", CLng(nCtl.Font.Bold)
-        AddPropStrToArray iPropsStr, c, "Font.Italic", CLng(nCtl.Font.Italic)
-        AddPropStrToArray iPropsStr, c, "Font.Underline", CLng(nCtl.Font.Underline)
-        AddPropStrToArray iPropsStr, c, "Font.Weight", CLng(nCtl.Font.Weight)
-    End If
+'    If Not FontsAreEqual(nAmbientFont, nCtl.Font) Then
+'        AddPropStrToArray iPropsStr, c, "Font.Name", nCtl.Font.Name
+'        AddPropStrToArray iPropsStr, c, "Font.Size", Val(Str$(nCtl.Font.Size))
+'        AddPropStrToArray iPropsStr, c, "Font.Bold", CLng(nCtl.Font.Bold)
+'        AddPropStrToArray iPropsStr, c, "Font.Italic", CLng(nCtl.Font.Italic)
+'        AddPropStrToArray iPropsStr, c, "Font.Underline", CLng(nCtl.Font.Underline)
+'        AddPropStrToArray iPropsStr, c, "Font.Weight", CLng(nCtl.Font.Weight)
+'    End If
     If c > -1 Then
         ReDim Preserve iPropsStr(c)
     Else

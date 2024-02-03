@@ -1,3 +1,5 @@
+2024-02-03 Background of LabelW now is painted the same as Label when the Windows visual style is active.
+2024-02-03 Several minor bug fixes related to themes.
 2024-02-01 Added property TabFixedWidth
 2024-02-01 Fixed bug when WordWrap = False
 2024-01-27 TabsPerRow is no longer considered a theme property.
