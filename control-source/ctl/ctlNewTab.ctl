@@ -10395,6 +10395,7 @@ Private Sub SetControlsForeColor2(ByVal nColor As Long, Optional ByVal nPrevColo
     
     On Error Resume Next
     Set iControls = UserControl.Parent.Controls
+    If nPrevColor = -1 Then nPrevColor = mControlsForeColor_PrevColor
     
     If iControls Is Nothing Then ' at least let's change the Forecolor of the contained controls in the usercontrol
         For Each iCtl In UserControlContainedControls

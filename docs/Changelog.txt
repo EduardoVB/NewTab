@@ -1,3 +1,4 @@
+2024-02-04 Bug fix in ChangeControlsForeColor procedure.
 2024-02-03 Changed to OLE version 8.0.
 2024-02-03 Changed property names TabBody[Left|Top|Width|Height] property names to Body[Left|Top|Width|Height].
 2024-02-03 Changed TabBodyResize event name to Resize.
