@@ -17,6 +17,7 @@ Begin VB.Form frmIcons
       Strikethrough   =   0   'False
    EndProperty
    LinkTopic       =   "Form2"
+   LockControls    =   -1  'True
    MaxButton       =   0   'False
    MinButton       =   0   'False
    ScaleHeight     =   9516

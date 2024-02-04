@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{66E63055-5A66-4C79-9327-4BC077858695}#7.0#0"; "NewTab01.ocx"
+Object = "{66E63055-5A66-4C79-9327-4BC077858695}#8.0#0"; "NewTab01.ocx"
 Begin VB.Form frmAllThemes 
    Caption         =   "All current default themes"
    ClientHeight    =   11748

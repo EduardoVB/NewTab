@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{66E63055-5A66-4C79-9327-4BC077858695}#3.0#0"; "NewTab01.ocx"
+Object = "{66E63055-5A66-4C79-9327-4BC077858695}#8.0#0"; "NewTab01.ocx"
 Begin VB.Form frmTDIControlsTest 
    Caption         =   "TDI"
    ClientHeight    =   5748
@@ -169,6 +169,6 @@ Private Sub NewTab1_TDINewTabAdded(ByVal TabNumber As Long)
 End Sub
 
 Private Sub PositionAndResizeControlsInTab(TabNumber As Long)
-    NewTab1.ControlMove "txtDoc(" & TabNumber & ")", Screen.TwipsPerPixelX, NewTab1.TabBodyTop + 700, NewTab1.TabBodyWidth, NewTab1.TabBodyHeight - 700 - Screen.TwipsPerPixelY
+    NewTab1.ControlMove "txtDoc(" & TabNumber & ")", Screen.TwipsPerPixelX, NewTab1.BodyTop + 700, NewTab1.BodyWidth, NewTab1.BodyHeight - 700 - Screen.TwipsPerPixelY
 End Sub
 

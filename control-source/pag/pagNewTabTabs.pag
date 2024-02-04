@@ -1933,10 +1933,10 @@ Private Sub PropertyPage_SelectionChanged()
         mEnableHorizontalDragging = True
         NewTab1.ToolTipText = "Drag to move the tab control and see other tabs"
     End If
-    If (iSC.Height - iSC.TabBodyHeight) > 800 Then
+    If (iSC.Height - iSC.BodyHeight) > 800 Then
         mEnableVerticalDragging = True
         NewTab1.ToolTipText = "Drag to move the tab control and see other tabs"
-        NewTab1.Top = 8400 - (iSC.Height - iSC.TabBodyHeight)
+        NewTab1.Top = 8400 - (iSC.Height - iSC.BodyHeight)
         If NewTab1.Rows = 1 Then
             If (picCharMap.Top + picCharMap.Height + 60) > NewTab1.Top Then
                 NewTab1.Top = picCharMap.Top + picCharMap.Height + 60

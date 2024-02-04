@@ -103,6 +103,10 @@ Backward compatible with SSTab (fully), and with SSTabEx (mostly).</p><br>
 <li class="toc1"><a href="#BackColorTabs-Property">BackColorTabs</a><br>
 <li class="toc1"><a href="#BackColorTabSel-Property">BackColorTabSel</a><br>
 <li class="toc1"><a href="#BackStyle-Property">BackStyle</a><br>
+<li class="toc1"><a href="#BodyHeight-Property">BodyHeight</a><br>
+<li class="toc1"><a href="#BodyLeft-Property">BodyLeft</a><br>
+<li class="toc1"><a href="#BodyTop-Property">BodyTop</a><br>
+<li class="toc1"><a href="#BodyWidth-Property">BodyWidth</a><br>
 <li class="toc1"><a href="#CanReorderTabs-Property">CanReorderTabs</a><br>
 <li class="toc1"><a href="#Caption-Property">Caption</a><br>
 <li class="toc1"><a href="#ChangeControlsBackColor-Property">ChangeControlsBackColor</a><br>
@@ -181,10 +185,6 @@ Backward compatible with SSTab (fully), and with SSTabEx (mostly).</p><br>
 <li class="toc1"><a href="#SubclassingMethod-Property">SubclassingMethod</a><br>
 <li class="toc1"><a href="#Tab-Property">Tab</a><br>
 <li class="toc1"><a href="#TabAppearance-Property">TabAppearance</a><br>
-<li class="toc1"><a href="#TabBodyHeight-Property">TabBodyHeight</a><br>
-<li class="toc1"><a href="#TabBodyLeft-Property">TabBodyLeft</a><br>
-<li class="toc1"><a href="#TabBodyTop-Property">TabBodyTop</a><br>
-<li class="toc1"><a href="#TabBodyWidth-Property">TabBodyWidth</a><br>
 <li class="toc1"><a href="#TabCaption-Property">TabCaption</a><br>
 <li class="toc1"><a href="#TabControls-Property">TabControls</a><br>
 <li class="toc1"><a href="#TabData-Property">TabData</a><br>
@@ -269,7 +269,6 @@ Backward compatible with SSTab (fully), and with SSTabEx (mostly).</p><br>
 <li class="toc1"><a href="#OLEStartDrag-Event">OLEStartDrag</a><br>
 <li class="toc1"><a href="#Resize-Event">Resize</a><br>
 <li class="toc1"><a href="#RowsChange-Event">RowsChange</a><br>
-<li class="toc1"><a href="#TabBodyResize-Event">TabBodyResize</a><br>
 <li class="toc1"><a href="#TabChange-Event">TabChange</a><br>
 <li class="toc1"><a href="#TabMouseEnter-Event">TabMouseEnter</a><br>
 <li class="toc1"><a href="#TabMouseLeave-Event">TabMouseLeave</a><br>
@@ -288,10 +287,10 @@ Backward compatible with SSTab (fully), and with SSTabEx (mostly).</p><br>
 Values:<br>
 <b>ntRelocateOnTabOrientationChange</b>: The contained controls will be automatically relocated when <a href="#TabOrientation-Property">TabOrientation</a> changes.<br>
 <b>ntRelocateAlways</b>: The contained controls will be automatically relocated when <a href="#TabOrientation-Property">TabOrientation</a> changes and also when the tab space changes in height.<br>
-<b>ntRelocateNever</b>:  The contained controls will never be automatically relocated. Choose this value if you are relocating the controls by code in the Form_Resize or <a href="#TabBodyResize-Event">TabBodyResize</a> events.<br>
+<b>ntRelocateNever</b>:  The contained controls will never be automatically relocated. Choose this value if you are relocating the controls by code in the Form_Resize or <a href="#Resize-Event">Resize</a> events.<br>
 <br>
 <h3>See Also:</h3><a href="#AutoTabHeight-Property">AutoTabHeight</a> property<br>
-<a href="#TabBodyResize-Event">TabBodyResize</a> event</p><br>
+<a href="#Resize-Event">Resize</a> event</p><br>
 <a name="AutoTabHeight-Property" /><h2><p class"section">AutoTabHeight Property</p></h2></a>
 <p>Type: <b>Boolean</b></p>
 <h3>Description:</h3>
@@ -300,7 +299,7 @@ If the property <a href="#TabHeight-Property">TabHeight</a> is manually set, <b>
 For newly added controls, its default it <b>True</b>, but if you are updating from a previous version or an SSTab control, it will be set to <b>False</b>.<br>
 <br>
 <h3>See Also:</h3><a href="#TabHeight-Property">TabHeight</a> property<br>
-<a href="#TabBodyResize-Event">TabBodyResize</a> event</p><br>
+<a href="#Resize-Event">Resize</a> event</p><br>
 <a name="BackColor-Property" /><h2><p class"section">BackColor Property</p></h2></a>
 <p>Type: <b>Long</b></p>
 <h3>Description:</h3>
@@ -341,6 +340,42 @@ When the control is themed, this property value has no effect.<br>
 <p>Returns or sets the a value that determines whether the background will be opaque or transparent.<br>
 <br>
 <h3>See Also:</h3><a href="#BackColor-Property">BackColor</a> property</p><br>
+<a name="BodyHeight-Property" /><h2><p class"section">BodyHeight Property</p></h2></a>
+<p>Type: <b>Single</b> (Read only)</p>
+<h3>Description:</h3>
+<p>Returns the <b>height</b> of the "tab body". The tab body is the space available to place contained controls.<br>
+They return the value in <b>Twips</b>.<br>
+<br>
+<h3>See Also:</h3><a href="#BodyLeft-Property">BodyLeft</a> property<br>
+<a href="#BodyTop-Property">BodyTop</a> property<br>
+<a href="#BodyWidth-Property">BodyWidth</a> property</p><br>
+<a name="BodyLeft-Property" /><h2><p class"section">BodyLeft Property</p></h2></a>
+<p>Type: <b>Single</b> (Read only)</p>
+<h3>Description:</h3>
+<p>Returns the <b>left</b> of the "tab body". The tab body is the space available to place contained controls.<br>
+They return the value in <b>Twips</b>.<br>
+<br>
+<h3>See Also:</h3><a href="#BodyTop-Property">BodyTop</a> property<br>
+<a href="#BodyWidth-Property">BodyWidth</a> property<br>
+<a href="#BodyHeight-Property">BodyHeight</a> property</p><br>
+<a name="BodyTop-Property" /><h2><p class"section">BodyTop Property</p></h2></a>
+<p>Type: <b>Single</b> (Read only)</p>
+<h3>Description:</h3>
+<p>Returns <b>top</b> of the "tab body". The tab body is the space available to place contained controls.<br>
+They return the value in <b>Twips</b>.<br>
+<br>
+<h3>See Also:</h3><a href="#BodyLeft-Property">BodyLeft</a> property<br>
+<a href="#BodyWidth-Property">BodyWidth</a> property<br>
+<a href="#BodyHeight-Property">BodyHeight</a> property</p><br>
+<a name="BodyWidth-Property" /><h2><p class"section">BodyWidth Property</p></h2></a>
+<p>Type: <b>Single</b> (Read only)</p>
+<h3>Description:</h3>
+<p>Returns the <b>width</b> of the "tab body". The tab body is the space available to place contained controls.<br>
+They return the value in <b>Twips</b>.<br>
+<br>
+<h3>See Also:</h3><a href="#BodyTop-Property">BodyTop</a> property<br>
+<a href="#BodyLeft-Property">BodyLeft</a> property<br>
+<a href="#BodyHeight-Property">BodyHeight</a> property</p><br>
 <a name="CanReorderTabs-Property" /><h2><p class"section">CanReorderTabs Property</p></h2></a>
 <p>Type: <b>Boolean</b></p>
 <h3>Description:</h3>
@@ -424,10 +459,10 @@ It is not available at design time, and is read-only at run time.<br>
 <h3>Description:</h3>
 <p>Returns a value that indicates where the last tab ends. Depending on the <a href="#TabOrientation-Property">TabOrientation</a> setting, it can be the rightmost tab (orientation top and bottom), the topmost tab (orientation left) or the bottommost tab (orientation right).<br>
 <br>
-<h3>See Also:</h3><a href="#TabBodyLeft-Property">TabBodyLeft</a> property<br>
-<a href="#TabBodyTop-Property">TabBodyTop</a> property<br>
-<a href="#TabBodyWidth-Property">TabBodyWidth</a> property<br>
-<a href="#TabBodyHeight-Property">TabBodyHeight</a> property<br>
+<h3>See Also:</h3><a href="#BodyLeft-Property">BodyLeft</a> property<br>
+<a href="#BodyTop-Property">BodyTop</a> property<br>
+<a href="#BodyWidth-Property">BodyWidth</a> property<br>
+<a href="#BodyHeight-Property">BodyHeight</a> property<br>
 <a href="#GetTabLeft-Method">GetTabLeft</a> method<br>
 <a href="#GetTabTop-Method">GetTabTop</a> method<br>
 <a href="#GetTabWidth-Method">GetTabWidth</a> method<br>
@@ -811,7 +846,7 @@ If <a href="#IconCharHex-Property">IconCharHex</a> property value is set, anythi
 <p>Returns the number of rows of tabs.<br>
 <br>
 The <b>Rows</b> property value can change its value when new tabs are dinamically added or, when <a href="#TabWidthStyle-Property">TabWidthStyle</a> is set to <b>ssTWSFixed</b> or <b>ssTWSNonJustified</b> and <a href="#TabsPerRow-Property">TabsPerRow</a> was changed, or <a href="#TabWidthStyle-Property">TabWidthStyle</a> is set to <b>ssTWSJustified</b> and the <b>Width</b> of the control changed, the tab captions changed or the <a href="#Font-Property">Font</a> setting has changed.<br>
-You can use the <a href="#TabBodyResize-Event">TabBodyResize</a> event to properly set the position of the contained controls.<br>
+You can use the <a href="#Resize-Event">Resize</a> event to properly set the position of the contained controls.<br>
 The <a href="#RowsChange-Event">RowsChange</a> notifies of the change of this property.<br>
 </p><br>
 <a name="ShowDisabledState-Property" /><h2><p class"section">ShowDisabledState Property</p></h2></a>
@@ -864,42 +899,6 @@ It also can set if the control will have Windows Styles (the Windows "theme" loo
 <h3>Description:</h3>
 <p>Returns or sets a value that determines the appearance of the tabs. When the control is themed, the theme defines the appearance.<br>
 </p><br>
-<a name="TabBodyHeight-Property" /><h2><p class"section">TabBodyHeight Property</p></h2></a>
-<p>Type: <b>Single</b> (Read only)</p>
-<h3>Description:</h3>
-<p>Returns the <b>height</b> of the "tab body". The tab body is the space available to place contained controls.<br>
-They return the value in <b>Twips</b>.<br>
-<br>
-<h3>See Also:</h3><a href="#TabBodyLeft-Property">TabBodyLeft</a> property<br>
-<a href="#TabBodyTop-Property">TabBodyTop</a> property<br>
-<a href="#TabBodyWidth-Property">TabBodyWidth</a> property</p><br>
-<a name="TabBodyLeft-Property" /><h2><p class"section">TabBodyLeft Property</p></h2></a>
-<p>Type: <b>Single</b> (Read only)</p>
-<h3>Description:</h3>
-<p>Returns the <b>left</b> of the "tab body". The tab body is the space available to place contained controls.<br>
-They return the value in <b>Twips</b>.<br>
-<br>
-<h3>See Also:</h3><a href="#TabBodyTop-Property">TabBodyTop</a> property<br>
-<a href="#TabBodyWidth-Property">TabBodyWidth</a> property<br>
-<a href="#TabBodyHeight-Property">TabBodyHeight</a> property</p><br>
-<a name="TabBodyTop-Property" /><h2><p class"section">TabBodyTop Property</p></h2></a>
-<p>Type: <b>Single</b> (Read only)</p>
-<h3>Description:</h3>
-<p>Returns <b>top</b> of the "tab body". The tab body is the space available to place contained controls.<br>
-They return the value in <b>Twips</b>.<br>
-<br>
-<h3>See Also:</h3><a href="#TabBodyLeft-Property">TabBodyLeft</a> property<br>
-<a href="#TabBodyWidth-Property">TabBodyWidth</a> property<br>
-<a href="#TabBodyHeight-Property">TabBodyHeight</a> property</p><br>
-<a name="TabBodyWidth-Property" /><h2><p class"section">TabBodyWidth Property</p></h2></a>
-<p>Type: <b>Single</b> (Read only)</p>
-<h3>Description:</h3>
-<p>Returns the <b>width</b> of the "tab body". The tab body is the space available to place contained controls.<br>
-They return the value in <b>Twips</b>.<br>
-<br>
-<h3>See Also:</h3><a href="#TabBodyTop-Property">TabBodyTop</a> property<br>
-<a href="#TabBodyLeft-Property">TabBodyLeft</a> property<br>
-<a href="#TabBodyHeight-Property">TabBodyHeight</a> property</p><br>
 <a name="TabCaption-Property" /><h2><p class"section">TabCaption Property</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>String</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
@@ -1386,25 +1385,18 @@ This event occurs only if <a href="#OLEDropMode-Property">OLEDropMode</a> is set
 <a name="Resize-Event" /><h2><p class"section">Resize Event</p></h2></a>
 <p>No parameters.</p>
 <h3>Description:</h3>
-<p>Occurs when the control is first drawn or when its size changes.<br>
-<br>
-<h3>See Also:</h3><a href="#TabBodyResize-Event">TabBodyResize</a> event</p><br>
+<p>Occurs when the tab body (the size available for controls) changes its size.<br>
+The size and position of the tab body are available by the properties <a href="#BodyLeft-Property">BodyLeft</a>, <a href="#BodyTop-Property">BodyTop</a>, <a href="#BodyWidth-Property">BodyWidth</a> and <a href="#BodyHeight-Property">BodyHeight</a>.<br>
+</p><br>
 <a name="RowsChange-Event" /><h2><p class"section">RowsChange Event</p></h2></a>
 <p>No parameters.</p>
 <h3>Description:</h3>
 <p>Occurs when the control is first drawn and when the <a href="#Rows-Property">Rows</a> property changes its value.<br>
 The <a href="#Rows-Property">Rows</a> property value can change its value when new tabs are dinamically added or upon changing some property settings, like <a href="#TabWidthStyle-Property">TabWidthStyle</a> or <a href="#TabsPerRow-Property">TabsPerRow</a> (for some configurations). Also changing the <b>Width</b> of the control, tab captions or the <a href="#Font-Property">Font</a> setting may produce different row number and raise this event.<br>
-You can use this event along with <a href="#TabBodyTop-Property">TabBodyTop</a> to properly set the Top (or use <a href="#TabBodyLeft-Property">TabBodyLeft</a>, depending on <a href="#TabOrientation-Property">TabOrientation</a>) of the contained controls.<br>
+You can use this event along with <a href="#BodyTop-Property">BodyTop</a> to properly set the Top (or use <a href="#BodyLeft-Property">BodyLeft</a>, depending on <a href="#TabOrientation-Property">TabOrientation</a>) of the contained controls.<br>
 But if <a href="#AutoRelocateControls-Property">AutoRelocateControls</a> is set to <b>True</b>, that's is already done automaticaly.<br>
 <br>
-<h3>See Also:</h3><a href="#TabBodyResize-Event">TabBodyResize</a> event</p><br>
-<a name="TabBodyResize-Event" /><h2><p class"section">TabBodyResize Event</p></h2></a>
-<p>No parameters.</p>
-<h3>Description:</h3>
-<p>Occurs when the tab body changes its size.<br>
-The size and position of the tab body are referenced by the properties <a href="#TabBodyLeft-Property">TabBodyLeft</a>, <a href="#TabBodyTop-Property">TabBodyTop</a>, <a href="#TabBodyWidth-Property">TabBodyWidth</a> and <a href="#TabBodyHeight-Property">TabBodyHeight</a>.<br>
-<b>This event is a proper place to position the contained controls.</b><br>
-</p><br>
+<h3>See Also:</h3><a href="#Resize-Event">Resize</a> event</p><br>
 <a name="TabChange-Event" /><h2><p class"section">TabChange Event</p></h2></a>
 <p>No parameters.</p>
 <h3>Description:</h3>

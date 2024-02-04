@@ -25,7 +25,7 @@ AutoRelocateControls property:
 	Values:
 	ntRelocateOnTabOrientationChange: The contained controls will be automatically relocated when TabOrientation changes.
 	ntRelocateAlways: The contained controls will be automatically relocated when TabOrientation changes and also when the tab space changes in height.
-	ntRelocateNever:  The contained controls will never be automatically relocated. Choose this value if you are relocating the controls by code in the Form_Resize or TabBodyResize events.
+	ntRelocateNever:  The contained controls will never be automatically relocated. Choose this value if you are relocating the controls by code in the Form_Resize or Resize events.
 
 
 AutoTabHeight property:
@@ -56,6 +56,30 @@ BackColorTabSel property:
 BackStyle property:
 	Type: NTBackStyleConstants
 	Returns or sets the a value that determines whether the background will be opaque or transparent.
+
+
+BodyHeight property:
+	Type: Single (Read only)
+	Returns the height of the "tab body". The tab body is the space available to place contained controls.
+	They return the value in Twips.
+
+
+BodyLeft property:
+	Type: Single (Read only)
+	Returns the left of the "tab body". The tab body is the space available to place contained controls.
+	They return the value in Twips.
+
+
+BodyTop property:
+	Type: Single (Read only)
+	Returns top of the "tab body". The tab body is the space available to place contained controls.
+	They return the value in Twips.
+
+
+BodyWidth property:
+	Type: Single (Read only)
+	Returns the width of the "tab body". The tab body is the space available to place contained controls.
+	They return the value in Twips.
 
 
 CanReorderTabs property:
@@ -477,7 +501,7 @@ Rows property:
 	Returns the number of rows of tabs.
 	
 	The Rows property value can change its value when new tabs are dinamically added or, when TabWidthStyle is set to ssTWSFixed or ssTWSNonJustified and TabsPerRow was changed, or TabWidthStyle is set to ssTWSJustified and the Width of the control changed, the tab captions changed or the Font setting has changed.
-	You can use the TabBodyResize event to properly set the position of the contained controls.
+	You can use the Resize event to properly set the position of the contained controls.
 	The RowsChange notifies of the change of this property.
 
 
@@ -529,30 +553,6 @@ Tab property:
 TabAppearance property:
 	Type: NTTabAppearanceConstants
 	Returns or sets a value that determines the appearance of the tabs. When the control is themed, the theme defines the appearance.
-
-
-TabBodyHeight property:
-	Type: Single (Read only)
-	Returns the height of the "tab body". The tab body is the space available to place contained controls.
-	They return the value in Twips.
-
-
-TabBodyLeft property:
-	Type: Single (Read only)
-	Returns the left of the "tab body". The tab body is the space available to place contained controls.
-	They return the value in Twips.
-
-
-TabBodyTop property:
-	Type: Single (Read only)
-	Returns top of the "tab body". The tab body is the space available to place contained controls.
-	They return the value in Twips.
-
-
-TabBodyWidth property:
-	Type: Single (Read only)
-	Returns the width of the "tab body". The tab body is the space available to place contained controls.
-	They return the value in Twips.
 
 
 TabCaption property:
@@ -1196,22 +1196,16 @@ OLEStartDrag event:
 
 Resize event:
 	No parameters.
-	Occurs when the control is first drawn or when its size changes.
+	Occurs when the tab body (the size available for controls) changes its size.
+	The size and position of the tab body are available by the properties BodyLeft, BodyTop, BodyWidth and BodyHeight.
 
 
 RowsChange event:
 	No parameters.
 	Occurs when the control is first drawn and when the Rows property changes its value.
 	The Rows property value can change its value when new tabs are dinamically added or upon changing some property settings, like TabWidthStyle or TabsPerRow (for some configurations). Also changing the Width of the control, tab captions or the Font setting may produce different row number and raise this event.
-	You can use this event along with TabBodyTop to properly set the Top (or use TabBodyLeft, depending on TabOrientation) of the contained controls.
+	You can use this event along with BodyTop to properly set the Top (or use BodyLeft, depending on TabOrientation) of the contained controls.
 	But if AutoRelocateControls is set to True, that's is already done automaticaly.
-
-
-TabBodyResize event:
-	No parameters.
-	Occurs when the tab body changes its size.
-	The size and position of the tab body are referenced by the properties TabBodyLeft, TabBodyTop, TabBodyWidth and TabBodyHeight.
-	This event is a proper place to position the contained controls.
 
 
 TabChange event:

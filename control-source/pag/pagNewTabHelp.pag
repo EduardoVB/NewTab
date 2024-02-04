@@ -42,7 +42,7 @@ Begin VB.PropertyPage pagNewTabHelp
       MultiLine       =   -1  'True
       ScrollBars      =   2  'Vertical
       TabIndex        =   1
-      Text            =   "pagNewTabHelp.pgx":5978
+      Text            =   "pagNewTabHelp.pgx":4768
       Top             =   240
       Visible         =   0   'False
       Width           =   4930
@@ -80,5 +80,5 @@ End Sub
 
 Private Sub tmrInit_Timer()
     tmrInit.Enabled = False
-    txtHelp.Text = Replace$(txtText(0).Text & txtText(1).Text, Chr$(1), vbTab)
+    txtHelp.Text = Replace$(txtText(0).Text & vbCrLf & vbCrLf & txtText(1).Text, Chr$(1), vbTab)
 End Sub
