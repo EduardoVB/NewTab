@@ -500,7 +500,7 @@ Rows property:
 	Type: Long (Default property, read only, not available at design time)
 	Returns the number of rows of tabs.
 	
-	The Rows property value can change its value when new tabs are dinamically added or, when TabWidthStyle is set to ssTWSFixed or ssTWSNonJustified and TabsPerRow was changed, or TabWidthStyle is set to ssTWSJustified and the Width of the control changed, the tab captions changed or the Font setting has changed.
+	The Rows property value can change its value when new tabs are dinamically added or, when TabWidthStyle is set to ntTWFixed or ntTWTabCaptionWidth and TabsPerRow was changed, or TabWidthStyle is set to ntTWStretchToFill and the Width of the control changed, the tab captions changed or the Font setting has changed.
 	You can use the Resize event to properly set the position of the contained controls.
 	The RowsChange notifies of the change of this property.
 
@@ -520,7 +520,7 @@ ShowRowsInPerspective property:
 	Type: NTAutoYesNoConstants
 	Returns or sets a value that determines when the control has more that one row of tabs, if they will be drawn changing the horizontal position on each row.
 	
-	If the value is ssYNAuto, the behavior will be determined by the Style property setting in this way: for ssStyleTabbedDialog and ssStylePropertyPage the rows will be drawn is perspective, and for ssStyleTabStrip without.
+	If the value is ntYNAuto, the behavior will be determined by the Style property setting in this way: for ssStyleTabbedDialog and ssStylePropertyPage the rows will be drawn is perspective, and for ntStyleTabStrip without.
 
 
 SoftEdges property:
@@ -647,10 +647,10 @@ TabMaxWidth property:
 	Type: Single
 	Returns or sets the maximum width of each tab. If set to 0 (zero), it means no maximun.
 	
-	When the TabWidthStyle property setting is ssTWSFixed and the TabMaxWidth property is set to 0 (zero), the control automatically sizes the tabs based on TabsPerRow property, to fit evenly across the control.
+	When the TabWidthStyle property setting is ntTWFixed and the TabMaxWidth property is set to 0 (zero), the control automatically sizes the tabs based on TabsPerRow property, to fit evenly across the control.
 	Unlike the original SSTab, this property is no longer ignored when Style property is set to ssStylePropertyPage.
 	
-	If TabWidthStyle property setting is ntTWTabCaptionWidth, ntTWTabStripEmulation or ntTWTabCaptionWidthFillRows, It determines the maximun width that a tab can have, regardeless of the lenght of the caption.
+	If TabWidthStyle property setting is ntTWTabCaptionWidth, ntTWTabStripEmulation or ntTWTabCaptionWidthFillRows, It determines the maximun width that a tab can have, regardless of the length of the caption.
 	When a tab caption doesn't fit in the available width, if WordWrap is set to True it will have an additional line, and if it is set to False it will cut the caption text and add an ellipsis.
 	In the case when TabWidthStyle setting is ntTWTabStripEmulation and it is needed more space than TabMaxWidth * Rows to fill all the rows space, then the tabs can have more width than the specified in the TabMaxWidth setting.
 
@@ -658,6 +658,8 @@ TabMaxWidth property:
 TabMinWidth property:
 	Type: Single
 	Returns or sets the minimun width of each tab. If set to 0 (zero), it means no minimun.
+	
+	Note: this property has no effect if TabWidthStyle is set to ntTWTabCaptionWidth or ntTWFixed.
 
 
 TabMousePointerHand property:
@@ -770,13 +772,25 @@ TabWidthStyle property:
 	Type: NTTabWidthStyleConstants
 	Returns or sets a value that determines the justification or width of the tabs.
 	
-	ssTWSFixed: All tabs has the same width. If TabMaxWidth is 0 (zero), the tab width will be the available space / TabsPerRow. If TabMaxWidth is greater than 0 (zero), that setting will determine the tabs width.
+	ntTWFixed: All tabs have the same width. If TabMaxWidth is 0 (zero), the tab width will be the available space / TabsPerRow. If TabMaxWidth is greater than 0 (zero), that setting will determine the tabs width.
 	
-	ssTWSNonJustified: The width of the tabs will be determined by the size of the caption + the size of the tab picture (if any). TabMinWidth and TabMaxWidth settings can set a boundary for the width that a tab can have. Unlike the original SSTab control, if the sum of the widths of all the tabs in a row exceeds the available space, the widths of the tabs in that row are shrunken to fit in the available space.
+	ntTWTabCaptionWidth: The width of the tabs will be determined by the size of the caption + the size of the tab picture (if any). TabMinWidth and TabMaxWidth settings can set a boundary for the width that a tab can have. Unlike the original SSTab control, if the sum of the widths of all the tabs in a row exceeds the available space, the widths of the tabs in that row are shrunken to fit in the available space.
 	
-	ssTWSJustified: If there is more than one row, each tab is wide enough to accommodate its contents and, if needed, the width of each tab is increased so that each row of tabs spans the width of the control. If all the tabs fit in one row, the tabs are not justified (it works the same as ssTWSNonJustified).
+	ntTWTabStripEmulation: Same as ntTWTabCaptionWidth but if the control is not wide enough to show all the tabs, it starts a new row.
+	If the control needs to distribute the tabs in more than one row because there is not enough space to fit them all in one row, it will do so by distributing them evenly on the rows. The width of each tab will be increased so that each row of tabs spans the width of the control. 
+	But if all the tabs fit in one row, the tabs are not justified (it works the same as ntTWTabCaptionWidth).
 	
-	ssTWSAuto: The behavior is defined by the Style property setting.
+	ntTWStretchToFill: same as ntTWTabStripEmulation but when there is only one row, if the captions are not wide enough to fill the row, they are stretched to do so.
+	
+	ntTWTabCaptionWidthFillRows: it works as ntTWTabStripEmulation but if one row is not enough to accomodate all the tabs, it starts a new row but does not distribute all the tabs evenly between rows as ntTWStretchToFill does. So it can show 8 tabs in one row and 1 tab in another row.
+	
+	ntTWAuto: The behavior is defined by the Style and TDIMode property settings, in this way:
+	TDIMode <> <i>ntTDIModeNone</i>: ntTWTabCaptionWidthFillRows
+	<i>ssStyleTabbedDialog</i>: ntTWFixed
+	<i>ssStylePropertyPage</i>: ntTWTabCaptionWidth
+	<i>ntStyleTabStrip</i>: ntTWTabStripEmulation
+	<i>ntStyleFlat</i>: ntTWStretchToFill
+	<i>ntStyleWindows</i>: ntTWStretchToFill
 	
 	Note: if the TabOrientation property is set to ntTabOrientationLeftHorizontal or ntTabOrientationRightHorizontal this property has no effect since the tab widths are defined by the widest tab caption. The minimal height is defined by the TabHeight property.
 	Also TabMinWidth and TabMaxWidth property settings can be used to set the minimun and maximun tabs size for those orientations.

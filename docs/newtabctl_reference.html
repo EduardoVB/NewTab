@@ -845,7 +845,7 @@ If <a href="#IconCharHex-Property">IconCharHex</a> property value is set, anythi
 <h3>Description:</h3>
 <p>Returns the number of rows of tabs.<br>
 <br>
-The <b>Rows</b> property value can change its value when new tabs are dinamically added or, when <a href="#TabWidthStyle-Property">TabWidthStyle</a> is set to <b>ssTWSFixed</b> or <b>ssTWSNonJustified</b> and <a href="#TabsPerRow-Property">TabsPerRow</a> was changed, or <a href="#TabWidthStyle-Property">TabWidthStyle</a> is set to <b>ssTWSJustified</b> and the <b>Width</b> of the control changed, the tab captions changed or the <a href="#Font-Property">Font</a> setting has changed.<br>
+The <b>Rows</b> property value can change its value when new tabs are dinamically added or, when <a href="#TabWidthStyle-Property">TabWidthStyle</a> is set to <b>ntTWFixed</b> or <b>ntTWTabCaptionWidth</b> and <a href="#TabsPerRow-Property">TabsPerRow</a> was changed, or <a href="#TabWidthStyle-Property">TabWidthStyle</a> is set to <b>ntTWStretchToFill</b> and the <b>Width</b> of the control changed, the tab captions changed or the <a href="#Font-Property">Font</a> setting has changed.<br>
 You can use the <a href="#Resize-Event">Resize</a> event to properly set the position of the contained controls.<br>
 The <a href="#RowsChange-Event">RowsChange</a> notifies of the change of this property.<br>
 </p><br>
@@ -863,7 +863,7 @@ If has no effect when the control is themed (<a href="#Style-Property">Style</a>
 <h3>Description:</h3>
 <p>Returns or sets a value that determines when the control has more that one row of tabs, if they will be drawn changing the horizontal position on each row.<br>
 <br>
-If the value is <b>ssYNAuto</b>, the behavior will be determined by the <a href="#Style-Property">Style</a> property setting in this way: for <b>ssStyleTabbedDialog</b> and <b>ssStylePropertyPage</b> the rows will be drawn is perspective, and for <b>ssStyleTabStrip</b> without.<br>
+If the value is <b>ntYNAuto</b>, the behavior will be determined by the <a href="#Style-Property">Style</a> property setting in this way: for <b>ssStyleTabbedDialog</b> and <b>ssStylePropertyPage</b> the rows will be drawn is perspective, and for <b>ntStyleTabStrip</b> without.<br>
 <br>
 <h3>See Also:</h3><a href="#Style-Property">Style</a> property</p><br>
 <a name="SoftEdges-Property" /><h2><p class"section">SoftEdges Property</p></h2></a>
@@ -979,10 +979,10 @@ Each tab can have a different font for its icon.<br>
 <h3>Description:</h3>
 <p>Returns or sets the maximum width of each tab. If set to 0 (zero), it means no maximun.<br>
 <br>
-When the <a href="#TabWidthStyle-Property">TabWidthStyle</a> property setting is <b>ssTWSFixed</b> and the <a href="#TabMaxWidth-Property">TabMaxWidth</a> property is set to 0 (zero), the control automatically sizes the tabs based on <a href="#TabsPerRow-Property">TabsPerRow</a> property, to fit evenly across the control.<br>
+When the <a href="#TabWidthStyle-Property">TabWidthStyle</a> property setting is <b>ntTWFixed</b> and the <a href="#TabMaxWidth-Property">TabMaxWidth</a> property is set to 0 (zero), the control automatically sizes the tabs based on <a href="#TabsPerRow-Property">TabsPerRow</a> property, to fit evenly across the control.<br>
 Unlike the original SSTab, this property is no longer ignored when <a href="#Style-Property">Style</a> property is set to <b>ssStylePropertyPage</b>.<br>
 <br>
-If <a href="#TabWidthStyle-Property">TabWidthStyle</a> property setting is <b>ntTWTabCaptionWidth</b>, <b>ntTWTabStripEmulation</b> or <b>ntTWTabCaptionWidthFillRows</b>, It determines the maximun width that a tab can have, regardeless of the lenght of the caption.<br>
+If <a href="#TabWidthStyle-Property">TabWidthStyle</a> property setting is <b>ntTWTabCaptionWidth</b>, <b>ntTWTabStripEmulation</b> or <b>ntTWTabCaptionWidthFillRows</b>, It determines the maximun width that a tab can have, regardless of the length of the caption.<br>
 When a tab caption doesn't fit in the available width, if <a href="#WordWrap-Property">WordWrap</a> is set to <b>True</b> it will have an additional line, and if it is set to <b>False</b> it will cut the caption text and add an ellipsis.<br>
 In the case when <a href="#TabWidthStyle-Property">TabWidthStyle</a> setting is <b>ntTWTabStripEmulation</b> and it is needed more space than <b>TabMaxWidth</b> * <a href="#Rows-Property">Rows</a> to fill all the rows space, then the tabs can have more width than the specified in the <b>TabMaxWidth</b> setting.<br>
 <br>
@@ -991,6 +991,8 @@ In the case when <a href="#TabWidthStyle-Property">TabWidthStyle</a> setting is 
 <p>Type: <b>Single</b></p>
 <h3>Description:</h3>
 <p>Returns or sets the minimun width of each tab. If set to 0 (zero), it means no minimun.<br>
+<br>
+Note: this property has no effect if <a href="#TabWidthStyle-Property">TabWidthStyle</a> is set to <b>ntTWTabCaptionWidth</b> or <b>ntTWFixed</b>.<br>
 <br>
 <h3>See Also:</h3><a href="#TabMaxWidth-Property">TabMaxWidth</a> property</p><br>
 <a name="TabMousePointerHand-Property" /><h2><p class"section">TabMousePointerHand Property</p></h2></a>
@@ -1078,13 +1080,25 @@ If the tab has not a <a href="#TabToolTipText-Property">TabToolTipText</a> set, 
 <h3>Description:</h3>
 <p>Returns or sets a value that determines the justification or width of the tabs.<br>
 <br>
-<b>ssTWSFixed</b>: All tabs has the same width. If <a href="#TabMaxWidth-Property">TabMaxWidth</a> is 0 (zero), the tab width will be the available space / <a href="#TabsPerRow-Property">TabsPerRow</a>. If <a href="#TabMaxWidth-Property">TabMaxWidth</a> is greater than 0 (zero), that setting will determine the tabs width.<br>
+<b>ntTWFixed</b>: All tabs have the same width. If <a href="#TabMaxWidth-Property">TabMaxWidth</a> is 0 (zero), the tab width will be the available space / <a href="#TabsPerRow-Property">TabsPerRow</a>. If <a href="#TabMaxWidth-Property">TabMaxWidth</a> is greater than 0 (zero), that setting will determine the tabs width.<br>
 <br>
-<b>ssTWSNonJustified</b>: The width of the tabs will be determined by the size of the caption + the size of the tab picture (if any). <a href="#TabMinWidth-Property">TabMinWidth</a> and <a href="#TabMaxWidth-Property">TabMaxWidth</a> settings can set a boundary for the width that a tab can have. Unlike the original SSTab control, if the sum of the widths of all the tabs in a row exceeds the available space, the widths of the tabs in that row are shrunken to fit in the available space.<br>
+<b>ntTWTabCaptionWidth</b>: The width of the tabs will be determined by the size of the caption + the size of the tab picture (if any). <a href="#TabMinWidth-Property">TabMinWidth</a> and <a href="#TabMaxWidth-Property">TabMaxWidth</a> settings can set a boundary for the width that a tab can have. Unlike the original SSTab control, if the sum of the widths of all the tabs in a row exceeds the available space, the widths of the tabs in that row are shrunken to fit in the available space.<br>
 <br>
-<b>ssTWSJustified</b>: If there is more than one row, each tab is wide enough to accommodate its contents and, if needed, the width of each tab is increased so that each row of tabs spans the width of the control. If all the tabs fit in one row, the tabs are not justified (it works the same as <b>ssTWSNonJustified</b>).<br>
+<b>ntTWTabStripEmulation</b>: Same as <b>ntTWTabCaptionWidth</b> but if the control is not wide enough to show all the tabs, it starts a new row.<br>
+If the control needs to distribute the tabs in more than one row because there is not enough space to fit them all in one row, it will do so by distributing them evenly on the rows. The width of each tab will be increased so that each row of tabs spans the width of the control. <br>
+But if all the tabs fit in one row, the tabs are not justified (it works the same as <b>ntTWTabCaptionWidth</b>).<br>
 <br>
-<b>ssTWSAuto</b>: The behavior is defined by the <a href="#Style-Property">Style</a> property setting.<br>
+<b>ntTWStretchToFill</b>: same as <b>ntTWTabStripEmulation</b> but when there is only one row, if the captions are not wide enough to fill the row, they are stretched to do so.<br>
+<br>
+<b>ntTWTabCaptionWidthFillRows</b>: it works as <b>ntTWTabStripEmulation</b> but if one row is not enough to accomodate all the tabs, it starts a new row but does not distribute all the tabs evenly between rows as <b>ntTWStretchToFill</b> does. So it can show 8 tabs in one row and 1 tab in another row.<br>
+<br>
+<b>ntTWAuto</b>: The behavior is defined by the <a href="#Style-Property">Style</a> and <a href="#TDIMode-Property">TDIMode</a> property settings, in this way:<br>
+<a href="#TDIMode-Property">TDIMode</a> <> <i>ntTDIModeNone</i>: ntTWTabCaptionWidthFillRows<br>
+<i>ssStyleTabbedDialog</i>: ntTWFixed<br>
+<i>ssStylePropertyPage</i>: ntTWTabCaptionWidth<br>
+<i>ntStyleTabStrip</i>: ntTWTabStripEmulation<br>
+<i>ntStyleFlat</i>: ntTWStretchToFill<br>
+<i>ntStyleWindows</i>: ntTWStretchToFill<br>
 <br>
 Note: if the <a href="#TabOrientation-Property">TabOrientation</a> property is set to <b>ntTabOrientationLeftHorizontal</b> or <b>ntTabOrientationRightHorizontal</b> this property has no effect since the tab widths are defined by the widest tab caption. The minimal height is defined by the <a href="#TabHeight-Property">TabHeight</a> property.<br>
 Also <a href="#TabMinWidth-Property">TabMinWidth</a> and <a href="#TabMaxWidth-Property">TabMaxWidth</a> property settings can be used to set the minimun and maximun tabs size for those orientations.</p><br>
