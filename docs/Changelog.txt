@@ -1,3 +1,7 @@
+2024-02-08 Bug fix in TabMaxWidth property.
+2024-02-08 Bug fix in FlatBorderMode = ntBorderTabs.
+2024-02-07 Added TabCustomColor property. Now each tab can have its own colors.
+2024-02-07 Bug fix when CanReorderTabs is True and the user clicks the icon of a non active tab.
 2024-02-04 Bug fix in ChangeControlsForeColor procedure.
 2024-02-03 Changed to OLE version 8.0.
 2024-02-03 Changed property names TabBody[Left|Top|Width|Height] property names to Body[Left|Top|Width|Height].

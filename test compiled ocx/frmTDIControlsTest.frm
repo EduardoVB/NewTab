@@ -105,7 +105,7 @@ Begin VB.Form frmTDIControlsTest
       End
       Begin VB.CommandButton Command1 
          BackColor       =   &H00F7F7F7&
-         Caption         =   "Do something"
+         Caption         =   "Do search"
          Height          =   370
          Index           =   0
          Left            =   3840
@@ -125,7 +125,7 @@ Begin VB.Form frmTDIControlsTest
       Begin VB.Label Label1 
          Alignment       =   1  'Right Justify
          BackColor       =   &H00F7F7F7&
-         Caption         =   "Search:"
+         Caption         =   "Find:"
          ForeColor       =   &H009B6541&
          Height          =   370
          Index           =   0
@@ -151,6 +151,16 @@ Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
+
+Private Sub Command1_Click(Index As Integer)
+    If txtSearch(Index).Text = "" Then
+        MsgBox "Search what? Please enter something to find!", vbExclamation
+        txtSearch(Index).SetFocus
+    Else
+        txtDoc(Index).Text = txtDoc(Index).Text & "Searched for """ & txtSearch(Index).Text & """." & vbCrLf
+        txtSearch(Index).Text = ""
+    End If
+End Sub
 
 Private Sub Form_Resize()
     Dim c As Long

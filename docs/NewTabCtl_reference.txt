@@ -577,6 +577,15 @@ TabControls property:
 	It is not available at design time, and is read-only at run time.
 
 
+TabCustomColor property:
+	Type: Long
+	
+	Additional parameter(s):
+	    In	Required	Index	As	Long
+	    In	Required	ColorID	As	NTTabCustomColorIDConstants
+	Returns or sets a custom color for a tab. It may be a color when it is inactive or active.
+
+
 TabData property:
 	Type: Long
 	
@@ -1482,6 +1491,26 @@ NTTabAppearanceConstants ENUMERATION
 	ntTAPropertyPage = 3
 	ntTAPropertyPageRounded = 4
 	ntTAFlat = 5
+
+NTTabCustomColorIDConstants ENUMERATION
+
+	ntCCBackColorTab = 0
+	ntCCBackColorTabSel = 1
+	ntCCHighlightColor = 2
+	ntCCHighlightColorTabSel = 3
+	ntCCFlatBarColorInactive = 4
+	ntCCFlatBarColorHighlight = 5
+	ntCCFlatBarColorTabSel = 6
+	ntCCFlatTabBorderColorHighlight = 7
+	ntCCFlatTabBorderColorTabSel = 8
+	ntCCForeColor = 9
+	ntCCForeColorHighlighted = 10
+	ntCCForeColorTabSel = 11
+	ntCCIconColor = 12
+	ntCCIconColorTabSel = 13
+	ntCCIconColorMouseHover = 14
+	ntCCIconColorMouseHoverTabSel = 15
+	ntCCIconColorTabHighlighted = 16
 
 NTTabOrientationConstants ENUMERATION
 

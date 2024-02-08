@@ -700,6 +700,27 @@ Public Enum NTFindTabMethodConstants
     ntFindTag = 3
 End Enum
 
+Public Enum NTTabCustomColorIDConstants
+    ntCCBackColorTab
+    ntCCBackColorTabSel
+    ntCCHighlightColor
+    ntCCHighlightColorTabSel
+    ntCCFlatBarColorInactive
+    ntCCFlatBarColorHighlight
+    ntCCFlatBarColorTabSel
+    ntCCFlatTabBorderColorHighlight
+    ntCCFlatTabBorderColorTabSel
+    ntCCForeColor
+    ntCCForeColorHighlighted
+    ntCCForeColorTabSel
+    ntCCIconColor
+    ntCCIconColorTabSel
+    ntCCIconColorMouseHover
+    ntCCIconColorMouseHoverTabSel
+    ntCCIconColorTabHighlighted
+End Enum
+
+
 ' Events
 ' Original
 Event Click(ByVal PreviousTab As Integer)
@@ -742,6 +763,7 @@ Attribute OLEStartDrag.VB_Description = "Occurs when a component's OLEDrag metho
 
 ' Added
 Event BeforeClick(ByVal CurrentTabSel As Long, ByRef NewTabSel As Long, ByRef Cancel As Boolean)
+Attribute BeforeClick.VB_Description = "Occurs when the active tab is about to change. The action can be canceled at this time by setting the Cancel parameter to True."
 Event ChangeControlBackColor(ByVal ControlName As String, ByVal ControlTypeName As String, ByRef Cancel As Boolean)
 Attribute ChangeControlBackColor.VB_Description = "When the ChangeControlsBackColor property is set to True, it allows you to individually determine which controls will (or will not) change their BackColor.\r\nThis event is raised for each control on the current tab, before the tab is painted."
 Event ChangeControlForeColor(ByVal ControlName As String, ByVal ControlTypeName As String, ByRef Cancel As Boolean)
@@ -749,21 +771,33 @@ Attribute ChangeControlForeColor.VB_Description = "When the ChangeControlsBackCo
 Event RowsChange()
 Attribute RowsChange.VB_Description = "Occurs when the Rows property changes its value."
 Event Resize()
+Attribute Resize.VB_Description = "Occurs when the tab body changes its size."
 Event TabMouseEnter(ByVal nTab As Long)
+Attribute TabMouseEnter.VB_Description = "Occurs when the mouse starts hovering on a tab."
 Event TabMouseLeave(ByVal nTab As Long)
+Attribute TabMouseLeave.VB_Description = "Occurs when the mouse ends hovering on a tab."
 Event TabRightClick(ByVal nTab As Long, ByVal Shift As Long, ByVal X As Single, ByVal Y As Single)
+Attribute TabRightClick.VB_Description = "Occurs when a click with the right mouse button takes places over a tab."
 Event TabChange()
+Attribute TabChange.VB_Description = "Occurs after the current tab has already changed."
 Event IconClick(ByVal nTab As Long, ByRef ForwardClickToTab As Boolean)
+Attribute IconClick.VB_Description = "Occurs when the icon of a tab is clicked (it doesn't work with pictures)."
 Event BeforeTabReorder(ByVal CurrentIndex As Long, ByRef NewIndex As Long, ByRef Cancel As Boolean)
+Attribute BeforeTabReorder.VB_Description = "Occurs when before a tab is changed from one position to another. The action can be canceled using the Cancel parameter or the new position can be altered from the NewIndex parameter."
 Event TabReordered(ByVal CurrentIndex As Long, ByVal OldIndex As Long)
+Attribute TabReordered.VB_Description = "Occurs when a tab changed its position."
 Event IconMouseEnter(ByVal nTab As Long)
+Attribute IconMouseEnter.VB_Description = "Occurs when the mouse enters hovering over a tab icon (not picture)."
 Event IconMouseLeave(ByVal nTab As Long)
+Attribute IconMouseLeave.VB_Description = "Occurs when the mouse goes out after hovering over a tab icon (not picture)."
 Event TDIBeforeNewTab(ByVal TabType As NTTDINewTabTypeConstants, ByVal TabNumber As Long, ByRef TabCaption As String, ByRef LoadControls As Boolean, ByRef Cancel As Boolean)
 Attribute TDIBeforeNewTab.VB_Description = "When in TDI mode, it occurs before opening a new tab."
 Event TDINewTabAdded(ByVal TabNumber As Long)
 Attribute TDINewTabAdded.VB_Description = "When in TDI mode, it occurs after a new tab was opened."
 Event TDIBeforeClosingTab(ByVal TabNumber As Long, ByVal IsLastTab As Boolean, ByRef OpenNewOnLastClosed As Boolean, ByRef UnloadControls As Boolean, ByRef Cancel As Boolean)
+Attribute TDIBeforeClosingTab.VB_Description = "When in TDI mode, it occurs before closing a tab."
 Event TDITabClosed(ByVal TabNumber As Long, ByVal IsLastTab As Boolean)
+Attribute TDITabClosed.VB_Description = "When in TDI mode, it occurs after a tab was closed."
 
 Private Type T_TabData
     ' Properties
@@ -804,6 +838,7 @@ Private Type T_TabData
     TDITabNumber As Long
     OriginalIndex As Long
     FixedWidth As Long
+    CustomColors As New cTabColors
 End Type
 
 Private Const cRowPerspectiveSpace As Long = 150&  ' in Twips
@@ -970,7 +1005,6 @@ Private mXCorrection As Single
 Private mYCorrection As Single
 Private mHighlightEffectColors_Strong(10) As Long
 Private mHighlightEffect_Step As Long
-'Private mGlowColor_Bk As Long
 Private mGlowColor_Sel_Bk As Long
 Private mGlowColor_Sel_Light As Long
 Private mHighlightGradient As NTHighlightGradientConstants
@@ -1095,6 +1129,7 @@ Private WithEvents mTabIconFontsEventsHandler As cFontEventHandlers
 Attribute mTabIconFontsEventsHandler.VB_VarHelpID = -1
 Private mChangingHighContrastTheme As Boolean
 Private mControlsForeColor_PrevColor As Long
+Private mControlsBackColor_PrevColor As Long
 Private mSettingBackColorTabSelFromBackColorTabs As Boolean
 
 ' Colors
@@ -1266,7 +1301,7 @@ End Sub
 
 ' Determines if the control is enabled.
 Public Property Get Enabled() As Boolean
-Attribute Enabled.VB_Description = "Returns or sets a value that determines whether a form or control can respond to user-generated events."
+Attribute Enabled.VB_Description = "Returns/sets a value that determines whether a form or control can respond to user-generated events."
 Attribute Enabled.VB_UserMemId = -514
     Enabled = mEnabled
 End Property
@@ -1387,15 +1422,23 @@ Public Property Let ForeColorTabSel(ByVal nValue As OLE_COLOR)
 End Property
 
 Private Sub SetControlsProperForeColor(Optional nPrevColor As Long = -1)
-    If ColorsHaveEnoughContrast(mBackColorTabSel, mForeColorTabSel) Then
-        SetControlsForeColor mForeColorTabSel, nPrevColor
+    Dim iForeColorTabSel As Long
+    
+    If IsEmpty(mTabData(mTab).CustomColors.ForeColorTabSel) Then
+        iForeColorTabSel = mForeColorTabSel
+    Else
+        iForeColorTabSel = mTabData(mTab).CustomColors.ForeColorTabSel
+    End If
+    
+    If ColorsHaveEnoughContrast(mBackColorTabSel, iForeColorTabSel) Then
+        SetControlsForeColor iForeColorTabSel, nPrevColor
     ElseIf ColorsHaveEnoughContrast(mBackColorTabSel, mForeColor) Then
         SetControlsForeColor mForeColor, nPrevColor
         'Debug.Print Extender.Index
     ElseIf ColorsHaveEnoughContrast(mBackColorTabSel, Ambient.ForeColor) Then
         SetControlsForeColor Ambient.ForeColor, nPrevColor
-    ElseIf ColorsHaveEnoughContrast(mBackColorTabSel, mForeColorTabSel, 80) Then
-        SetControlsForeColor mForeColorTabSel, nPrevColor
+    ElseIf ColorsHaveEnoughContrast(mBackColorTabSel, iForeColorTabSel, 80) Then
+        SetControlsForeColor iForeColorTabSel, nPrevColor
     ElseIf ColorsHaveEnoughContrast(mBackColorTabSel, mForeColor, 80) Then
         SetControlsForeColor mForeColor, nPrevColor
     ElseIf ColorsHaveEnoughContrast(mBackColorTabSel, Ambient.ForeColor, 80) Then
@@ -1404,6 +1447,7 @@ Private Sub SetControlsProperForeColor(Optional nPrevColor As Long = -1)
 End Sub
 
 Public Property Get ForeColorHighlighted() As OLE_COLOR
+Attribute ForeColorHighlighted.VB_Description = "Returns/sets the color used to draw the captions of tabs when the are highlighted."
     If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
         ForeColorHighlighted = mHandleHighContrastTheme_OrigForeColorHighlighted
     Else
@@ -1556,9 +1600,18 @@ Public Property Let Tabs(ByVal nValue As Long)
         End If
         mHighlightEffect_Step = 0
         If mHighlightIntensity = ntHighlightIntensityStrong Then
-            mGlowColor = mHighlightEffectColors_Strong(10) ' mGlowColor
+            mGlowColor = mHighlightEffectColors_Strong(10)
         Else
             mGlowColor = mHighlightEffectColors_Light(10)
+        End If
+        If mTabUnderMouse > -1 Then
+            If Not IsEmpty(mTabData(mTabUnderMouse).CustomColors.HighlightColor) Then
+                If mHighlightIntensity = ntHighlightIntensityStrong Then
+                    mTabData(mTabUnderMouse).CustomColors.GlowColor = mTabData(mTabUnderMouse).CustomColors.HighlightEffectColors_Strong(10)
+                Else
+                    mTabData(mTabUnderMouse).CustomColors.GlowColor = mTabData(mTabUnderMouse).CustomColors.HighlightEffectColors_Light(10)
+                End If
+            End If
         End If
         If mTabs > nValue Then
             For c = nValue To mTabs - 1
@@ -1577,9 +1630,9 @@ Public Property Let Tabs(ByVal nValue As Long)
             Next c
         End If
         If UBound(mTabData) = -1 Then
-            ReDim mTabData(nValue - 1)
+            ReDim mTabData(-1 To nValue - 1)
         Else
-            ReDim Preserve mTabData(nValue - 1)
+            ReDim Preserve mTabData(-1 To nValue - 1)
             If mTabs < nValue Then
                 For c = mTabs To nValue - 1
                     mTabData(c).OriginalIndex = c
@@ -1675,6 +1728,21 @@ Public Property Let TabSel(ByVal nValue As Long)
             mSubclassControlsPaintingPending = True
             If tmrHighlightEffect.Enabled Then
                 tmrHighlightEffect.Enabled = False
+            End If
+            If (Not IsEmpty(mTabData(mTab).CustomColors.BackColorTabSel)) Or (Not IsEmpty(mTabData(mTab).CustomColors.HighlightColorTabSel)) Or (Not IsEmpty(mTabData(iPrev2).CustomColors.BackColorTabSel)) Or (Not IsEmpty(mTabData(iPrev2).CustomColors.HighlightColorTabSel)) Then
+                SetColors
+            ElseIf mAppearanceIsFlat And ((Not IsEmpty(mTabData(mTab).CustomColors.FlatBarColorTabSel)) Or (Not IsEmpty(mTabData(iPrev2).CustomColors.FlatBarColorTabSel))) Then
+                SetColors
+            End If
+            If (Not IsEmpty(mTabData(mTab).CustomColors.ForeColorTabSel)) Or (Not IsEmpty(mTabData(iPrev2).CustomColors.ForeColorTabSel)) Then
+                SetControlsProperForeColor
+            End If
+            If (Not IsEmpty(mTabData(mTab).CustomColors.BackColorTabSel)) Or (Not IsEmpty(mTabData(iPrev2).CustomColors.BackColorTabSel)) Then
+                If IsEmpty(mTabData(mTab).CustomColors.BackColorTabSel) Then
+                    SetControlsBackColor mBackColorTabSel
+                Else
+                    SetControlsBackColor mTabData(mTab).CustomColors.BackColorTabSel
+                End If
             End If
             Draw
             If iWv Then RedrawWindow mUserControlHwnd, ByVal 0&, 0&, RDW_INVALIDATE Or RDW_ALLCHILDREN
@@ -2457,7 +2525,7 @@ End Property
 
 ' Returns the text displayed on the specified tab.
 Public Property Get TabCaption(ByVal Index As Long) As String
-Attribute TabCaption.VB_Description = "Returns the text displayed on the specified tab."
+Attribute TabCaption.VB_Description = "Returns/sets  the text displayed on the specified tab."
 Attribute TabCaption.VB_ProcData.VB_Invoke_Property = ";Texto"
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
@@ -2657,7 +2725,7 @@ End Property
 
 
 Public Property Get BackColorTabSel() As OLE_COLOR
-Attribute BackColorTabSel.VB_Description = "Returns /sets the color of the active tab including the tab body."
+Attribute BackColorTabSel.VB_Description = "Returns/sets the color of the active tab including the tab body."
 Attribute BackColorTabSel.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
         BackColorTabSel = mHandleHighContrastTheme_OrigBackColorTabSel
@@ -3216,6 +3284,7 @@ End Property
 
 
 Public Property Get FlatBarHeight() As Long
+Attribute FlatBarHeight.VB_Description = "Returns/sets the height in pixels of the bar in flat style."
     FlatBarHeight = mFlatBarHeight
 End Property
 
@@ -4003,15 +4072,35 @@ Private Sub tmrHighlightEffect_Timer()
     Else
         mGlowColor = mHighlightEffectColors_Light(mHighlightEffect_Step)
     End If
+    If mTabUnderMouse > -1 Then
+        If Not IsEmpty(mTabData(mTabUnderMouse).CustomColors.HighlightColor) Then
+            If mHighlightIntensity = ntHighlightIntensityStrong Then
+                mTabData(mTabUnderMouse).CustomColors.GlowColor = mTabData(mTabUnderMouse).CustomColors.HighlightEffectColors_Strong(mHighlightEffect_Step)
+            Else
+                mTabData(mTabUnderMouse).CustomColors.GlowColor = mTabData(mTabUnderMouse).CustomColors.HighlightEffectColors_Light(mHighlightEffect_Step)
+            End If
+        End If
+    End If
     mFlatBarGlowColor = mFlatBarHighlightEffectColors(mHighlightEffect_Step)
-'    mFlatGlowColor = mHighlightEffectColors_Light(mHighlightEffect_Step)
+    If (Not IsEmpty(mTabData(mTabUnderMouse).CustomColors.FlatBarColorInactive)) Or (Not IsEmpty(mTabData(mTabUnderMouse).CustomColors.FlatBarColorHighlight)) Then
+        mTabData(mTabUnderMouse).CustomColors.FlatBarGlowColor = mTabData(mTabUnderMouse).CustomColors.FlatBarHighlightEffectColors(mHighlightEffect_Step)
+    End If
     Draw
     If mHighlightEffect_Step = 10 Then
         tmrHighlightEffect.Enabled = False
         If mHighlightIntensity = ntHighlightIntensityStrong Then
-            mGlowColor = mHighlightEffectColors_Strong(10) ' mGlowColor
+            mGlowColor = mHighlightEffectColors_Strong(10)
         Else
             mGlowColor = mHighlightEffectColors_Light(10)
+        End If
+        If mTabUnderMouse > -1 Then
+            If Not IsEmpty(mTabData(mTabUnderMouse).CustomColors.HighlightColor) Then
+                If mHighlightIntensity = ntHighlightIntensityStrong Then
+                    mTabData(mTabUnderMouse).CustomColors.GlowColor = mTabData(mTabUnderMouse).CustomColors.HighlightEffectColors_Strong(10)
+                Else
+                    mTabData(mTabUnderMouse).CustomColors.GlowColor = mTabData(mTabUnderMouse).CustomColors.HighlightEffectColors_Light(10)
+                End If
+            End If
         End If
     End If
 End Sub
@@ -4159,6 +4248,7 @@ Private Sub UserControl_Initialize()
     mTabIconDistanceToCaptionDPIScaled = cTabIconDistanceToCaption * mDPIScale
     mIconClickExtendDPIScaled = cIconClickExtend * mDPIScale
     mControlsForeColor_PrevColor = -1
+    mControlsBackColor_PrevColor = -1
 End Sub
 
 Private Sub UserControl_InitProperties()
@@ -4178,6 +4268,8 @@ Private Sub UserControl_InitProperties()
     End If
     On Error GoTo 0
     
+    mTabs = 3
+    ReDim mTabData(-1 To mTabs - 1)
     mTab = 0
     
     mTabsEndFreeSpace = cPropDef_TabsEndFreeSpace
@@ -4194,8 +4286,6 @@ Private Sub UserControl_InitProperties()
     Set mDefaultIconFont = New StdFont
     mDefaultIconFont.Name = cPropDef_IconFontName
     mDefaultIconFont.Size = cPropDef_IconFontSize
-    mTabs = 3
-    ReDim mTabData(mTabs - 1)
     For c = 0 To mTabs - 1
         Set mTabData(c).Controls = New Collection
         mTabData(c).Enabled = True
@@ -4835,7 +4925,7 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Sing
         End If
         If mCanReorderTabs Then
             tmrCheckTabDrag.Enabled = False
-            If Not (mTabChangedFromAnotherRow Or mProcessingTabChange Or iTabIconClicked Or (IIf(mTDIMode, mVisibleTabs < 3, mVisibleTabs < 2))) Then
+            If Not (mTabChangedFromAnotherRow Or mProcessingTabChange Or (IIf(mTDIMode, mVisibleTabs < 3, mVisibleTabs < 2))) Then
                 tmrCheckTabDrag.Enabled = True
                 mMouseX = ScaleX(iX, vbTwips, vbPixels)
                 mMouseY = ScaleY(iY, vbTwips, vbPixels)
@@ -4940,11 +5030,27 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
     RaiseEvent MouseMove(Button, Shift, iX, iY)
     
     If mTabUnderMouse = mTab Then
-        iCol = mIconColorTabSel
-        iBool = (mIconColorMouseHoverTabSel <> iCol)
+        If IsEmpty(mTabData(mTabUnderMouse).CustomColors.IconColorTabSel) Then
+            iCol = mIconColorTabSel
+        Else
+            iCol = mTabData(mTabUnderMouse).CustomColors.IconColorTabSel
+        End If
+        If IsEmpty(mTabData(mTabUnderMouse).CustomColors.IconColorMouseHoverTabSel) Then
+            iBool = (mIconColorMouseHoverTabSel <> iCol)
+        Else
+            iBool = (mTabData(mTabUnderMouse).CustomColors.IconColorMouseHoverTabSel <> iCol)
+        End If
     Else
-        iCol = mIconColor
-        iBool = (mIconColorMouseHover <> iCol)
+        If IsEmpty(mTabData(mTabUnderMouse).CustomColors.IconColor) Then
+            iCol = mIconColor
+        Else
+            iCol = mTabData(mTabUnderMouse).CustomColors.IconColor
+        End If
+        If IsEmpty(mTabData(mTabUnderMouse).CustomColors.IconColorMouseHover) Then
+            iBool = (mIconColorMouseHover <> iCol)
+        Else
+            iBool = (mTabData(mTabUnderMouse).CustomColors.IconColorMouseHover <> iCol)
+        End If
     End If
     If iBool Then
         Static sTabOverIcon_Last As Long
@@ -5475,7 +5581,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         ReDim mTabData(-1 To -1)
         mTab = -1
     Else
-        ReDim mTabData(mTabs - 1)
+        ReDim mTabData(-1 To mTabs - 1)
         For c = 0 To mTabs - 1
             mTabData(c).OriginalIndex = c
         Next
@@ -6254,7 +6360,11 @@ Private Sub Draw()
     If mBackStyle = ntOpaque Then
         If mEnabled Or (Not mAmbientUserMode) Or (Not mShowDisabledState) Then
             mBackColorTabs2 = TranslatedColor(mBackColorTabs)
-            mBackColorTabSel2 = TranslatedColor(mBackColorTabSel)
+            If IsEmpty(mTabData(mTab).CustomColors.BackColorTabSel) Or (mHandleHighContrastTheme And mHighContrastThemeOn) Then
+                mBackColorTabSel2 = TranslatedColor(mBackColorTabSel)
+            Else
+                mBackColorTabSel2 = TranslatedColor(mTabData(mTab).CustomColors.BackColorTabSel)
+            End If
         Else
             mBackColorTabs2 = TranslatedColor(mBackColorTabsDisabled)
             mBackColorTabSel2 = TranslatedColor(mBackColorTabSelDisabled)
@@ -6735,13 +6845,13 @@ Private Sub Draw()
             Next
             If iColumnWidthForHorizontalCaptions(iRow) = 0 Then iColumnWidthForHorizontalCaptions(iRow) = 1600
             If iTabMaxWidth > 0 Then
-                If iTabMaxWidth < iColumnWidthForHorizontalCaptions(iRow) Then
+                If iColumnWidthForHorizontalCaptions(iRow) > iTabMaxWidth Then
                     iColumnWidthForHorizontalCaptions(iRow) = iTabMaxWidth
                 End If
             End If
             If iTabMinWidth > 0 Then
-                If iTabMinWidth > iColumnWidthForHorizontalCaptions(iRow) Then
-                    iColumnWidthForHorizontalCaptions(iRow) = iTabMaxWidth
+                If iColumnWidthForHorizontalCaptions(iRow) < iTabMinWidth Then
+                    iColumnWidthForHorizontalCaptions(iRow) = iTabMinWidth
                 End If
             End If
             iTabHeightForHorizontalCaptions = (iAvailableSpaceForTabs - (iColumnTabCount - 1) * mTabSeparation2) / iColumnTabCount - 0.5
@@ -6905,15 +7015,15 @@ Private Sub Draw()
             mUserControlSizeCorrectionsCounter_ScaleHeightNotToResize = mScaleHeight
         End If
         If mAppearanceIsPP Then
-            iTabWidth = (iScaleWidth - 5 - iAllRowsPerspectiveSpace - 1 - IIf(mControlIsThemed, 2 - mThemedBodyRightShadowPixels, 0) - mTabSeparation2 * (mTabsPerRow - 1)) / mTabsPerRow
+            iTabWidth = (iScaleWidthForTabs - 5 - iAllRowsPerspectiveSpace - 1 - IIf(mControlIsThemed, 2 - mThemedBodyRightShadowPixels, 0) - mTabSeparation2 * (mTabsPerRow - 1)) / mTabsPerRow
         Else
-            iTabWidth = (iScaleWidth - 1 - iAllRowsPerspectiveSpace - 1 - IIf(mControlIsThemed, 2 - mThemedBodyRightShadowPixels, 0) - mTabSeparation2 * (mTabsPerRow - 1)) / mTabsPerRow
+            iTabWidth = (iScaleWidthForTabs - 1 - iAllRowsPerspectiveSpace - 1 - IIf(mControlIsThemed, 2 - mThemedBodyRightShadowPixels, 0) - mTabSeparation2 * (mTabsPerRow - 1)) / mTabsPerRow
         End If
         If iTabWidth > iTabMaxWidth Then
             iTabWidth = iTabMaxWidth
         End If
     Else
-        iTabWidth = (iScaleWidth - iAllRowsPerspectiveSpace - 1 - mTabSeparation2 * (mTabsPerRow - 1)) / mTabsPerRow
+        iTabWidth = (iScaleWidthForTabs - iAllRowsPerspectiveSpace - 1 - mTabSeparation2 * (mTabsPerRow - 1)) / mTabsPerRow
     End If
     
     mUserControlSizeCorrectionsCounter = 0
@@ -6981,7 +7091,7 @@ Private Sub Draw()
                             .Right = .Left + iTabData.Width - 1 '- mTabSeparation2 ' no volver a sacar el -1!!
                             
                             If iTabData.RightTab Then
-                                iLng = iScaleWidth - iRowPerspectiveSpace * mTabData(t).RowPos - 1
+                                iLng = iScaleWidthForTabs - iRowPerspectiveSpace * mTabData(t).RowPos - 1
                                 If mAppearanceIsPP Then
                                     iLng = iLng - 2
                                     If mControlIsThemed Then
@@ -7080,7 +7190,7 @@ Private Sub Draw()
                                 iTabLeft = .Right + 1
                             End If
                             If iTabData.RightTab Then
-                                iLng = iScaleWidth - iRowPerspectiveSpace * mTabData(t).RowPos - 1
+                                iLng = iScaleWidthForTabs - iRowPerspectiveSpace * mTabData(t).RowPos - 1
                                 If mAppearanceIsPP Then
                                     iLng = iLng - 2
                                     If mControlIsThemed Then
@@ -7212,7 +7322,7 @@ Private Sub Draw()
                                 iLng = iLng + 2 + IIf(mControlIsThemed, mThemedBodyRightShadowPixels - 2, 0)
                             End If
                             If ((mTabWidthStyle2 <> ntTWTabStripEmulation) And (mTabWidthStyle2 <> ntTWStretchToFill)) Or mShowsRowsPerspective2 Then
-                                DrawInactiveBodyPart iRowPerspectiveSpace * (mRows - mTabData(t).RowPos - 1) + 3, mTabData(t).TabRect.Bottom + 5, mBodyWidth - iLng, CLng(mBodyHeight), iLng, mTabData(t).RowPos, 1
+                                DrawInactiveBodyPart iRowPerspectiveSpace * (mRows - mTabData(t).RowPos - 1) + 3, mTabData(t).TabRect.Bottom + 5, mBodyWidth - iLng, CLng(mBodyHeight), iLng, mTabData(t).RowPos, t
                             End If
                         End If
                         If mAppearanceIsPP Then
@@ -7256,7 +7366,11 @@ Private Sub Draw()
                         ' right point
                         iTriangle(2).X = (.Left + .Right) / 2 + mFlatBarGripHeightDPIScaled + cEpsilon
                         iTriangle(2).Y = .Bottom + 2
-                        DrawTriangle iTriangle, mFlatBarGlowColor
+                        If (Not IsEmpty(mTabData(t).CustomColors.FlatBarColorInactive)) Or (Not IsEmpty(mTabData(t).CustomColors.FlatBarColorHighlight)) Then
+                            DrawTriangle iTriangle, mTabData(t).CustomColors.FlatBarGlowColor
+                        Else
+                            DrawTriangle iTriangle, mFlatBarGlowColor
+                        End If
                     End With
                     Exit For
                 End If
@@ -7522,13 +7636,41 @@ Private Sub DrawTab(ByVal nTab As Long)
     Dim iLng As Long
     Dim iColor As Long
     
+    Dim iTabColor_BackColorTab As Long
+    Dim iTabColor_BackColorTabSel As Long
+    Dim iTabColor_FlatBarColorInactive As Long
+    Dim iTabColor_FlatBarGlowColor As Long
+    Dim iTabColor_FlatBarColorTabSel As Long
+    
     iTabData = mTabData(nTab)
     iActive = iTabData.Selected
     iRoundedTabs = (mTabAppearance2 = ntTAPropertyPageRounded) Or (mTabAppearance2 = ntTATabbedDialogRounded) Or ((mTabAppearance2 = ntTAFlat) And ((mFlatRoundnessTopDPIScaled > 0) Or (mFlatRoundnessTabsDPIScaled > 0)))
     
+    If IsEmpty(iTabData.CustomColors.BackColorTab) Or (mHandleHighContrastTheme And mHighContrastThemeOn) Then
+        iTabColor_BackColorTab = mBackColorTabs2
+    Else
+        iTabColor_BackColorTab = iTabData.CustomColors.BackColorTab
+    End If
+    iTabColor_BackColorTabSel = mBackColorTabSel2
+    If IsEmpty(iTabData.CustomColors.FlatBarColorInactive) Then
+        iTabColor_FlatBarColorInactive = mFlatBarColorInactive
+    Else
+        iTabColor_FlatBarColorInactive = iTabData.CustomColors.FlatBarColorInactive
+    End If
+    If (IsEmpty(mTabData(nTab).CustomColors.FlatBarColorInactive)) And (IsEmpty(mTabData(nTab).CustomColors.FlatBarColorHighlight)) Then
+        iTabColor_FlatBarGlowColor = mFlatBarGlowColor
+    Else
+        iTabColor_FlatBarGlowColor = iTabData.CustomColors.FlatBarGlowColor
+    End If
+    If IsEmpty(iTabData.CustomColors.FlatBarColorTabSel) Then
+        iTabColor_FlatBarColorTabSel = mFlatBarColorTabSel
+    Else
+        iTabColor_FlatBarColorTabSel = iTabData.CustomColors.FlatBarColorTabSel
+    End If
+    
     If iActive Then
         iHighlighted = ((mHighlightGradientTabSel <> ntGradientNone) Or mAppearanceIsFlat Or mControlIsThemed) And iTabData.Enabled
-        iBackColorTabs2 = mBackColorTabSel2
+        iBackColorTabs2 = iTabColor_BackColorTabSel
         i3DDKShadow = m3DDKShadow_Sel
         i3DHighlightH = m3DHighlightH_Sel
         i3DHighlightV = m3DHighlightV_Sel
@@ -7547,17 +7689,21 @@ Private Sub DrawTab(ByVal nTab As Long)
     Else
         iHighlighted = mAmbientUserMode And ((mHighlightGradient <> ntGradientNone) Or mAppearanceIsFlat Or mControlIsThemed) And iTabData.Hovered And (mEnabled Or (Not mAmbientUserMode)) And iTabData.Enabled
         If DraggingATab Then iHighlighted = False
-        iBackColorTabs2 = mBackColorTabs2
+        iBackColorTabs2 = iTabColor_BackColorTab
         i3DDKShadow = m3DDKShadow
         i3DHighlightH = m3DHighlightH
         i3DHighlightV = m3DHighlightV
         i3DShadowV = m3DShadowV
         i3DShadow = m3DShadow
         i3DHighlight = m3DHighlight
-        iHighlightColor = mGlowColor
+        If Not IsEmpty(iTabData.CustomColors.HighlightColor) Then
+            iHighlightColor = iTabData.CustomColors.HighlightColor
+        Else
+            iHighlightColor = mGlowColor
+        End If
         iHighlightGradient = mHighlightGradient
     End If
-    iBackColorTabs3 = mBackColorTabSel2
+    iBackColorTabs3 = iTabColor_BackColorTabSel
     
     If mAppearanceIsFlat Then
         Dim iFlatBarTopColor As Long
@@ -7590,10 +7736,10 @@ Private Sub DrawTab(ByVal nTab As Long)
         
         If iHighlighted And (Not iActive) Then
             If mHighlightFlatBar Or mHighlightFlatBarTabSel Then
-                If mHighlightFlatBar Or ((iHighlightGradient <> ntGradientNone) And (mFlatBarGlowColor = mBackColorTabs2)) Then
-                    iFlatBarTopColor = mFlatBarGlowColor
+                If mHighlightFlatBar Or ((iHighlightGradient <> ntGradientNone) And (iTabColor_FlatBarGlowColor = iTabColor_BackColorTab)) Then
+                    iFlatBarTopColor = iTabColor_FlatBarGlowColor
                 Else
-                    iFlatBarTopColor = mFlatBarColorInactive
+                    iFlatBarTopColor = iTabColor_FlatBarColorInactive
                 End If
             Else
                 iFlatBarTopHeight = 1
@@ -7604,29 +7750,43 @@ Private Sub DrawTab(ByVal nTab As Long)
                         iFlatBarTopColor = iHighlightColor
                     End If
                 Else
-                    iFlatBarTopColor = iFlatTabsSeparationLineColor
+                    If mFlatBorderMode = ntBorderTabs Then
+                        iFlatBarTopColor = iFlatBorderColor
+                    Else
+                        iFlatBarTopColor = iFlatTabsSeparationLineColor
+                    End If
                 End If
                 iFlatBarTopSet = True
             End If
         Else
             If iActive Then
                 If mHighlightFlatBarTabSel Then
-                    iFlatBarTopColor = mFlatBarColorTabSel
+                    iFlatBarTopColor = iTabColor_FlatBarColorTabSel
                 Else
                     If mHighlightGradient <> ntGradientNone Then
                         iFlatBarTopHeight = 1
                         iFlatBarTopColor = iFlatBorderColor '  iHighlightColor
                         iFlatBarTopSet = True
                     Else
-                        iFlatBarTopColor = mFlatBarColorInactive
+                        If mHighlightFlatBar Then
+                            iFlatBarTopColor = iTabColor_FlatBarColorInactive
+                        Else
+                            iFlatBarTopHeight = 1
+                            iFlatBarTopColor = iFlatBorderColor
+                            iFlatBarTopSet = True
+                        End If
                     End If
                 End If
             Else
                 If mHighlightFlatBar Or mHighlightFlatBarTabSel Then
-                    iFlatBarTopColor = mFlatBarColorInactive
+                    iFlatBarTopColor = iTabColor_FlatBarColorInactive
                 Else
                     iFlatBarTopHeight = 1
-                    iFlatBarTopColor = iFlatTabsSeparationLineColor
+                    If mFlatBorderMode = ntBorderTabs Then
+                        iFlatBarTopColor = iFlatBorderColor ' iFlatTabsSeparationLineColor
+                    Else
+                        iFlatBarTopColor = iFlatTabsSeparationLineColor
+                    End If
                     iFlatBarTopSet = True
                 End If
             End If
@@ -7651,13 +7811,21 @@ Private Sub DrawTab(ByVal nTab As Long)
         If iActive Then
             If mHighlightFlatDrawBorderTabSel Then
                 iHighlightFlatDrawBorder = True
-                iHighlightFlatDrawBorder_Color = TranslatedColor(mFlatTabBorderColorTabSel)
+                If IsEmpty(iTabData.CustomColors.FlatTabBorderColorTabSel) Then
+                    iHighlightFlatDrawBorder_Color = TranslatedColor(mFlatTabBorderColorTabSel)
+                Else
+                    iHighlightFlatDrawBorder_Color = TranslatedColor(iTabData.CustomColors.FlatTabBorderColorTabSel)
+                End If
                 iFlatBarTopColor = iHighlightFlatDrawBorder_Color
             End If
         Else
             If mHighlightFlatDrawBorder And iHighlighted Then
                 iHighlightFlatDrawBorder = True
-                iHighlightFlatDrawBorder_Color = TranslatedColor(mFlatTabBorderColorHighlight)
+                If IsEmpty(iTabData.CustomColors.FlatTabBorderColorHighlight) Then
+                    iHighlightFlatDrawBorder_Color = TranslatedColor(mFlatTabBorderColorHighlight)
+                Else
+                    iHighlightFlatDrawBorder_Color = TranslatedColor(iTabData.CustomColors.FlatTabBorderColorHighlight)
+                End If
                 iFlatBarTopColor = iHighlightFlatDrawBorder_Color
             End If
         End If
@@ -7705,11 +7873,9 @@ Private Sub DrawTab(ByVal nTab As Long)
         Else
             iFlatRightLineColor = IIf(iActive And (mFlatBorderMode = ntBorderTabSel) Or (mFlatBorderMode = ntBorderTabs) And (mTabSeparationDPIScaled > 0), iFlatBorderColor, iFlatTabsSeparationLineColor)
         End If
-      '  If iHighlighted Then
         If IIf(nTab = mTab, mHighlightFlatBarTabSel, mHighlightFlatBar) And (iFlatBarPosition = ntBarPositionBottom) Then
             iShowFlatBarBottom = (mFlatBarHeightDPIScaled > 0)
         End If
-       ' End If
     End If
     
     With iTabData.TabRect
@@ -7777,7 +7943,6 @@ Private Sub DrawTab(ByVal nTab As Long)
                 iTRect2.Bottom = iTRect.Bottom + 1
                 
                 DrawThemeBackground mTheme, picAux.hDC, iPartId, iState, iTRect2, iTRect
-'                SetThemedTabTransparentPixels iTabData.LeftTab, (iState = TIS_FOCUSED) Or (iTabData.RightTab And Not iState = TIS_SELECTED), (iTabData.TopTab Or (mTabSeparation2 > 0)) And Not (iState = TIS_SELECTED)
                 SetThemedTabTransparentPixels iTabData.LeftTab, (iState = TIS_FOCUSED) Or iTabData.RightTab, (iTabData.TopTab Or (mTabSeparation2 > 0)) And Not (iState = TIS_SELECTED)
                 Call TransparentBlt(picDraw.hDC, iLeft, iTop, iTRect.Right, iTRect.Bottom, picAux.hDC, 0, 0, iTRect.Right, iTRect.Bottom, cAuxTransparentColor)
                 picAux.Cls
@@ -7798,19 +7963,10 @@ Private Sub DrawTab(ByVal nTab As Long)
                         iCurv = 2
                     End If
                 ElseIf mAppearanceIsFlat Then
-                    'iExtI = 1
                     iBottomOffset = 3
-                    'iRightOffset = -1 'iLeftOffset = -1
-                    'iLeftOffset = -3
-                    'iRightOffset = 2
-                    ' iRightOffset = -1
-                    'iLeftOffset = -2
                     If iTabData.LeftTab Then
                         iLeftOffset = -2
-'                    Else
-'                        iLeftOffset = -1
                     End If
-                    'iRightOffset = -1
                 Else
                     iExtI = 1
                     If iRoundedTabs Then
@@ -7818,11 +7974,7 @@ Private Sub DrawTab(ByVal nTab As Long)
                     Else
                         iLeftOffset = 0
                     End If
-'                    If mAppearanceIsFlat Then
-'                        iRightOffset = -1
-'                    Else
                     iRightOffset = 0
-'                    End If
                     iTopOffset = 0
                     iBottomOffset = 2
                     iCurv = 4
@@ -7841,11 +7993,7 @@ Private Sub DrawTab(ByVal nTab As Long)
                         iCurv = 2
                     End If
                 ElseIf mAppearanceIsFlat Then
-                    '
-                    'iRightOffset = -1
-                    'iLeftOffset = -2
                     iBottomOffset = 6
-                    'iRightOffset = 0 '-1
                     If iTabData.LeftTab Then
                         iLeftOffset = -2
                     End If
@@ -7977,16 +8125,16 @@ Private Sub DrawTab(ByVal nTab As Long)
                                 ' right point
                                 iTriangle(2).X = (.Left + .Right) / 2 + iLng + cEpsilon ' + 1
                                 iTriangle(2).Y = .Top
-                                DrawTriangle iTriangle, IIf(iTabData.RowPos = 0, TranslatedColor(mBackColor), mBackColorTabs2)
+                                DrawTriangle iTriangle, IIf(iTabData.RowPos = 0, TranslatedColor(mBackColor), iTabColor_BackColorTab)
                             End If
                         End If
                     End If
                 End If
                 If iShowFlatBarBottom Then
                     If iActive Then
-                        iColor = mFlatBarColorTabSel
+                        iColor = iTabColor_FlatBarColorTabSel
                     ElseIf iTabData.Hovered Then
-                        iColor = mFlatBarGlowColor
+                        iColor = iTabColor_FlatBarGlowColor
                     Else
                         iColor = iFlatBarTopColor
                     End If
@@ -8022,26 +8170,20 @@ Private Sub DrawTab(ByVal nTab As Long)
                             
                             If iHighlightGradient <> ntGradientNone Then
                                 If iActive Then
-'                                    If (mFlatBodySeparationLineHeightDPIScaled < 2) Then
-'                                        iColor = mBackColorTabSel2
-'                                    Else
-'                                        iColor = mHighlightColorTabSel
-'                                    End If
                                     If mFlatBodySeparationLineHeightDPIScaled > 0 Then
                                         iColor = TranslatedColor(mFlatBodySeparationLineColor)
                                     Else
-                                        iColor = mHighlightColorTabSel
+                                        If IsEmpty(iTabData.CustomColors.HighlightColorTabSel) Then
+                                            iColor = mHighlightColorTabSel
+                                        Else
+                                            iColor = iTabData.CustomColors.HighlightColorTabSel
+                                        End If
                                     End If
                                 Else
-                                    iColor = mBackColorTabSel2
-'                                    If mFlatBodySeparationLineHeightDPIScaled > 0 Then
-                                        'iColor = TranslatedColor(mFlatBodySeparationLineColor)
-'                                    Else
- '                                       iColor = mBackColorTabSel2
- '                                   End If
+                                    iColor = iTabColor_BackColorTabSel
                                 End If
                             Else
-                                iColor = mBackColorTabSel2
+                                iColor = iTabColor_BackColorTabSel
                             End If
                             iColor = TranslatedColor(iColor)
                             ' top point
@@ -8089,7 +8231,7 @@ Private Sub DrawTab(ByVal nTab As Long)
             ElseIf mAppearanceIsFlat Then
                 If iHighlightFlatDrawBorder Then
                     picDraw.Line (.Right, .Top + iTopOffset + iFlatRightRoundness)-(.Right, .Bottom - iFlatRightRoundness + 1), iHighlightFlatDrawBorder_Color
-                ElseIf Not ((iFlatRightLineColor = mBackColorTabs2) And iTabData.RightTab And (iFlatRightRoundness > 0)) Then
+                ElseIf Not ((iFlatRightLineColor = iTabColor_BackColorTab) And iTabData.RightTab And (iFlatRightRoundness > 0)) Then
                     If ((iHighlightGradient = ntGradientPlain) Or (iHighlightGradient = ntGradientSimple)) And iHighlighted And (Not iActive) And (mHighlightFlatBar Or mHighlightFlatBarTabSel) Then
                         picDraw.Line (.Right, .Top + iTopOffset + iFlatRightRoundness)-(.Right, .Bottom + iBottomOffset + iExtI), iHighlightColor
                     Else
@@ -8133,7 +8275,7 @@ Private Sub DrawTab(ByVal nTab As Long)
             ElseIf mAppearanceIsFlat Then
                 If iHighlightFlatDrawBorder Then
                     picDraw.Line (.Left + iLeftOffset, .Top + iTopOffset + iFlatLeftRoundness)-(.Left + iLeftOffset, .Bottom - iFlatLeftRoundness + 1), iHighlightFlatDrawBorder_Color
-                ElseIf iFlatLeftLineColor <> mBackColorTabs2 Then
+                ElseIf iFlatLeftLineColor <> iTabColor_BackColorTab Then
                     If ((iHighlightGradient = ntGradientPlain) Or (iHighlightGradient = ntGradientSimple)) And iHighlighted And (Not iActive) And (mHighlightFlatBar Or mHighlightFlatBarTabSel) Then
                         picDraw.Line (.Left + iLeftOffset, .Top + iTopOffset + iFlatLeftRoundness)-(.Left + iLeftOffset, .Bottom + iBottomOffset + iExtI), iHighlightColor
                     Else
@@ -8208,7 +8350,7 @@ Private Sub DrawTab(ByVal nTab As Long)
                             iLineColor = IIf((mFlatBorderMode = ntBorderTabs) Or iActive, iFlatBorderColor, iFlatTabsSeparationLineColor)
                         End If
                     End If
-                    If iLineColor <> mBackColorTabs2 Then
+                    If iLineColor <> iTabColor_BackColorTab Then
                         DrawRoundedCorner ntCornerTopRight, .Right + iRightOffset, .Top + iTopOffset, iFlatRightRoundness, iLineColor, iFlatBarTopHeight
                     End If
                 End If
@@ -8265,7 +8407,7 @@ Private Sub DrawTab(ByVal nTab As Long)
                             iLineColor = IIf((mFlatBorderMode = ntBorderTabs) Or (iActive And (mFlatBorderMode = ntBorderTabSel)), iFlatBorderColor, iFlatTabsSeparationLineColor)
                         End If
                     End If
-                    If iLineColor <> mBackColorTabs2 Then
+                    If iLineColor <> iTabColor_BackColorTab Then
                         DrawRoundedCorner ntCornerTopleft, .Left + iLeftOffset, .Top + iTopOffset, iFlatLeftRoundness, iLineColor, iFlatBarTopHeight
                     End If
                 End If
@@ -8306,36 +8448,23 @@ Private Sub DrawTab(ByVal nTab As Long)
                     End If
                 End If
             End If
-        
         End If
     End With
 End Sub
 
-Private Sub DrawInactiveBodyPart(ByVal nLeft As Long, ByVal nTop As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal nXShift As Long, ByVal nRowPos As Long, ByVal nSectionID_ForTesting As Long)
+Private Sub DrawInactiveBodyPart(ByVal nLeft As Long, ByVal nTop As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal nXShift As Long, ByVal nRowPos As Long, nTab As Long)
     Dim iDoRightLine As Boolean
     Dim iDoBottomLine As Boolean
-    Dim iTesting As Boolean
     Dim iBackColorTabs As Long
     Dim iLineColor As Long
     Dim iFlatBorderColor As Long
     
     If (nWidth < 1) Or (nHeight < 1) Or (nXShift > mBodyWidth) Then Exit Sub
     
-'    iTesting = True
-    
-    If iTesting Then
-        Select Case nSectionID_ForTesting
-            Case 1
-                iBackColorTabs = vbGreen
-            Case 2
-                iBackColorTabs = vbMagenta
-            Case 3
-                iBackColorTabs = vbBlue
-            Case 4
-                iBackColorTabs = vbCyan
-        End Select
-    Else
+    If IsEmpty(mTabData(nTab).CustomColors.BackColorTab) Or (mHandleHighContrastTheme And mHighContrastThemeOn) Then
         iBackColorTabs = mBackColorTabs2
+    Else
+        iBackColorTabs = mTabData(nTab).CustomColors.BackColorTab
     End If
     
     If mControlIsThemed Then
@@ -8344,7 +8473,6 @@ Private Sub DrawInactiveBodyPart(ByVal nLeft As Long, ByVal nTop As Long, ByVal 
             BitBlt picDraw.hDC, nLeft, nTop, nWidth, nHeight, picInactiveBodyThemed.hDC, nXShift, 0, vbSrcCopy
         End If
     Else
-        
         iDoRightLine = mBodyWidth - (nWidth + nXShift) <= 0
         iDoBottomLine = mBodyHeight - nHeight <= 0
         
@@ -8368,7 +8496,6 @@ Private Sub DrawInactiveBodyPart(ByVal nLeft As Long, ByVal nTop As Long, ByVal 
             Else
                 iFlatBorderColor = TranslatedColor(mFlatTabsSeparationLineColor)
             End If
-            
             picDraw.Line (nLeft - 1, nTop)-(nLeft + nWidth - mFlatRoundnessTopDPIScaled, nTop), iFlatBorderColor 'm3DDKShadow
         Else
             picDraw.Line (nLeft - 1, nTop)-(nLeft + nWidth, nTop), m3DDKShadow
@@ -8387,7 +8514,7 @@ Private Sub DrawInactiveBodyPart(ByVal nLeft As Long, ByVal nTop As Long, ByVal 
                 If (mFlatRoundnessTopDPIScaled > 0) Then
                     If ((nLeft + nWidth) - mRightMostTabsRightPos(nRowPos)) > mFlatRoundnessTopDPIScaled Then
                         iLineColor = iFlatBorderColor
-                        If iLineColor <> mBackColorTabs2 Then
+                        If iLineColor <> iBackColorTabs Then
                             DrawRoundedCorner ntCornerTopRight, nLeft + nWidth, nTop, mFlatRoundnessTopDPIScaled, iLineColor
                         End If
                     End If
@@ -8449,6 +8576,7 @@ Private Sub DrawBody(ByVal nScaleHeight As Long)
         End If
         
         iColor = mBackColorTabSel2
+        
         If mBackStyle = ntOpaqueTabSel Then
             iColor = iColor Xor 1
         End If
@@ -8641,6 +8769,11 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     Dim iTabCenterX As Long
     Dim iTabCenterY As Long
     Dim iActive As Boolean
+    Dim iPropIconColor As Long
+    Dim iIconColorTabSel As Long
+    Dim iIconColorMouseHover As Long
+    Dim iIconColorMouseHoverTabSel As Long
+    Dim iIconColorTabHighlighted As Long
     
     If Not mTabData(nTab).Visible Then Exit Sub
     If Not mTabData(nTab).PicToUseSet Then SetPicToUse nTab
@@ -8723,48 +8856,89 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     
     If iActive Then
         iBackColorTabs2 = mBackColorTabSel2
-        iForeColor = mForeColorTabSel
-        If mIconColorMouseHoverTabSel <> mIconColorTabSel Then
+        If IsEmpty(iTabData.CustomColors.ForeColorTabSel) Then
+            iForeColor = mForeColorTabSel
+        Else
+            iForeColor = iTabData.CustomColors.ForeColorTabSel
+        End If
+        If IsEmpty(iTabData.CustomColors.IconColorTabSel) Then
+            iIconColorTabSel = mIconColorTabSel
+        Else
+            iIconColorTabSel = iTabData.CustomColors.IconColorTabSel
+        End If
+        If IsEmpty(iTabData.CustomColors.IconColorMouseHoverTabSel) Then
+            iIconColorMouseHoverTabSel = mIconColorMouseHoverTabSel
+        Else
+            iIconColorMouseHoverTabSel = iTabData.CustomColors.IconColorMouseHoverTabSel
+        End If
+        If iIconColorMouseHoverTabSel <> iIconColorTabSel Then
             If (mMouseIsOverIcon_Tab = CInt(nTab) Or (tmrHighlightIcon.Enabled And (Val(tmrHighlightIcon.Tag) = nTab))) And (Not tmrPreHighlightIcon.Enabled) Then
-                iIconColor = mIconColorMouseHoverTabSel
+                iIconColor = iIconColorMouseHoverTabSel
             Else
-                iIconColor = mIconColorTabSel
+                iIconColor = iIconColorTabSel
             End If
         Else
-            iIconColor = mIconColorTabSel
+            iIconColor = iIconColorTabSel
         End If
         iGrayText = mGrayText_Sel
     Else
-        iBackColorTabs2 = mBackColorTabs2
-        If iTabData.Hovered And mAmbientUserMode And Not DraggingATab Then
-            iForeColor = mForeColorHighlighted
+        If IsEmpty(iTabData.CustomColors.BackColorTab) Or (mHandleHighContrastTheme And mHighContrastThemeOn) Then
+            iBackColorTabs2 = mBackColorTabs2
         Else
-            iForeColor = mForeColor
+            iBackColorTabs2 = iTabData.CustomColors.BackColorTab
         End If
-        If mIconColorMouseHover <> mIconColor Then
+        If iTabData.Hovered And mAmbientUserMode And Not DraggingATab Then
+            If IsEmpty(iTabData.CustomColors.ForeColorHighlighted) Then
+                iForeColor = mForeColorHighlighted
+            Else
+                iForeColor = iTabData.CustomColors.ForeColorHighlighted
+            End If
+        Else
+            If IsEmpty(iTabData.CustomColors.ForeColor) Then
+                iForeColor = mForeColor
+            Else
+                iForeColor = iTabData.CustomColors.ForeColor
+            End If
+        End If
+        If IsEmpty(iTabData.CustomColors.IconColor) Then
+            iPropIconColor = mIconColor
+        Else
+            iPropIconColor = iTabData.CustomColors.IconColor
+        End If
+        If IsEmpty(iTabData.CustomColors.IconColorMouseHover) Then
+            iIconColorMouseHover = mIconColorMouseHover
+        Else
+            iIconColorMouseHover = iTabData.CustomColors.IconColorMouseHover
+        End If
+        If IsEmpty(iTabData.CustomColors.IconColorTabHighlighted) Then
+            iIconColorTabHighlighted = mIconColorTabHighlighted
+        Else
+            iIconColorTabHighlighted = iTabData.CustomColors.IconColorTabHighlighted
+        End If
+        If iIconColorMouseHover <> iPropIconColor Then
+            Debug.Print mMouseIsOverIcon_Tab
             If mAmbientUserMode And (mMouseIsOverIcon_Tab = CInt(nTab) Or (tmrHighlightIcon.Enabled And (Val(tmrHighlightIcon.Tag) = nTab))) And (Not tmrPreHighlightIcon.Enabled) Then
-                If (mMouseIsOverIcon_Tab = CInt(nTab)) Then
-                    iIconColor = mIconColorMouseHover
+            If (mMouseIsOverIcon_Tab = CInt(nTab)) Then
+                    iIconColor = iIconColorMouseHover
                 Else
-                    'iIconColor = vbGreen 'mIconColorMouseHover
                     If iTabData.Hovered And mAmbientUserMode Then
-                        iIconColor = mIconColorTabHighlighted
+                        iIconColor = iIconColorTabHighlighted
                     Else
-                        iIconColor = mIconColor
+                        iIconColor = iPropIconColor
                     End If
                 End If
             Else
                 If mAmbientUserMode And iTabData.Hovered Then
-                    iIconColor = mIconColorTabHighlighted
+                    iIconColor = iIconColorTabHighlighted
                 Else
-                    iIconColor = mIconColor
+                    iIconColor = iPropIconColor
                 End If
             End If
         Else
             If iTabData.Hovered And mAmbientUserMode Then
-                iIconColor = mIconColorTabHighlighted
+                iIconColor = iIconColorTabHighlighted
             Else
-                iIconColor = mIconColor
+                iIconColor = iPropIconColor
             End If
         End If
         iGrayText = mGrayText
@@ -8772,10 +8946,10 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     If Not (iTabData.Enabled And mEnabled) Then
         iIconColor = iGrayText
     End If
-    If mTabData(nTab).IconFont Is Nothing Then
+    If iTabData.IconFont Is Nothing Then
         Set iIconFont = mDefaultIconFont
     Else
-        Set iIconFont = mTabData(nTab).IconFont
+        Set iIconFont = iTabData.IconFont
     End If
     iForeColor = TranslatedColor(iForeColor)
     iIconColor = TranslatedColor(iIconColor)
@@ -8909,8 +9083,8 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     ' Calculate iMeasureRect for one liner and without elipsis for both cases, WordWrap or not
     iMeasureRect = iTabSpaceRect
     If mTDIMode = ntTDIModeForms Then
-        If mTabData(nTab).Data > 0 Then
-            If Not mTDIModeFormsFormData_FormIcon(mTabData(nTab).Data) Is Nothing Then
+        If iTabData.Data > 0 Then
+            If Not mTDIModeFormsFormData_FormIcon(iTabData.Data) Is Nothing Then
                 iTabSpaceRect.Left = iTabSpaceRect.Left + cTDIForms_FormIconSpace - 4
             End If
         End If
@@ -9146,7 +9320,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
                 End If
                 iLng = iIconCharRect.Left: iIconCharRect.Left = iIconCharRect.Right: iIconCharRect.Right = iLng
             End If
-            mTabData(nTab).IconRect = iIconCharRect
+            mTabData(mTab).IconRect = iIconCharRect
             Set picDraw.Font = iFontPrev
             picDraw.ForeColor = iForeColorPrev
         Else
@@ -9191,9 +9365,9 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     DrawTextW picDraw.hDC, StrPtr(iCaption & IIf(iFlags And DT_MODIFYSTRING, "    ", "")), IIf(iFlags And DT_MODIFYSTRING, Len(iCaption), -1), iCaptionRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
     
     If mTDIMode = ntTDIModeForms Then
-        If mTabData(nTab).Data <> 0 Then
-            If Not mTDIModeFormsFormData_FormIcon(mTabData(nTab).Data) Is Nothing Then
-                picDraw.PaintPicture mTDIModeFormsFormData_FormIcon(mTabData(nTab).Data), iTabRect.Left + 6, iTabRect.Top + 2, 32, 32, 1, 1, 32, 32
+        If iTabData.Data <> 0 Then
+            If Not mTDIModeFormsFormData_FormIcon(iTabData.Data) Is Nothing Then
+                picDraw.PaintPicture mTDIModeFormsFormData_FormIcon(iTabData.Data), iTabRect.Left + 6, iTabRect.Top + 2, 32, 32, 1, 1, 32, 32
             End If
         End If
     End If
@@ -9750,11 +9924,11 @@ Private Sub SetColors()
     Dim iFlatBarColorInactiveTab As Long
     Dim iFlatSeparationColorTabs As Long
     Dim iFlatSeparationColorBody As Long
+    Dim iBackColorTabSel As Long
     
     ResetAllPicsDisabled
     mBodyReset = True
     
-'    If mHighContrastThemeOn Or (mBackColorTabs = vbButtonFace) And (Not mSoftEdges) Then
     If mHandleHighContrastTheme And mHighContrastThemeOn Then
         m3DDKShadow = vb3DDKShadow
         m3DHighlight = vb3DHighlight
@@ -9826,84 +10000,7 @@ Private Sub SetColors()
         mBackColorTabs_B = (iBCol \ 65536) And 255
     End If
     
-    If iBackColorTabs_L > 150 Then
-        If (iBackColorTabs_L > 233) Then
-            If iBackColorTabs_S = 0 Then
-                iCol_L = iBackColorTabs_L * 0.95
-                iCol_S = 0
-                iCol_H = iBackColorTabs_H
-            Else
-                iCol_L = iBackColorTabs_L * 0.9
-                iCol_S = 80
-                iCol_H = iBackColorTabs_H
-            End If
-            mGlowColor = ColorHLSToRGB(iCol_H, iCol_L, iCol_S)
-        ElseIf (iBackColorTabs_L > 200) And (iBackColorTabs_S < 150) Then
-            iCol_L = iBackColorTabs_L + (240 - iBackColorTabs_L) * 0.1 + iBackColorTabs_L * 0.05 + 5
-            If iCol_L > 240 Then iCol_L = 240
-            mGlowColor = ColorHLSToRGB(iBackColorTabs_H, iCol_L, iBackColorTabs_S)
-        Else
-            iCol_S = iBackColorTabs_S
-            If iBackColorTabs_L > 160 Then
-                iCol_L = iBackColorTabs_L * 1.15
-            Else
-                iCol_L = iBackColorTabs_L + (240 - iBackColorTabs_L) * 0.2 + iBackColorTabs_L * 0.06 + 5
-            End If
-            If iCol_L > 240 Then iCol_L = 240
-            If iCol_L > 200 Then
-                If iBackColorTabs_L > 210 Then
-                    iCol_S = 1
-                Else
-                    If iCol_S > 100 Then
-                        If ((iBackColorTabs_H > 35) And (iBackColorTabs_H < 45)) Then
-                            iCol_S = iCol_S - 100
-                            If iCol_S < 1 Then iCol_S = 1
-                            iCol_L = iCol_L + 20
-                            If iCol_L > 240 Then iCol_L = 240
-                        End If
-                    End If
-                End If
-            End If
-            mGlowColor = ColorHLSToRGB(iBackColorTabs_H, iCol_L, iCol_S)
-        End If
-    Else
-        If iBackColorTabs_S > 60 Then
-            Select Case iBackColorTabs_H
-                Case 0 To 30, 220 To 240 ' reds
-                    If iBackColorTabs_L < 100 Then
-                        iCol_L = iBackColorTabs_L + (240 - iBackColorTabs_L) * 0.07
-                    Else
-                        iCol_L = iBackColorTabs_L
-                    End If
-                Case 200 To 219 ' violet
-                    iCol_L = iBackColorTabs_L + (240 - iBackColorTabs_L) * 0.3
-                Case 31 To 120 ' yellows, greenes, cyanes
-                    iCol_L = iBackColorTabs_L + (240 - iBackColorTabs_L) * 0.2
-                Case Else ' blues
-                    If iBackColorTabs_L < 100 Then
-                        iCol_L = iBackColorTabs_L + (240 - iBackColorTabs_L) * 0.15
-                    Else
-                        iCol_L = iBackColorTabs_L '+ (240 - iBackColorTabs_L) * 0.07
-                    End If
-            End Select
-        Else ' gray
-            iCol_L = iBackColorTabs_L + (240 - iBackColorTabs_L) * 0.2
-        End If
-        iCol_L = iCol_L + 15
-        If iCol_L > 240 Then iCol_L = 240
-        iCol_S = iBackColorTabs_S
-        If iCol_S > 200 Then
-            iCol_S = iCol_S * 0.65
-            If iCol_S < 1 Then iCol_S = 1
-            iCol_L = iCol_L * 1.4
-            If iCol_L > 240 Then iCol_L = 240
-        Else
-            iCol_S = iCol_S * 1.1
-        End If
-        If iCol_S > 240 Then iCol_S = 240
-        
-        mGlowColor = ColorHLSToRGB(iBackColorTabs_H, iCol_L, iCol_S)
-    End If
+    mGlowColor = GetGlowColor(iBackColorTabs_H, iBackColorTabs_L, iBackColorTabs_S)
     
     mHighlightColor_ColorAutomatic = mGlowColor
     If mHighlightColor_IsAutomatic Then
@@ -9917,7 +10014,11 @@ Private Sub SetColors()
         mFlatBarColorInactive = mFlatBarColorInactive_ColorAutomatic
     End If
     
-    iCol = MixColors(mFlatBarColorTabSel, mFlatBarColorInactive, 60)
+    If Not IsEmpty(mTabData(mTab).CustomColors.FlatBarColorTabSel) Then
+        iCol = MixColors(mTabData(mTab).CustomColors.FlatBarColorTabSel, mFlatBarColorInactive, 60)
+    Else
+        iCol = MixColors(mFlatBarColorTabSel, mFlatBarColorInactive, 60)
+    End If
     ColorRGBToHLS iCol, iCol_H, iCol_L, iCol_S
     mFlatBarColorHighlight_ColorAutomatic = ColorHLSToRGB(iCol_H, iCol_L, iCol_S * 0.75)
     If mFlatBarColorHighlight_IsAutomatic Then
@@ -9926,8 +10027,6 @@ Private Sub SetColors()
     
     For c = 1 To 10
         mHighlightEffectColors_Strong(c) = MixColors(mGlowColor, mBackColorTabs, 10 * c)
-        iCol = MixColors(mFlatBarColorHighlight, mFlatBarColorInactive, 6 * c)
-        ColorRGBToHLS iCol, iCol_H, iCol_L, iCol_S
         mHighlightEffectColors_Light(c) = MixColors(mGlowColor, mBackColorTabs, 6 * c)
         mFlatBarHighlightEffectColors(c) = MixColors(mFlatBarColorHighlight, mFlatBarColorInactive, 10 * c)
     Next c
@@ -9943,7 +10042,12 @@ Private Sub SetColors()
         ColorRGBToHLS iBCol, iBackColorTabSel_H, iBackColorTabSel_L, iBackColorTabSel_S
         mBackColorTabSelDisabled = ColorHLSToRGB(iBackColorTabSel_H, iBackColorTabSel_L * 0.98, iBackColorTabSel_S * 0.6)
     Else
-        iBCol = TranslatedColor(mBackColorTabSel)
+        If IsEmpty(mTabData(mTab).CustomColors.BackColorTabSel) Or (mHandleHighContrastTheme And mHighContrastThemeOn) Then
+            iBackColorTabSel = mBackColorTabSel
+        Else
+            iBackColorTabSel = mTabData(mTab).CustomColors.BackColorTabSel
+        End If
+        iBCol = TranslatedColor(iBackColorTabSel)
         ColorRGBToHLS iBCol, iBackColorTabSel_H, iBackColorTabSel_L, iBackColorTabSel_S
         
         iBCol = TranslatedColor(Ambient.BackColor)
@@ -10082,8 +10186,11 @@ Private Sub SetColors()
     Else
         mGlowColor_Sel = mHighlightColorTabSel
     End If
+    If Not IsEmpty(mTabData(mTab).CustomColors.HighlightColorTabSel) Then
+        mGlowColor_Sel = mTabData(mTab).CustomColors.HighlightColorTabSel
+    End If
     mGlowColor_Sel_Bk = mGlowColor_Sel
-    mGlowColor_Sel_Light = MixColors(mGlowColor_Sel, mBackColorTabSel, 60)
+    mGlowColor_Sel_Light = MixColors(mGlowColor_Sel, iBackColorTabSel, 60)
     
     If iBackColorTabs_L > 150 Then
         iFlatSeparationColorTabs = MixColors(m3DDKShadow, TranslatedColor(mBackColorTabs), 12)
@@ -10108,6 +10215,92 @@ Private Sub SetColors()
     End If
     
 End Sub
+
+Private Function GetGlowColor(nBackColorTabs_H As Integer, nBackColorTabs_L As Integer, nBackColorTabs_S As Integer) As Long
+    Dim iBCol As Long
+    Dim iCol_L As Integer
+    Dim iCol_S As Integer
+    Dim iCol_H As Integer
+    
+    If nBackColorTabs_L > 150 Then
+        If (nBackColorTabs_L > 233) Then
+            If nBackColorTabs_S = 0 Then
+                iCol_L = nBackColorTabs_L * 0.95
+                iCol_S = 0
+                iCol_H = nBackColorTabs_H
+            Else
+                iCol_L = nBackColorTabs_L * 0.9
+                iCol_S = 80
+                iCol_H = nBackColorTabs_H
+            End If
+            GetGlowColor = ColorHLSToRGB(iCol_H, iCol_L, iCol_S)
+        ElseIf (nBackColorTabs_L > 200) And (nBackColorTabs_S < 150) Then
+            iCol_L = nBackColorTabs_L + (240 - nBackColorTabs_L) * 0.1 + nBackColorTabs_L * 0.05 + 5
+            If iCol_L > 240 Then iCol_L = 240
+            GetGlowColor = ColorHLSToRGB(nBackColorTabs_H, iCol_L, nBackColorTabs_S)
+        Else
+            iCol_S = nBackColorTabs_S
+            If nBackColorTabs_L > 160 Then
+                iCol_L = nBackColorTabs_L * 1.15
+            Else
+                iCol_L = nBackColorTabs_L + (240 - nBackColorTabs_L) * 0.2 + nBackColorTabs_L * 0.06 + 5
+            End If
+            If iCol_L > 240 Then iCol_L = 240
+            If iCol_L > 200 Then
+                If nBackColorTabs_L > 210 Then
+                    iCol_S = 1
+                Else
+                    If iCol_S > 100 Then
+                        If ((nBackColorTabs_H > 35) And (nBackColorTabs_H < 45)) Then
+                            iCol_S = iCol_S - 100
+                            If iCol_S < 1 Then iCol_S = 1
+                            iCol_L = iCol_L + 20
+                            If iCol_L > 240 Then iCol_L = 240
+                        End If
+                    End If
+                End If
+            End If
+            GetGlowColor = ColorHLSToRGB(nBackColorTabs_H, iCol_L, iCol_S)
+        End If
+    Else
+        If nBackColorTabs_S > 60 Then
+            Select Case nBackColorTabs_H
+                Case 0 To 30, 220 To 240 ' reds
+                    If nBackColorTabs_L < 100 Then
+                        iCol_L = nBackColorTabs_L + (240 - nBackColorTabs_L) * 0.07
+                    Else
+                        iCol_L = nBackColorTabs_L
+                    End If
+                Case 200 To 219 ' violet
+                    iCol_L = nBackColorTabs_L + (240 - nBackColorTabs_L) * 0.3
+                Case 31 To 120 ' yellows, greenes, cyanes
+                    iCol_L = nBackColorTabs_L + (240 - nBackColorTabs_L) * 0.2
+                Case Else ' blues
+                    If nBackColorTabs_L < 100 Then
+                        iCol_L = nBackColorTabs_L + (240 - nBackColorTabs_L) * 0.15
+                    Else
+                        iCol_L = nBackColorTabs_L '+ (240 - nBackColorTabs_L) * 0.07
+                    End If
+            End Select
+        Else ' gray
+            iCol_L = nBackColorTabs_L + (240 - nBackColorTabs_L) * 0.2
+        End If
+        iCol_L = iCol_L + 15
+        If iCol_L > 240 Then iCol_L = 240
+        iCol_S = nBackColorTabs_S
+        If iCol_S > 200 Then
+            iCol_S = iCol_S * 0.65
+            If iCol_S < 1 Then iCol_S = 1
+            iCol_L = iCol_L * 1.4
+            If iCol_L > 240 Then iCol_L = 240
+        Else
+            iCol_S = iCol_S * 1.1
+        End If
+        If iCol_S > 240 Then iCol_S = 240
+        
+        GetGlowColor = ColorHLSToRGB(nBackColorTabs_H, iCol_L, iCol_S)
+    End If
+End Function
 
 Private Function MixColors(ByVal nColor1 As Long, ByVal nColor2 As Long, ByVal nPercentageColor1 As Long) As Long
     Dim iColor1 As Long
@@ -10280,6 +10473,7 @@ Private Sub SetControlsBackColor(ByVal nColor As Long, Optional ByVal nPrevColor
     
     On Error Resume Next
     Set iControls = UserControl.Parent.Controls
+    If nPrevColor = -1 Then nPrevColor = mControlsBackColor_PrevColor
     
     If iControls Is Nothing Then ' at least let's change the backcolor of the contained controls in the usercontrol
         For Each iCtl In UserControlContainedControls
@@ -10374,6 +10568,7 @@ Private Sub SetControlsBackColor(ByVal nColor As Long, Optional ByVal nPrevColor
         Next
     End If
     Err.Clear
+    mControlsBackColor_PrevColor = nColor
 End Sub
 
 Private Sub SetControlsForeColor(ByVal nColor As Long, Optional ByVal nPrevColor As Long = -1)
@@ -10503,12 +10698,31 @@ Private Sub RaiseEvent_TabMouseEnter(ByVal nTab As Long)
         Else
             mGlowColor = mHighlightEffectColors_Light(mHighlightEffect_Step)
         End If
+        If mTabUnderMouse > -1 Then
+            If Not IsEmpty(mTabData(mTabUnderMouse).CustomColors.HighlightColor) Then
+                If mHighlightIntensity = ntHighlightIntensityStrong Then
+                    mTabData(mTabUnderMouse).CustomColors.GlowColor = mTabData(mTabUnderMouse).CustomColors.HighlightEffectColors_Strong(mHighlightEffect_Step)
+                Else
+                    mTabData(mTabUnderMouse).CustomColors.GlowColor = mTabData(mTabUnderMouse).CustomColors.HighlightEffectColors_Light(mHighlightEffect_Step)
+                End If
+            End If
+        End If
         mFlatBarGlowColor = mFlatBarHighlightEffectColors(mHighlightEffect_Step)
+        If (Not IsEmpty(mTabData(mTabUnderMouse).CustomColors.FlatBarColorInactive)) Or (Not IsEmpty(mTabData(mTabUnderMouse).CustomColors.FlatBarColorHighlight)) Then
+            mTabData(mTabUnderMouse).CustomColors.FlatBarGlowColor = mTabData(mTabUnderMouse).CustomColors.FlatBarHighlightEffectColors(mHighlightEffect_Step)
+        End If
     ElseIf (Not mControlIsThemed) Then
         mGlowColor = mHighlightEffectColors_Strong(10)
+        If mTabUnderMouse > -1 Then
+            If Not IsEmpty(mTabData(mTabUnderMouse).CustomColors.HighlightColor) Then
+                mTabData(mTabUnderMouse).CustomColors.GlowColor = mTabData(mTabUnderMouse).CustomColors.HighlightEffectColors_Strong(10)
+            End If
+        End If
         mFlatBarGlowColor = mFlatBarHighlightEffectColors(10)
+        If (Not IsEmpty(mTabData(mTabUnderMouse).CustomColors.FlatBarColorInactive)) Or (Not IsEmpty(mTabData(mTabUnderMouse).CustomColors.FlatBarColorHighlight)) Then
+            mTabData(mTabUnderMouse).CustomColors.FlatBarGlowColor = mTabData(mTabUnderMouse).CustomColors.FlatBarHighlightEffectColors(10)
+        End If
         Draw
-'        mFlatGlowColor = mHighlightEffectColors_Light(10)
     End If
     If (mHighlightGradient <> ntGradientNone) Or mAppearanceIsFlat Or mControlIsThemed Then PostDrawMessage
     
@@ -10524,9 +10738,18 @@ Private Sub RaiseEvent_TabMouseLeave(ByVal nTab As Long)
     If tmrHighlightEffect.Enabled Then
         tmrHighlightEffect.Enabled = False
         If mHighlightIntensity = ntHighlightIntensityStrong Then
-            mGlowColor = mHighlightEffectColors_Strong(10) ' mGlowColor
+            mGlowColor = mHighlightEffectColors_Strong(10)
         Else
             mGlowColor = mHighlightEffectColors_Light(10)
+        End If
+    End If
+    If mTabUnderMouse > -1 Then
+        If Not IsEmpty(mTabData(mTabUnderMouse).CustomColors.HighlightColor) Then
+            If mHighlightIntensity = ntHighlightIntensityStrong Then
+                mTabData(mTabUnderMouse).CustomColors.GlowColor = mTabData(mTabUnderMouse).CustomColors.HighlightEffectColors_Strong(10)
+            Else
+                mTabData(mTabUnderMouse).CustomColors.GlowColor = mTabData(mTabUnderMouse).CustomColors.HighlightEffectColors_Light(10)
+            End If
         End If
     End If
     mTabData(nTab).Hovered = False
@@ -10961,13 +11184,12 @@ Private Function MeasureTabIconAndCaption(ByVal t As Long) As Long
     If mTabMaxWidth > 0 Then
         iTabMaxWidth = pScaleX(mTabMaxWidth, vbHimetric, vbPixels)
         iCaptionRect.Right = iTabMaxWidth
-    Else
-        iFlags = DT_CALCRECT Or DT_SINGLELINE Or DT_CENTER Or DT_VCENTER
-'        iCaption = mTabData(t).Caption & IIf(picAux.Font.Italic, " ", "") & IIf((mTabWidthStyle2 = ntTWTabStripEmulation) Or mVisualStyles, "  ", "")
-        iCaption = mTabData(t).Caption & IIf(picAux.Font.Italic, " ", "") & IIf(mVisualStyles Or mAppearanceIsFlat, " ", "")
-        DrawTextW picAux.hDC, StrPtr(iCaption), -1, iCaptionRect, iFlags
     End If
-    iCaptionWidth = iCaptionRect.Right '- iCaptionRect.Left
+    
+    iFlags = DT_CALCRECT Or DT_SINGLELINE Or DT_CENTER Or DT_VCENTER
+    iCaption = mTabData(t).Caption & IIf(picAux.Font.Italic, " ", "") & IIf(mVisualStyles Or mAppearanceIsFlat, " ", "")
+    DrawTextW picAux.hDC, StrPtr(iCaption), -1, iCaptionRect, iFlags
+    iCaptionWidth = iCaptionRect.Right
     
     If picAux.FontBold <> iFontBoldPrev Then
         picAux.FontBold = iFontBoldPrev
@@ -12370,7 +12592,7 @@ Attribute TabControls.VB_ProcData.VB_Invoke_Property = ";Datos"
 End Property
 
 Public Property Get EndOfTabs() As Single
-Attribute EndOfTabs.VB_Description = "Returns and value that indicates where the last tab ends."
+Attribute EndOfTabs.VB_Description = "Returns a value that indicates where the last tab ends."
 Attribute EndOfTabs.VB_ProcData.VB_Invoke_Property = ";Posici n"
     EnsureDrawn
     If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ssTabOrientationBottom) Then
@@ -12403,6 +12625,8 @@ Public Property Let HandleHighContrastTheme(ByVal nValue As Boolean)
         If mHandleHighContrastTheme Then
             CheckHighContrastTheme
         End If
+        SetColors
+        DrawDelayed
     End If
 End Property
 
@@ -14562,7 +14786,7 @@ Attribute SetTabsOrder.VB_Description = "Sets the tabs order using data previous
         If c < mTabs Then
             oi = FindTab(Val(iData(c)), ntFindOriginalIndex)
             If oi > -1 Then
-                CopyTabData mTabData(oi), iAuxTabData(c)
+                iAuxTabData(c) = mTabData(oi)
                 iSet(c) = True
             End If
         End If
@@ -14570,51 +14794,12 @@ Attribute SetTabsOrder.VB_Description = "Sets the tabs order using data previous
     
     For c = 0 To mTabs - 1
         If iSet(c) Then
-            CopyTabData iAuxTabData(c), mTabData(c)
+            mTabData(c) = iAuxTabData(c)
         End If
     Next
     
     DrawDelayed
 End Sub
-
-Private Sub CopyTabData(nOrg As T_TabData, ByRef nDest As T_TabData)
-    nDest.Caption = nOrg.Caption
-    Set nDest.Controls = nOrg.Controls
-    nDest.Data = nOrg.Data
-    nDest.DoNotUseIconFont = nOrg.DoNotUseIconFont
-    nDest.Enabled = nOrg.Enabled
-    nDest.Hovered = nOrg.Hovered
-    nDest.IconAndCaptionWidth = nOrg.IconAndCaptionWidth
-    nDest.IconChar = nOrg.IconChar
-    Set nDest.IconFont = nOrg.IconFont
-    nDest.IconFontName = nOrg.IconFontName
-    nDest.IconLeftOffset = nOrg.IconLeftOffset
-    nDest.IconRect = nOrg.IconRect
-    nDest.IconTopOffset = nOrg.IconTopOffset
-    nDest.LeftTab = nOrg.LeftTab
-    nDest.OriginalIndex = nOrg.OriginalIndex
-    Set nDest.Pic16 = nOrg.Pic16
-    Set nDest.Pic20 = nOrg.Pic20
-    Set nDest.Pic24 = nOrg.Pic24
-    Set nDest.PicDisabled = nOrg.PicDisabled
-    nDest.PicDisabledSet = nOrg.PicDisabledSet
-    Set nDest.PicToUse = nOrg.PicToUse
-    Set nDest.Picture = nOrg.Picture
-    nDest.PosH = nOrg.PosH
-    nDest.RightTab = nOrg.RightTab
-    nDest.Row = nOrg.Row
-    nDest.RowPos = nOrg.RowPos
-    nDest.Selected = nOrg.Selected
-    nDest.TabRect = nOrg.TabRect
-    nDest.Tag = nOrg.Tag
-    nDest.TDITabNumber = nOrg.TDITabNumber
-    nDest.ToolTipText = nOrg.ToolTipText
-    nDest.TopTab = nOrg.TopTab
-    nDest.Visible = nOrg.Visible
-    nDest.Width = nOrg.Width
-    nDest.FixedWidth = nOrg.FixedWidth
-End Sub
-
 
 Public Function GetThemeData() As String
 Attribute GetThemeData.VB_Description = "Returns a string with the current theme data. It can be later applied with SetThemeData."
@@ -14674,6 +14859,283 @@ Private Function ColorsHaveEnoughContrast(ByVal nColor1 As Long, ByVal nColor2 A
     ColorRGBToHLS c2, h2, l2, s2
     ColorsHaveEnoughContrast = Abs(l1 - l2) > Threshold
 End Function
+
+
+Public Property Get TabCustomColor(ByVal Index As Long, ByVal ColorID As NTTabCustomColorIDConstants) As OLE_COLOR
+Attribute TabCustomColor.VB_Description = "Returns/sets a custom color for a tab. It may be a color when it is inactive or active."
+    If (Index < 0) Or (Index >= mTabs) Then
+        RaiseError 381, TypeName(Me) ' invalid property array index
+        Exit Property
+    End If
+    If (ColorID < 0) Or (ColorID > ntCCIconColorTabHighlighted) Then
+        RaiseError 1382, TypeName(Me), "invalid ColorID."
+        Exit Property
+    End If
+    
+    Select Case ColorID
+        Case ntCCBackColorTab
+            If IsEmpty(mTabData(Index).CustomColors.BackColorTab) Then
+                TabCustomColor = mBackColorTabs
+            Else
+                TabCustomColor = mTabData(Index).CustomColors.BackColorTab
+            End If
+        Case ntCCBackColorTabSel
+            If IsEmpty(mTabData(Index).CustomColors.BackColorTabSel) Then
+                TabCustomColor = mBackColorTabSel
+            Else
+                TabCustomColor = mTabData(Index).CustomColors.BackColorTabSel
+            End If
+        Case ntCCHighlightColor
+            If IsEmpty(mTabData(Index).CustomColors.HighlightColor) Then
+                TabCustomColor = mHighlightColor
+            Else
+                TabCustomColor = mTabData(Index).CustomColors.HighlightColor
+            End If
+        Case ntCCHighlightColorTabSel
+            If IsEmpty(mTabData(Index).CustomColors.HighlightColorTabSel) Then
+                TabCustomColor = mHighlightColorTabSel
+            Else
+                TabCustomColor = mTabData(Index).CustomColors.HighlightColorTabSel
+            End If
+        Case ntCCFlatBarColorInactive
+            If IsEmpty(mTabData(Index).CustomColors.FlatBarColorInactive) Then
+                TabCustomColor = mFlatBarColorInactive
+            Else
+                TabCustomColor = mTabData(Index).CustomColors.FlatBarColorInactive
+            End If
+        Case ntCCFlatBarColorHighlight
+            If IsEmpty(mTabData(Index).CustomColors.FlatBarColorHighlight) Then
+                TabCustomColor = mFlatBarColorHighlight
+            Else
+                TabCustomColor = mTabData(Index).CustomColors.FlatBarColorHighlight
+            End If
+        Case ntCCFlatBarColorTabSel
+            If IsEmpty(mTabData(Index).CustomColors.FlatBarColorTabSel) Then
+                TabCustomColor = mFlatBarColorTabSel
+            Else
+                TabCustomColor = mTabData(Index).CustomColors.FlatBarColorTabSel
+            End If
+        Case ntCCFlatTabBorderColorHighlight
+            If IsEmpty(mTabData(Index).CustomColors.FlatTabBorderColorHighlight) Then
+                TabCustomColor = mFlatTabBorderColorHighlight
+            Else
+                TabCustomColor = mTabData(Index).CustomColors.FlatTabBorderColorHighlight
+            End If
+        Case ntCCFlatTabBorderColorTabSel
+            If IsEmpty(mTabData(Index).CustomColors.FlatTabBorderColorTabSel) Then
+                TabCustomColor = mFlatTabBorderColorTabSel
+            Else
+                TabCustomColor = mTabData(Index).CustomColors.FlatTabBorderColorTabSel
+            End If
+        Case ntCCForeColor
+            If IsEmpty(mTabData(Index).CustomColors.ForeColor) Then
+                TabCustomColor = mForeColor
+            Else
+                TabCustomColor = mTabData(Index).CustomColors.ForeColor
+            End If
+        Case ntCCForeColorHighlighted
+            If IsEmpty(mTabData(Index).CustomColors.ForeColorHighlighted) Then
+                TabCustomColor = mForeColorHighlighted
+            Else
+                TabCustomColor = mTabData(Index).CustomColors.ForeColorHighlighted
+            End If
+        Case ntCCForeColorTabSel
+            If IsEmpty(mTabData(Index).CustomColors.ForeColorTabSel) Then
+                TabCustomColor = mForeColorTabSel
+            Else
+                TabCustomColor = mTabData(Index).CustomColors.ForeColorTabSel
+            End If
+        Case ntCCIconColor
+            If IsEmpty(mTabData(Index).CustomColors.IconColor) Then
+                TabCustomColor = mIconColor
+            Else
+                TabCustomColor = mTabData(Index).CustomColors.IconColor
+            End If
+        Case ntCCIconColorTabSel
+            If IsEmpty(mTabData(Index).CustomColors.IconColorTabSel) Then
+                TabCustomColor = mIconColorTabSel
+            Else
+                TabCustomColor = mTabData(Index).CustomColors.IconColorTabSel
+            End If
+        Case ntCCIconColorMouseHover
+            If IsEmpty(mTabData(Index).CustomColors.IconColorMouseHover) Then
+                TabCustomColor = mIconColorMouseHover
+            Else
+                TabCustomColor = mTabData(Index).CustomColors.IconColorMouseHover
+            End If
+        Case ntCCIconColorMouseHoverTabSel
+            If IsEmpty(mTabData(Index).CustomColors.IconColorMouseHoverTabSel) Then
+                TabCustomColor = mIconColorMouseHoverTabSel
+            Else
+                TabCustomColor = mTabData(Index).CustomColors.IconColorMouseHoverTabSel
+            End If
+        Case ntCCIconColorTabHighlighted
+    End Select
+End Property
+
+Public Property Let TabCustomColor(ByVal Index As Long, ByVal ColorID As NTTabCustomColorIDConstants, ByVal nValue As OLE_COLOR)
+    Dim c As Long
+    Dim iCol As Long
+    
+    If (Index < 0) Or (Index >= mTabs) Then
+        RaiseError 381, TypeName(Me) ' invalid property array index
+        Exit Property
+    End If
+    If (ColorID < 0) Or (ColorID > ntCCIconColorTabHighlighted) Then
+        RaiseError 1382, TypeName(Me), "invalid ColorID."
+        Exit Property
+    End If
+    
+    Select Case ColorID
+        Case ntCCBackColorTab
+            If nValue = mBackColorTabs Then
+                mTabData(Index).CustomColors.BackColorTab = Empty
+            Else
+                mTabData(Index).CustomColors.BackColorTab = nValue
+            
+                Dim iBCol As Long
+                Dim iBackColorTabs_H As Integer
+                Dim iBackColorTabs_L As Integer
+                Dim iBackColorTabs_S As Integer
+                Dim iGlowColor As Long
+                
+                iBCol = TranslatedColor(nValue)
+                ColorRGBToHLS iBCol, iBackColorTabs_H, iBackColorTabs_L, iBackColorTabs_S
+                iGlowColor = GetGlowColor(iBackColorTabs_H, iBackColorTabs_L, iBackColorTabs_S)
+                For c = 1 To 10
+                    mTabData(Index).CustomColors.HighlightEffectColors_Strong(c) = MixColors(iGlowColor, nValue, 10 * c)
+                    mTabData(Index).CustomColors.HighlightEffectColors_Light(c) = MixColors(iGlowColor, nValue, 6 * c)
+                Next c
+            End If
+        Case ntCCBackColorTabSel
+            If nValue = mBackColorTabSel Then
+                mTabData(Index).CustomColors.BackColorTabSel = Empty
+                iCol = mBackColorTabSel
+            Else
+                mTabData(Index).CustomColors.BackColorTabSel = nValue
+                iCol = nValue
+            End If
+            SetColors
+            If Index = mTab Then SetControlsBackColor iCol
+        Case ntCCHighlightColor
+            If nValue = mHighlightColor Then
+                mTabData(Index).CustomColors.HighlightColor = Empty
+            Else
+                mTabData(Index).CustomColors.HighlightColor = nValue
+            End If
+        Case ntCCHighlightColorTabSel
+            If nValue = mHighlightColorTabSel Then
+                mTabData(Index).CustomColors.HighlightColorTabSel = Empty
+            Else
+                mTabData(Index).CustomColors.HighlightColorTabSel = nValue
+            End If
+            SetColors
+        Case ntCCFlatBarColorInactive
+            If nValue = mFlatBarColorInactive Then
+                mTabData(Index).CustomColors.FlatBarColorInactive = Empty
+            Else
+                mTabData(Index).CustomColors.FlatBarColorInactive = nValue
+                Dim iFlatBarColorHighlight As Long
+                
+                If IsEmpty(mTabData(Index).CustomColors.FlatBarColorHighlight) Then
+                    iFlatBarColorHighlight = mFlatBarColorHighlight
+                Else
+                    iFlatBarColorHighlight = mTabData(Index).CustomColors.FlatBarColorHighlight
+                End If
+                For c = 1 To 10
+                    mTabData(Index).CustomColors.FlatBarHighlightEffectColors(c) = MixColors(iFlatBarColorHighlight, mTabData(Index).CustomColors.FlatBarColorInactive, 10 * c)
+                Next c
+                mTabData(Index).CustomColors.FlatBarGlowColor = mTabData(Index).CustomColors.FlatBarHighlightEffectColors(10)
+            End If
+        Case ntCCFlatBarColorHighlight
+            If nValue = mFlatBarColorHighlight Then
+                mTabData(Index).CustomColors.FlatBarColorHighlight = Empty
+            Else
+                mTabData(Index).CustomColors.FlatBarColorHighlight = nValue
+                
+                Dim iFlatBarColorInactive As Long
+                
+                If IsEmpty(mTabData(Index).CustomColors.FlatBarColorInactive) Then
+                    iFlatBarColorInactive = mFlatBarColorInactive
+                Else
+                    iFlatBarColorInactive = mTabData(Index).CustomColors.FlatBarColorInactive
+                End If
+                For c = 1 To 10
+                    mTabData(Index).CustomColors.FlatBarHighlightEffectColors(c) = MixColors(mTabData(Index).CustomColors.FlatBarColorHighlight, iFlatBarColorInactive, 10 * c)
+                Next c
+                mTabData(Index).CustomColors.FlatBarGlowColor = mTabData(Index).CustomColors.FlatBarHighlightEffectColors(10)
+            End If
+        Case ntCCFlatBarColorTabSel
+            If nValue = mFlatBarColorTabSel Then
+                mTabData(Index).CustomColors.FlatBarColorTabSel = Empty
+            Else
+                mTabData(Index).CustomColors.FlatBarColorTabSel = nValue
+            End If
+            SetColors
+        Case ntCCFlatTabBorderColorHighlight
+            If nValue = mFlatTabBorderColorHighlight Then
+                mTabData(Index).CustomColors.FlatTabBorderColorHighlight = Empty
+            Else
+                mTabData(Index).CustomColors.FlatTabBorderColorHighlight = nValue
+            End If
+        Case ntCCFlatTabBorderColorTabSel
+            If nValue = mFlatTabBorderColorTabSel Then
+                mTabData(Index).CustomColors.FlatTabBorderColorTabSel = Empty
+            Else
+                mTabData(Index).CustomColors.FlatTabBorderColorTabSel = nValue
+            End If
+        Case ntCCForeColor
+            If nValue = mForeColor Then
+                mTabData(Index).CustomColors.ForeColor = Empty
+            Else
+                mTabData(Index).CustomColors.ForeColor = nValue
+            End If
+        Case ntCCForeColorHighlighted
+            If nValue = mForeColorHighlighted Then
+                mTabData(Index).CustomColors.ForeColorHighlighted = Empty
+            Else
+                mTabData(Index).CustomColors.ForeColorHighlighted = nValue
+            End If
+        Case ntCCForeColorTabSel
+            If nValue = mForeColorTabSel Then
+                mTabData(Index).CustomColors.ForeColorTabSel = Empty
+            Else
+                mTabData(Index).CustomColors.ForeColorTabSel = nValue
+            End If
+            SetControlsProperForeColor
+        Case ntCCIconColor
+            If nValue = mIconColor Then
+                mTabData(Index).CustomColors.IconColor = Empty
+            Else
+                mTabData(Index).CustomColors.IconColor = nValue
+            End If
+        Case ntCCIconColorTabSel
+            If nValue = mIconColorTabSel Then
+                mTabData(Index).CustomColors.IconColorTabSel = Empty
+            Else
+                mTabData(Index).CustomColors.IconColorTabSel = nValue
+            End If
+        Case ntCCIconColorMouseHover
+            If nValue = mIconColorMouseHover Then
+                mTabData(Index).CustomColors.IconColorMouseHover = Empty
+            Else
+                mTabData(Index).CustomColors.IconColorMouseHover = nValue
+            End If
+        Case ntCCIconColorMouseHoverTabSel
+            If nValue = mIconColorMouseHoverTabSel Then
+                mTabData(Index).CustomColors.IconColorMouseHoverTabSel = Empty
+            Else
+                mTabData(Index).CustomColors.IconColorMouseHoverTabSel = nValue
+            End If
+        Case ntCCIconColorTabHighlighted
+            If nValue = mIconColorTabHighlighted Then
+                mTabData(Index).CustomColors.IconColorTabHighlighted = Empty
+            Else
+                mTabData(Index).CustomColors.IconColorTabHighlighted = nValue
+            End If
+    End Select
+    DrawDelayed
+End Property
 
 'Tab is a reserved keyword in VB6, but you can remove that restriction.
 'To be able to compile with Tab property, you need to replace VBA6.DLL with this version: https://github.com/EduardoVB/NewTab/raw/main/control-source/lib/VBA6.DLL
