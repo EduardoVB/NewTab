@@ -1,12 +1,12 @@
 2024-02-15 Added Align property.
-2024-02-15 Changed property names Body[Left|Top|Width|Height] property names to Client[Left|Top|Width|Height].
+2024-02-15 Changed property names Body[Left|Top|Width|Height] to Client[Left|Top|Width|Height].
 2024-02-08 Bug fix in TabMaxWidth property.
 2024-02-08 Bug fix in FlatBorderMode = ntBorderTabs.
 2024-02-07 Added TabCustomColor property. Now each tab can have its own colors.
 2024-02-07 Bug fix when CanReorderTabs is True and the user clicks the icon of a non active tab.
 2024-02-04 Bug fix in ChangeControlsForeColor procedure.
 2024-02-03 Changed to OLE version 8.0.
-2024-02-03 Changed property names TabBody[Left|Top|Width|Height] property names to Body[Left|Top|Width|Height].
+2024-02-03 Changed property names TabBody[Left|Top|Width|Height] to Body[Left|Top|Width|Height].
 2024-02-03 Changed TabBodyResize event name to Resize.
 2024-02-03 Background of LabelW now is painted the same as Label when the Windows visual style is active.
 2024-02-03 Several minor bug fixes related to themes.
