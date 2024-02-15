@@ -179,6 +179,6 @@ Private Sub NewTab1_TDINewTabAdded(ByVal TabNumber As Long)
 End Sub
 
 Private Sub PositionAndResizeControlsInTab(TabNumber As Long)
-    NewTab1.ControlMove "txtDoc(" & TabNumber & ")", Screen.TwipsPerPixelX, NewTab1.BodyTop + 700, NewTab1.BodyWidth, NewTab1.BodyHeight - 700 - Screen.TwipsPerPixelY
+    NewTab1.ControlMove "txtDoc(" & TabNumber & ")", Screen.TwipsPerPixelX, NewTab1.ClientTop + 700, NewTab1.ClientWidth, NewTab1.ClientHeight - 700 - Screen.TwipsPerPixelY
 End Sub
 
