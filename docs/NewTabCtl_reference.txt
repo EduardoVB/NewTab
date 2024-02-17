@@ -58,30 +58,6 @@ BackStyle property:
 	Returns or sets the a value that determines whether the background will be opaque or transparent.
 
 
-BodyHeight property:
-	Type: Single (Read only)
-	Returns the height of the "tab body". The tab body is the space available to place contained controls.
-	They return the value in Twips.
-
-
-BodyLeft property:
-	Type: Single (Read only)
-	Returns the left of the "tab body". The tab body is the space available to place contained controls.
-	They return the value in Twips.
-
-
-BodyTop property:
-	Type: Single (Read only)
-	Returns top of the "tab body". The tab body is the space available to place contained controls.
-	They return the value in Twips.
-
-
-BodyWidth property:
-	Type: Single (Read only)
-	Returns the width of the "tab body". The tab body is the space available to place contained controls.
-	They return the value in Twips.
-
-
 CanReorderTabs property:
 	Type: Boolean
 	Returns or sets a value that determines whether the user will be able to change tab positions by dragging them with the mouse.
@@ -110,6 +86,30 @@ ChangeControlsForeColor property:
 	If ChangeControlsForeColor is False, the ForeColor of the contained controls is left unchanged.
 	If ChangeControlsForeColor is True, and the control is not themed, changing the ForeColorTabSel propery value will also change the ForeColor of the contained controls, but only when their ForeColor's has the same color as the previous ForeColorTabSel setting.
 	If ChangeControlsBackColor is True, and the control is themed, only the controls that has the ForeColor property value set to the same color of ForeColorTabSel are changed.
+
+
+ClientHeight property:
+	Type: Single (Read only)
+	Returns the height of the "tab body". The tab body is the space available to place contained controls.
+	They return the value in Twips.
+
+
+ClientLeft property:
+	Type: Single (Read only)
+	Returns the left of the "tab body". The tab body is the space available to place contained controls.
+	They return the value in Twips.
+
+
+ClientTop property:
+	Type: Single (Read only)
+	Returns top of the "tab body". The tab body is the space available to place contained controls.
+	They return the value in Twips.
+
+
+ClientWidth property:
+	Type: Single (Read only)
+	Returns the width of the "tab body". The tab body is the space available to place contained controls.
+	They return the value in Twips.
 
 
 Container property:
@@ -1220,14 +1220,14 @@ OLEStartDrag event:
 Resize event:
 	No parameters.
 	Occurs when the tab body (the size available for controls) changes its size.
-	The size and position of the tab body are available by the properties BodyLeft, BodyTop, BodyWidth and BodyHeight.
+	The size and position of the tab body are available by the properties ClientLeft, ClientTop, ClientWidth and ClientHeight.
 
 
 RowsChange event:
 	No parameters.
 	Occurs when the control is first drawn and when the Rows property changes its value.
 	The Rows property value can change its value when new tabs are dinamically added or upon changing some property settings, like TabWidthStyle or TabsPerRow (for some configurations). Also changing the Width of the control, tab captions or the Font setting may produce different row number and raise this event.
-	You can use this event along with BodyTop to properly set the Top (or use BodyLeft, depending on TabOrientation) of the contained controls.
+	You can use this event along with ClientTop to properly set the Top (or use ClientLeft, depending on TabOrientation) of the contained controls.
 	But if AutoRelocateControls is set to True, that's is already done automaticaly.
 
 
