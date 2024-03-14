@@ -582,7 +582,7 @@ TabCustomColor property:
 	
 	Additional parameter(s):
 	    In	Required	Index	As	Long
-	    In	Required	ColorID	As	NTTabCustomColorIDConstants
+	    In	Optional	ColorID	As	NTTabCustomColorIDConstants	Default value: ntCCBackColorTab (0)
 	Returns or sets a custom color for a tab. It may be a color when it is inactive or active.
 
 
@@ -909,6 +909,7 @@ FindTab function:
 	Parameter(s):
 	    In	Required	Find	As	Variant
 	    In	Optional	Method	As	NTFindTabMethodConstants	Default value: ntFindCaption (0)
+	    In/Out	Optional	StartingTab	As	Variant
 
 	Finds a tab based on the values provided in the parameters and returns its index. If the tab is not found, it returns -1.
 	
@@ -988,6 +989,7 @@ SetActiveTab function:
 	Parameter(s):
 	    In	Required	Find	As	Variant
 	    In	Optional	Method	As	NTFindTabMethodConstants	Default value: ntFindCaption (0)
+	    In/Out	Optional	StartingTab	As	Variant
 
 	Sets the current ('selected' or 'active') tab by other means than its index (that can be done with the Tab property).
 	If the tab is found its retuns True, otherwise it returns False.
@@ -996,12 +998,16 @@ SetActiveTab function:
 	
 	Find parameter: find a tab with this data.
 	
-	Method parameter: where to look for the data to find.
+	Method optional parameter: where to look for the data to find.
 	
 	ntFindCaption: searches for a tab with the TabCaption specified in the Find parameter.
 	ntFindOriginalIndex: searches for a tab that when it was created had that tab index. If CanReorderTabs is True, the current index of the tab may not be the index it had when it was created.
 	ntFindData: searches for a tab with the TabData specified in the Find parameter.
 	ntFindTag: searches for a tab with the TabTag specified in the Find parameter.
+	ntFindPartialCaption: searches for a tab with a partial match for the TabCaption.
+	ntFindPartialCaptionReverse: searches for a tab with a partial match for the TabCaption, staring from the last tab.
+	
+	StartingTab optional parameter: the index of the tb from where to search.
 
 
 SetFocus method:
@@ -1401,6 +1407,8 @@ NTFindTabMethodConstants ENUMERATION
 	ntFindOriginalIndex = 1
 	ntFindData = 2
 	ntFindTag = 3
+	ntFindPartialCaption = 4
+	ntFindPartialCaptionReverse = 5
 
 NTFlatBarPosition ENUMERATION
 

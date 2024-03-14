@@ -919,7 +919,7 @@ It is not available at design time, and is read-only at run time.<br>
 <br>
 <h3>See Also:</h3><a href="#Controls-Property">Controls</a> property</p><br>
 <a name="TabCustomColor-Property" /><h2><p class"section">TabCustomColor Property</p></h2></a>
-<p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>Long</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>ColorID</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbsp<a href="#NTTabCustomColorIDConstants-Enum">NTTabCustomColorIDConstants</a>&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>Long</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspOptional&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>ColorID</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbsp<a href="#NTTabCustomColorIDConstants-Enum">NTTabCustomColorIDConstants</a>&nbsp&nbsp</td>    <td>&nbsp&nbspDefault value: ntCCBackColorTab (0)&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Returns or sets a custom color for a tab. It may be a color when it is inactive or active.</p><br>
 <a name="TabData-Property" /><h2><p class"section">TabData Property</p></h2></a>
@@ -1185,7 +1185,7 @@ In a control that its size and/or the tab texts change dinamically, to make sure
 <h3>Description:</h3>
 <p>Begins, ends, or cancels a drag operation.</p><br>
 <a name="FindTab-Method" /><h2><p class"section">FindTab Method</p></h2></a>
-<p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Long</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Find</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspOptional&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Method</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbsp<a href="#NTFindTabMethodConstants-Enum">NTFindTabMethodConstants</a>&nbsp&nbsp</td>    <td>&nbsp&nbspDefault value: ntFindCaption (0)&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Long</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Find</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspOptional&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Method</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbsp<a href="#NTFindTabMethodConstants-Enum">NTFindTabMethodConstants</a>&nbsp&nbsp</td>    <td>&nbsp&nbspDefault value: ntFindCaption (0)&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In/Out&nbsp&nbsp</td>    <td>&nbsp&nbspOptional&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>StartingTab</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Finds a tab based on the values provided in the parameters and returns its index. If the tab is not found, it returns -1.<br>
 <br>
@@ -1247,7 +1247,7 @@ Please read <a href="#SetActiveTab-Method">SetActiveTab</a> for an explanation o
 <h3>Description:</h3>
 <p>Redraws the control.</p><br>
 <a name="SetActiveTab-Method" /><h2><p class"section">SetActiveTab Method</p></h2></a>
-<p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Boolean</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Find</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspOptional&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Method</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbsp<a href="#NTFindTabMethodConstants-Enum">NTFindTabMethodConstants</a>&nbsp&nbsp</td>    <td>&nbsp&nbspDefault value: ntFindCaption (0)&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Boolean</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Find</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspOptional&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Method</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbsp<a href="#NTFindTabMethodConstants-Enum">NTFindTabMethodConstants</a>&nbsp&nbsp</td>    <td>&nbsp&nbspDefault value: ntFindCaption (0)&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In/Out&nbsp&nbsp</td>    <td>&nbsp&nbspOptional&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>StartingTab</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Sets the current ('selected' or 'active') tab by other means than its index (that can be done with the <a href="#Tab-Property">Tab</a> property).<br>
 If the tab is found its retuns <b>True</b>, otherwise it returns <b>False</b>.<br>
@@ -1256,12 +1256,16 @@ This method is mainly useful when you don't know the position of the tab because
 <br>
 <b>Find</b> parameter: find a tab with this data.<br>
 <br>
-<b>Method</b> parameter: where to look for the data to find.<br>
+<b>Method</b> optional parameter: where to look for the data to find.<br>
 <br>
 <b>ntFindCaption</b>: searches for a tab with the <a href="#TabCaption-Property">TabCaption</a> specified in the <b>Find</b> parameter.<br>
 <b>ntFindOriginalIndex</b>: searches for a tab that when it was created had that tab index. If <a href="#CanReorderTabs-Property">CanReorderTabs</a> is <b>True</b>, the current index of the tab may not be the index it had when it was created.<br>
 <b>ntFindData</b>: searches for a tab with the <a href="#TabData-Property">TabData</a> specified in the <b>Find</b> parameter.<br>
 <b>ntFindTag</b>: searches for a tab with the <a href="#TabTag-Property">TabTag</a> specified in the <b>Find</b> parameter.<br>
+<b>ntFindPartialCaption</b>: searches for a tab with a partial match for the <a href="#TabCaption-Property">TabCaption</a>.<br>
+<b>ntFindPartialCaptionReverse</b>: searches for a tab with a partial match for the <a href="#TabCaption-Property">TabCaption</a>, staring from the last tab.<br>
+<br>
+<b>StartingTab</b> optional parameter: the index of the tb from where to search.<br>
 <br>
 <h3>See Also:</h3><a href="#FindTab-Method">FindTab</a> method<br>
 <a href="#Tab-Property">Tab</a> property<br>
@@ -1612,6 +1616,14 @@ Use the names of the themes to set one into the <a href="#Theme-Property">Theme<
   <tr>
     <td><b>ntFindTag</b> =     </td>
     <td>3    </td>
+  </tr>
+  <tr>
+    <td><b>ntFindPartialCaption</b> =     </td>
+    <td>4    </td>
+  </tr>
+  <tr>
+    <td><b>ntFindPartialCaptionReverse</b> =     </td>
+    <td>5    </td>
   </tr>
 </table>
 <br><a name="NTFlatBarPosition-Enum" /><h2><p class"section">NTFlatBarPosition</h2></p></h2></a>

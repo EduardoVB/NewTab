@@ -699,6 +699,8 @@ Public Enum NTFindTabMethodConstants
     ntFindOriginalIndex = 1
     ntFindData = 2
     ntFindTag = 3
+    ntFindPartialCaption = 4
+    ntFindPartialCaptionReverse = 5
 End Enum
 
 Public Enum NTTabCustomColorIDConstants
@@ -1435,7 +1437,6 @@ Private Sub SetControlsProperForeColor(Optional nPrevColor As Long = -1)
         SetControlsForeColor iForeColorTabSel, nPrevColor
     ElseIf ColorsHaveEnoughContrast(mBackColorTabSel, mForeColor) Then
         SetControlsForeColor mForeColor, nPrevColor
-        'Debug.Print Extender.Index
     ElseIf ColorsHaveEnoughContrast(mBackColorTabSel, Ambient.ForeColor) Then
         SetControlsForeColor Ambient.ForeColor, nPrevColor
     ElseIf ColorsHaveEnoughContrast(mBackColorTabSel, iForeColorTabSel, 80) Then
@@ -3508,6 +3509,7 @@ Public Property Let RightToLeft(ByVal nValue As Boolean)
         Else
             SetLayout GetDC(picDraw.hWnd), 0
         End If
+        SetScaleMode
         SetPropertyChanged "RightToLeft"
         DrawDelayed
     End If
@@ -3897,6 +3899,7 @@ Private Sub mThemesCollection_ThemeRenamed()
     SetPropertyChanged
 End Sub
 
+
 Private Sub tmrCancelDoubleClick_Timer()
     tmrCancelDoubleClick.Enabled = False
 End Sub
@@ -4283,6 +4286,7 @@ Private Sub UserControl_InitProperties()
     mIconColorMouseHover = Ambient.ForeColor
     mIconColorMouseHoverTabSel = Ambient.ForeColor
     mRightToLeft = Ambient.RightToLeft
+    SetScaleMode
     mEnabled = True
     Set mDefaultIconFont = New StdFont
     mDefaultIconFont.Name = cPropDef_IconFontName
@@ -5191,9 +5195,6 @@ Private Function GetTabAtXY(X As Single, Y As Single) As Long
     Dim iY As Long
     
     iX = pScaleX(X, vbTwips, vbPixels)
-    If mRightToLeft Then
-        iX = mScaleWidth - iX
-    End If
     iY = pScaleX(Y, vbTwips, vbPixels)
     
     GetTabAtXY = mTab
@@ -5219,9 +5220,6 @@ Private Sub ProcessMouseMove(Button As Integer, Shift As Integer, X As Single, Y
     Dim iY As Long
     
     iX = pScaleX(X, vbTwips, vbPixels)
-    If mRightToLeft Then
-        iX = mScaleWidth - iX
-    End If
     iY = pScaleX(Y, vbTwips, vbPixels)
     
     ' first check for the active tab, because in some cases it is bigger and can overlap surrounding tabs
@@ -5509,7 +5507,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         mHighlightMode = ntHLNone
         mHighlightModeTabSel = ntHLNone
         iUpgradingFromSSTab = True
-    ElseIf PropBag.ReadProperty("Themed", cPropDef_Style = ntStyleWindows) Then
+    ElseIf PropBag.ReadProperty("Themed", False) Then
         ' upgrading from SSTab Ex
         mStyle = ntStyleWindows
         If mShowRowsInPerspective = ntYNAuto Then
@@ -5530,6 +5528,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     If mRightToLeft Then
         SetLayout GetDC(picDraw.hWnd), LAYOUT_RTL
     End If
+    SetScaleMode
     mHandleHighContrastTheme = PropBag.ReadProperty("HandleHighContrastTheme", cPropDef_HandleHighContrastThem)
     mBackStyle = PropBag.ReadProperty("BackStyle", cPropDef_BackStyle)
     mAutoTabHeight = PropBag.ReadProperty("AutoTabHeight", False) ' Defaults to False for backward compatibility with SSTab
@@ -6220,7 +6219,7 @@ Private Sub Draw()
     mScaleWidth = UserControl.ScaleWidth
     mScaleHeight = UserControl.ScaleHeight
     If Not ((mScaleWidth > 0) And (mScaleHeight > 0)) Then
-        UserControl.ScaleMode = vbTwips
+        SetScaleMode
         Exit Sub
     End If
     If Not mFirstDraw Then mFirstDraw = True
@@ -7555,12 +7554,22 @@ Private Sub Draw()
 
     
 TheExit:
-    UserControl.ScaleMode = vbTwips
+    SetScaleMode
     If mTheme <> 0 Then
         CloseThemeData mTheme
         mTheme = 0
     End If
     mDrawing = False
+End Sub
+
+Private Sub SetScaleMode()
+    Dim iSW As Long
+    
+    UserControl.ScaleMode = vbTwips
+    If mRightToLeft Then
+        iSW = UserControl.ScaleWidth
+        UserControl.Scale (iSW, 0)-(0, UserControl.ScaleHeight)
+    End If
 End Sub
 
 Private Sub RaiseEvent_Resize()
@@ -7581,10 +7590,6 @@ End Sub
 
 Private Sub TDIResizeFormContainers()
     Dim c As Long
-    Dim iSM As Long
-    
-    iSM = UserControl.ScaleMode
-    UserControl.ScaleMode = vbTwips
     
     For c = 1 To mTabs - 1
         If mTabData(c).Visible Then
@@ -7598,7 +7603,6 @@ Private Sub TDIResizeFormContainers()
             End If
         End If
     Next
-    UserControl.ScaleMode = iSM
 End Sub
 
 Private Sub DrawTab(ByVal nTab As Long)
@@ -8912,7 +8916,6 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
             iIconColorTabHighlighted = iTabData.CustomColors.IconColorTabHighlighted
         End If
         If iIconColorMouseHover <> iPropIconColor Then
-            Debug.Print mMouseIsOverIcon_Tab
             If mAmbientUserMode And (mMouseIsOverIcon_Tab = CInt(nTab) Or (tmrHighlightIcon.Enabled And (Val(tmrHighlightIcon.Tag) = nTab))) And (Not tmrPreHighlightIcon.Enabled) Then
             If (mMouseIsOverIcon_Tab = CInt(nTab)) Then
                     iIconColor = iIconColorMouseHover
@@ -9010,7 +9013,6 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
         iPicHeight = (iIconCharRect.Bottom - iIconCharRect.Top)
     ElseIf Not iTabData.PicToUse Is Nothing Then
         iDrawIcon = True
-        'If iTabData.Enabled And mEnabled Then
         If iTabData.Enabled Then
             Set iAuxPicture = iTabData.PicToUse
         Else
@@ -12041,12 +12043,9 @@ End Sub
 
 Private Function MouseIsOverAContainedControl() As Boolean
     Dim iPt As POINTAPI
-    Dim iSM As Long
     Dim iCtl As Object
     Dim iWidth As Long
     
-    iSM = UserControl.ScaleMode
-    UserControl.ScaleMode = vbTwips
     GetCursorPos iPt
     ScreenToClient mUserControlHwnd, iPt
     iPt.X = iPt.X * Screen_TwipsPerPixelX
@@ -12071,7 +12070,6 @@ Private Function MouseIsOverAContainedControl() As Boolean
         End If
     Next
     Err.Clear
-    UserControl.ScaleMode = iSM
 End Function
 
 
@@ -14695,47 +14693,68 @@ Friend Sub ShowsModalForm()
     mShowingModalForm = True
 End Sub
     
-Public Function SetActiveTab(ByVal Find As Variant, Optional ByVal Method As NTFindTabMethodConstants = ntFindCaption) As Boolean
+Public Function SetActiveTab(ByVal Find As Variant, Optional ByVal Method As NTFindTabMethodConstants = ntFindCaption, Optional StartingTab As Variant) As Boolean
 Attribute SetActiveTab.VB_Description = "Sets the current ('selected' or 'active') tab by other means than its index."
     Dim t As Long
     
-    t = FindTab(Find, Method)
+    t = FindTab(Find, Method, StartingTab)
     If t > -1 Then
         TabSel = t
         SetActiveTab = True
     End If
 End Function
 
-Public Function FindTab(ByVal Find As Variant, Optional ByVal Method As NTFindTabMethodConstants = ntFindCaption) As Long
+Public Function FindTab(ByVal Find As Variant, Optional ByVal Method As NTFindTabMethodConstants = ntFindCaption, Optional StartingTab As Variant) As Long
 Attribute FindTab.VB_Description = "Finds a tab based on the values provided in the parameters and returns its index. If the tab is not found, it returns -1."
     Dim c As Long
+    Dim iStartingTab As Long
     
+    If Not IsMissing(StartingTab) Then
+        iStartingTab = Val(StartingTab)
+    End If
     FindTab = -1
     If Method = ntFindCaption Then
         Find = LCase$(Find)
-        For c = 0 To mTabs - 1
+        For c = iStartingTab To mTabs - 1
             If LCase$(mTabData(c).Caption) = Find Then
                 FindTab = c
                 Exit Function
             End If
         Next
     ElseIf Method = ntFindOriginalIndex Then
-        For c = 0 To mTabs - 1
+        For c = iStartingTab To mTabs - 1
             If mTabData(c).OriginalIndex = Find Then
                 FindTab = c
                 Exit Function
             End If
         Next
     ElseIf Method = ntFindData Then
-        For c = 0 To mTabs - 1
+        For c = iStartingTab To mTabs - 1
             If mTabData(c).Data = Find Then
                 FindTab = c
                 Exit Function
             End If
         Next
     ElseIf Method = ntFindTag Then
-        For c = 0 To mTabs - 1
+        For c = iStartingTab To mTabs - 1
             If mTabData(c).Tag = Find Then
+                FindTab = c
+                Exit Function
+            End If
+        Next
+    ElseIf Method = ntFindPartialCaption Then
+        For c = iStartingTab To mTabs - 1
+            If InStr(1, mTabData(c).Caption, Find, vbTextCompare) > 0 Then
+                FindTab = c
+                Exit Function
+            End If
+        Next
+    ElseIf Method = ntFindPartialCaptionReverse Then
+        If IsMissing(StartingTab) Then
+            iStartingTab = mTabs - 1
+        End If
+        For c = iStartingTab To 0 Step -1
+            If InStr(1, mTabData(c).Caption, Find, vbTextCompare) > 0 Then
                 FindTab = c
                 Exit Function
             End If
@@ -14857,7 +14876,7 @@ Private Function ColorsHaveEnoughContrast(ByVal nColor1 As Long, ByVal nColor2 A
 End Function
 
 
-Public Property Get TabCustomColor(ByVal Index As Long, ByVal ColorID As NTTabCustomColorIDConstants) As OLE_COLOR
+Public Property Get TabCustomColor(ByVal Index As Long, Optional ByVal ColorID As NTTabCustomColorIDConstants = ntCCBackColorTab) As OLE_COLOR
 Attribute TabCustomColor.VB_Description = "Returns/sets a custom color for a tab. It may be a color when it is inactive or active."
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
@@ -14969,7 +14988,7 @@ Attribute TabCustomColor.VB_Description = "Returns/sets a custom color for a tab
     End Select
 End Property
 
-Public Property Let TabCustomColor(ByVal Index As Long, ByVal ColorID As NTTabCustomColorIDConstants, ByVal nValue As OLE_COLOR)
+Public Property Let TabCustomColor(ByVal Index As Long, Optional ByVal ColorID As NTTabCustomColorIDConstants = ntCCBackColorTab, ByVal nValue As OLE_COLOR)
     Dim c As Long
     Dim iCol As Long
     

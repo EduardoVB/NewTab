@@ -1,3 +1,8 @@
+2024-03-14 Added a third parameter StartingTab to FindTab and SetActiveTab methods.
+2024-03-14 Added ntFindPartialCaption and ntFindPartialCaptionReverse options to parameter 'Method' of FindTab and SetActiveTab methods. 
+2024-03-13 Bug fix regarding RightToLeft.
+2024-03-12 Bug fix related to TabWidthStyle default setting.
+2024-03-12 TabCustomColor property second parameter made optional, defaulting to ntCCBackColorTab. 
 2024-02-15 Added Align property.
 2024-02-15 Changed property names Body[Left|Top|Width|Height] to Client[Left|Top|Width|Height].
 2024-02-08 Bug fix in TabMaxWidth property.

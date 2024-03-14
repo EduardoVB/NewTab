@@ -53,5 +53,7 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Private Sub Form_Resize()
-    Text2.Move 0, Text1.Top + Text1.Height + 200, Me.ScaleWidth, Me.ScaleHeight - Text1.Top - Text1.Height - 200
+    If (Me.WindowState <> vbMinimized) And (Me.ScaleWidth <> 0) Then
+        Text2.Move 0, Text1.Top + Text1.Height + 200, Me.ScaleWidth, Me.ScaleHeight - Text1.Top - Text1.Height - 200
+    End If
 End Sub
