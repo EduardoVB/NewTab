@@ -14513,7 +14513,9 @@ Friend Sub TDIPutFormIntoTab(ByVal nHwndForm As Long)
         mTabData(mTabs - 1).Data = mTabs - 1
         
         Load picTDIFormContainer(mTabs - 1)
+        UserControl.ScaleMode = vbTwips
         picTDIFormContainer(mTabs - 1).Move ClientLeft, ClientTop, ClientWidth, ClientHeight
+        SetScaleMode
         SetWindowLong nHwndForm, GWL_STYLE, GetWindowLong(nHwndForm, GWL_STYLE) And Not (WS_CAPTION Or WS_THICKFRAME)
         MoveWindow nHwndForm, 0, 0, mClientRect.Right - mClientRect.Left + 2, mClientRect.Bottom - mClientRect.Top + 3, 1
         
