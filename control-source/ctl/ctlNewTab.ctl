@@ -7590,7 +7590,10 @@ End Sub
 
 Private Sub TDIResizeFormContainers()
     Dim c As Long
+    Dim iSM As Long
     
+    iSM = UserControl.ScaleMode
+    UserControl.ScaleMode = vbTwips
     For c = 1 To mTabs - 1
         If mTabData(c).Visible Then
             If (mTabData(c).Data >= picTDIFormContainer.LBound) And (mTabData(c).Data <= picTDIFormContainer.UBound) Then
@@ -7603,6 +7606,11 @@ Private Sub TDIResizeFormContainers()
             End If
         End If
     Next
+    If iSM = vbUser Then
+        SetScaleMode
+    Else
+        UserControl.ScaleMode = iSM
+    End If
 End Sub
 
 Private Sub DrawTab(ByVal nTab As Long)
