@@ -1,3 +1,6 @@
+2024-03-17 RightToLeft only available for TabOrientation top.
+2024-03-17 TDI modes only available for TabOrientation top and bottom.
+2024-03-17 CanReorderTabs now only works on TabOrientation top and bottom.
 2024-03-14 Added a third parameter StartingTab to FindTab and SetActiveTab methods.
 2024-03-14 Added ntFindPartialCaption and ntFindPartialCaptionReverse options to parameter 'Method' of FindTab and SetActiveTab methods. 
 2024-03-13 Bug fix regarding RightToLeft.

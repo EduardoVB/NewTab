@@ -1776,6 +1776,18 @@ Public Property Let TabOrientation(ByVal nValue As NTTabOrientationConstants)
         RaiseError 380, TypeName(Me) ' invalid property value
         Exit Property
     End If
+    If mTDIMode <> ntTDIModeNone Then
+        If (nValue <> ssTabOrientationTop) And (nValue <> ssTabOrientationBottom) Then
+            RaiseError 1383, TypeName(Me), "In TDI mode only TabOrientation top and bottom are available."
+            Exit Property
+        End If
+    End If
+    If mRightToLeft Then
+        If (nValue <> ssTabOrientationTop) Then
+            RaiseError 1384, TypeName(Me), "RightToLeft is only available for Top orientation."
+            Exit Property
+        End If
+    End If
     If nValue <> mTabOrientation Then
         mTabOrientation = nValue
         SetPropertyChanged "TabOrientation"
@@ -3502,6 +3514,13 @@ Attribute RightToLeft.VB_Description = "Returns/Sets the text display direction 
 End Property
 
 Public Property Let RightToLeft(ByVal nValue As Boolean)
+    If nValue Then
+        If mTabOrientation <> ssTabOrientationTop Then
+            RaiseError 1384, TypeName(Me), "RightToLeft is only available for Top orientation."
+            Exit Property
+        End If
+    End If
+    
     If nValue <> mRightToLeft Then
         mRightToLeft = nValue
         If mRightToLeft Then
@@ -4928,7 +4947,7 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Sing
                 End If
             End If
         End If
-        If mCanReorderTabs Then
+        If CanReorderTabsEffective Then
             tmrCheckTabDrag.Enabled = False
             If Not (mTabChangedFromAnotherRow Or mProcessingTabChange Or (IIf(mTDIMode, mVisibleTabs < 3, mVisibleTabs < 2))) Then
                 tmrCheckTabDrag.Enabled = True
@@ -4938,7 +4957,7 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Sing
         End If
     ElseIf (Button = vbMiddleButton) And (mTDIMode <> ntTDIModeNone) Then
         HandleTabTDIEvents
-    ElseIf mCanReorderTabs Then
+    ElseIf CanReorderTabsEffective Then
         tmrCheckTabDrag.Enabled = True
         mMouseX = 0
         mMouseY = 0
@@ -5091,7 +5110,7 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
         End If
     End If
 
-    If mCanReorderTabs Then
+    If CanReorderTabsEffective Then
         If Not (mTabChangedFromAnotherRow Or mProcessingTabChange) Then
             If Not tmrCheckTabDrag.Enabled Then
                 If (mMouseX <> 0) Or (mMouseY <> 0) Then
@@ -5294,7 +5313,7 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single
         End If
     End If
     
-    If mCanReorderTabs Then
+    If CanReorderTabsEffective Then
         If DraggingATab Then
             If mRows = 1 Then
                 DraggingATab = False
@@ -5335,11 +5354,14 @@ Private Function GetTabAtDropPoint() As Long
     
     For c = 0 To mTabs - 1
         If mTabData(c).Visible Then
-            If IIf(mTabData(c).LeftTab, True, mTabData(c).TabRect.Left <= X) Then
-                If IIf(mTabData(c).RightTab, True, mTabData(c).TabRect.Right >= X) Then
-                    If mTabData(c).TabRect.Top <= Y Then
-                        If mTabData(c).TabRect.Bottom >= Y Then
+            If mTabData(c).TabRect.Top <= Y Then
+                If mTabData(c).TabRect.Bottom >= Y Then
+                    If IIf(mTabData(c).LeftTab, True, (mTabData(c).TabRect.Left + (mTabData(c).TabRect.Right - mTabData(c).TabRect.Left) / 2) <= X) Then
+                        If IIf(mTabData(c).RightTab, True, (mTabData(c).TabRect.Right + (mTabData(c).TabRect.Right - mTabData(c).TabRect.Left) / 2) >= X) Then
                             GetTabAtDropPoint = c
+                            If mTabData(c).LeftTab And (mMouseX2 - mMouseX < mTabData(c).TabRect.Left) Then
+                                GetTabAtDropPoint = GetTabAtDropPoint - 1
+                            End If
                             Exit Function
                         End If
                     End If
@@ -7689,10 +7711,27 @@ Private Sub DrawTab(ByVal nTab As Long)
         If mBackStyle <> ntOpaque Then iHighlightColor = iHighlightColor Xor 65538
         iHighlightGradient = mHighlightGradientTabSel
         If DraggingATab Then
-            iTabData.TabRect.Left = iTabData.TabRect.Left + mMouseX2 - mMouseX
-            iTabData.TabRect.Right = iTabData.TabRect.Right + mMouseX2 - mMouseX
-            iTabData.TabRect.Top = iTabData.TabRect.Top + mMouseY2 - mMouseY
-            iTabData.TabRect.Bottom = iTabData.TabRect.Bottom + mMouseY2 - mMouseY
+            If mTabOrientation = ssTabOrientationBottom Then
+                iTabData.TabRect.Left = iTabData.TabRect.Left + mMouseX2 - mMouseX
+                iTabData.TabRect.Right = iTabData.TabRect.Right + mMouseX2 - mMouseX
+                iTabData.TabRect.Top = iTabData.TabRect.Top - mMouseY2 + mMouseY
+                iTabData.TabRect.Bottom = iTabData.TabRect.Bottom - mMouseY2 + mMouseY
+            ElseIf (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftHorizontal) Then
+                iTabData.TabRect.Left = iTabData.TabRect.Left - mMouseY2 + mMouseY
+                iTabData.TabRect.Right = iTabData.TabRect.Right - mMouseY2 + mMouseY
+                iTabData.TabRect.Top = iTabData.TabRect.Top + mMouseX2 - mMouseX
+                iTabData.TabRect.Bottom = iTabData.TabRect.Bottom + mMouseX2 - mMouseX
+            ElseIf (mTabOrientation = ssTabOrientationRight) Or (mTabOrientation = ntTabOrientationRightHorizontal) Then
+                iTabData.TabRect.Left = iTabData.TabRect.Left + mMouseY2 - mMouseY
+                iTabData.TabRect.Right = iTabData.TabRect.Right + mMouseY2 - mMouseY
+                iTabData.TabRect.Top = iTabData.TabRect.Top - mMouseX2 + mMouseX
+                iTabData.TabRect.Bottom = iTabData.TabRect.Bottom - mMouseX2 + mMouseX
+            Else
+                iTabData.TabRect.Left = iTabData.TabRect.Left + mMouseX2 - mMouseX
+                iTabData.TabRect.Right = iTabData.TabRect.Right + mMouseX2 - mMouseX
+                iTabData.TabRect.Top = iTabData.TabRect.Top + mMouseY2 - mMouseY
+                iTabData.TabRect.Bottom = iTabData.TabRect.Bottom + mMouseY2 - mMouseY
+            End If
         End If
     Else
         iHighlighted = mAmbientUserMode And ((mHighlightGradient <> ntGradientNone) Or mAppearanceIsFlat Or mControlIsThemed) And iTabData.Hovered And (mEnabled Or (Not mAmbientUserMode)) And iTabData.Enabled
@@ -8817,13 +8856,30 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     End If
     
     iActive = (nTab = mTab)
-    If mCanReorderTabs Then
+    If CanReorderTabsEffective Then
         If iActive Then
             If DraggingATab Then
-                iTabRect.Left = iTabRect.Left + mMouseX2 - mMouseX
-                iTabRect.Right = iTabRect.Right + mMouseX2 - mMouseX
-                iTabRect.Top = iTabRect.Top + mMouseY2 - mMouseY
-                iTabRect.Bottom = iTabRect.Bottom + mMouseY2 - mMouseY
+                If mTabOrientation = ssTabOrientationBottom Then
+                    iTabRect.Left = iTabRect.Left + mMouseX2 - mMouseX
+                    iTabRect.Right = iTabRect.Right + mMouseX2 - mMouseX
+                    iTabRect.Top = iTabRect.Top - mMouseY2 + mMouseY
+                    iTabRect.Bottom = iTabRect.Bottom - mMouseY2 + mMouseY
+                ElseIf (mTabOrientation = ssTabOrientationLeft) Then
+                    iTabRect.Left = iTabRect.Left - mMouseY2 + mMouseY
+                    iTabRect.Right = iTabRect.Right - mMouseY2 + mMouseY
+                    iTabRect.Top = iTabRect.Top + mMouseX2 - mMouseX
+                    iTabRect.Bottom = iTabRect.Bottom + mMouseX2 - mMouseX
+                ElseIf (mTabOrientation = ssTabOrientationRight) Then
+                    iTabRect.Left = iTabRect.Left + mMouseY2 - mMouseY
+                    iTabRect.Right = iTabRect.Right + mMouseY2 - mMouseY
+                    iTabRect.Top = iTabRect.Top - mMouseX2 + mMouseX
+                    iTabRect.Bottom = iTabRect.Bottom - mMouseX2 + mMouseX
+                Else
+                    iTabRect.Left = iTabRect.Left + mMouseX2 - mMouseX
+                    iTabRect.Right = iTabRect.Right + mMouseX2 - mMouseX
+                    iTabRect.Top = iTabRect.Top + mMouseY2 - mMouseY
+                    iTabRect.Bottom = iTabRect.Bottom + mMouseY2 - mMouseY
+                End If
             End If
         End If
     End If
@@ -13863,6 +13919,8 @@ End Property
 Private Property Let DraggingATab(nValue As Boolean)
     Dim iRc As RECT
     Dim iPt As POINTAPI
+    Dim iPt2 As POINTAPI
+    Dim iPt3 As POINTAPI
     
     If mMovingATab Then Exit Property
     If nValue = mDraggingATab Then Exit Property
@@ -13872,13 +13930,37 @@ Private Property Let DraggingATab(nValue As Boolean)
         mPreviousTabBeforeDragging = mTab
         ClientToScreen mUserControlHwnd, iPt
         
-        iRc.Left = iPt.X
-        iRc.Right = UserControl.ScaleX(UserControl.ScaleWidth, UserControl.ScaleMode, vbPixels) + iPt.X
-        iRc.Top = iPt.Y + mMouseY - mTabData(mTab).TabRect.Top
-        iRc.Bottom = mClientRect.Top + iPt.Y + mMouseY - mTabData(mTab).TabRect.Bottom
+        If mTabOrientation = ssTabOrientationBottom Then
+            iRc.Left = iPt.X
+            iRc.Right = UserControl.ScaleX(UserControl.ScaleWidth, UserControl.ScaleMode, vbPixels) + iPt.X
+            iPt2.Y = mClientRect.Bottom
+            iPt3.Y = mScaleHeight
+            ClientToScreen mUserControlHwnd, iPt2
+            ClientToScreen mUserControlHwnd, iPt3
+            iRc.Top = iPt2.Y + mMouseY - mTabData(mTab).TabRect.Top
+            iRc.Bottom = iPt3.Y + mMouseY - mTabData(mTab).TabRect.Bottom
+        ElseIf (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftHorizontal) Then
+            iRc.Left = iPt.X + mMouseX - mTabData(mTab).TabRect.Left
+            iRc.Right = iPt.X + mClientRect.Left + mMouseX - mTabData(mTab).TabRect.Right
+            iRc.Top = iPt.Y
+            iPt3.Y = mScaleHeight
+            ClientToScreen mUserControlHwnd, iPt3
+            iRc.Bottom = iPt3.Y
+        ElseIf (mTabOrientation = ssTabOrientationRight) Or (mTabOrientation = ntTabOrientationRightHorizontal) Then
+            iRc.Left = iPt.X + mClientRect.Left + mClientRect.Right + mMouseX - mTabData(mTab).TabRect.Left
+            iRc.Right = UserControl.ScaleX(UserControl.ScaleWidth, UserControl.ScaleMode, vbPixels) + iPt.X + mClientRect.Left + mMouseX - mTabData(mTab).TabRect.Right
+            iRc.Top = iPt.Y
+            iPt3.Y = mScaleHeight
+            ClientToScreen mUserControlHwnd, iPt3
+            iRc.Bottom = iPt3.Y
+        Else
+            iRc.Left = iPt.X
+            iRc.Right = UserControl.ScaleX(UserControl.ScaleWidth, UserControl.ScaleMode, vbPixels) + iPt.X
+            iRc.Top = iPt.Y + mMouseY - mTabData(mTab).TabRect.Top
+            iRc.Bottom = mClientRect.Top + iPt.Y + mMouseY - mTabData(mTab).TabRect.Bottom
+        End If
         
         tmrTabDragging.Enabled = True
-        'If Not mInIDE Then ClipCursor iRc
         If mTDIMode = ntTDIModeForms Then
             If mRows = 1 Then
                 iRc.Left = iRc.Left + mTabData(0).TabRect.Right - mTabData(0).TabRect.Left
@@ -14777,7 +14859,7 @@ Public Function GetTabsOrder() As String
 Attribute GetTabsOrder.VB_Description = "Returns a string with data containing the tabs order. CanReorderTabs must be set to True."
     Dim c As Long
     
-    If mCanReorderTabs = False Then
+    If CanReorderTabsEffective = False Then
         RaiseError 1381, TypeName(Me), "GetTabsOrder/SetTabsOrder need CanReorderTabs property to True."
         Exit Function
     End If
@@ -14797,7 +14879,7 @@ Attribute SetTabsOrder.VB_Description = "Sets the tabs order using data previous
     Dim iSet() As Boolean
     Dim oi As Long
     
-    If mCanReorderTabs = False Then
+    If CanReorderTabsEffective = False Then
         RaiseError 1381, TypeName(Me), "GetTabsOrder/SetTabsOrder need CanReorderTabs property to True."
         Exit Sub
     End If
@@ -15162,6 +15244,10 @@ Public Property Let TabCustomColor(ByVal Index As Long, Optional ByVal ColorID A
     DrawDelayed
 End Property
 
+Private Property Get CanReorderTabsEffective() As Boolean
+    CanReorderTabsEffective = mCanReorderTabs And ((mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ssTabOrientationBottom))
+End Property
+
 'Tab is a reserved keyword in VB6, but you can remove that restriction.
 'To be able to compile with Tab property, you need to replace VBA6.DLL with this version: https://github.com/EduardoVB/NewTab/raw/main/control-source/lib/VBA6.DLL
 'VBA6.DLL is in VS6's installation folder, usually:
@@ -15179,3 +15265,4 @@ Public Property Let Tab(ByVal nValue As Long)
     TabSel = nValue
 End Property
 #End If
+
