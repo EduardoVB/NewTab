@@ -61,6 +61,8 @@ BackStyle property:
 CanReorderTabs property:
 	Type: Boolean
 	Returns or sets a value that determines whether the user will be able to change tab positions by dragging them with the mouse.
+	
+	This feature is only available for TabOrientation top and bottom.
 
 
 Caption property:
@@ -584,6 +586,8 @@ TabCustomColor property:
 	    In	Required	Index	As	Long
 	    In	Optional	ColorID	As	NTTabCustomColorIDConstants	Default value: ntCCBackColorTab (0)
 	Returns or sets a custom color for a tab. It may be a color when it is inactive or active.
+	
+	Note: The Style property must be set to other than Windows for this feature to work (the Windows "visual styles" must not be applied).
 
 
 TabData property:

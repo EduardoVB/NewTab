@@ -346,6 +346,8 @@ When the control is themed, this property value has no effect.<br>
 <h3>Description:</h3>
 <p>Returns or sets a value that determines whether the user will be able to change tab positions by dragging them with the mouse.<br>
 <br>
+This feature is only available for <a href="#TabOrientation-Property">TabOrientation</a> top and bottom.<br>
+<br>
 <h3>See Also:</h3><a href="#BeforeTabReorder-Event">BeforeTabReorder</a> event<br>
 <a href="#TabReordered-Event">TabReordered</a> event<br>
 <a href="#GetTabsOrder-Method">GetTabsOrder</a> method<br>
@@ -921,7 +923,9 @@ It is not available at design time, and is read-only at run time.<br>
 <a name="TabCustomColor-Property" /><h2><p class"section">TabCustomColor Property</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>Long</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspOptional&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>ColorID</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbsp<a href="#NTTabCustomColorIDConstants-Enum">NTTabCustomColorIDConstants</a>&nbsp&nbsp</td>    <td>&nbsp&nbspDefault value: ntCCBackColorTab (0)&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
-<p>Returns or sets a custom color for a tab. It may be a color when it is inactive or active.</p><br>
+<p>Returns or sets a custom color for a tab. It may be a color when it is inactive or active.<br>
+<br>
+Note: The <a href="#Style-Property">Style</a> property must be set to other than Windows for this feature to work (the Windows "visual styles" must not be applied).</p><br>
 <a name="TabData-Property" /><h2><p class"section">TabData Property</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>Long</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
