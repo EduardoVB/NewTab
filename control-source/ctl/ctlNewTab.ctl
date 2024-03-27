@@ -13870,12 +13870,16 @@ Attribute MoveTab.VB_Description = "Moves a tab to another position."
     If iCurTab Then
         mTab = -1
         'SetVisibleControls mTab
-        TabSel = NewIndex
-        Draw
+        If TabVisible(NewIndex) Then
+            TabSel = NewIndex
+            Draw
+        End If
     Else
         For c = 0 To mTabs - 1
             If mTabData(c).Selected Then
-                TabSel = c
+                If TabVisible(c) Then
+                    TabSel = c
+                End If
                 Exit For
             End If
         Next
@@ -14754,7 +14758,9 @@ Friend Sub TDIFormClosing(ByVal nHwndForm As Long)
             Next
         End If
         If Not iDone Then
-            TabSel = 0
+            If TabVisible(0) = True Then
+                TabSel = 0
+            End If
         End If
     End If
 End Sub
