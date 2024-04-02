@@ -1425,11 +1425,6 @@ NTFindTabMethodConstants ENUMERATION
 	ntFindPartialCaption = 4
 	ntFindPartialCaptionReverse = 5
 
-NTFlatBarPosition ENUMERATION
-
-	ntBarPositionTop = 0
-	ntBarPositionBottom = 1
-
 NTFlatBarPositionConstants ENUMERATION
 
 	ntBarPositionTop = 0
