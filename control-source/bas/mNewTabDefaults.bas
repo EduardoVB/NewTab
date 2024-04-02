@@ -45,3 +45,5 @@ Public Const cPropDef_TabMaxWidth As Long = 0
 Public Const cPropDef_TabMinWidth As Long = 0
 Public Const cPropDef_SubclassingMethod As Long = ntSMSetWindowSubclass
 Public Const cPropDef_TabsEndFreeSpace As Long = 0
+Public Const cPropDef_CaptionAlignment As Long = ntAlignmentCenter
+

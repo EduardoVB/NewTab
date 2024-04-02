@@ -71,6 +71,11 @@ Caption property:
 	Captions can have accelerators by adding "&" before the letter that will act as the accelerator.
 
 
+CaptionAlignment property:
+	Type: NTAlignmentConstants
+	Returns or sets the alignment of the tab captions.
+
+
 ChangeControlsBackColor property:
 	Type: Boolean
 	Returns or sets a value that determines if the background color of the contained controls will be changed according to the background color of the tabs (the BackColorTabSel property value).
@@ -182,7 +187,7 @@ FlatBarHeight property:
 
 
 FlatBarPosition property:
-	Type: NTFlatBarPosition
+	Type: NTFlatBarPositionConstants
 	Returns or sets the position of the bar in flat style. It can be at the top (ntBarPositionTop)  or at the bottom (ntBarPositionBottom).
 
 
@@ -1387,6 +1392,12 @@ ThemeRenamed event:
 
 Constants
 
+NTAlignmentConstants ENUMERATION
+
+	ntAlignmentLeft = 0
+	ntAlignmentRight = 1
+	ntAlignmentCenter = 2
+
 NTAutoRelocateControlsConstants ENUMERATION
 
 	ntRelocateNever = 0
@@ -1415,6 +1426,11 @@ NTFindTabMethodConstants ENUMERATION
 	ntFindPartialCaptionReverse = 5
 
 NTFlatBarPosition ENUMERATION
+
+	ntBarPositionTop = 0
+	ntBarPositionBottom = 1
+
+NTFlatBarPositionConstants ENUMERATION
 
 	ntBarPositionTop = 0
 	ntBarPositionBottom = 1

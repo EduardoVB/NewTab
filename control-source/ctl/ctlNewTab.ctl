@@ -448,7 +448,9 @@ Private Declare Function WindowFromPoint Lib "user32" (ByVal xPoint As Long, ByV
 
 'Draw Text Constants
 Private Const DT_CALCRECT = &H400&
+Private Const DT_LEFT = &H0&
 Private Const DT_CENTER = &H1&
+Private Const DT_RIGHT = &H2&
 Private Const DT_SINGLELINE = &H20&
 Private Const DT_VCENTER = &H4&
 Private Const DT_END_ELLIPSIS = &H8000&
@@ -668,7 +670,7 @@ Public Enum NTFlatBorderModeConstants
     ntBorderTabSel = 1
 End Enum
 
-Public Enum NTFlatBarPosition
+Public Enum NTFlatBarPositionConstants
     ntBarPositionTop = 0
     ntBarPositionBottom = 1
 End Enum
@@ -723,6 +725,11 @@ Public Enum NTTabCustomColorIDConstants
     ntCCIconColorTabHighlighted
 End Enum
 
+Public Enum NTAlignmentConstants
+    ntAlignmentLeft = 0
+    ntAlignmentRight = 1
+    ntAlignmentCenter = 2
+End Enum
 
 ' Events
 ' Original
@@ -931,13 +938,14 @@ Attribute mThemesCollection.VB_VarHelpID = -1
 Private mCurrentThemeName As String
 Private mCanReorderTabs As Boolean
 Private mTDIMode As NTTDIModeConstants
-Private mFlatBarPosition As NTFlatBarPosition
+Private mFlatBarPosition As NTFlatBarPositionConstants
 Private mFlatBodySeparationLineHeight As Long
 Private mSubclassingMethod As NTSubclassingMethodConstants
 Private mOnlySubclassUserControl As Boolean
 Private mTabsEndFreeSpace As Long
 Private mUserControlSizeCorrectionsCounter_ScaleWidthNotToResize As Long
 Private mUserControlSizeCorrectionsCounter_ScaleHeightNotToResize As Long
+Private mCaptionAlignment As NTAlignmentConstants
 
 ' Variables
 Private mClientStart As Long ' in Pixels
@@ -1073,10 +1081,10 @@ Private mTDIModeFormsFormData_FormIcon() As StdPicture
 Private mShowingModalForm As Boolean
 Private mAppDeactivated As Boolean
 Private mUserControlSizeCorrectionsCounter As Long
-
 Private mBackColorTabs_SavedWhileVisualStyles As Long
 Private mBackColorTabSel_SavedWhileVisualStyles As Long
 Private mBackColorTabsSavingWhileVisualStyles As Boolean
+Private mAlignmentDTFlag As Long
 
 Private mHighContrastThemeOn As Boolean
 Private mHandleHighContrastTheme_OrigForeColor As Long
@@ -3356,13 +3364,13 @@ Public Property Let FlatBodySeparationLineHeight(ByVal nValue As Long)
 End Property
 
 
-Public Property Get FlatBarPosition() As NTFlatBarPosition
+Public Property Get FlatBarPosition() As NTFlatBarPositionConstants
 Attribute FlatBarPosition.VB_Description = "Returns/sets the position of the bar in flat style."
 Attribute FlatBarPosition.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     FlatBarPosition = mFlatBarPosition
 End Property
 
-Public Property Let FlatBarPosition(ByVal nValue As NTFlatBarPosition)
+Public Property Let FlatBarPosition(ByVal nValue As NTFlatBarPositionConstants)
     If nValue <> mFlatBarPosition Then
         If (nValue < ntBarPositionTop) Or (nValue > ntBarPositionBottom) Then
             RaiseError 380, TypeName(Me) ' invalid property value
@@ -4465,6 +4473,14 @@ Friend Sub SetDefaultPropertyValues(Optional nSetControlsColors As Boolean)
     mFlatBodySeparationLineHeightDPIScaled = mFlatBodySeparationLineHeight * mDPIScale
     mTabMaxWidth = cPropDef_TabMaxWidth: PropertyChanged "TabMaxWidth"
     mTabMinWidth = cPropDef_TabMinWidth: PropertyChanged "TabMinWidth"
+    mCaptionAlignment = cPropDef_CaptionAlignment: PropertyChanged "CaptionAlignment"
+    If mCaptionAlignment = ntAlignmentLeft Then
+        mAlignmentDTFlag = DT_LEFT
+    ElseIf mCaptionAlignment = ntAlignmentRight Then
+        mAlignmentDTFlag = DT_RIGHT
+    Else
+        mAlignmentDTFlag = DT_CENTER
+    End If
     
     SetFont
     If mTabAppearance <> ntTAAuto Then
@@ -5507,6 +5523,14 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     mTabTransition = PropBag.ReadProperty("TabTransition", cPropDef_TabTransition)
     mHighlightMode = PropBag.ReadProperty("HighlightMode", cPropDef_HighlightMode)
     mHighlightModeTabSel = PropBag.ReadProperty("HighlightModeTabSel", cPropDef_HighlightModeTabSel)
+    mCaptionAlignment = PropBag.ReadProperty("CaptionAlignment", cPropDef_CaptionAlignment)
+    If mCaptionAlignment = ntAlignmentLeft Then
+        mAlignmentDTFlag = DT_LEFT
+    ElseIf mCaptionAlignment = ntAlignmentRight Then
+        mAlignmentDTFlag = DT_RIGHT
+    Else
+        mAlignmentDTFlag = DT_CENTER
+    End If
     If PropBag.ReadProperty("_Version", 0) <> 0 Then
         ' upgrading from SSTab
         If (mStyle <> ssStyleTabbedDialog) And (mStyle <> ssStylePropertyPage) Then
@@ -6111,6 +6135,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     PropBag.WriteProperty "IconColorTabHighlighted", mIconColorTabHighlighted, mIconColor
     PropBag.WriteProperty "HighlightMode", mHighlightMode, cPropDef_HighlightMode
     PropBag.WriteProperty "HighlightModeTabSel", mHighlightModeTabSel, cPropDef_HighlightModeTabSel
+    PropBag.WriteProperty "CaptionAlignment", mCaptionAlignment, cPropDef_CaptionAlignment
     PropBag.WriteProperty "FlatBorderMode", mFlatBorderMode, cPropDef_FlatBorderMode
     PropBag.WriteProperty "FlatBarHeight", mFlatBarHeight, cPropDef_FlatBarHeight
     PropBag.WriteProperty "FlatBarGripHeight", mFlatBarGripHeight, cPropDef_FlatBarGripHeight
@@ -7765,7 +7790,7 @@ Private Sub DrawTab(ByVal nTab As Long)
         Dim iShowFlatBarBottom As Boolean
         Const cEpsilon As Single = 0.499
         Dim iFlatBarTopSet As Boolean
-        Dim iFlatBarPosition As NTFlatBarPosition
+        Dim iFlatBarPosition As NTFlatBarPositionConstants
         Dim iHighlightFlatDrawBorder As Boolean
         Dim iHighlightFlatDrawBorder_Color As Long
         
@@ -8812,7 +8837,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     Dim iGMPrev2 As Long
     Dim iTx2 As XFORM
     Dim iTx2Prev As XFORM
-    Dim iFlatBarPosition As NTFlatBarPosition
+    Dim iFlatBarPosition As NTFlatBarPositionConstants
     Dim iTabCenterX As Long
     Dim iTabCenterY As Long
     Dim iActive As Boolean
@@ -9153,7 +9178,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     End If
     iMeasureRect.Bottom = iMeasureRect.Top + 5
     
-    iFlags = DT_CALCRECT Or DT_SINGLELINE Or DT_CENTER
+    iFlags = DT_CALCRECT Or DT_SINGLELINE Or mAlignmentDTFlag
     iCaption = iTabData.Caption & IIf(picDraw.Font.Italic, "  ", "")
     DrawTextW picDraw.hDC, StrPtr(iCaption), -1, iMeasureRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
     iMeasureWidth = (iMeasureRect.Right - iMeasureRect.Left)
@@ -9405,9 +9430,9 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     End If
     'Now draw the text
     If mWordWrap Then
-        iFlags = DT_WORDBREAK Or DT_END_ELLIPSIS Or DT_MODIFYSTRING Or DT_CENTER
+        iFlags = DT_WORDBREAK Or DT_END_ELLIPSIS Or DT_MODIFYSTRING Or mAlignmentDTFlag
     Else
-        iFlags = DT_SINGLELINE Or DT_END_ELLIPSIS Or DT_MODIFYSTRING Or DT_CENTER Or DT_VCENTER
+        iFlags = DT_SINGLELINE Or DT_END_ELLIPSIS Or DT_MODIFYSTRING Or mAlignmentDTFlag Or DT_VCENTER
     End If
     
     iCaption = iTabData.Caption
@@ -11248,7 +11273,7 @@ Private Function MeasureTabIconAndCaption(ByVal t As Long) As Long
         iCaptionRect.Right = iTabMaxWidth
     End If
     
-    iFlags = DT_CALCRECT Or DT_SINGLELINE Or DT_CENTER Or DT_VCENTER
+    iFlags = DT_CALCRECT Or DT_SINGLELINE Or mAlignmentDTFlag Or DT_VCENTER
     iCaption = mTabData(t).Caption & IIf(picAux.Font.Italic, " ", "") & IIf(mVisualStyles Or mAppearanceIsFlat, " ", "")
     DrawTextW picAux.hDC, StrPtr(iCaption), -1, iCaptionRect, iFlags
     iCaptionWidth = iCaptionRect.Right
@@ -15253,6 +15278,33 @@ End Property
 Private Property Get CanReorderTabsEffective() As Boolean
     CanReorderTabsEffective = mCanReorderTabs And ((mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ssTabOrientationBottom))
 End Property
+
+
+Public Property Get CaptionAlignment() As NTAlignmentConstants
+Attribute CaptionAlignment.VB_Description = "Returns/sets the alignment of the tab captions."
+    CaptionAlignment = mCaptionAlignment
+End Property
+
+Public Property Let CaptionAlignment(ByVal nValue As NTAlignmentConstants)
+    If nValue <> mCaptionAlignment Then
+        If (nValue < ntAlignmentLeft) Or (nValue > ntAlignmentCenter) Then
+            RaiseError 380, TypeName(Me) ' invalid property value
+            Exit Property
+        End If
+        mCaptionAlignment = nValue
+        If mCaptionAlignment = ntAlignmentLeft Then
+            mAlignmentDTFlag = DT_LEFT
+        ElseIf mCaptionAlignment = ntAlignmentRight Then
+            mAlignmentDTFlag = DT_RIGHT
+        Else
+            mAlignmentDTFlag = DT_CENTER
+        End If
+        DrawDelayed
+        mSetAutoTabHeightPending = True
+        SetPropertyChanged "CaptionAlignment"
+    End If
+End Property
+
 
 'Tab is a reserved keyword in VB6, but you can remove that restriction.
 'To be able to compile with Tab property, you need to replace VBA6.DLL with this version: https://github.com/EduardoVB/NewTab/raw/main/control-source/lib/VBA6.DLL

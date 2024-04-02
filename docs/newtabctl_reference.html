@@ -105,6 +105,7 @@ Backward compatible with SSTab (fully), and with SSTabEx (mostly).</p><br>
 <li class="toc1"><a href="#BackStyle-Property">BackStyle</a><br>
 <li class="toc1"><a href="#CanReorderTabs-Property">CanReorderTabs</a><br>
 <li class="toc1"><a href="#Caption-Property">Caption</a><br>
+<li class="toc1"><a href="#CaptionAlignment-Property">CaptionAlignment</a><br>
 <li class="toc1"><a href="#ChangeControlsBackColor-Property">ChangeControlsBackColor</a><br>
 <li class="toc1"><a href="#ChangeControlsForeColor-Property">ChangeControlsForeColor</a><br>
 <li class="toc1"><a href="#ClientHeight-Property">ClientHeight</a><br>
@@ -361,6 +362,10 @@ This feature is only available for <a href="#TabOrientation-Property">TabOrienta
 Captions can have accelerators by adding "&" before the letter that will act as the accelerator.<br>
 <br>
 <h3>See Also:</h3><a href="#TabCaption-Property">TabCaption</a> property</p><br>
+<a name="CaptionAlignment-Property" /><h2><p class"section">CaptionAlignment Property</p></h2></a>
+<p>Type: <b><a href="#NTAlignmentConstants-Enum">NTAlignmentConstants</a></b></p>
+<h3>Description:</h3>
+<p>Returns or sets the alignment of the tab captions.</p><br>
 <a name="ChangeControlsBackColor-Property" /><h2><p class"section">ChangeControlsBackColor Property</p></h2></a>
 <p>Type: <b>Boolean</b></p>
 <h3>Description:</h3>
@@ -491,7 +496,7 @@ It is not available at design time, and is read-only at run time.<br>
 <h3>Description:</h3>
 <p>Returns or sets the height in pixels of the bar in flat style.</p><br>
 <a name="FlatBarPosition-Property" /><h2><p class"section">FlatBarPosition Property</p></h2></a>
-<p>Type: <b><a href="#NTFlatBarPosition-Enum">NTFlatBarPosition</a></b></p>
+<p>Type: <b><a href="#NTFlatBarPositionConstants-Enum">NTFlatBarPositionConstants</a></b></p>
 <h3>Description:</h3>
 <p>Returns or sets the position of the bar in flat style. It can be at the top (<b>ntBarPositionTop</b>)  or at the bottom (<b>ntBarPositionBottom</b>).</p><br>
 <a name="FlatBodySeparationLineColor-Property" /><h2><p class"section">FlatBodySeparationLineColor Property</p></h2></a>
@@ -1554,7 +1559,23 @@ Use the names of the themes to set one into the <a href="#Theme-Property">Theme<
 </body>
 </html>
 <a name="Constants"><h1><p class="section">NewTabCtl Enumerations</p></h1></a>
-<li class="toc1"><a href="#NTAutoRelocateControlsConstants-Enum">NTAutoRelocateControlsConstants</a></li><li class="toc1"><a href="#NTAutoYesNoConstants-Enum">NTAutoYesNoConstants</a></li><li class="toc1"><a href="#NTBackStyleConstants-Enum">NTBackStyleConstants</a></li><li class="toc1"><a href="#NTFindTabMethodConstants-Enum">NTFindTabMethodConstants</a></li><li class="toc1"><a href="#NTFlatBarPosition-Enum">NTFlatBarPosition</a></li><li class="toc1"><a href="#NTFlatBorderModeConstants-Enum">NTFlatBorderModeConstants</a></li><li class="toc1"><a href="#NTHighlightModeFlagsConstants-Enum">NTHighlightModeFlagsConstants</a></li><li class="toc1"><a href="#NTIconAlignmentConstants-Enum">NTIconAlignmentConstants</a></li><li class="toc1"><a href="#NTMousePointerConstants-Enum">NTMousePointerConstants</a></li><li class="toc1"><a href="#NTOLEDropConstants-Enum">NTOLEDropConstants</a></li><li class="toc1"><a href="#NTStyleConstants-Enum">NTStyleConstants</a></li><li class="toc1"><a href="#NTSubclassingMethodConstants-Enum">NTSubclassingMethodConstants</a></li><li class="toc1"><a href="#NTTabAppearanceConstants-Enum">NTTabAppearanceConstants</a></li><li class="toc1"><a href="#NTTabCustomColorIDConstants-Enum">NTTabCustomColorIDConstants</a></li><li class="toc1"><a href="#NTTabOrientationConstants-Enum">NTTabOrientationConstants</a></li><li class="toc1"><a href="#NTTabTransitionConstants-Enum">NTTabTransitionConstants</a></li><li class="toc1"><a href="#NTTabWidthStyleConstants-Enum">NTTabWidthStyleConstants</a></li><li class="toc1"><a href="#NTTDIModeConstants-Enum">NTTDIModeConstants</a></li><li class="toc1"><a href="#NTTDINewTabTypeConstants-Enum">NTTDINewTabTypeConstants</a></li><br><a name="NTAutoRelocateControlsConstants-Enum" /><h2><p class"section">NTAutoRelocateControlsConstants</h2></p></h2></a>
+<li class="toc1"><a href="#NTAlignmentConstants-Enum">NTAlignmentConstants</a></li><li class="toc1"><a href="#NTAutoRelocateControlsConstants-Enum">NTAutoRelocateControlsConstants</a></li><li class="toc1"><a href="#NTAutoYesNoConstants-Enum">NTAutoYesNoConstants</a></li><li class="toc1"><a href="#NTBackStyleConstants-Enum">NTBackStyleConstants</a></li><li class="toc1"><a href="#NTFindTabMethodConstants-Enum">NTFindTabMethodConstants</a></li><li class="toc1"><a href="#NTFlatBarPosition-Enum">NTFlatBarPosition</a></li><li class="toc1"><a href="#NTFlatBarPositionConstants-Enum">NTFlatBarPositionConstants</a></li><li class="toc1"><a href="#NTFlatBorderModeConstants-Enum">NTFlatBorderModeConstants</a></li><li class="toc1"><a href="#NTHighlightModeFlagsConstants-Enum">NTHighlightModeFlagsConstants</a></li><li class="toc1"><a href="#NTIconAlignmentConstants-Enum">NTIconAlignmentConstants</a></li><li class="toc1"><a href="#NTMousePointerConstants-Enum">NTMousePointerConstants</a></li><li class="toc1"><a href="#NTOLEDropConstants-Enum">NTOLEDropConstants</a></li><li class="toc1"><a href="#NTStyleConstants-Enum">NTStyleConstants</a></li><li class="toc1"><a href="#NTSubclassingMethodConstants-Enum">NTSubclassingMethodConstants</a></li><li class="toc1"><a href="#NTTabAppearanceConstants-Enum">NTTabAppearanceConstants</a></li><li class="toc1"><a href="#NTTabCustomColorIDConstants-Enum">NTTabCustomColorIDConstants</a></li><li class="toc1"><a href="#NTTabOrientationConstants-Enum">NTTabOrientationConstants</a></li><li class="toc1"><a href="#NTTabTransitionConstants-Enum">NTTabTransitionConstants</a></li><li class="toc1"><a href="#NTTabWidthStyleConstants-Enum">NTTabWidthStyleConstants</a></li><li class="toc1"><a href="#NTTDIModeConstants-Enum">NTTDIModeConstants</a></li><li class="toc1"><a href="#NTTDINewTabTypeConstants-Enum">NTTDINewTabTypeConstants</a></li><br><a name="NTAlignmentConstants-Enum" /><h2><p class"section">NTAlignmentConstants</h2></p></h2></a>
+<p></p><br>
+<table class="table table2">
+  <tr>
+    <td><b>ntAlignmentLeft</b> =     </td>
+    <td>0    </td>
+  </tr>
+  <tr>
+    <td><b>ntAlignmentRight</b> =     </td>
+    <td>1    </td>
+  </tr>
+  <tr>
+    <td><b>ntAlignmentCenter</b> =     </td>
+    <td>2    </td>
+  </tr>
+</table>
+<br><a name="NTAutoRelocateControlsConstants-Enum" /><h2><p class"section">NTAutoRelocateControlsConstants</h2></p></h2></a>
 <p></p><br>
 <table class="table table2">
   <tr>
@@ -1631,6 +1652,18 @@ Use the names of the themes to set one into the <a href="#Theme-Property">Theme<
   </tr>
 </table>
 <br><a name="NTFlatBarPosition-Enum" /><h2><p class"section">NTFlatBarPosition</h2></p></h2></a>
+<p></p><br>
+<table class="table table2">
+  <tr>
+    <td><b>ntBarPositionTop</b> =     </td>
+    <td>0    </td>
+  </tr>
+  <tr>
+    <td><b>ntBarPositionBottom</b> =     </td>
+    <td>1    </td>
+  </tr>
+</table>
+<br><a name="NTFlatBarPositionConstants-Enum" /><h2><p class"section">NTFlatBarPositionConstants</h2></p></h2></a>
 <p></p><br>
 <table class="table table2">
   <tr>
