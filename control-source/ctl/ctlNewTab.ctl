@@ -4335,6 +4335,14 @@ Private Sub UserControl_InitProperties()
     mCanReorderTabs = cPropDef_CanReorderTabs
     mTDIMode = cPropDef_TDIMode
     mTabTransition = cPropDef_TabTransition
+    mCaptionAlignment = cPropDef_CaptionAlignment: PropertyChanged "CaptionAlignment"
+    If mCaptionAlignment = ntAlignmentLeft Then
+        mAlignmentDTFlag = DT_LEFT
+    ElseIf mCaptionAlignment = ntAlignmentRight Then
+        mAlignmentDTFlag = DT_RIGHT
+    Else
+        mAlignmentDTFlag = DT_CENTER
+    End If
 
     If mHandleHighContrastTheme Then CheckHighContrastTheme
     mPropertiesReady = True
@@ -4473,14 +4481,6 @@ Friend Sub SetDefaultPropertyValues(Optional nSetControlsColors As Boolean)
     mFlatBodySeparationLineHeightDPIScaled = mFlatBodySeparationLineHeight * mDPIScale
     mTabMaxWidth = cPropDef_TabMaxWidth: PropertyChanged "TabMaxWidth"
     mTabMinWidth = cPropDef_TabMinWidth: PropertyChanged "TabMinWidth"
-    mCaptionAlignment = cPropDef_CaptionAlignment: PropertyChanged "CaptionAlignment"
-    If mCaptionAlignment = ntAlignmentLeft Then
-        mAlignmentDTFlag = DT_LEFT
-    ElseIf mCaptionAlignment = ntAlignmentRight Then
-        mAlignmentDTFlag = DT_RIGHT
-    Else
-        mAlignmentDTFlag = DT_CENTER
-    End If
     
     SetFont
     If mTabAppearance <> ntTAAuto Then
