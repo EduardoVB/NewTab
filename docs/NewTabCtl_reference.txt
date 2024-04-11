@@ -1039,6 +1039,14 @@ SetThemeData method:
 	Applies a theme from data contained in a String. That string can be obtained with GetThemeData.
 
 
+TDIGetFormHwndByTab function:
+	Return Type:	Long
+	Parameter(s):
+	    In	Required	Index	As	Long
+
+	When in TDI mode forms, it returns the hWnd of the form that is in that tab index.
+
+
 TDIGetTabIndexByTabNumber function:
 	Return Type:	Long
 	Parameter(s):

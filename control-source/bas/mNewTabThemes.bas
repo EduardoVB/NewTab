@@ -288,7 +288,7 @@ Public Sub CopyControlProperties(nCtlSrc As NewTab, nCtlDest As NewTab)
     iRedraw = nCtlDest.Redraw
     nCtlDest.Redraw = False
     
-    nCtlDest.SetDefaultPropertyValues True
+    nCtlDest.SetDefaultPropertyValuesForThemedProperties True
     
     nCtlDest.Style = nCtlSrc.Style
     nCtlDest.BackColor = nCtlSrc.BackColor
@@ -407,7 +407,7 @@ Public Sub ApplyThemeToControl(ByRef nThemeData As Collection, nCtl As NewTab, n
     
     iRedraw = nCtl.Redraw
     nCtl.Redraw = False
-    nCtl.SetDefaultPropertyValues True
+    nCtl.SetDefaultPropertyValuesForThemedProperties True
     
     If PropertyExists("BackColor") Then nCtl.BackColor = GetPropertyValue("BackColor")
     If PropertyExists("ForeColor") Then nCtl.ForeColor = GetPropertyValue("ForeColor")

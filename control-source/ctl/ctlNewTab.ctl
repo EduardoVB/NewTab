@@ -4308,7 +4308,7 @@ Private Sub UserControl_InitProperties()
     mChangeControlsBackColor = cPropDef_ChangeControlsBackColor: PropertyChanged "ChangeControlsBackColor"
     mChangeControlsForeColor = cPropDef_ChangeControlsForeColor: PropertyChanged "ChangeControlsForeColor"
     
-    SetDefaultPropertyValues
+    SetDefaultPropertyValuesForThemedProperties
     
     mIconColorMouseHover = Ambient.ForeColor
     mIconColorMouseHoverTabSel = Ambient.ForeColor
@@ -4399,7 +4399,7 @@ Private Sub SubclassForm()
     End If
 End Sub
 
-Friend Sub SetDefaultPropertyValues(Optional nSetControlsColors As Boolean)
+Friend Sub SetDefaultPropertyValuesForThemedProperties(Optional nSetControlsColors As Boolean)
     Dim iBackColor_Prev As Long
     Dim iForeColor_Prev As Long
     
@@ -15305,6 +15305,11 @@ Public Property Let CaptionAlignment(ByVal nValue As NTAlignmentConstants)
     End If
 End Property
 
+Public Function TDIGetFormHwndByTab(ByVal Index As Long) As Long
+Attribute TDIGetFormHwndByTab.VB_Description = "When in TDI mode forms, it returns the hWnd of the form that is in that tab index."
+    On Error Resume Next
+    TDIGetFormHwndByTab = mTDIModeFormsFormData_FormHwnd(mTabData(Index).Data)
+End Function
 
 'Tab is a reserved keyword in VB6, but you can remove that restriction.
 'To be able to compile with Tab property, you need to replace VBA6.DLL with this version: https://github.com/EduardoVB/NewTab/raw/main/control-source/lib/VBA6.DLL

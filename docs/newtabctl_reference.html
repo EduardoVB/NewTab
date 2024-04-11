@@ -244,6 +244,7 @@ Backward compatible with SSTab (fully), and with SSTabEx (mostly).</p><br>
 <li class="toc1"><a href="#SetFocus-Method">SetFocus</a><br>
 <li class="toc1"><a href="#SetTabsOrder-Method">SetTabsOrder</a><br>
 <li class="toc1"><a href="#SetThemeData-Method">SetThemeData</a><br>
+<li class="toc1"><a href="#TDIGetFormHwndByTab-Method">TDIGetFormHwndByTab</a><br>
 <li class="toc1"><a href="#TDIGetTabIndexByTabNumber-Method">TDIGetTabIndexByTabNumber</a><br>
 <li class="toc1"><a href="#TDIGetTabNumberByTabIndex-Method">TDIGetTabNumberByTabIndex</a><br>
 <li class="toc1"><a href="#ZOrder-Method">ZOrder</a><br>
@@ -1293,14 +1294,26 @@ This method is mainly useful when you don't know the position of the tab because
 <p>Applies a theme from data contained in a String. That string can be obtained with <a href="#GetThemeData-Method">GetThemeData</a>.<br>
 <br>
 <h3>See Also:</h3><a href="#Theme-Property">Theme</a> property</p><br>
+<a name="TDIGetFormHwndByTab-Method" /><h2><p class"section">TDIGetFormHwndByTab Method</p></h2></a>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Long</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<h3>Description:</h3>
+<p>When in TDI mode forms, it returns the hWnd of the form that is in that tab index.<br>
+<br>
+<h3>See Also:</h3><a href="#TDIMode-Property">TDIMode</a> property.</p><br>
 <a name="TDIGetTabIndexByTabNumber-Method" /><h2><p class"section">TDIGetTabIndexByTabNumber Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Long</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>nTabNumber</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
-<p>When in TDI mode, it returns the Index of a tab given its number.</p><br>
+<p>When in TDI mode, it returns the Index of a tab given its number.<br>
+<br>
+<h3>See Also:</h3><a href="#TDIMode-Property">TDIMode</a> property.<br>
+<a href="#TDIGetTabNumberByTabIndex-Method">TDIGetTabNumberByTabIndex</a> method.</p><br>
 <a name="TDIGetTabNumberByTabIndex-Method" /><h2><p class"section">TDIGetTabNumberByTabIndex Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Long</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
-<p>When in TDI mode, it returns the number of a tab given its Index.</p><br>
+<p>When in TDI mode, it returns the number of a tab given its Index.<br>
+<br>
+<h3>See Also:</h3><a href="#TDIMode-Property">TDIMode</a> property.<br>
+<a href="#TDIGetTabIndexByTabNumber-Method">TDIGetTabIndexByTabNumber</a> method.</p><br>
 <a name="ZOrder-Method" /><h2><p class"section">ZOrder Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbspNone.&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In/Out&nbsp&nbsp</td>    <td>&nbsp&nbspOptional&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Position</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>

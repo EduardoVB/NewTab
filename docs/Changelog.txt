@@ -1,3 +1,4 @@
+2024-04-11 Added TDIGetFormHwndByTab function.
 2024-04-03 Fix in Theme/CaptionAlignment.
 2024-04-02 Added CaptionAlignment property. 
 2024-03-27 In TDIMode forms, the first/home tab can be hidden now (TabVisible(0) = False).
