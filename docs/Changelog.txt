@@ -1,3 +1,5 @@
+2024-04-22 Improved in TDI mode forms when the form's caption is changed.
+2024-04-22 Added TDIGetTabByFormHwnd function.
 2024-04-11 Added TDIGetFormHwndByTab function.
 2024-04-03 Fix in Theme/CaptionAlignment.
 2024-04-02 Added CaptionAlignment property. 
