@@ -1047,6 +1047,14 @@ TDIGetFormHwndByTab function:
 	When in TDI mode forms, it returns the hWnd of the form that is in that tab index.
 
 
+TDIGetTabByFormHwnd function:
+	Return Type:	Long
+	Parameter(s):
+	    In	Required	FormHwnd	As	Long
+
+	When in TDI mode forms, it returns the tab index by supplying the hWnd of the form.
+
+
 TDIGetTabIndexByTabNumber function:
 	Return Type:	Long
 	Parameter(s):

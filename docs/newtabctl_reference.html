@@ -245,6 +245,7 @@ Backward compatible with SSTab (fully), and with SSTabEx (mostly).</p><br>
 <li class="toc1"><a href="#SetTabsOrder-Method">SetTabsOrder</a><br>
 <li class="toc1"><a href="#SetThemeData-Method">SetThemeData</a><br>
 <li class="toc1"><a href="#TDIGetFormHwndByTab-Method">TDIGetFormHwndByTab</a><br>
+<li class="toc1"><a href="#TDIGetTabByFormHwnd-Method">TDIGetTabByFormHwnd</a><br>
 <li class="toc1"><a href="#TDIGetTabIndexByTabNumber-Method">TDIGetTabIndexByTabNumber</a><br>
 <li class="toc1"><a href="#TDIGetTabNumberByTabIndex-Method">TDIGetTabNumberByTabIndex</a><br>
 <li class="toc1"><a href="#ZOrder-Method">ZOrder</a><br>
@@ -937,7 +938,8 @@ Note: The <a href="#Style-Property">Style</a> property must be set to other than
 <h3>Description:</h3>
 <p>Used to store any data as a Long value, similar to ListBox's ItemData. If the tabs are reordered, it will keep this data for this tab.<br>
 <br>
-<h3>See Also:</h3><a href="#TabTag-Property">TabTag</a> property.</p><br>
+<h3>See Also:</h3><a href="#TabTag-Property">TabTag</a> property.<br>
+<a href="#FindTab-Method">FindTab</a> method.</p><br>
 <a name="TabEnabled-Property" /><h2><p class"section">TabEnabled Property</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>Boolean</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
@@ -1073,7 +1075,8 @@ If <a href="#TabWidthStyle-Property">TabWidthStyle</a> property setting is other
 <h3>Description:</h3>
 <p>Similar to a Tag property, but for each tab. You can store any string there. If the tabs are reordered, it will keep this data for this tab.<br>
 <br>
-<h3>See Also:</h3><a href="#TabData-Property">TabData</a> property</p><br>
+<h3>See Also:</h3><a href="#TabData-Property">TabData</a> property<br>
+<a href="#FindTab-Method">FindTab</a> method.</p><br>
 <a name="TabToolTipText-Property" /><h2><p class"section">TabToolTipText Property</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>String</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
@@ -1300,6 +1303,10 @@ This method is mainly useful when you don't know the position of the tab because
 <p>When in TDI mode forms, it returns the hWnd of the form that is in that tab index.<br>
 <br>
 <h3>See Also:</h3><a href="#TDIMode-Property">TDIMode</a> property.</p><br>
+<a name="TDIGetTabByFormHwnd-Method" /><h2><p class"section">TDIGetTabByFormHwnd Method</p></h2></a>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Long</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>FormHwnd</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<h3>Description:</h3>
+<p>When in TDI mode forms, it returns the tab index by supplying the hWnd of the form.</p><br>
 <a name="TDIGetTabIndexByTabNumber-Method" /><h2><p class"section">TDIGetTabIndexByTabNumber Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Long</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>nTabNumber</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>

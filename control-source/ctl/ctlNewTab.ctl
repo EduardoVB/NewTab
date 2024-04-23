@@ -240,6 +240,11 @@ Option Explicit
 
 Implements IBSSubclass
 
+Private Type STYLESTRUCT
+   styleOld As Long
+   styleNew As Long
+End Type
+
 Private Type RECT
     Left As Long
     Top As Long
@@ -424,6 +429,8 @@ Private Const WM_GETDPISCALEDSIZE As Long = &H2E4&
 Private Const WM_SETCURSOR As Long = &H20
 Private Const WM_ACTIVATE As Long = &H6
 Private Const WM_ACTIVATEAPP As Long = &H1C&
+Private Const WM_STYLECHANGING = &H7C&
+Private Const WM_DESTROY As Long = &H2&
 
 'Private Const MA_NOACTIVATEANDEAT As Long = &H4
 Private Const WM_MOUSELEAVE As Long = &H2A3
@@ -978,6 +985,7 @@ Private mContainedControlsThatAreContainers As Collection
 Private mSubclassedControlsForPaintingHwnds As Collection
 Private mSubclassedFramesHwnds As Collection
 Private mSubclassedControlsForMoveHwnds As Collection
+Private mTDISubclassedFormsHwnds As Collection
 Private mTabStopsInitialized As Boolean
 Private mAccessKeys As String
 Private mAccessKeysSet As Boolean
@@ -3583,7 +3591,7 @@ Private Function IBSSubclass_MsgResponse(ByVal hWnd As Long, ByVal iMsg As Long)
     Select Case iMsg
         Case WM_PAINT, WM_PRINTCLIENT, WM_MOUSELEAVE
             IBSSubclass_MsgResponse = emrConsume
-        Case WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEACTIVATE, WM_SETFOCUS, WM_LBUTTONDBLCLK, WM_MOVE, WM_WINDOWPOSCHANGING, WM_SETCURSOR, WM_MOUSEMOVE, WM_ACTIVATE
+        Case WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEACTIVATE, WM_SETFOCUS, WM_LBUTTONDBLCLK, WM_MOVE, WM_WINDOWPOSCHANGING, WM_SETCURSOR, WM_MOUSEMOVE, WM_ACTIVATE, WM_STYLECHANGING
             IBSSubclass_MsgResponse = emrPreprocess
         Case Else
             IBSSubclass_MsgResponse = emrPostProcess
@@ -3613,6 +3621,7 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, 
     Dim iTab As Long
     Const WA_INACTIVE As Long = 0
     Const WA_ACTIVE As Long = 1
+    Dim iHwnd As Long
     
     Select Case iMsg
         Case WM_WINDOWPOSCHANGING ' invisible controls, to prevent being moved to the visible space if they are moved by code. Unfortunately the same can't be done to Labels and other windowless controls. But at least the protection acts on windowed controls.
@@ -3656,7 +3665,6 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, 
         Case WM_MOUSEACTIVATE ' UserControl message, only at run time (Ambient.UserMode),, to avoid taking the focus when the tab control is clicked in a non-clickable part (outside a tab).
             If mTabUnderMouse = -1 Then
                 Dim iPt2 As POINTAPI
-                Dim iHwnd As Long
                 
                 GetCursorPos iPt2
                 iHwnd = WindowFromPoint(iPt2.X, iPt2.Y)
@@ -3866,6 +3874,31 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, 
             If wParam = WA_INACTIVE Then
                 PostMessage hWnd, WM_NCACTIVATE, WA_INACTIVE, 0&
                 mAppDeactivated = True
+            End If
+        Case WM_STYLECHANGING
+            Dim iST As STYLESTRUCT
+            Const WS_CAPTION As Long = &HC00000
+            Const WS_THICKFRAME As Long = &H40000
+            Dim iFormCaption As String
+            
+            CopyMemory iST, ByVal lParam, Len(iST)
+            iST.styleNew = iST.styleNew And Not (WS_CAPTION Or WS_THICKFRAME)
+            CopyMemory ByVal lParam, iST, Len(iST)
+            
+            iFormCaption = GetWindowCaption(hWnd)
+            iTab = TDIGetTabByFormHwnd(hWnd)
+            If iTab > -1 Then
+                TabCaption(iTab) = iFormCaption
+            End If
+        Case WM_DESTROY
+            iHwnd = 0
+            On Error Resume Next
+            iHwnd = mTDISubclassedFormsHwnds(CStr(hWnd))
+            On Error GoTo 0
+            If iHwnd <> 0 Then
+                DetachMessage Me, hWnd, WM_STYLECHANGING
+                DetachMessage Me, hWnd, WM_DESTROY
+                mTDISubclassedFormsHwnds.Remove CStr(hWnd)
             End If
     End Select
 End Function
@@ -4271,6 +4304,7 @@ Private Sub UserControl_Initialize()
     Set mSubclassedControlsForPaintingHwnds = New Collection
     Set mSubclassedFramesHwnds = New Collection
     Set mSubclassedControlsForMoveHwnds = New Collection
+    Set mTDISubclassedFormsHwnds = New Collection
     Set mTabIconFontsEventsHandler = New cFontEventHandlers
     mRedraw = True
     mTabOrientation_Prev = -1
@@ -6023,7 +6057,17 @@ Private Sub Unsubclass()
         Next c
         Set mSubclassedControlsForMoveHwnds = Nothing
     End If
-
+    
+    If Not mTDISubclassedFormsHwnds Is Nothing Then
+        For c = 1 To mTDISubclassedFormsHwnds.Count
+            iHwnd = mTDISubclassedFormsHwnds(c)
+            On Error Resume Next
+            DetachMessage Me, iHwnd, WM_STYLECHANGING
+            DetachMessage Me, iHwnd, WM_DESTROY
+            On Error GoTo 0
+        Next
+        Set mTDISubclassedFormsHwnds = Nothing
+    End If
 End Sub
 
 Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
@@ -14621,7 +14665,7 @@ Friend Sub TDIPutFormIntoTab(ByVal nHwndForm As Long)
     Dim iFormCaption As String
     
     mTDIAddingNewTabForForm = True
-    iFormCaption = GetWindowTitle(nHwndForm)
+    iFormCaption = GetWindowCaption(nHwndForm)
     If TDIAddNewTab(mTabs, , ntTDIForm, iFormCaption) Then
         If UBound(mTDIModeFormsFormData_FormHwnd) < (mTabs - 1) Then
             ReDim Preserve mTDIModeFormsFormData_FormHwnd(mTabs + 100)
@@ -14637,6 +14681,10 @@ Friend Sub TDIPutFormIntoTab(ByVal nHwndForm As Long)
         SetScaleMode
         SetWindowLong nHwndForm, GWL_STYLE, GetWindowLong(nHwndForm, GWL_STYLE) And Not (WS_CAPTION Or WS_THICKFRAME)
         MoveWindow nHwndForm, 0, 0, mClientRect.Right - mClientRect.Left + 2, mClientRect.Bottom - mClientRect.Top + 3, 1
+        
+        mTDISubclassedFormsHwnds.Add nHwndForm, CStr(nHwndForm)
+        AttachMessage Me, nHwndForm, WM_STYLECHANGING
+        AttachMessage Me, nHwndForm, WM_DESTROY
         
         mTDIModeFormsFormData_OldParentHwnd(mTabs - 1) = SetParent(nHwndForm, picTDIFormContainer(mTabs - 1).hWnd)
         picTDIFormContainer(mTabs - 1).Visible = True
@@ -14681,18 +14729,6 @@ Private Function CreatePicture(ByVal hImage As Long, ByVal nType As PictureTypeC
  
     Set CreatePicture = TmpPic
  
-End Function
-
-Private Function GetTDIModeFormsIndexOfTabFromFormHwnd(ByVal nHwndForm As Long) As Long
-    Dim c As Long
-    
-    GetTDIModeFormsIndexOfTabFromFormHwnd = -1
-    For c = 0 To mTabs - 1
-        If mTDIModeFormsFormData_FormHwnd(mTabData(c).Data) = nHwndForm Then
-            GetTDIModeFormsIndexOfTabFromFormHwnd = c
-            Exit For
-        End If
-    Next
 End Function
 
 Private Function GetUniqueCaption(nCaption As String) As String
@@ -14740,12 +14776,12 @@ Private Function GetUniqueCaption(nCaption As String) As String
     Loop
 End Function
 
-Private Function GetWindowTitle(ByVal hWnd As Long) As String
+Private Function GetWindowCaption(ByVal hWnd As Long) As String
     Dim Buffer As String
     
     Buffer = String$(GetWindowTextLength(hWnd) + 1, vbNullChar)
     GetWindowText hWnd, StrPtr(Buffer), Len(Buffer)
-    GetWindowTitle = Left$(Buffer, Len(Buffer) - 1)
+    GetWindowCaption = Left$(Buffer, Len(Buffer) - 1)
 End Function
 
 Friend Sub TDIFormClosing(ByVal nHwndForm As Long)
@@ -14753,13 +14789,24 @@ Friend Sub TDIFormClosing(ByVal nHwndForm As Long)
     Dim i As Long
     Dim iDone As Boolean
     Const WA_ACTIVE As Long = 1
+    Dim iHwnd As Long
     
     If mShowingModalForm Then
         PostMessage mFormHwnd, WM_NCACTIVATE, WA_ACTIVE, 0&
         mShowingModalForm = False
     End If
     
-    i = GetTDIModeFormsIndexOfTabFromFormHwnd(nHwndForm)
+    iHwnd = 0
+    On Error Resume Next
+    iHwnd = mTDISubclassedFormsHwnds(CStr(nHwndForm))
+    On Error GoTo 0
+    If iHwnd <> 0 Then
+        DetachMessage Me, nHwndForm, WM_STYLECHANGING
+        DetachMessage Me, nHwndForm, WM_DESTROY
+        mTDISubclassedFormsHwnds.Remove CStr(nHwndForm)
+    End If
+    
+    i = TDIGetTabByFormHwnd(nHwndForm)
     If i > -1 Then
         If (mTabData(i).Data >= picTDIFormContainer.LBound) And (mTabData(i).Data <= picTDIFormContainer.UBound) Then
            picTDIFormContainer(mTabData(i).Data).Visible = False
@@ -15310,6 +15357,20 @@ Attribute TDIGetFormHwndByTab.VB_Description = "When in TDI mode forms, it retur
     On Error Resume Next
     TDIGetFormHwndByTab = mTDIModeFormsFormData_FormHwnd(mTabData(Index).Data)
 End Function
+
+Public Function TDIGetTabByFormHwnd(ByVal FormHwnd As Long) As Long
+Attribute TDIGetTabByFormHwnd.VB_Description = "When in TDI mode forms, it returns the tab index by supplying the hWnd of the form."
+    Dim c As Long
+    
+    TDIGetTabByFormHwnd = -1
+    For c = 0 To mTabs - 1
+        If mTDIModeFormsFormData_FormHwnd(mTabData(c).Data) = FormHwnd Then
+            TDIGetTabByFormHwnd = c
+            Exit For
+        End If
+    Next
+End Function
+
 
 'Tab is a reserved keyword in VB6, but you can remove that restriction.
 'To be able to compile with Tab property, you need to replace VBA6.DLL with this version: https://github.com/EduardoVB/NewTab/raw/main/control-source/lib/VBA6.DLL
