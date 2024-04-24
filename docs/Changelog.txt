@@ -1,3 +1,9 @@
+2024-04-24 Changed to OLE version 9.0.
+2024-04-24 Added property TabKey. That key can be used to set the current/active/selected tab with the 'Tab' property now.
+2024-04-24 Added function GetTabOriginalIndex.
+2024-04-24 Now TabTag, TabData, TabFixedWidth and TabCustomColor properties can be set at design time.
+2024-04-24 Tabs property page splitted into two property pages (Icons went to a new property page).
+2024-04-24 Fixed bug in TabCustomColor property.
 2024-04-22 Improved in TDI mode forms when the form's caption is changed.
 2024-04-22 Added TDIGetTabByFormHwnd function.
 2024-04-11 Added TDIGetFormHwndByTab function.

@@ -69,4 +69,53 @@ Public Property Let HighlightEffectColors_Strong(ByVal nStep As Long, ByVal nCol
     mHighlightEffectColors_Strong(nStep) = nColor
 End Property
 
+Friend Function Serialize() As Byte()
+    Dim iPb As PropertyBag
+    
+    Set iPb = New PropertyBag
+    
+    iPb.WriteProperty "BackColorTab", BackColorTab, Empty
+    iPb.WriteProperty "BackColorTabSel", BackColorTabSel, Empty
+    iPb.WriteProperty "HighlightColor", HighlightColor, Empty
+    iPb.WriteProperty "HighlightColorTabSel", HighlightColorTabSel, Empty
+    iPb.WriteProperty "FlatBarColorInactive", FlatBarColorInactive, Empty
+    iPb.WriteProperty "FlatBarColorHighlight", FlatBarColorHighlight, Empty
+    iPb.WriteProperty "FlatBarColorTabSel", FlatBarColorTabSel, Empty
+    iPb.WriteProperty "FlatTabBorderColorHighlight", FlatTabBorderColorHighlight, Empty
+    iPb.WriteProperty "FlatTabBorderColorTabSel", FlatTabBorderColorTabSel, Empty
+    iPb.WriteProperty "ForeColor", ForeColor, Empty
+    iPb.WriteProperty "ForeColorHighlighted", ForeColorHighlighted, Empty
+    iPb.WriteProperty "ForeColorTabSel", ForeColorTabSel, Empty
+    iPb.WriteProperty "IconColor", IconColor, Empty
+    iPb.WriteProperty "IconColorTabSel", IconColorTabSel, Empty
+    iPb.WriteProperty "IconColorMouseHover", IconColorMouseHover, Empty
+    iPb.WriteProperty "IconColorMouseHoverTabSel", IconColorMouseHoverTabSel, Empty
+    iPb.WriteProperty "IconColorTabHighlighted", IconColorTabHighlighted, Empty
+    
+    Serialize = iPb.Contents
+End Function
 
+Friend Sub Deserialize(nBytes() As Byte)
+    Dim iPb As PropertyBag
+    
+    Set iPb = New PropertyBag
+    iPb.Contents = nBytes
+    
+    BackColorTab = iPb.ReadProperty("BackColorTab", Empty)
+    BackColorTabSel = iPb.ReadProperty("BackColorTabSel", Empty)
+    HighlightColor = iPb.ReadProperty("HighlightColor", Empty)
+    HighlightColorTabSel = iPb.ReadProperty("HighlightColorTabSel", Empty)
+    FlatBarColorInactive = iPb.ReadProperty("FlatBarColorInactive", Empty)
+    FlatBarColorHighlight = iPb.ReadProperty("FlatBarColorHighlight", Empty)
+    FlatBarColorTabSel = iPb.ReadProperty("FlatBarColorTabSel", Empty)
+    FlatTabBorderColorHighlight = iPb.ReadProperty("FlatTabBorderColorHighlight", Empty)
+    FlatTabBorderColorTabSel = iPb.ReadProperty("FlatTabBorderColorTabSel", Empty)
+    ForeColor = iPb.ReadProperty("ForeColor", Empty)
+    ForeColorHighlighted = iPb.ReadProperty("ForeColorHighlighted", Empty)
+    ForeColorTabSel = iPb.ReadProperty("ForeColorTabSel", Empty)
+    IconColor = iPb.ReadProperty("IconColor", Empty)
+    IconColorTabSel = iPb.ReadProperty("IconColorTabSel", Empty)
+    IconColorMouseHover = iPb.ReadProperty("IconColorMouseHover", Empty)
+    IconColorMouseHoverTabSel = iPb.ReadProperty("IconColorMouseHoverTabSel", Empty)
+    IconColorTabHighlighted = iPb.ReadProperty("IconColorTabHighlighted", Empty)
+End Sub

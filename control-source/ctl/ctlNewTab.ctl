@@ -11,7 +11,7 @@ Begin VB.UserControl NewTab
    PropertyPages   =   "ctlNewTab.ctx":0000
    ScaleHeight     =   2880
    ScaleWidth      =   3840
-   ToolboxBitmap   =   "ctlNewTab.ctx":0068
+   ToolboxBitmap   =   "ctlNewTab.ctx":0079
    Begin VB.PictureBox picTDIFormContainer 
       BorderStyle     =   0  'None
       Height          =   612
@@ -710,26 +710,27 @@ Public Enum NTFindTabMethodConstants
     ntFindTag = 3
     ntFindPartialCaption = 4
     ntFindPartialCaptionReverse = 5
+    ntFindKey = 6
 End Enum
 
 Public Enum NTTabCustomColorIDConstants
-    ntCCBackColorTab
-    ntCCBackColorTabSel
-    ntCCHighlightColor
-    ntCCHighlightColorTabSel
-    ntCCFlatBarColorInactive
-    ntCCFlatBarColorHighlight
-    ntCCFlatBarColorTabSel
-    ntCCFlatTabBorderColorHighlight
-    ntCCFlatTabBorderColorTabSel
-    ntCCForeColor
-    ntCCForeColorHighlighted
-    ntCCForeColorTabSel
-    ntCCIconColor
-    ntCCIconColorTabSel
-    ntCCIconColorMouseHover
-    ntCCIconColorMouseHoverTabSel
-    ntCCIconColorTabHighlighted
+    ntCCBackColorTab = 0
+    ntCCBackColorTabSel = 1
+    ntCCHighlightColor = 2
+    ntCCHighlightColorTabSel = 3
+    ntCCFlatBarColorInactive = 4
+    ntCCFlatBarColorHighlight = 5
+    ntCCFlatBarColorTabSel = 6
+    ntCCFlatTabBorderColorHighlight = 7
+    ntCCFlatTabBorderColorTabSel = 8
+    ntCCForeColor = 9
+    ntCCForeColorHighlighted = 10
+    ntCCForeColorTabSel = 11
+    ntCCIconColor = 12
+    ntCCIconColorTabSel = 13
+    ntCCIconColorMouseHover = 14
+    ntCCIconColorMouseHoverTabSel = 15
+    ntCCIconColorTabHighlighted = 16
 End Enum
 
 Public Enum NTAlignmentConstants
@@ -856,6 +857,7 @@ Private Type T_TabData
     OriginalIndex As Long
     FixedWidth As Long
     CustomColors As New cTabColors
+    Key As String
 End Type
 
 Private Const cRowPerspectiveSpace As Long = 150&  ' in Twips
@@ -1263,7 +1265,7 @@ Public Property Set IconFont(ByVal nValue As StdFont)
 End Property
 
 
-Public Property Get TabIconFont(ByVal Index As Variant) As StdFont
+Public Property Get TabIconFont(ByVal Index As Long) As StdFont
 Attribute TabIconFont.VB_Description = "Returns/sets the Font that will be used to draw the icon in the tab pointed by the Index parameter."
 Attribute TabIconFont.VB_ProcData.VB_Invoke_Property = ";Fuente"
     If (Index < 0) Or (Index >= mTabs) Then
@@ -1277,11 +1279,11 @@ Attribute TabIconFont.VB_ProcData.VB_Invoke_Property = ";Fuente"
     Set TabIconFont = mTabData(Index).IconFont
 End Property
 
-Public Property Let TabIconFont(ByVal Index As Variant, ByVal nValue As StdFont)
+Public Property Let TabIconFont(ByVal Index As Long, ByVal nValue As StdFont)
     Set TabIconFont(Index) = nValue
 End Property
 
-Public Property Set TabIconFont(ByVal Index As Variant, ByVal nValue As StdFont)
+Public Property Set TabIconFont(ByVal Index As Long, ByVal nValue As StdFont)
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -1703,7 +1705,7 @@ Public Property Let TabSel(ByVal nValue As Long)
         Exit Property
     End If
     If Not mTabData(nValue).Visible Then
-        RaiseError 380, TypeName(Me) ' invalid property value
+        RaiseError 380, TypeName(Me), "Invalid property value. Non-visible tabs can't be set as active/current."
         Exit Property
     End If
     
@@ -1904,7 +1906,7 @@ End Property
 
 Public Property Get IconCharHex() As String
 Attribute IconCharHex.VB_Description = "Returns/sets a string representing the hexadecimal value of the character that will be used as the icon in the currently selected tab."
-Attribute IconCharHex.VB_ProcData.VB_Invoke_Property = "pagNewTabTabs;Apariencia"
+Attribute IconCharHex.VB_ProcData.VB_Invoke_Property = "pagNewTabIcons;Apariencia"
     IconCharHex = TabIconCharHex(mTab)
 End Property
 
@@ -2242,7 +2244,7 @@ Public Property Set TabPicture(ByVal Index As Long, ByVal nValue As Picture)
 End Property
 
 
-Public Property Get TabPic16(ByVal Index As Variant) As Picture
+Public Property Get TabPic16(ByVal Index As Long) As Picture
 Attribute TabPic16.VB_Description = "Specifies a bitmap to display on the specified tab at 96 DPI, when the application is DPI aware."
 Attribute TabPic16.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     If (Index < 0) Or (Index >= mTabs) Then
@@ -2252,7 +2254,7 @@ Attribute TabPic16.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     Set TabPic16 = mTabData(Index).Pic16
 End Property
 
-Public Property Let TabPic16(ByVal Index As Variant, ByVal nValue As Picture)
+Public Property Let TabPic16(ByVal Index As Long, ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
@@ -2261,7 +2263,7 @@ Public Property Let TabPic16(ByVal Index As Variant, ByVal nValue As Picture)
     Set TabPic16(Index) = nValue
 End Property
 
-Public Property Set TabPic16(ByVal Index As Variant, ByVal nValue As Picture)
+Public Property Set TabPic16(ByVal Index As Long, ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
@@ -2278,7 +2280,7 @@ Public Property Set TabPic16(ByVal Index As Variant, ByVal nValue As Picture)
 End Property
 
 
-Public Property Get TabPic20(ByVal Index As Variant) As Picture
+Public Property Get TabPic20(ByVal Index As Long) As Picture
 Attribute TabPic20.VB_Description = "Specifies a bitmap to display on the specified tab at 120 DPI, when the application is DPI aware."
 Attribute TabPic20.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     If (Index < 0) Or (Index >= mTabs) Then
@@ -2288,7 +2290,7 @@ Attribute TabPic20.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     Set TabPic20 = mTabData(Index).Pic20
 End Property
 
-Public Property Let TabPic20(ByVal Index As Variant, ByVal nValue As Picture)
+Public Property Let TabPic20(ByVal Index As Long, ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
@@ -2297,7 +2299,7 @@ Public Property Let TabPic20(ByVal Index As Variant, ByVal nValue As Picture)
     Set TabPic20(Index) = nValue
 End Property
 
-Public Property Set TabPic20(ByVal Index As Variant, ByVal nValue As Picture)
+Public Property Set TabPic20(ByVal Index As Long, ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
@@ -2314,7 +2316,7 @@ Public Property Set TabPic20(ByVal Index As Variant, ByVal nValue As Picture)
 End Property
 
 
-Public Property Get TabPic24(ByVal Index As Variant) As Picture
+Public Property Get TabPic24(ByVal Index As Long) As Picture
 Attribute TabPic24.VB_Description = "Specifies a bitmap to display on the specified tab at 144 DPI, when the application is DPI aware."
 Attribute TabPic24.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     If (Index < 0) Or (Index >= mTabs) Then
@@ -2324,7 +2326,7 @@ Attribute TabPic24.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     Set TabPic24 = mTabData(Index).Pic24
 End Property
 
-Public Property Let TabPic24(ByVal Index As Variant, ByVal nValue As Picture)
+Public Property Let TabPic24(ByVal Index As Long, ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
@@ -2333,7 +2335,7 @@ Public Property Let TabPic24(ByVal Index As Variant, ByVal nValue As Picture)
     Set TabPic24(Index) = nValue
 End Property
 
-Public Property Set TabPic24(ByVal Index As Variant, ByVal nValue As Picture)
+Public Property Set TabPic24(ByVal Index As Long, ByVal nValue As Picture)
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
@@ -2350,7 +2352,7 @@ Public Property Set TabPic24(ByVal Index As Variant, ByVal nValue As Picture)
 End Property
 
 
-Public Property Get TabIconCharHex(ByVal Index As Variant) As String
+Public Property Get TabIconCharHex(ByVal Index As Long) As String
 Attribute TabIconCharHex.VB_Description = "Returns/sets a string representing the hexadecimal value of the character that will be used as the icon for the tab pointed by the Index parameter."
 Attribute TabIconCharHex.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     If (Index < 0) Or (Index >= mTabs) Then
@@ -2366,7 +2368,7 @@ Attribute TabIconCharHex.VB_ProcData.VB_Invoke_Property = ";Apariencia"
     End If
 End Property
 
-Public Property Let TabIconCharHex(ByVal Index As Variant, ByVal nValue As String)
+Public Property Let TabIconCharHex(ByVal Index As Long, ByVal nValue As String)
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -2389,7 +2391,7 @@ Public Property Let TabIconCharHex(ByVal Index As Variant, ByVal nValue As Strin
 End Property
 
 
-Public Property Get TabIconLeftOffset(ByVal Index As Variant) As Long
+Public Property Get TabIconLeftOffset(ByVal Index As Long) As Long
 Attribute TabIconLeftOffset.VB_Description = "Returns/sets the value in pixels of the offset for the left position when drawing the icon of the tab pointed by the Index parameter. It can be negative."
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
@@ -2398,7 +2400,7 @@ Attribute TabIconLeftOffset.VB_Description = "Returns/sets the value in pixels o
     TabIconLeftOffset = mTabData(Index).IconLeftOffset
 End Property
 
-Public Property Let TabIconLeftOffset(ByVal Index As Variant, ByVal nValue As Long)
+Public Property Let TabIconLeftOffset(ByVal Index As Long, ByVal nValue As Long)
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -2413,7 +2415,7 @@ Public Property Let TabIconLeftOffset(ByVal Index As Variant, ByVal nValue As Lo
 End Property
 
 
-Public Property Get TabIconTopOffset(ByVal Index As Variant) As Long
+Public Property Get TabIconTopOffset(ByVal Index As Long) As Long
 Attribute TabIconTopOffset.VB_Description = "Returns/sets the value in pixels of the offset for the top position when drawing the icon of the tab pointed by the Index parameter. It can be negative."
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
@@ -2422,7 +2424,7 @@ Attribute TabIconTopOffset.VB_Description = "Returns/sets the value in pixels of
     TabIconTopOffset = mTabData(Index).IconTopOffset
 End Property
 
-Public Property Let TabIconTopOffset(ByVal Index As Variant, ByVal nValue As Long)
+Public Property Let TabIconTopOffset(ByVal Index As Long, ByVal nValue As Long)
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -2578,7 +2580,7 @@ Public Property Let TabCaption(ByVal Index As Long, ByVal nValue As String)
 End Property
 
 
-Public Property Get TabToolTipText(ByVal Index As Variant) As String
+Public Property Get TabToolTipText(ByVal Index As Long) As String
 Attribute TabToolTipText.VB_Description = "Returns/sets the text that will be shown as tooltip text when the mouse pointer is over the specified tab."
 Attribute TabToolTipText.VB_ProcData.VB_Invoke_Property = ";Texto"
     If (Index < 0) Or (Index >= mTabs) Then
@@ -2588,7 +2590,7 @@ Attribute TabToolTipText.VB_ProcData.VB_Invoke_Property = ";Texto"
     TabToolTipText = mTabData(Index).ToolTipText
 End Property
 
-Public Property Let TabToolTipText(ByVal Index As Variant, ByVal nValue As String)
+Public Property Let TabToolTipText(ByVal Index As Long, ByVal nValue As String)
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -5479,6 +5481,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     Dim iUpgradingFromSSTab As Boolean
     Dim iBytes() As Byte
     Dim iTheme As NewTabTheme
+    Dim iNewTabVersion As Long
     
     On Error Resume Next
     mUserControlHwnd = UserControl.hWnd
@@ -5668,6 +5671,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     End If
     Set iAllCtlNames = New Collection
     mNoTabVisible = True
+    iNewTabVersion = Val(PropBag.ReadProperty("NewTabVersion", 0))
     For c = 0 To mTabs - 1
         Set mTabData(c).Controls = New Collection
         Set mTabData(c).Picture = PropBag.ReadProperty("TabPicture(" & CStr(c) & ")", Nothing)
@@ -5689,7 +5693,11 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         mTabData(c).IconChar = PropBag.ReadProperty("TabIconChar(" & CStr(c) & ")", 0)
         mTabData(c).IconLeftOffset = PropBag.ReadProperty("TabIconLeftOffset(" & CStr(c) & ")", 0)
         mTabData(c).IconTopOffset = PropBag.ReadProperty("TabIconTopOffset(" & CStr(c) & ")", 0)
-        mTabData(c).Caption = PropBag.ReadProperty("TabCaption(" & CStr(c) & ")", "")
+        If iNewTabVersion < 9 Then
+            mTabData(c).Caption = PropBag.ReadProperty("TabCaption(" & CStr(c) & ")", "")
+        Else
+            mTabData(c).Caption = PropBag.ReadProperty("TabCaption(" & CStr(c) & ")", "Tab " & CStr(c))
+        End If
         mTabData(c).ToolTipText = PropBag.ReadProperty("TabToolTipText(" & CStr(c) & ")", "")
         For c2 = 0 To PropBag.ReadProperty("Tab(" & c & ").ControlCount", 0) - 1
             iStr = PropBag.ReadProperty("Tab(" & c & ").Control(" & c2 & ")", "")
@@ -5715,6 +5723,11 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
             End If
         End If
         If Not mTabData(c).IconFont Is Nothing Then mTabIconFontsEventsHandler.AddFont mTabData(c).IconFont, c
+        mTabData(c).FixedWidth = PropBag.ReadProperty("TabFixedWidth(" & CStr(c) & ")", 0)
+        mTabData(c).Tag = PropBag.ReadProperty("TabTag(" & CStr(c) & ")", "")
+        mTabData(c).Data = PropBag.ReadProperty("TabData(" & CStr(c) & ")", 0)
+        mTabData(c).CustomColors.Deserialize PropBag.ReadProperty("TabCustomColors(" & CStr(c) & ")", "")
+        mTabData(c).Key = PropBag.ReadProperty("TabKey(" & CStr(c) & ")", "")
     Next c
     mTabData(mTab).Selected = True
     
@@ -6074,9 +6087,9 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     Dim c As Long
     Dim c2 As Long
     Dim iTheme As NewTabTheme
+    Dim iBytes() As Byte
     
     StoreVisibleControlsInSelectedTab
-    
     
     PropBag.WriteProperty "ControlJustAdded", mControlJustAdded, True
     
@@ -6189,6 +6202,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     PropBag.WriteProperty "FlatBodySeparationLineHeight", mFlatBodySeparationLineHeight, cPropDef_FlatBodySeparationLineHeight
     PropBag.WriteProperty "UserControlSizeCorrectionsCounter_ScaleWidthNotToResize", mUserControlSizeCorrectionsCounter_ScaleWidthNotToResize, 0
     PropBag.WriteProperty "UserControlSizeCorrectionsCounter_ScaleHeightNotToResize", mUserControlSizeCorrectionsCounter_ScaleHeightNotToResize, 0
+    PropBag.WriteProperty "NewTabVersion", App.Major, 0
     
     For c = 0 To mTabs - 1
         PropBag.WriteProperty "TabPicture(" & CStr(c) & ")", mTabData(c).Picture, Nothing
@@ -6198,7 +6212,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         PropBag.WriteProperty "TabIconChar(" & CStr(c) & ")", mTabData(c).IconChar, 0
         PropBag.WriteProperty "TabIconLeftOffset(" & CStr(c) & ")", mTabData(c).IconLeftOffset, 0
         PropBag.WriteProperty "TabIconTopOffset(" & CStr(c) & ")", mTabData(c).IconTopOffset, 0
-        PropBag.WriteProperty "TabCaption(" & CStr(c) & ")", mTabData(c).Caption, ""
+        PropBag.WriteProperty "TabCaption(" & CStr(c) & ")", mTabData(c).Caption, "Tab " & CStr(c)
         PropBag.WriteProperty "TabToolTipText(" & CStr(c) & ")", mTabData(c).ToolTipText, ""
         PropBag.WriteProperty "TabEnabled(" & CStr(c) & ")", mTabData(c).Enabled, True
         PropBag.WriteProperty "TabVisible(" & CStr(c) & ")", mTabData(c).Visible, True
@@ -6214,6 +6228,16 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
             PropBag.WriteProperty "IconFont(" & CStr(c) & ")", mTabData(c).IconFont, Nothing
             PropBag.WriteProperty "IconFontName(" & CStr(c) & ")", mTabData(c).IconFontName, ""
         End If
+        PropBag.WriteProperty "TabFixedWidth(" & CStr(c) & ")", mTabData(c).FixedWidth, 0
+        PropBag.WriteProperty "TabTag(" & CStr(c) & ")", mTabData(c).Tag, ""
+        PropBag.WriteProperty "TabData(" & CStr(c) & ")", mTabData(c).Data, 0
+        iBytes = mTabData(c).CustomColors.Serialize
+        If UBound(iBytes) = -1 Then
+            PropBag.WriteProperty "TabCustomColors(" & CStr(c) & ")", "", ""
+        Else
+            PropBag.WriteProperty "TabCustomColors(" & CStr(c) & ")", iBytes
+        End If
+        PropBag.WriteProperty "TabKey(" & CStr(c) & ")", mTabData(c).Key, ""
     Next c
     
     If Not mThemesCollection Is Nothing Then
@@ -12225,7 +12249,7 @@ Private Sub PostDrawMessage()
     End If
 End Sub
 
-Friend Property Get TabControlsNames(ByVal Index As Variant) As Object
+Friend Property Get TabControlsNames(ByVal Index As Long) As Object
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -12233,7 +12257,7 @@ Friend Property Get TabControlsNames(ByVal Index As Variant) As Object
     Set TabControlsNames = mTabData(Index).Controls
 End Property
 
-Friend Property Set TabControlsNames(ByVal Index As Variant, nValue As Object)
+Friend Property Set TabControlsNames(ByVal Index As Long, nValue As Object)
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -13518,13 +13542,14 @@ Public Property Let TabData(ByVal Index As Long, ByVal nValue As Long)
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    mTabData(Index).Data = nValue
+    If nValue <> mTabData(Index).Data Then
+        mTabData(Index).Data = nValue
+        PropertyChanged "TabData"
+    End If
 End Property
 
 
 Public Property Get TabTag(ByVal Index As Long) As String
-Attribute TabTag.VB_Description = "Similar to a Tag property, but for each tab. You can store any string there. If the tabs are reordered, it will keep this data for this tab."
-Attribute TabTag.VB_ProcData.VB_Invoke_Property = ";Datos"
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -13537,7 +13562,36 @@ Public Property Let TabTag(ByVal Index As Long, ByVal nValue As String)
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    mTabData(Index).Tag = nValue
+    If nValue <> mTabData(Index).Tag Then
+        mTabData(Index).Tag = nValue
+        PropertyChanged "TabTag"
+    End If
+End Property
+
+
+Public Property Get TabKey(ByVal Index As Long) As String
+    If (Index < 0) Or (Index >= mTabs) Then
+        RaiseError 381, TypeName(Me) ' invalid property array index
+        Exit Property
+    End If
+    TabKey = mTabData(Index).Key
+End Property
+
+Public Property Let TabKey(ByVal Index As Long, ByVal nValue As String)
+    If (Index < 0) Or (Index >= mTabs) Then
+        RaiseError 381, TypeName(Me) ' invalid property array index
+        Exit Property
+    End If
+    If nValue <> "" Then
+        If IsNumeric(Left$(nValue, 1)) Then
+            RaiseError 380, TypeName(Me), "The TabKey must not start with a number.", vbExclamation
+            Exit Property
+        End If
+    End If
+    If nValue <> mTabData(Index).Key Then
+        mTabData(Index).Key = nValue
+        PropertyChanged "TabKey"
+    End If
 End Property
 
 
@@ -13851,7 +13905,7 @@ Private Sub SetHighlightMode()
     End If
 End Sub
 
-Public Function GetTabLeft(ByVal Index As Variant) As Single
+Public Function GetTabLeft(ByVal Index As Long) As Single
 Attribute GetTabLeft.VB_Description = "Returns the left position of a tab."
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
@@ -13861,7 +13915,7 @@ Attribute GetTabLeft.VB_Description = "Returns the left position of a tab."
     GetTabLeft = FixRoundingError(UserControl.ScaleX(mTabData(Index).TabRect.Left, vbPixels, vbTwips))
 End Function
 
-Public Function GetTabTop(ByVal Index As Variant) As Single
+Public Function GetTabTop(ByVal Index As Long) As Single
 Attribute GetTabTop.VB_Description = "Returns the top position of a tab."
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
@@ -13871,7 +13925,7 @@ Attribute GetTabTop.VB_Description = "Returns the top position of a tab."
     GetTabTop = FixRoundingError(UserControl.ScaleY(mTabData(Index).TabRect.Top, vbPixels, vbTwips))
 End Function
 
-Public Function GetTabWidth(ByVal Index As Variant) As Single
+Public Function GetTabWidth(ByVal Index As Long) As Single
 Attribute GetTabWidth.VB_Description = "Returns the width of a tab."
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
@@ -13881,7 +13935,7 @@ Attribute GetTabWidth.VB_Description = "Returns the width of a tab."
     GetTabWidth = FixRoundingError(UserControl.ScaleX(mTabData(Index).TabRect.Right - mTabData(Index).TabRect.Left, vbPixels, vbTwips))
 End Function
 
-Public Function GetTabHeight(ByVal Index As Variant) As Single
+Public Function GetTabHeight(ByVal Index As Long) As Single
 Attribute GetTabHeight.VB_Description = "Returns the height of a tab."
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
@@ -14929,6 +14983,13 @@ Attribute FindTab.VB_Description = "Finds a tab based on the values provided in 
                 Exit Function
             End If
         Next
+    ElseIf Method = ntFindKey Then
+        For c = iStartingTab To mTabs - 1
+            If mTabData(c).Key = Find Then
+                FindTab = c
+                Exit Function
+            End If
+        Next
     End If
 End Function
 
@@ -15021,10 +15082,10 @@ Public Property Let TabFixedWidth(ByVal Index As Long, ByVal nValue As Long)
             RaiseError 380, TypeName(Me) ' invalid property value
             Exit Property
         End If
+        mTabData(Index).FixedWidth = UserControl.ScaleX(nValue, vbTwips, vbPixels)
+        PropertyChanged "TabFixedWidth"
+        DrawDelayed
     End If
-    
-    mTabData(Index).FixedWidth = UserControl.ScaleX(nValue, vbTwips, vbPixels)
-    DrawDelayed
 End Property
 
 Private Function ColorsHaveEnoughContrast(ByVal nColor1 As Long, ByVal nColor2 As Long, Optional ByVal Threshold As Long = 120) As Boolean
@@ -15155,6 +15216,11 @@ Attribute TabCustomColor.VB_Description = "Returns/sets a custom color for a tab
                 TabCustomColor = mTabData(Index).CustomColors.IconColorMouseHoverTabSel
             End If
         Case ntCCIconColorTabHighlighted
+            If IsEmpty(mTabData(Index).CustomColors.IconColorTabHighlighted) Then
+                TabCustomColor = mIconColorTabHighlighted
+            Else
+                TabCustomColor = mTabData(Index).CustomColors.IconColorTabHighlighted
+            End If
     End Select
 End Property
 
@@ -15170,10 +15236,13 @@ Public Property Let TabCustomColor(ByVal Index As Long, Optional ByVal ColorID A
         RaiseError 1382, TypeName(Me), "invalid ColorID."
         Exit Property
     End If
+    If nValue <> -1 Then
+        If Not IsValidOLE_COLOR(nValue) Then RaiseError 380, TypeName(Me): Exit Property
+    End If
     
     Select Case ColorID
         Case ntCCBackColorTab
-            If nValue = mBackColorTabs Then
+            If (nValue = mBackColorTabs) Or (nValue = -1) Then
                 mTabData(Index).CustomColors.BackColorTab = Empty
             Else
                 mTabData(Index).CustomColors.BackColorTab = nValue
@@ -15193,7 +15262,7 @@ Public Property Let TabCustomColor(ByVal Index As Long, Optional ByVal ColorID A
                 Next c
             End If
         Case ntCCBackColorTabSel
-            If nValue = mBackColorTabSel Then
+            If (nValue = mBackColorTabSel) Or (nValue = -1) Then
                 mTabData(Index).CustomColors.BackColorTabSel = Empty
                 iCol = mBackColorTabSel
             Else
@@ -15203,20 +15272,20 @@ Public Property Let TabCustomColor(ByVal Index As Long, Optional ByVal ColorID A
             SetColors
             If Index = mTab Then SetControlsBackColor iCol
         Case ntCCHighlightColor
-            If nValue = mHighlightColor Then
+            If (nValue = mHighlightColor) Or (nValue = -1) Then
                 mTabData(Index).CustomColors.HighlightColor = Empty
             Else
                 mTabData(Index).CustomColors.HighlightColor = nValue
             End If
         Case ntCCHighlightColorTabSel
-            If nValue = mHighlightColorTabSel Then
+            If (nValue = mHighlightColorTabSel) Or (nValue = -1) Then
                 mTabData(Index).CustomColors.HighlightColorTabSel = Empty
             Else
                 mTabData(Index).CustomColors.HighlightColorTabSel = nValue
             End If
             SetColors
         Case ntCCFlatBarColorInactive
-            If nValue = mFlatBarColorInactive Then
+            If (nValue = mFlatBarColorInactive) Or (nValue = -1) Then
                 mTabData(Index).CustomColors.FlatBarColorInactive = Empty
             Else
                 mTabData(Index).CustomColors.FlatBarColorInactive = nValue
@@ -15233,7 +15302,7 @@ Public Property Let TabCustomColor(ByVal Index As Long, Optional ByVal ColorID A
                 mTabData(Index).CustomColors.FlatBarGlowColor = mTabData(Index).CustomColors.FlatBarHighlightEffectColors(10)
             End If
         Case ntCCFlatBarColorHighlight
-            If nValue = mFlatBarColorHighlight Then
+            If (nValue = mFlatBarColorHighlight) Or (nValue = -1) Then
                 mTabData(Index).CustomColors.FlatBarColorHighlight = Empty
             Else
                 mTabData(Index).CustomColors.FlatBarColorHighlight = nValue
@@ -15251,74 +15320,75 @@ Public Property Let TabCustomColor(ByVal Index As Long, Optional ByVal ColorID A
                 mTabData(Index).CustomColors.FlatBarGlowColor = mTabData(Index).CustomColors.FlatBarHighlightEffectColors(10)
             End If
         Case ntCCFlatBarColorTabSel
-            If nValue = mFlatBarColorTabSel Then
+            If (nValue = mFlatBarColorTabSel) Or (nValue = -1) Then
                 mTabData(Index).CustomColors.FlatBarColorTabSel = Empty
             Else
                 mTabData(Index).CustomColors.FlatBarColorTabSel = nValue
             End If
             SetColors
         Case ntCCFlatTabBorderColorHighlight
-            If nValue = mFlatTabBorderColorHighlight Then
+            If (nValue = mFlatTabBorderColorHighlight) Or (nValue = -1) Then
                 mTabData(Index).CustomColors.FlatTabBorderColorHighlight = Empty
             Else
                 mTabData(Index).CustomColors.FlatTabBorderColorHighlight = nValue
             End If
         Case ntCCFlatTabBorderColorTabSel
-            If nValue = mFlatTabBorderColorTabSel Then
+            If (nValue = mFlatTabBorderColorTabSel) Or (nValue = -1) Then
                 mTabData(Index).CustomColors.FlatTabBorderColorTabSel = Empty
             Else
                 mTabData(Index).CustomColors.FlatTabBorderColorTabSel = nValue
             End If
         Case ntCCForeColor
-            If nValue = mForeColor Then
+            If (nValue = mForeColor) Or (nValue = -1) Then
                 mTabData(Index).CustomColors.ForeColor = Empty
             Else
                 mTabData(Index).CustomColors.ForeColor = nValue
             End If
         Case ntCCForeColorHighlighted
-            If nValue = mForeColorHighlighted Then
+            If (nValue = mForeColorHighlighted) Or (nValue = -1) Then
                 mTabData(Index).CustomColors.ForeColorHighlighted = Empty
             Else
                 mTabData(Index).CustomColors.ForeColorHighlighted = nValue
             End If
         Case ntCCForeColorTabSel
-            If nValue = mForeColorTabSel Then
+            If (nValue = mForeColorTabSel) Or (nValue = -1) Then
                 mTabData(Index).CustomColors.ForeColorTabSel = Empty
             Else
                 mTabData(Index).CustomColors.ForeColorTabSel = nValue
             End If
             SetControlsProperForeColor
         Case ntCCIconColor
-            If nValue = mIconColor Then
+            If (nValue = mIconColor) Or (nValue = -1) Then
                 mTabData(Index).CustomColors.IconColor = Empty
             Else
                 mTabData(Index).CustomColors.IconColor = nValue
             End If
         Case ntCCIconColorTabSel
-            If nValue = mIconColorTabSel Then
+            If (nValue = mIconColorTabSel) Or (nValue = -1) Then
                 mTabData(Index).CustomColors.IconColorTabSel = Empty
             Else
                 mTabData(Index).CustomColors.IconColorTabSel = nValue
             End If
         Case ntCCIconColorMouseHover
-            If nValue = mIconColorMouseHover Then
+            If (nValue = mIconColorMouseHover) Or (nValue = -1) Then
                 mTabData(Index).CustomColors.IconColorMouseHover = Empty
             Else
                 mTabData(Index).CustomColors.IconColorMouseHover = nValue
             End If
         Case ntCCIconColorMouseHoverTabSel
-            If nValue = mIconColorMouseHoverTabSel Then
+            If (nValue = mIconColorMouseHoverTabSel) Or (nValue = -1) Then
                 mTabData(Index).CustomColors.IconColorMouseHoverTabSel = Empty
             Else
                 mTabData(Index).CustomColors.IconColorMouseHoverTabSel = nValue
             End If
         Case ntCCIconColorTabHighlighted
-            If nValue = mIconColorTabHighlighted Then
+            If (nValue = mIconColorTabHighlighted) Or (nValue = -1) Then
                 mTabData(Index).CustomColors.IconColorTabHighlighted = Empty
             Else
                 mTabData(Index).CustomColors.IconColorTabHighlighted = nValue
             End If
     End Select
+    PropertyChanged "TabCustomColor"
     DrawDelayed
 End Property
 
@@ -15371,6 +15441,24 @@ Attribute TDIGetTabByFormHwnd.VB_Description = "When in TDI mode forms, it retur
     Next
 End Function
 
+Public Function GetTabOriginalIndex(ByVal Index As Long) As Long
+Attribute GetTabOriginalIndex.VB_Description = "It returns the original index of the tab by supplying the current index. If CanReorderTabs is set to True, the tab index can vary."
+    If (Index < 0) Or (Index >= mTabs) Then
+        RaiseError 381, TypeName(Me) ' invalid property array index
+        Exit Function
+    End If
+    GetTabOriginalIndex = mTabData(Index).OriginalIndex
+End Function
+
+Private Function IsNumericInteger(nValue As Variant) As Boolean
+    Dim iVal As Variant
+    
+    IsNumericInteger = IsNumeric(nValue)
+    If IsNumericInteger Then
+        iVal = Val(nValue)
+        IsNumericInteger = (iVal = Int(iVal))
+    End If
+End Function
 
 'Tab is a reserved keyword in VB6, but you can remove that restriction.
 'To be able to compile with Tab property, you need to replace VBA6.DLL with this version: https://github.com/EduardoVB/NewTab/raw/main/control-source/lib/VBA6.DLL
@@ -15379,13 +15467,29 @@ End Function
 
 #Const COMPILE_WITH_TAB_PROPERTY = 0
 #If COMPILE_WITH_TAB_PROPERTY Then
-Public Property Get Tab() As Long
+Public Property Get Tab() As Variant
 Attribute Tab.VB_Description = "Returns or sets the current ('selected' or 'active') tab by its index."
 'Attribute Tab.VB_Description = "Returns or sets the index of the current (""selected"" or ""active"") tab."
     Tab = TabSel
 End Property
 
-Public Property Let Tab(ByVal nValue As Long)
+Public Property Let Tab(ByVal nValue As Variant)
+    Dim iTab As Long
+    
+    If IsNumericInteger(nValue) Then
+        ' OK, it is an index
+    ElseIf VarType(nValue) = vbString Then
+        iTab = FindTab(nValue, ntFindKey)
+        If iTab = -1 Then
+            RaiseError 5, TypeName(Me), "Invalid procedure call or argument. TabKey not found or nValue must be numeric integer if it is a tab index."   ' Invalid procedure call or argument
+            Exit Property
+        Else
+            nValue = iTab
+        End If
+    Else
+        RaiseError 380, TypeName(Me), "Invalid property value. nValue must be a tab index or a TabKey."
+        Exit Property
+    End If
     TabSel = nValue
 End Property
 #End If
