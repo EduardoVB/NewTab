@@ -197,6 +197,7 @@ Backward compatible with SSTab (fully), and with SSTabEx (mostly).</p><br>
 <li class="toc1"><a href="#TabIconFont-Property">TabIconFont</a><br>
 <li class="toc1"><a href="#TabIconLeftOffset-Property">TabIconLeftOffset</a><br>
 <li class="toc1"><a href="#TabIconTopOffset-Property">TabIconTopOffset</a><br>
+<li class="toc1"><a href="#TabKey-Property">TabKey</a><br>
 <li class="toc1"><a href="#TabMaxWidth-Property">TabMaxWidth</a><br>
 <li class="toc1"><a href="#TabMinWidth-Property">TabMinWidth</a><br>
 <li class="toc1"><a href="#TabMousePointerHand-Property">TabMousePointerHand</a><br>
@@ -233,6 +234,7 @@ Backward compatible with SSTab (fully), and with SSTabEx (mostly).</p><br>
 <li class="toc1"><a href="#FindTab-Method">FindTab</a><br>
 <li class="toc1"><a href="#GetTabHeight-Method">GetTabHeight</a><br>
 <li class="toc1"><a href="#GetTabLeft-Method">GetTabLeft</a><br>
+<li class="toc1"><a href="#GetTabOriginalIndex-Method">GetTabOriginalIndex</a><br>
 <li class="toc1"><a href="#GetTabsOrder-Method">GetTabsOrder</a><br>
 <li class="toc1"><a href="#GetTabTop-Method">GetTabTop</a><br>
 <li class="toc1"><a href="#GetTabWidth-Method">GetTabWidth</a><br>
@@ -897,11 +899,12 @@ It also can set if the control will have Windows Styles (the Windows "theme" loo
 <h3>Description:</h3>
 <p>Returns/sets the sublassing method, what to subclass (only the UserControl or the Form too) and if the subclassing will be enabled at all. If subclassing is disabled or partially disabled some features may not work. This property is provided in case of incompatibility with other third party controls.</p><br>
 <a name="Tab-Property" /><h2><p class"section">Tab Property</p></h2></a>
-<p>Type: <b>Long</b></p>
+<p>Type: <b>Variant</b></p>
 <h3>Description:</h3>
-<p>Returns or sets the current ('selected' or 'active') tab by its index.<br>
+<p>Returns or sets the current ('selected' or 'active') tab by its index or by a <a href="#TabKey-Property">TabKey</a>.<br>
 <br>
-<h3>See Also:</h3><a href="#SetActiveTab-Method">SetActiveTab</a> method<br>
+<h3>See Also:</h3><a href="#TabKey-Property">TabKey</a> property<br>
+<a href="#SetActiveTab-Method">SetActiveTab</a> method<br>
 <a href="#TabChange-Event">TabChange</a> event<br>
 </p><br>
 <a name="TabAppearance-Property" /><h2><p class"section">TabAppearance Property</p></h2></a>
@@ -939,6 +942,7 @@ Note: The <a href="#Style-Property">Style</a> property must be set to other than
 <p>Used to store any data as a Long value, similar to ListBox's ItemData. If the tabs are reordered, it will keep this data for this tab.<br>
 <br>
 <h3>See Also:</h3><a href="#TabTag-Property">TabTag</a> property.<br>
+<a href="#TabKey-Property">TabKey</a> property<br>
 <a href="#FindTab-Method">FindTab</a> method.</p><br>
 <a name="TabEnabled-Property" /><h2><p class"section">TabEnabled Property</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>Boolean</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
@@ -961,7 +965,7 @@ This property is not available at design time.</p><br>
 <br>
 <h3>See Also:</h3><a href="#AutoTabHeight-Property">AutoTabHeight</a> property</p><br>
 <a name="TabIconCharHex-Property" /><h2><p class"section">TabIconCharHex Property</p></h2></a>
-<p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>String</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>String</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Returns or sets a string representing the hexadecimal value of the character that will be used as the icon in the tab identified by the Index parameter. If this property is set, anything in the picture properties is ignored.<br>
 <br>
@@ -970,7 +974,7 @@ This property is not available at design time.</p><br>
 <a href="#TabIconLeftOffset-Property">TabIconLeftOffset</a> property<br>
 <a href="#TabIconTopOffset-Property">TabIconTopOffset</a> property</p><br>
 <a name="TabIconFont-Property" /><h2><p class"section">TabIconFont Property</p></h2></a>
-<p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>Font</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>Font</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Returns or sets the Font that will be used to draw the icon of the tab identified by the Index parameter.<br>
 Each tab can have a different font for its icon.<br>
@@ -978,19 +982,28 @@ Each tab can have a different font for its icon.<br>
 <h3>See Also:</h3><a href="#TabIconCharHex-Property">TabIconCharHex</a> property<br>
 <a href="#IconColor-Property">IconColor</a> property</p><br>
 <a name="TabIconLeftOffset-Property" /><h2><p class"section">TabIconLeftOffset Property</p></h2></a>
-<p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>Long</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>Long</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Returns or sets the value in pixels of the offset for the left position when drawing the icon of the tab identified by the Index parameter. It can be negative.<br>
 <br>
 <h3>See Also:</h3><a href="#TabIconTopOffset-Property">TabIconTopOffset</a> property<br>
 <a href="#TabIconCharHex-Property">TabIconCharHex</a> property</p><br>
 <a name="TabIconTopOffset-Property" /><h2><p class"section">TabIconTopOffset Property</p></h2></a>
-<p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>Long</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>Long</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Returns or sets the value in pixels of the offset for the top position when drawing the icon of the tab identified by the Index parameter. It can be negative.<br>
 <br>
 <h3>See Also:</h3><a href="#TabIconLeftOffset-Property">TabIconLeftOffset</a> property<br>
 <a href="#TabIconCharHex-Property">TabIconCharHex</a> property</p><br>
+<a name="TabKey-Property" /><h2><p class"section">TabKey Property</p></h2></a>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>String</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<h3>Description:</h3>
+<p>A key that can be used to set the current/active/selected tab with the <a href="#Tab-Property">Tab</a> property. <br>
+Or alternatively used to hold custom String data similar to <a href="#TabTag-Property">TabTag</a>.<br>
+<br>
+<h3>See Also:</h3><a href="#TabTag-Property">TabTag</a> property<br>
+<a href="#TabData-Property">TabData</a> property<br>
+<a href="#FindTab-Method">FindTab</a> method.</p><br>
 <a name="TabMaxWidth-Property" /><h2><p class"section">TabMaxWidth Property</p></h2></a>
 <p>Type: <b>Single</b></p>
 <h3>Description:</h3>
@@ -1021,7 +1034,7 @@ Note: this property has no effect if <a href="#TabWidthStyle-Property">TabWidthS
 <h3>Description:</h3>
 <p>Returns or sets a value that determines on which side of the control the tabs will appear.</p><br>
 <a name="TabPic16-Property" /><h2><p class"section">TabPic16 Property</p></h2></a>
-<p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>Picture</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>Picture</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Returns or sets the bitmap to be displayed on the tab specified by the Index parameter, when the application is DPI aware.<br>
 <b>TabPic16</b> is used for 96 DPI, <a href="#TabPic20-Property">TabPic20</a> for 120 DPI and <a href="#TabPic24-Property">TabPic24</a> for 144 DPI. Others DPI setting are handled automatically.<br>
@@ -1030,7 +1043,7 @@ When these pictures are set, the <a href="#TabPicture-Property">TabPicture</a> p
 They can be accessed at design time through a property page.<br>
 </p><br>
 <a name="TabPic20-Property" /><h2><p class"section">TabPic20 Property</p></h2></a>
-<p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>Picture</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>Picture</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Returns or sets the bitmap to be displayed on the tab specified by the Index parameter, when the application is DPI aware.<br>
 <a href="#TabPic16-Property">TabPic16</a> is used for 96 DPI, <b>TabPic20</b> for 120 DPI and <a href="#TabPic24-Property">TabPic24</a> for 144 DPI. Others DPI setting are handled automatically.<br>
@@ -1038,7 +1051,7 @@ The application need to have a manifest file to declare it as DPI aware.<br>
 When these pictures are set, the <a href="#TabPicture-Property">TabPicture</a> property is ignored.<br>
 They can be accessed at design time through a property page.</p><br>
 <a name="TabPic24-Property" /><h2><p class"section">TabPic24 Property</p></h2></a>
-<p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>Picture</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>Picture</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Returns or sets the bitmap to be displayed on the tab specified by the Index parameter, when the application is DPI aware.<br>
 <a href="#TabPic16-Property">TabPic16</a> is used for 96 DPI, <a href="#TabPic20-Property">TabPic20</a> for 120 DPI and <b>TabPic24</b> for 144 DPI. Others DPI setting are handled automatically.<br>
@@ -1076,9 +1089,10 @@ If <a href="#TabWidthStyle-Property">TabWidthStyle</a> property setting is other
 <p>Similar to a Tag property, but for each tab. You can store any string there. If the tabs are reordered, it will keep this data for this tab.<br>
 <br>
 <h3>See Also:</h3><a href="#TabData-Property">TabData</a> property<br>
+<a href="#TabKey-Property">TabKey</a> property<br>
 <a href="#FindTab-Method">FindTab</a> method.</p><br>
 <a name="TabToolTipText-Property" /><h2><p class"section">TabToolTipText Property</p></h2></a>
-<p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>String</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspType: <b>String</b>&nbsp&nbsp</td>    </tr>    <tr>    </tr>    <tr>    <td>&nbsp&nbspAdditional parameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Returns or sets the text that will be shown as tooltip text when the mouse pointer is over the tab identified by the Index parameter.<br>
 If the tab has not a <a href="#TabToolTipText-Property">TabToolTipText</a> set, it will show the control <b>ToolTipText</b>, if there is any text set on that property.<br>
@@ -1205,7 +1219,7 @@ In a control that its size and/or the tab texts change dinamically, to make sure
 This method is similar to <a href="#SetActiveTab-Method">SetActiveTab</a> but it does not change the current tab.<br>
 Please read <a href="#SetActiveTab-Method">SetActiveTab</a> for an explanation of the parameters.</p><br>
 <a name="GetTabHeight-Method" /><h2><p class"section">GetTabHeight Method</p></h2></a>
-<p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Single</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Single</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Returns the height of a tab.<br>
 <br>
@@ -1214,19 +1228,23 @@ Please read <a href="#SetActiveTab-Method">SetActiveTab</a> for an explanation o
 <a href="#GetTabWidth-Method">GetTabWidth</a> method<br>
 </p><br>
 <a name="GetTabLeft-Method" /><h2><p class"section">GetTabLeft Method</p></h2></a>
-<p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Single</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Single</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Returns the left position of a tab.<br>
 <br>
 <h3>See Also:</h3><a href="#GetTabTop-Method">GetTabTop</a> method<br>
 <a href="#GetTabWidth-Method">GetTabWidth</a> method<br>
 <a href="#GetTabHeight-Method">GetTabHeight</a> method</p><br>
+<a name="GetTabOriginalIndex-Method" /><h2><p class"section">GetTabOriginalIndex Method</p></h2></a>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Long</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<h3>Description:</h3>
+<p>It returns the original index of the tab by supplying the current index. If CanReorderTabs is set to True, the tab index can change.</p><br>
 <a name="GetTabsOrder-Method" /><h2><p class"section">GetTabsOrder Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>String</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspNo parameters.&nbsp&nbsp</td>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Returns a string with data containing the tab positions (order) for later use with <a href="#SetTabsOrder-Method">SetTabsOrder</a>. <a href="#CanReorderTabs-Property">CanReorderTabs</a> must be set to True.</p><br>
 <a name="GetTabTop-Method" /><h2><p class"section">GetTabTop Method</p></h2></a>
-<p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Single</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Single</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Returns the top position of a tab.<br>
 <br>
@@ -1234,7 +1252,7 @@ Please read <a href="#SetActiveTab-Method">SetActiveTab</a> for an explanation o
 <a href="#GetTabWidth-Method">GetTabWidth</a> method<br>
 <a href="#GetTabHeight-Method">GetTabHeight</a> method</p><br>
 <a name="GetTabWidth-Method" /><h2><p class"section">GetTabWidth Method</p></h2></a>
-<p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Single</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Single</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Returns the width of a tab.<br>
 <br>
@@ -1669,6 +1687,10 @@ Use the names of the themes to set one into the <a href="#Theme-Property">Theme<
   <tr>
     <td><b>ntFindPartialCaptionReverse</b> =     </td>
     <td>5    </td>
+  </tr>
+  <tr>
+    <td><b>ntFindKey</b> =     </td>
+    <td>6    </td>
   </tr>
 </table>
 <br><a name="NTFlatBarPositionConstants-Enum" /><h2><p class"section">NTFlatBarPositionConstants</h2></p></h2></a>

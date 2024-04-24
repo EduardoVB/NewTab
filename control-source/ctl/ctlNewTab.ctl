@@ -13570,6 +13570,7 @@ End Property
 
 
 Public Property Get TabKey(ByVal Index As Long) As String
+Attribute TabKey.VB_Description = "A key that can be used to set the current/active/selected tab with the 'Tab' property."
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -15442,7 +15443,7 @@ Attribute TDIGetTabByFormHwnd.VB_Description = "When in TDI mode forms, it retur
 End Function
 
 Public Function GetTabOriginalIndex(ByVal Index As Long) As Long
-Attribute GetTabOriginalIndex.VB_Description = "It returns the original index of the tab by supplying the current index. If CanReorderTabs is set to True, the tab index can vary."
+Attribute GetTabOriginalIndex.VB_Description = "It returns the original index of the tab by supplying the current index. If CanReorderTabs is set to True, the tab index can change."
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Function

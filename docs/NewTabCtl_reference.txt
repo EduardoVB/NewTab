@@ -553,8 +553,8 @@ SubclassingMethod property:
 
 
 Tab property:
-	Type: Long
-	Returns or sets the current ('selected' or 'active') tab by its index.
+	Type: Variant
+	Returns or sets the current ('selected' or 'active') tab by its index or by a TabKey.
 
 
 TabAppearance property:
@@ -632,7 +632,7 @@ TabIconCharHex property:
 	Type: String
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Variant
+	    In	Required	Index	As	Long
 	Returns or sets a string representing the hexadecimal value of the character that will be used as the icon in the tab identified by the Index parameter. If this property is set, anything in the picture properties is ignored.
 
 
@@ -640,7 +640,7 @@ TabIconFont property:
 	Type: Font
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Variant
+	    In	Required	Index	As	Long
 	Returns or sets the Font that will be used to draw the icon of the tab identified by the Index parameter.
 	Each tab can have a different font for its icon.
 
@@ -649,7 +649,7 @@ TabIconLeftOffset property:
 	Type: Long
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Variant
+	    In	Required	Index	As	Long
 	Returns or sets the value in pixels of the offset for the left position when drawing the icon of the tab identified by the Index parameter. It can be negative.
 
 
@@ -657,8 +657,17 @@ TabIconTopOffset property:
 	Type: Long
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Variant
+	    In	Required	Index	As	Long
 	Returns or sets the value in pixels of the offset for the top position when drawing the icon of the tab identified by the Index parameter. It can be negative.
+
+
+TabKey property:
+	Type: String
+	
+	Additional parameter(s):
+	    In	Required	Index	As	Long
+	A key that can be used to set the current/active/selected tab with the Tab property. 
+	Or alternatively used to hold custom String data similar to TabTag.
 
 
 TabMaxWidth property:
@@ -694,7 +703,7 @@ TabPic16 property:
 	Type: Picture
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Variant
+	    In	Required	Index	As	Long
 	Returns or sets the bitmap to be displayed on the tab specified by the Index parameter, when the application is DPI aware.
 	TabPic16 is used for 96 DPI, TabPic20 for 120 DPI and TabPic24 for 144 DPI. Others DPI setting are handled automatically.
 	The application need to have a manifest file to declare it as DPI aware.
@@ -706,7 +715,7 @@ TabPic20 property:
 	Type: Picture
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Variant
+	    In	Required	Index	As	Long
 	Returns or sets the bitmap to be displayed on the tab specified by the Index parameter, when the application is DPI aware.
 	TabPic16 is used for 96 DPI, TabPic20 for 120 DPI and TabPic24 for 144 DPI. Others DPI setting are handled automatically.
 	The application need to have a manifest file to declare it as DPI aware.
@@ -718,7 +727,7 @@ TabPic24 property:
 	Type: Picture
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Variant
+	    In	Required	Index	As	Long
 	Returns or sets the bitmap to be displayed on the tab specified by the Index parameter, when the application is DPI aware.
 	TabPic16 is used for 96 DPI, TabPic20 for 120 DPI and TabPic24 for 144 DPI. Others DPI setting are handled automatically.
 	The application need to have a manifest file to declare it as DPI aware.
@@ -768,7 +777,7 @@ TabToolTipText property:
 	Type: String
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Variant
+	    In	Required	Index	As	Long
 	Returns or sets the text that will be shown as tooltip text when the mouse pointer is over the tab identified by the Index parameter.
 	If the tab has not a TabToolTipText set, it will show the control ToolTipText, if there is any text set on that property.
 
@@ -929,7 +938,7 @@ FindTab function:
 GetTabHeight function:
 	Return Type:	Single
 	Parameter(s):
-	    In	Required	Index	As	Variant
+	    In	Required	Index	As	Long
 
 	Returns the height of a tab.
 
@@ -937,9 +946,17 @@ GetTabHeight function:
 GetTabLeft function:
 	Return Type:	Single
 	Parameter(s):
-	    In	Required	Index	As	Variant
+	    In	Required	Index	As	Long
 
 	Returns the left position of a tab.
+
+
+GetTabOriginalIndex function:
+	Return Type:	Long
+	Parameter(s):
+	    In	Required	Index	As	Long
+
+	It returns the original index of the tab by supplying the current index. If CanReorderTabs is set to True, the tab index can change.
 
 
 GetTabsOrder function:
@@ -952,7 +969,7 @@ GetTabsOrder function:
 GetTabTop function:
 	Return Type:	Single
 	Parameter(s):
-	    In	Required	Index	As	Variant
+	    In	Required	Index	As	Long
 
 	Returns the top position of a tab.
 
@@ -960,7 +977,7 @@ GetTabTop function:
 GetTabWidth function:
 	Return Type:	Single
 	Parameter(s):
-	    In	Required	Index	As	Variant
+	    In	Required	Index	As	Long
 
 	Returns the width of a tab.
 
@@ -1440,6 +1457,7 @@ NTFindTabMethodConstants ENUMERATION
 	ntFindTag = 3
 	ntFindPartialCaption = 4
 	ntFindPartialCaptionReverse = 5
+	ntFindKey = 6
 
 NTFlatBarPositionConstants ENUMERATION
 
