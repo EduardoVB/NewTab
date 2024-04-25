@@ -666,7 +666,7 @@ TabKey property:
 	
 	Additional parameter(s):
 	    In	Required	Index	As	Long
-	A key that can be used to set the current/active/selected tab with the Tab property. 
+	A key that can be used to set the current/active/selected tab with the Tab property. Keys are case insensitive.
 	Or alternatively used to hold custom String data similar to TabTag.
 
 

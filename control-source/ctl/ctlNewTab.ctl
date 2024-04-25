@@ -13570,7 +13570,7 @@ End Property
 
 
 Public Property Get TabKey(ByVal Index As Long) As String
-Attribute TabKey.VB_Description = "A key that can be used to set the current/active/selected tab with the 'Tab' property."
+Attribute TabKey.VB_Description = "A key that can be used to set the current/active/selected tab with the 'Tab' property.  Keys are case insensitive."
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -14986,7 +14986,10 @@ Attribute FindTab.VB_Description = "Finds a tab based on the values provided in 
         Next
     ElseIf Method = ntFindKey Then
         For c = iStartingTab To mTabs - 1
-            If mTabData(c).Key = Find Then
+            Dim iLCFind As String
+            
+            iLCFind = LCase(Find)
+            If LCase$(mTabData(c).Key) = iLCFind Then
                 FindTab = c
                 Exit Function
             End If

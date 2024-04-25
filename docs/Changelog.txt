@@ -1,3 +1,4 @@
+2024-04-25 TabKeys are now case insensitive.
 2024-04-24 Changed to OLE version 9.0.
 2024-04-24 Added property TabKey. That key can be used to set the current/active/selected tab with the 'Tab' property now.
 2024-04-24 Added function GetTabOriginalIndex.
