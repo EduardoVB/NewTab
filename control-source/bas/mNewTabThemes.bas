@@ -23,8 +23,8 @@ Public Const cThemeIsCustomSettings As String = "Current custom settings, not sa
 
 ' Default Themes strings
 Private Const cThemeString_Default                       As String = ""
-Private Const cThemeString_SSTab                         As String = "HighlightEffect=0|HighlightMode=1|HighlightModeTabSel=1|ShowFocusRect=-1|SoftEdges=0|Style=0"
-Private Const cThemeString_SSTabWindows                  As String = "ShowFocusRect=-1"
+Private Const cThemeString_SSTab                         As String = "HighlightEffect=0|HighlightMode=1|HighlightModeTabSel=16|ShowFocusRect=-1|SoftEdges=0|Style=0"
+Private Const cThemeString_SSTabWindows                  As String = "HighlightModeTabSel=16|ShowFocusRect=-1"
 Private Const cThemeString_SSTabPropertyPage             As String = "HighlightEffect=0|HighlightMode=1|HighlightModeTabSel=1|ShowFocusRect=-1|SoftEdges=0|Style=1"
 Private Const cThemeString_SSTabPropertyPageWindows      As String = "ShowFocusRect=-1|ShowRowsInPerspective=1|TabWidthStyle=1"
 Private Const cThemeString_TabStrip                      As String = "HighlightEffect=0|HighlightMode=1|HighlightModeTabSel=1|ShowFocusRect=-1|SoftEdges=0|Style=2"
@@ -678,11 +678,11 @@ Public Function GetThemeStringFromControl(nCtl As NewTab, nAmbientBackColor As L
     If nCtl.Style <> cPropDef_Style Then AddPropStrToArray iPropsStr, c, "Style", nCtl.Style
     If nCtl.Style <> ntStyleWindows Then
         If nCtl.TabAppearance <> cPropDef_TabAppearance Then AddPropStrToArray iPropsStr, c, "TabAppearance", nCtl.TabAppearance
-        If nCtl.HighlightMode <> cPropDef_HighlightMode Then AddPropStrToArray iPropsStr, c, "HighlightMode", nCtl.HighlightMode
-        If nCtl.HighlightModeTabSel <> cPropDef_HighlightModeTabSel Then AddPropStrToArray iPropsStr, c, "HighlightModeTabSel", nCtl.HighlightModeTabSel
         If nCtl.HighlightEffect <> cPropDef_HighlightEffect Then AddPropStrToArray iPropsStr, c, "HighlightEffect", Val(Str$(CLng(nCtl.HighlightEffect)))
         If nCtl.ShowDisabledState <> cPropDef_ShowDisabledState Then AddPropStrToArray iPropsStr, c, "ShowDisabledState", Val(Str$(CLng(nCtl.ShowDisabledState)))
     End If
+    If nCtl.HighlightMode <> cPropDef_HighlightMode Then AddPropStrToArray iPropsStr, c, "HighlightMode", nCtl.HighlightMode
+    If nCtl.HighlightModeTabSel <> cPropDef_HighlightModeTabSel Then AddPropStrToArray iPropsStr, c, "HighlightModeTabSel", nCtl.HighlightModeTabSel
     If nCtl.TabWidthStyle <> cPropDef_TabWidthStyle Then AddPropStrToArray iPropsStr, c, "TabWidthStyle", nCtl.TabWidthStyle
     If nCtl.ShowRowsInPerspective <> cPropDef_ShowRowsInPerspective Then AddPropStrToArray iPropsStr, c, "ShowRowsInPerspective", nCtl.ShowRowsInPerspective
     If nCtl.BackStyle <> cPropDef_BackStyle Then AddPropStrToArray iPropsStr, c, "BackStyle", nCtl.BackStyle
