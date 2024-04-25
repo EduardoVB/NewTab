@@ -232,7 +232,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
-Attribute VB_Description = "Tabbed control for VB6."
+Attribute VB_Description = "NewTab: tabbed control"
 Option Explicit
 
 ' Set the line below to 0 to disable the IDE protection (with IDE protection some features are be lost in the IDE-uncompiled when it is set to 1, like changing tabs with a click at design time)
