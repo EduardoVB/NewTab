@@ -5481,7 +5481,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     Dim iUpgradingFromSSTab As Boolean
     Dim iBytes() As Byte
     Dim iTheme As NewTabTheme
-    Dim iNewTabVersion As Long
+    Dim iControlVersion As Long
     
     On Error Resume Next
     mUserControlHwnd = UserControl.hWnd
@@ -5671,7 +5671,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     End If
     Set iAllCtlNames = New Collection
     mNoTabVisible = True
-    iNewTabVersion = Val(PropBag.ReadProperty("NewTabVersion", 0))
+    iControlVersion = Val(PropBag.ReadProperty("ControlVersion", 0))
     For c = 0 To mTabs - 1
         Set mTabData(c).Controls = New Collection
         Set mTabData(c).Picture = PropBag.ReadProperty("TabPicture(" & CStr(c) & ")", Nothing)
@@ -5693,7 +5693,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         mTabData(c).IconChar = PropBag.ReadProperty("TabIconChar(" & CStr(c) & ")", 0)
         mTabData(c).IconLeftOffset = PropBag.ReadProperty("TabIconLeftOffset(" & CStr(c) & ")", 0)
         mTabData(c).IconTopOffset = PropBag.ReadProperty("TabIconTopOffset(" & CStr(c) & ")", 0)
-        If iNewTabVersion < 9 Then
+        If iControlVersion < 9 Then
             mTabData(c).Caption = PropBag.ReadProperty("TabCaption(" & CStr(c) & ")", "")
         Else
             mTabData(c).Caption = PropBag.ReadProperty("TabCaption(" & CStr(c) & ")", "Tab " & CStr(c))
@@ -6202,7 +6202,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     PropBag.WriteProperty "FlatBodySeparationLineHeight", mFlatBodySeparationLineHeight, cPropDef_FlatBodySeparationLineHeight
     PropBag.WriteProperty "UserControlSizeCorrectionsCounter_ScaleWidthNotToResize", mUserControlSizeCorrectionsCounter_ScaleWidthNotToResize, 0
     PropBag.WriteProperty "UserControlSizeCorrectionsCounter_ScaleHeightNotToResize", mUserControlSizeCorrectionsCounter_ScaleHeightNotToResize, 0
-    PropBag.WriteProperty "NewTabVersion", App.Major, 0
+    PropBag.WriteProperty "ControlVersion", App.Major, 0
     
     For c = 0 To mTabs - 1
         PropBag.WriteProperty "TabPicture(" & CStr(c) & ")", mTabData(c).Picture, Nothing
@@ -6216,7 +6216,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         PropBag.WriteProperty "TabToolTipText(" & CStr(c) & ")", mTabData(c).ToolTipText, ""
         PropBag.WriteProperty "TabEnabled(" & CStr(c) & ")", mTabData(c).Enabled, True
         PropBag.WriteProperty "TabVisible(" & CStr(c) & ")", mTabData(c).Visible, True
-        PropBag.WriteProperty "Tab(" & c & ").ControlCount", mTabData(c).Controls.Count
+        PropBag.WriteProperty "Tab(" & c & ").ControlCount", mTabData(c).Controls.Count, 0
         For c2 = 1 To mTabData(c).Controls.Count
             PropBag.WriteProperty "Tab(" & c & ").Control(" & c2 - 1 & ")", mTabData(c).Controls(c2), ""
         Next
