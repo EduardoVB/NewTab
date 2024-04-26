@@ -13579,6 +13579,9 @@ Attribute TabKey.VB_Description = "A key that can be used to set the current/act
 End Property
 
 Public Property Let TabKey(ByVal Index As Long, ByVal nValue As String)
+    Dim c As Long
+    Dim iLCKey As String
+    
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -13590,6 +13593,19 @@ Public Property Let TabKey(ByVal Index As Long, ByVal nValue As String)
         End If
     End If
     If nValue <> mTabData(Index).Key Then
+        If nValue <> "" Then
+            For c = 0 To mTabs - 1
+                If c <> Index Then
+                    iLCKey = LCase$(nValue)
+                    If mTabData(c).Key <> "" Then
+                        If LCase$(mTabData(c).Key) = iLCKey Then
+                            RaiseError 457, TypeName(Me)
+                            Exit Property
+                        End If
+                    End If
+                End If
+            Next
+        End If
         mTabData(Index).Key = nValue
         PropertyChanged "TabKey"
     End If

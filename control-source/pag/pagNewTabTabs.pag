@@ -374,9 +374,10 @@ Begin VB.PropertyPage pagNewTabTabs
       EndProperty
       TabHeight       =   579
       AutoTabHeight   =   -1  'True
-      Tab(0).ControlCount=   0
-      Tab(1).ControlCount=   0
-      Tab(2).ControlCount=   0
+      ControlVersion  =   9
+      TabCaption(0)   =   ""
+      TabCaption(1)   =   ""
+      TabCaption(2)   =   ""
    End
    Begin VB.Line Line3 
       BorderColor     =   &H80000006&
@@ -967,6 +968,31 @@ Private Sub mUniTextTabKey_GotFocus()
 End Sub
 
 Private Sub mUniTextTabKey_LostFocus()
+    Dim c As Long
+    Dim iLCKey As String
+    Dim iErrDesc As String
+    
+    If (mUniTextTabKey.Text <> "") And (Not mLoading) And (Not mShowingTabData) Then
+        For c = 0 To mTabs - 1
+            If c <> mTabSel Then
+                iLCKey = LCase$(mUniTextTabKey.Text)
+                If mTabData(c).Key <> "" Then
+                    If LCase$(mTabData(c).Key) = iLCKey Then
+                        On Error Resume Next
+                        Dim col As New Collection
+                        col.Add 1, "A"
+                        col.Add 1, "A"
+                        iErrDesc = Err.Description
+                        On Error GoTo 0
+                        MsgBox iErrDesc, vbCritical
+                        mUniTextTabKey.Text = ""
+                        mUniTextTabKey.SetFocus
+                        Exit Sub
+                    End If
+                End If
+            End If
+        Next
+    End If
     mUniTextTabKeySync = False
 End Sub
 
