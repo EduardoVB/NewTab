@@ -697,6 +697,7 @@ End Sub
 Private Sub cmdInsertTab_Click()
     Dim iTabData() As T_TabDataP
     Dim t As Long
+    Dim c As Long
     
     ReDim iTabData(mTabs)
     For t = 0 To mTabSel
@@ -721,12 +722,16 @@ Private Sub cmdInsertTab_Click()
     Set mTabData(mTabSel).IconFont = CloneFont(mLastIconFont)
     mTabData(mTabSel).Enabled = True
     mTabData(mTabSel).Visible = True
-    
+    For c = 0 To 16
+        mTabData(mTabSel).CustomColor(c) = GetGeneralColor(c)
+    Next
     Changed = True
     
+    NewTab1.Tabs = mTabs
     ShowTabData
 
 End Sub
+
 
 Private Sub cmdMoveContainedControls_Click()
     Dim iStr As String
@@ -979,9 +984,9 @@ Private Sub mUniTextTabKey_LostFocus()
                 If mTabData(c).Key <> "" Then
                     If LCase$(mTabData(c).Key) = iLCKey Then
                         On Error Resume Next
-                        Dim col As New Collection
-                        col.Add 1, "A"
-                        col.Add 1, "A"
+                        Dim Col As New Collection
+                        Col.Add 1, "A"
+                        Col.Add 1, "A"
                         iErrDesc = Err.Description
                         On Error GoTo 0
                         MsgBox iErrDesc, vbCritical

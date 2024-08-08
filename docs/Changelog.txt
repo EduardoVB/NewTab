@@ -1,3 +1,4 @@
+2024-08-08 Fixed bug in pagNewTabTabs propety page, when adding a new tab. 
 2024-04-25 Fixed: TabKey must be unique.
 2024-04-25 TabKeys are now case insensitive.
 2024-04-24 Changed to OLE version 9.0.
