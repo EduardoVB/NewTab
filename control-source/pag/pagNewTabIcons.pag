@@ -606,9 +606,35 @@ Begin VB.PropertyPage pagNewTabIcons
       EndProperty
       TabHeight       =   579
       AutoTabHeight   =   -1  'True
-      Tab(0).ControlCount=   0
-      Tab(1).ControlCount=   0
-      Tab(2).ControlCount=   0
+      ControlVersion  =   9
+      TabCaption(0)   =   ""
+      TabCaption(1)   =   ""
+      TabCaption(2)   =   ""
+   End
+   Begin VB.Label lblTabCaption 
+      Height          =   252
+      Left            =   4680
+      TabIndex        =   51
+      Top             =   105
+      Width           =   2452
+   End
+   Begin VB.Label Label3 
+      Alignment       =   1  'Right Justify
+      Caption         =   "TabCaption:"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   7.8
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   252
+      Left            =   3480
+      TabIndex        =   50
+      Top             =   105
+      Width           =   1092
    End
    Begin VB.Label Label2 
       Caption         =   $"pagNewTabIcons.pgx":0000
@@ -1510,6 +1536,7 @@ Private Sub DoShowTabData()
     t = mTabSel
     txtTabSel.Text = t
     txtTabSel.Refresh
+    lblTabCaption.Caption = mTabData(t).Caption
     
     cmdTabPrev.Enabled = t > 0
     cmdTabNext.Enabled = t < (mTabs - 1)

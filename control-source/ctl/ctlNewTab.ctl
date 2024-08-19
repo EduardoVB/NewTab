@@ -5786,13 +5786,13 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
 End Sub
 
 Private Sub UserControl_Resize()
-    If mResizeEventPending Then RaiseEvent_Resize
     ResetCachedThemeImages
     If mAmbientUserMode Then
         PostDrawMessage
     Else
         tmrDraw.Enabled = True
     End If
+    If mResizeEventPending Then RaiseEvent_Resize
 End Sub
 
 Private Sub UserControl_Show()
@@ -6311,7 +6311,7 @@ Private Sub Draw()
     
     If mUserControlTerminated Then Exit Sub
     
-    If mResizeEventPending Then RaiseEvent_Resize
+    'If mResizeEventPending Then RaiseEvent_Resize
     If Not mRedraw Then
         mNeedToDraw = True
         If Not mEnsuringDrawn Then
@@ -7652,14 +7652,7 @@ Private Sub Draw()
         picAux.Cls
     End If
     
-    If (mClientRect_Prev.Left <> mClientRect.Left) Or (mClientRect_Prev.Top <> mClientRect.Top) Or (mClientRect_Prev.Right <> mClientRect.Right) Or (mClientRect_Prev.Bottom <> mClientRect.Bottom) Then
-        RaiseEvent_Resize
-    End If
-    
-    mClientRect_Prev.Left = mClientRect.Left
-    mClientRect_Prev.Top = mClientRect.Top
-    mClientRect_Prev.Right = mClientRect.Right
-    mClientRect_Prev.Bottom = mClientRect.Bottom
+    RaiseEvent_Resize
     
     If mSubclassControlsPaintingPending Then SubclassControlsPainting
     
@@ -7693,11 +7686,19 @@ Private Sub RaiseEvent_Resize()
     If UserControl.EventsFrozen Then
         mResizeEventPending = True
     Else
-        If Not sInside Then
+        If mDrawMessagePosted Or tmrDraw.Enabled Then
+            Draw
+        ElseIf Not sInside Then
             sInside = True
             mResizeEventPending = False
             If mTDIMode = ntTDIModeForms Then TDIResizeFormContainers
-            RaiseEvent Resize
+            If (mClientRect_Prev.Left <> mClientRect.Left) Or (mClientRect_Prev.Top <> mClientRect.Top) Or (mClientRect_Prev.Right <> mClientRect.Right) Or (mClientRect_Prev.Bottom <> mClientRect.Bottom) Then
+                RaiseEvent Resize
+                mClientRect_Prev.Left = mClientRect.Left
+                mClientRect_Prev.Top = mClientRect.Top
+                mClientRect_Prev.Right = mClientRect.Right
+                mClientRect_Prev.Bottom = mClientRect.Bottom
+            End If
             sInside = False
         End If
     End If

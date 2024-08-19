@@ -1,3 +1,6 @@
+2024-08-13 Fix in raising Resize event.
+2024-08-12 In the pagNewTabTabs property page now the default tab displayed is the current tab in the control.
+2024-08-12 Added TabCaption label to pagNewTabIcons property page.
 2024-08-08 Fixed bug in pagNewTabTabs propety page, when adding a new tab. 
 2024-04-25 Fixed: TabKey must be unique.
 2024-04-25 TabKeys are now case insensitive.

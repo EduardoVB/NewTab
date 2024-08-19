@@ -1211,6 +1211,13 @@ Private Sub PropertyPage_SelectionChanged()
         NewTab1.ToolTipText = "Drag to move the tab control and see other tabs"
         NewTab1.Top = 8400 - (mSC.Height - mSC.ClientHeight)
     End If
+    
+    If ((Timer - gPagTabsApplyTime) < 3) And (gPagTabsApplyTime <> 0) Then
+        mTabSel = gPagTabsLastTabSel
+    Else
+        mTabSel = mSC.TabSel
+    End If
+    
     CopyControlProperties mSC, NewTab1
     If mTDIMode Then NewTab1.TabWidthStyle = ntTWTabCaptionWidthFillRows
     
