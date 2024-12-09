@@ -1,3 +1,4 @@
+2024-12-09 Fixed click on tabs at design time when RightToLeft = True.
 2024-08-13 Fix in raising Resize event.
 2024-08-12 In the pagNewTabTabs property page now the default tab displayed is the current tab in the control.
 2024-08-12 Added TabCaption label to pagNewTabIcons property page.

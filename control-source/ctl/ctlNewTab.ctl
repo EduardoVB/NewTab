@@ -5292,6 +5292,7 @@ Private Sub ProcessMouseMove(Button As Integer, Shift As Integer, X As Single, Y
     
     iX = pScaleX(X, vbTwips, vbPixels)
     iY = pScaleX(Y, vbTwips, vbPixels)
+    If (Not mAmbientUserMode) And mRightToLeft Then iX = mScaleWidth - iX
     
     ' first check for the active tab, because in some cases it is bigger and can overlap surrounding tabs
     If (mTab > -1) And (mTab < mTabs) Then
