@@ -1,3 +1,4 @@
+2024-12-10 Improved GUI in pagNewTabIcons property page for TDI mode.
 2024-12-10 Fixed left border issue when RightToLeft = True.
 2024-12-10 Removed TabsPerRow property from Theme.
 2024-12-09 Fixed click on tabs at design time when RightToLeft = True.
