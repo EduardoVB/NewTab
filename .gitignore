@@ -4,5 +4,6 @@
 *.log
 *.vbw
 *.lnk
+*.tmp
 /docs/Documenter
 ToDo.txt

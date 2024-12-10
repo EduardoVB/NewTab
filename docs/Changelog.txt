@@ -1,3 +1,5 @@
+2024-12-10 Fixed left border issue when RightToLeft = True.
+2024-12-10 Removed TabsPerRow property from Theme.
 2024-12-09 Fixed click on tabs at design time when RightToLeft = True.
 2024-08-13 Fix in raising Resize event.
 2024-08-12 In the pagNewTabTabs property page now the default tab displayed is the current tab in the control.

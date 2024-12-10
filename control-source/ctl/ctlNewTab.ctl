@@ -3543,8 +3543,10 @@ Public Property Let RightToLeft(ByVal nValue As Boolean)
         mRightToLeft = nValue
         If mRightToLeft Then
             SetLayout GetDC(picDraw.hWnd), LAYOUT_RTL
+            SetLayout GetDC(picAux.hWnd), LAYOUT_RTL
         Else
             SetLayout GetDC(picDraw.hWnd), 0
+            SetLayout GetDC(picAux.hWnd), 0
         End If
         SetScaleMode
         SetPropertyChanged "RightToLeft"
@@ -4346,6 +4348,7 @@ Private Sub UserControl_InitProperties()
     
     SetDefaultPropertyValuesForThemedProperties
     
+    mTabsPerRow = cPropDef_TabsPerRow
     mIconColorMouseHover = Ambient.ForeColor
     mIconColorMouseHoverTabSel = Ambient.ForeColor
     mRightToLeft = Ambient.RightToLeft
@@ -4476,7 +4479,6 @@ Friend Sub SetDefaultPropertyValuesForThemedProperties(Optional nSetControlsColo
     mWordWrap = cPropDef_WordWrap: PropertyChanged "WordWrap"
     mMaskColor = cPropDef_MaskColor: PropertyChanged "MaskColor"
     mShowFocusRect = cPropDef_ShowFocusRect: PropertyChanged "ShowFocusRect"
-    mTabsPerRow = cPropDef_TabsPerRow: PropertyChanged "TabsPerRow"
     mShowDisabledState = cPropDef_ShowDisabledState: PropertyChanged "ShowDisabledState"
     mHighlightEffect = cPropDef_HighlightEffect: PropertyChanged "HighlightEffect"
     mTabWidthStyle = cPropDef_TabWidthStyle: PropertyChanged "TabWidthStyle"
@@ -5611,6 +5613,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     mRightToLeft = PropBag.ReadProperty("RightToLeft", Ambient.RightToLeft)
     If mRightToLeft Then
         SetLayout GetDC(picDraw.hWnd), LAYOUT_RTL
+        SetLayout GetDC(picAux.hWnd), LAYOUT_RTL
     End If
     SetScaleMode
     mHandleHighContrastTheme = PropBag.ReadProperty("HandleHighContrastTheme", cPropDef_HandleHighContrastThem)
