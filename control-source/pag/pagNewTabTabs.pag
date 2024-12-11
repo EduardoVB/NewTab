@@ -344,7 +344,7 @@ Begin VB.PropertyPage pagNewTabTabs
       Top             =   70
       Width           =   300
    End
-   Begin VB.TextBox txtTabSel 
+   Begin VB.TextBox txtTab 
       BackColor       =   &H8000000F&
       Height          =   300
       Left            =   1140
@@ -608,7 +608,6 @@ Private Const VK_LBUTTON = &H1
 Private Const VK_RBUTTON = &H2
 Private Const SM_SWAPBUTTON = 23&
 
-Private Const cMsgBugIcons As String = "Note: If you are going to load *.ico files, do it from the property window (not from here). There seems to be a bug in VB6 that cause them to lose the tabsparency." & vbCrLf & "This operation will be Canceled." & vbCrLf & "To load pictures for different tabs in the property window (the one that appears pressing F4 on a control), select the appropriate tab with the TabSel property and then load the picture in the Picture property (or Pic16, Pic20 and Pic24)."
 Private Const cCopyImageTTT As String = "Double click on the image to copy it to the clipboard"
 
 Private mLoading As Boolean
@@ -635,7 +634,7 @@ Private Type T_TabDataP
 End Type
 
 Private mTabData() As T_TabDataP
-Private mTabSel As Long
+Private mTab As Long
 Private mTabs As Long
 Private mStrImagesDifferences As String
 
@@ -671,7 +670,7 @@ End Sub
 Private Sub chkTabEnabled_Click()
     If Not mLoading And Not mShowingTabData Then
         Changed = True
-        mTabData(mTabSel).Enabled = (chkTabEnabled.Value = 1)
+        mTabData(mTab).Enabled = (chkTabEnabled.Value = 1)
         ShowTabData
     End If
 End Sub
@@ -679,7 +678,7 @@ End Sub
 Private Sub chkTabVisible_Click()
     If Not mLoading And Not mShowingTabData Then
         Changed = True
-        mTabData(mTabSel).Visible = (chkTabVisible.Value = 1)
+        mTabData(mTab).Visible = (chkTabVisible.Value = 1)
     End If
 End Sub
 
@@ -688,7 +687,7 @@ Private Sub cmdChangeCustomColor_Click()
     
     iDlg.ShowColor
     If Not iDlg.Canceled Then
-        mTabData(mTabSel).CustomColor(cboColorID.ItemData(cboColorID.ListIndex)) = iDlg.Color
+        mTabData(mTab).CustomColor(cboColorID.ItemData(cboColorID.ListIndex)) = iDlg.Color
         Changed = True
         ShowCustomColor
     End If
@@ -700,10 +699,10 @@ Private Sub cmdInsertTab_Click()
     Dim c As Long
     
     ReDim iTabData(mTabs)
-    For t = 0 To mTabSel
+    For t = 0 To mTab
         iTabData(t) = mTabData(t)
     Next t
-    For t = mTabSel + 1 To mTabs - 1
+    For t = mTab + 1 To mTabs - 1
         iTabData(t + 1) = mTabData(t)
         If iTabData(t + 1).Caption = "Tab " & CStr(t) Then
             iTabData(t + 1).Caption = "Tab " & CStr(t + 1)
@@ -716,14 +715,14 @@ Private Sub cmdInsertTab_Click()
         mTabData(t) = iTabData(t)
     Next t
     
-    mTabSel = mTabSel + 1
-    mTabData(mTabSel).Caption = "Tab " & CStr(mTabSel)
-    Set mTabData(mTabSel).Controls = New Collection
-    Set mTabData(mTabSel).IconFont = CloneFont(mLastIconFont)
-    mTabData(mTabSel).Enabled = True
-    mTabData(mTabSel).Visible = True
+    mTab = mTab + 1
+    mTabData(mTab).Caption = "Tab " & CStr(mTab)
+    Set mTabData(mTab).Controls = New Collection
+    Set mTabData(mTab).IconFont = CloneFont(mLastIconFont)
+    mTabData(mTab).Enabled = True
+    mTabData(mTab).Visible = True
     For c = 0 To 16
-        mTabData(mTabSel).CustomColor(c) = GetGeneralColor(c)
+        mTabData(mTab).CustomColor(c) = GetGeneralColor(c)
     Next
     Changed = True
     
@@ -745,7 +744,7 @@ Private Sub cmdMoveContainedControls_Click()
         If IsNumeric(iStr) Then
             t = Val(iStr)
             If (t > -1) And (t <= (mTabs - 1)) Then
-                If t = mTabSel Then
+                If t = mTab Then
                     MsgBox "Destination tab number must be different than current tab.", vbExclamation
                 Else
                     If mTabData(t).Controls.Count > 0 Then
@@ -758,14 +757,14 @@ Private Sub cmdMoveContainedControls_Click()
                         End Select
                     End If
                     If iExchange Then
-                        Set iObj = mTabData(mTabSel).Controls
-                        Set mTabData(mTabSel).Controls = mTabData(t).Controls
+                        Set iObj = mTabData(mTab).Controls
+                        Set mTabData(mTab).Controls = mTabData(t).Controls
                         Set mTabData(t).Controls = iObj
                     Else
-                        For Each iCtlName In mTabData(mTabSel).Controls
+                        For Each iCtlName In mTabData(mTab).Controls
                             mTabData(t).Controls.Add iCtlName
                         Next
-                        Set mTabData(mTabSel).Controls = New Collection
+                        Set mTabData(mTab).Controls = New Collection
                     End If
                     Changed = True
                 End If
@@ -786,7 +785,7 @@ Private Sub cmdMoveControlToTab_Click()
     
     Set iFrm = New frmNewTabSelectControl
     For t = 0 To UBound(mTabData)
-        If t <> mTabSel Then
+        If t <> mTab Then
             For c = 1 To mTabData(t).Controls.Count
                 iFrm.lstControls.AddItem mTabData(t).Controls(c) & "   [now in Tab " & t & "]"
             Next
@@ -796,7 +795,7 @@ Private Sub cmdMoveControlToTab_Click()
     iFrm.Show 1
     If iFrm.SelectedControl <> "" Then
         For t = 0 To UBound(mTabData)
-            If t <> mTabSel Then
+            If t <> mTab Then
                 For c = 1 To mTabData(t).Controls.Count
                     If mTabData(t).Controls(c) = iFrm.SelectedControl Then
                         mTabData(t).Controls.Remove c
@@ -808,7 +807,7 @@ Private Sub cmdMoveControlToTab_Click()
             If iFound Then Exit For
         Next t
         
-        mTabData(mTabSel).Controls.Add iFrm.SelectedControl
+        mTabData(mTab).Controls.Add iFrm.SelectedControl
         Changed = True
     End If
     
@@ -817,11 +816,11 @@ End Sub
 Private Sub cmdMoveNext_Click()
     Dim iTD As T_TabDataP
     
-    iTD = mTabData(mTabSel)
-    mTabData(mTabSel) = mTabData(mTabSel + 1)
-    mTabData(mTabSel + 1) = iTD
+    iTD = mTabData(mTab)
+    mTabData(mTab) = mTabData(mTab + 1)
+    mTabData(mTab + 1) = iTD
     DoShowTabData
-    mTabSel = mTabSel + 1
+    mTab = mTab + 1
     Changed = True
     ShowTabData
 End Sub
@@ -838,11 +837,11 @@ End Sub
 Private Sub cmdMovePrevious_Click()
     Dim iTD As T_TabDataP
     
-    iTD = mTabData(mTabSel)
-    mTabData(mTabSel) = mTabData(mTabSel - 1)
-    mTabData(mTabSel - 1) = iTD
+    iTD = mTabData(mTab)
+    mTabData(mTab) = mTabData(mTab - 1)
+    mTabData(mTab - 1) = iTD
     DoShowTabData
-    mTabSel = mTabSel - 1
+    mTab = mTab - 1
     Changed = True
     ShowTabData
 End Sub
@@ -857,7 +856,7 @@ Private Sub cmdMovePrevious_MouseUp(Button As Integer, Shift As Integer, X As Si
 End Sub
 
 Private Sub cmdRemoveCustomColor_Click()
-    mTabData(mTabSel).CustomColor(cboColorID.ItemData(cboColorID.ListIndex)) = GetGeneralColor(cboColorID.ItemData(cboColorID.ListIndex))
+    mTabData(mTab).CustomColor(cboColorID.ItemData(cboColorID.ListIndex)) = GetGeneralColor(cboColorID.ItemData(cboColorID.ListIndex))
     Changed = True
     ShowCustomColor
 End Sub
@@ -866,8 +865,8 @@ Private Sub cmdRemoveTab_Click()
     Dim iTabData() As T_TabDataP
     Dim t As Long
     
-    If mTabData(mTabSel).Controls.Count > 0 Then
-        MsgBox "Tab " & CStr(mTabSel) & " has controls, can't remove tabs with controls. Remove the contained controls first.", vbCritical
+    If mTabData(mTab).Controls.Count > 0 Then
+        MsgBox "Tab " & CStr(mTab) & " has controls, can't remove tabs with controls. Remove the contained controls first.", vbCritical
         Exit Sub
     End If
     If mTabs = 1 Then
@@ -876,10 +875,10 @@ Private Sub cmdRemoveTab_Click()
     End If
     
     ReDim iTabData(mTabs - 2)
-    For t = 0 To mTabSel - 1
+    For t = 0 To mTab - 1
         iTabData(t) = mTabData(t)
     Next t
-    For t = mTabSel + 1 To mTabs - 1
+    For t = mTab + 1 To mTabs - 1
         iTabData(t - 1) = mTabData(t)
         If iTabData(t - 1).Caption = "Tab " & CStr(t) Then
             iTabData(t - 1).Caption = "Tab " & CStr(t - 1)
@@ -892,8 +891,8 @@ Private Sub cmdRemoveTab_Click()
         mTabData(t) = iTabData(t)
     Next t
     
-    If mTabSel = mTabs Then
-        mTabSel = mTabSel - 1
+    If mTab = mTabs Then
+        mTab = mTab - 1
     End If
     
     Changed = True
@@ -903,7 +902,7 @@ End Sub
 
 Private Sub cmdTabNext_Click()
     mLoading = True
-    mTabSel = mTabSel + 1
+    mTab = mTab + 1
     ShowTabData
     mLoading = False
 End Sub
@@ -919,7 +918,7 @@ End Sub
 
 Private Sub cmdTabPrev_Click()
     mLoading = True
-    mTabSel = mTabSel - 1
+    mTab = mTab - 1
     ShowTabData
     mLoading = False
 End Sub
@@ -979,7 +978,7 @@ Private Sub mUniTextTabKey_LostFocus()
     
     If (mUniTextTabKey.Text <> "") And (Not mLoading) And (Not mShowingTabData) Then
         For c = 0 To mTabs - 1
-            If c <> mTabSel Then
+            If c <> mTab Then
                 iLCKey = LCase$(mUniTextTabKey.Text)
                 If mTabData(c).Key <> "" Then
                     If LCase$(mTabData(c).Key) = iLCKey Then
@@ -1089,7 +1088,7 @@ Private Sub PropertyPage_ApplyChanges()
     End If
     iSC.MakeContainedControlsInSelTabVisible
     gPagTabsApplyTime = Timer
-    gPagTabsLastTabSel = mTabSel
+    gPagTabsLastTabSel = mTab
     Set mSC = Nothing
 End Sub
 
@@ -1156,6 +1155,7 @@ Private Sub PropertyPage_SelectionChanged()
     mTabs = mSC.Tabs
     mSC.StoreVisibleControlsInSelectedTab
     ReDim mTabData(mTabs - 1)
+    NewTab1.RightToLeft = mSC.RightToLeft
     NewTab1.Tabs = mSC.Tabs
     For t = 0 To mTabs - 1
         mTabData(t).Caption = mSC.TabCaption(t)
@@ -1213,9 +1213,9 @@ Private Sub PropertyPage_SelectionChanged()
     End If
     
     If ((Timer - gPagTabsApplyTime) < 3) And (gPagTabsApplyTime <> 0) Then
-        mTabSel = gPagTabsLastTabSel
+        mTab = gPagTabsLastTabSel
     Else
-        mTabSel = mSC.TabSel
+        mTab = mSC.TabSel
     End If
     
     CopyControlProperties mSC, NewTab1
@@ -1256,9 +1256,9 @@ Private Sub DoShowTabData()
     
     If mShowingTabData Then Exit Sub
     mShowingTabData = True
-    t = mTabSel
-    txtTabSel.Text = t
-    txtTabSel.Refresh
+    t = mTab
+    txtTab.Text = t
+    txtTab.Refresh
     If mUniTextTabCaption.Text <> mTabData(t).Caption Then
         mUniTextTabCaption.Text = mTabData(t).Caption
     End If
@@ -1336,7 +1336,7 @@ End Sub
 Private Sub mUniTextTabCaption_Change()
     If Not mLoading And Not mShowingTabData Then
         Changed = True
-        mTabData(mTabSel).Caption = mUniTextTabCaption.Text
+        mTabData(mTab).Caption = mUniTextTabCaption.Text
         ShowTabData
     End If
 End Sub
@@ -1344,7 +1344,7 @@ End Sub
 Private Sub mUniTextTabToolTipText_Change()
     If Not mLoading And Not mShowingTabData Then
         Changed = True
-        mTabData(mTabSel).ToolTipText = mUniTextTabToolTipText.Text
+        mTabData(mTab).ToolTipText = mUniTextTabToolTipText.Text
         ShowTabData
     End If
 End Sub
@@ -1352,7 +1352,7 @@ End Sub
 Private Sub mUniTextTabTag_Change()
     If Not mLoading And Not mShowingTabData Then
         Changed = True
-        mTabData(mTabSel).Tag = mUniTextTabTag.Text
+        mTabData(mTab).Tag = mUniTextTabTag.Text
     End If
 End Sub
 
@@ -1366,7 +1366,7 @@ Private Sub mUniTextTabKey_Change()
             End If
         End If
         Changed = True
-        mTabData(mTabSel).Key = mUniTextTabKey.Text
+        mTabData(mTab).Key = mUniTextTabKey.Text
     End If
 End Sub
 
@@ -1450,8 +1450,8 @@ Private Sub txtCustomColor_Change()
     iColor = CLng(txtCustomColor.Text)
     On Error GoTo 0
     If IsValidOLE_COLOR(iColor) Then
-        If iColor <> mTabData(mTabSel).CustomColor(cboColorID.ItemData(cboColorID.ListIndex)) Then
-            mTabData(mTabSel).CustomColor(cboColorID.ItemData(cboColorID.ListIndex)) = iColor
+        If iColor <> mTabData(mTab).CustomColor(cboColorID.ItemData(cboColorID.ListIndex)) Then
+            mTabData(mTab).CustomColor(cboColorID.ItemData(cboColorID.ListIndex)) = iColor
             ShowCustomColor
             Changed = True
         End If
@@ -1486,7 +1486,7 @@ Private Sub txtTabData_Change()
         sPrevValue = txtTabData.Text
     
         Changed = True
-        mTabData(mTabSel).Data = Val(txtTabData.Text)
+        mTabData(mTab).Data = Val(txtTabData.Text)
     End If
 End Sub
 
@@ -1508,7 +1508,7 @@ Private Sub txtTabFixedWidth_Change()
         sPrevValue = txtTabFixedWidth.Text
     
         Changed = True
-        mTabData(mTabSel).Data = Val(txtTabFixedWidth.Text)
+        mTabData(mTab).Data = Val(txtTabFixedWidth.Text)
     End If
 End Sub
 
@@ -1528,7 +1528,7 @@ Private Sub ShowCustomColor()
     iColorID = cboColorID.ItemData(cboColorID.ListIndex)
     iGeneralColor = GetGeneralColor(iColorID)
     picCustomColor.Cls
-    If (mTabData(mTabSel).CustomColor(iColorID) = iGeneralColor) Then
+    If (mTabData(mTab).CustomColor(iColorID) = iGeneralColor) Then
         ' custom color not set
         picCustomColor.BackColor = vbButtonFace
         For Y = 0 To 5
@@ -1546,14 +1546,14 @@ Private Sub ShowCustomColor()
         cmdRemoveCustomColor.Enabled = False
         txtCustomColor.Text = ""
     Else
-        picCustomColor.BackColor = mTabData(mTabSel).CustomColor(iColorID)
+        picCustomColor.BackColor = mTabData(mTab).CustomColor(iColorID)
         cmdRemoveCustomColor.Enabled = True
-        txtCustomColor.Text = "&H" & Hex(mTabData(mTabSel).CustomColor(iColorID))
+        txtCustomColor.Text = "&H" & Hex(mTabData(mTab).CustomColor(iColorID))
         txtCustomColor.SelStart = Len(txtCustomColor.Text)
     End If
     picGeneralColor.BackColor = iGeneralColor
     picGeneralColor.ToolTipText = "&H" & Hex(iGeneralColor)
-    NewTab1.TabCustomColor(mTabSel, iColorID) = mTabData(mTabSel).CustomColor(iColorID)
+    NewTab1.TabCustomColor(mTab, iColorID) = mTabData(mTab).CustomColor(iColorID)
 End Sub
 
 Private Function GetGeneralColor(nColorID As NTTabCustomColorIDConstants) As Long
@@ -1602,16 +1602,16 @@ End Sub
 Private Sub NewTab1_Click(PreviousTab As Integer)
     If Not mLoading And Not mShowingTabData Then
         mLoading = True
-        mTabSel = NewTab1.TabSel
+        mTab = NewTab1.TabSel
         ShowTabData
         mLoading = False
         
-        If (NewTab1.Left + NewTab1.GetTabLeft(mTabSel) + NewTab1.GetTabWidth(mTabSel)) > PropertyPage.ScaleWidth Then
+        If (NewTab1.Left + NewTab1.GetTabLeft(mTab) + NewTab1.GetTabWidth(mTab)) > PropertyPage.ScaleWidth Then
             tmrTabChanged.Enabled = True
-            NewTab1.Left = PropertyPage.ScaleWidth - (NewTab1.GetTabLeft(mTabSel) + NewTab1.GetTabWidth(mTabSel)) - 120
-        ElseIf (NewTab1.Left + NewTab1.GetTabLeft(mTabSel)) < 0 Then
+            NewTab1.Left = PropertyPage.ScaleWidth - (NewTab1.GetTabLeft(mTab) + NewTab1.GetTabWidth(mTab)) - 120
+        ElseIf (NewTab1.Left + NewTab1.GetTabLeft(mTab)) < 0 Then
             tmrTabChanged.Enabled = True
-            NewTab1.Left = 120 - NewTab1.GetTabLeft(mTabSel)
+            NewTab1.Left = 120 - NewTab1.GetTabLeft(mTab)
         End If
     End If
 End Sub
@@ -1646,6 +1646,6 @@ Private Sub NewTab1_MouseMove(Button As Integer, Shift As Integer, X As Single, 
     End If
 End Sub
 
-Private Sub txtTabSel_Change()
-    NewTab1.TabSel = Val(txtTabSel.Text)
+Private Sub txtTab_Change()
+    NewTab1.TabSel = Val(txtTab.Text)
 End Sub

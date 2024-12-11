@@ -45,14 +45,8 @@ Begin VB.PropertyPage pagNewTabThemes
          Strikethrough   =   0   'False
       EndProperty
       TabHeight       =   600
-      Themed          =   0   'False
       AutoTabHeight   =   -1  'True
-      TabCaption(0)   =   "Tab 0"
-      Tab(0).ControlCount=   0
-      TabCaption(1)   =   "Tab 1"
-      Tab(1).ControlCount=   0
-      TabCaption(2)   =   "Tab 2"
-      Tab(2).ControlCount=   0
+      ControlVersion  =   9
    End
    Begin VB.CommandButton cmdCompare 
       Caption         =   "Compare"
@@ -247,14 +241,8 @@ Begin VB.PropertyPage pagNewTabThemes
             Strikethrough   =   0   'False
          EndProperty
          TabHeight       =   600
-         Themed          =   0   'False
          AutoTabHeight   =   -1  'True
-         TabCaption(0)   =   "Tab 0"
-         Tab(0).ControlCount=   0
-         TabCaption(1)   =   "Tab 1"
-         Tab(1).ControlCount=   0
-         TabCaption(2)   =   "Tab 2"
-         Tab(2).ControlCount=   0
+         ControlVersion  =   9
       End
       Begin NewTabCtl.NewTab NewTab2 
          Height          =   2172
@@ -275,20 +263,10 @@ Begin VB.PropertyPage pagNewTabThemes
             Strikethrough   =   0   'False
          EndProperty
          TabHeight       =   600
-         Themed          =   0   'False
          AutoTabHeight   =   -1  'True
-         TabCaption(0)   =   "Tab 0"
-         Tab(0).ControlCount=   0
-         TabCaption(1)   =   "Tab 1"
-         Tab(1).ControlCount=   0
-         TabCaption(2)   =   "Tab 2"
-         Tab(2).ControlCount=   0
+         ControlVersion  =   9
          TabCaption(3)   =   "Tab 3 wider caption"
-         Tab(3).ControlCount=   0
          TabCaption(4)   =   "Tab 4 wider caption"
-         Tab(4).ControlCount=   0
-         TabCaption(5)   =   "Tab 5"
-         Tab(5).ControlCount=   0
       End
       Begin VB.Label lblLum 
          Alignment       =   1  'Right Justify
@@ -855,6 +833,10 @@ Private Sub PropertyPage_SelectionChanged()
     Set NewTab1.Font = f
     Set NewTab2.Font = f
     Set AuxNewTab(0).Font = f
+    
+    NewTab1.RightToLeft = iCtl.RightToLeft
+    NewTab2.RightToLeft = iCtl.RightToLeft
+    AuxNewTab(0).RightToLeft = iCtl.RightToLeft
     
     mAmbientBackColor = iCtl.AmbientBackColor
     mAmbientForeColor = iCtl.AmbientForeColor

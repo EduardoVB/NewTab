@@ -585,7 +585,7 @@ Begin VB.PropertyPage pagNewTabIcons
       Top             =   70
       Width           =   300
    End
-   Begin VB.TextBox txtTabSel 
+   Begin VB.TextBox txtTab 
       BackColor       =   &H8000000F&
       Height          =   300
       Left            =   1140
@@ -876,7 +876,7 @@ Private Const DT_CALCRECT = &H400&
 Private Const DT_CENTER = &H1&
 Private Const DT_SINGLELINE = &H20&
 
-Private Const cMsgBugIcons As String = "Note: If you are going to load *.ico files, do it from the property window (not from here). There seems to be a bug in VB6 that cause them to lose the tabsparency." & vbCrLf & "This operation will be Canceled." & vbCrLf & "To load pictures for different tabs in the property window (the one that appears pressing F4 on a control), select the appropriate tab with the TabSel property and then load the picture in the Picture property (or Pic16, Pic20 and Pic24)."
+Private Const cMsgBugIcons As String = "Note: If you are going to load *.ico files, do it from the property window (not from here). There seems to be a bug in VB6 that cause them to lose the transparency." & vbCrLf & "This operation will be Canceled." & vbCrLf & "To load pictures for different tabs in the property window (the one that appears pressing F4 on a control), select the appropriate tab with the Tab property and then load the picture in the Picture property (or Pic16, Pic20 and Pic24)."
 Private Const cCopyImageTTT As String = "Double click on the image to copy it to the clipboard"
 
 Private mLoading As Boolean
@@ -903,7 +903,7 @@ Private Type T_TabDataP
 End Type
 
 Private mTabData() As T_TabDataP
-Private mTabSel As Long
+Private mTab As Long
 Private mTabs As Long
 Private mStrImagesDifferences As String
 
@@ -944,7 +944,7 @@ Private Sub cboTabIconFont_Click()
     If (Not mLoading) And (Not mShowingTabData) Then
         Changed = True
         If cboTabIconFont.Text <> "" Then
-            mTabData(mTabSel).IconFont.Name = cboTabIconFont.Text
+            mTabData(mTab).IconFont.Name = cboTabIconFont.Text
         End If
         CheckOtherTabsFonts
         ShowTabData
@@ -968,7 +968,7 @@ Private Sub cmdBrowsePicture_Click()
         End If
         Changed = True
         On Error Resume Next
-        Set mTabData(mTabSel).Picture = LoadPicture(iDlg.FileName)
+        Set mTabData(mTab).Picture = LoadPicture(iDlg.FileName)
         If Err.Number <> 0 Then
             MsgBox "Error: " & Err.Number & ", " & Err.Description, vbCritical
         End If
@@ -982,11 +982,11 @@ Private Sub cmdChangeIconFont_Click()
     Dim cDlg As New cCommonDialog
     
     picIconFontNote.Visible = True
-    Set cDlg.Font = mTabData(mTabSel).IconFont
+    Set cDlg.Font = mTabData(mTab).IconFont
     cDlg.ShowFont
     If Not cDlg.Canceled Then
         Changed = True
-        Set mTabData(mTabSel).IconFont = CloneFont(cDlg.Font)
+        Set mTabData(mTab).IconFont = CloneFont(cDlg.Font)
         CheckOtherTabsFonts
         ShowTabData
         Set mLastIconFont = CloneFont(cDlg.Font)
@@ -996,19 +996,19 @@ End Sub
 Private Sub cmdDecreaseIconFontSize_Click()
     Dim iPrev As Single
     
-    If mTabData(mTabSel).IconFont.Size > 3 Then
-        iPrev = mTabData(mTabSel).IconFont.Size
-        mTabData(mTabSel).IconFont.Size = mTabData(mTabSel).IconFont.Size - 0.5
-        If mTabData(mTabSel).IconFont.Size = iPrev Then
-            mTabData(mTabSel).IconFont.Size = mTabData(mTabSel).IconFont.Size - 1
-            If mTabData(mTabSel).IconFont.Size = iPrev Then
-                mTabData(mTabSel).IconFont.Size = mTabData(mTabSel).IconFont.Size - 2
+    If mTabData(mTab).IconFont.Size > 3 Then
+        iPrev = mTabData(mTab).IconFont.Size
+        mTabData(mTab).IconFont.Size = mTabData(mTab).IconFont.Size - 0.5
+        If mTabData(mTab).IconFont.Size = iPrev Then
+            mTabData(mTab).IconFont.Size = mTabData(mTab).IconFont.Size - 1
+            If mTabData(mTab).IconFont.Size = iPrev Then
+                mTabData(mTab).IconFont.Size = mTabData(mTab).IconFont.Size - 2
             End If
         End If
-        If mLastIconFont.Name <> mTabData(mTabSel).IconFont.Name Then
-            Set mLastIconFont = CloneFont(mTabData(mTabSel).IconFont)
+        If mLastIconFont.Name <> mTabData(mTab).IconFont.Name Then
+            Set mLastIconFont = CloneFont(mTabData(mTab).IconFont)
         End If
-        mLastIconFont.Size = mTabData(mTabSel).IconFont.Size
+        mLastIconFont.Size = mTabData(mTab).IconFont.Size
         Changed = True
         CheckOtherTabsFonts
         ShowTabData
@@ -1017,7 +1017,7 @@ End Sub
 
 Private Sub cmdDeletePicture_Click()
     Changed = True
-    Set mTabData(mTabSel).Picture = Nothing
+    Set mTabData(mTab).Picture = Nothing
     ShowTabData
 End Sub
 
@@ -1034,7 +1034,7 @@ Private Sub cmdBrowsePic16_Click()
         End If
         Changed = True
         On Error Resume Next
-        Set mTabData(mTabSel).Pic16 = LoadPicture(iDlg.FileName)
+        Set mTabData(mTab).Pic16 = LoadPicture(iDlg.FileName)
         If Err.Number <> 0 Then
             MsgBox "Error: " & Err.Number & ", " & Err.Description, vbCritical
         End If
@@ -1046,7 +1046,7 @@ End Sub
 
 Private Sub cmdDeletePic16_Click()
     Changed = True
-    Set mTabData(mTabSel).Pic16 = Nothing
+    Set mTabData(mTab).Pic16 = Nothing
     ShowTabData
     CheckImageSizes
 End Sub
@@ -1063,7 +1063,7 @@ Private Sub cmdBrowsePic20_Click()
         End If
         Changed = True
         On Error Resume Next
-        Set mTabData(mTabSel).Pic20 = LoadPicture(iDlg.FileName)
+        Set mTabData(mTab).Pic20 = LoadPicture(iDlg.FileName)
         If Err.Number <> 0 Then
             MsgBox "Error: " & Err.Number & ", " & Err.Description, vbCritical
         End If
@@ -1075,7 +1075,7 @@ End Sub
 
 Private Sub cmdDeletePic20_Click()
     Changed = True
-    Set mTabData(mTabSel).Pic20 = Nothing
+    Set mTabData(mTab).Pic20 = Nothing
     ShowTabData
     CheckImageSizes
 End Sub
@@ -1092,7 +1092,7 @@ Private Sub cmdBrowsePic24_Click()
         End If
         Changed = True
         On Error Resume Next
-        Set mTabData(mTabSel).Pic24 = LoadPicture(iDlg.FileName)
+        Set mTabData(mTab).Pic24 = LoadPicture(iDlg.FileName)
         If Err.Number <> 0 Then
             MsgBox "Error: " & Err.Number & ", " & Err.Description, vbCritical
         End If
@@ -1104,7 +1104,7 @@ End Sub
 
 Private Sub cmdDeletePic24_Click()
     Changed = True
-    Set mTabData(mTabSel).Pic24 = Nothing
+    Set mTabData(mTab).Pic24 = Nothing
     ShowTabData
     CheckImageSizes
 End Sub
@@ -1112,20 +1112,20 @@ End Sub
 Private Sub cmdIncreaseIconFontSize_Click()
     Dim iPrev As Single
     
-    If mTabData(mTabSel).IconFont.Size < 100 Then
-        iPrev = mTabData(mTabSel).IconFont.Size
-        mTabData(mTabSel).IconFont.Size = mTabData(mTabSel).IconFont.Size + 0.5
-        If mTabData(mTabSel).IconFont.Size = iPrev Then
-            mTabData(mTabSel).IconFont.Size = mTabData(mTabSel).IconFont.Size + 1
-            If mTabData(mTabSel).IconFont.Size = iPrev Then
-                mTabData(mTabSel).IconFont.Size = mTabData(mTabSel).IconFont.Size + 2
+    If mTabData(mTab).IconFont.Size < 100 Then
+        iPrev = mTabData(mTab).IconFont.Size
+        mTabData(mTab).IconFont.Size = mTabData(mTab).IconFont.Size + 0.5
+        If mTabData(mTab).IconFont.Size = iPrev Then
+            mTabData(mTab).IconFont.Size = mTabData(mTab).IconFont.Size + 1
+            If mTabData(mTab).IconFont.Size = iPrev Then
+                mTabData(mTab).IconFont.Size = mTabData(mTab).IconFont.Size + 2
             End If
         End If
         Changed = True
-        If mLastIconFont.Name <> mTabData(mTabSel).IconFont.Name Then
-            Set mLastIconFont = CloneFont(mTabData(mTabSel).IconFont)
+        If mLastIconFont.Name <> mTabData(mTab).IconFont.Name Then
+            Set mLastIconFont = CloneFont(mTabData(mTab).IconFont)
         End If
-        mLastIconFont.Size = mTabData(mTabSel).IconFont.Size
+        mLastIconFont.Size = mTabData(mTab).IconFont.Size
         CheckOtherTabsFonts
         ShowTabData
     End If
@@ -1133,13 +1133,13 @@ End Sub
 
 Private Sub cmdRemoveIconChar_Click()
     Changed = True
-    mTabData(mTabSel).IconChar = 0
+    mTabData(mTab).IconChar = 0
     ShowTabData
 End Sub
 
 Private Sub cmdTabNext_Click()
     mLoading = True
-    mTabSel = mTabSel + 1
+    mTab = mTab + 1
     ShowTabData
     mLoading = False
 End Sub
@@ -1155,7 +1155,7 @@ End Sub
 
 Private Sub cmdTabPrev_Click()
     mLoading = True
-    mTabSel = mTabSel - 1
+    mTab = mTab - 1
     ShowTabData
     mLoading = False
 End Sub
@@ -1268,16 +1268,16 @@ End Sub
 Private Sub NewTab1_Click(PreviousTab As Integer)
     If Not mLoading And Not mShowingTabData Then
         mLoading = True
-        mTabSel = NewTab1.TabSel
+        mTab = NewTab1.TabSel
         ShowTabData
         mLoading = False
         
-        If (NewTab1.Left + NewTab1.GetTabLeft(mTabSel) + NewTab1.GetTabWidth(mTabSel)) > PropertyPage.ScaleWidth Then
+        If (NewTab1.Left + NewTab1.GetTabLeft(mTab) + NewTab1.GetTabWidth(mTab)) > PropertyPage.ScaleWidth Then
             tmrTabChanged.Enabled = True
-            NewTab1.Left = PropertyPage.ScaleWidth - (NewTab1.GetTabLeft(mTabSel) + NewTab1.GetTabWidth(mTabSel)) - 120
-        ElseIf (NewTab1.Left + NewTab1.GetTabLeft(mTabSel)) < 0 Then
+            NewTab1.Left = PropertyPage.ScaleWidth - (NewTab1.GetTabLeft(mTab) + NewTab1.GetTabWidth(mTab)) - 120
+        ElseIf (NewTab1.Left + NewTab1.GetTabLeft(mTab)) < 0 Then
             tmrTabChanged.Enabled = True
-            NewTab1.Left = 120 - NewTab1.GetTabLeft(mTabSel)
+            NewTab1.Left = 120 - NewTab1.GetTabLeft(mTab)
         End If
     End If
 End Sub
@@ -1396,7 +1396,7 @@ Private Sub PropertyPage_ApplyChanges()
     End If
     iSC.MakeContainedControlsInSelTabVisible
     gPagTabsApplyTime = Timer
-    gPagTabsLastTabSel = mTabSel
+    gPagTabsLastTabSel = mTab
     Unsubclass
 End Sub
 
@@ -1454,6 +1454,7 @@ Private Sub PropertyPage_SelectionChanged()
     mTabs = iSC.Tabs
     iSC.StoreVisibleControlsInSelectedTab
     ReDim mTabData(mTabs - 1)
+    NewTab1.RightToLeft = iSC.RightToLeft
     NewTab1.Tabs = iSC.Tabs
     For t = 0 To mTabs - 1
         mTabData(t).Caption = iSC.TabCaption(t)
@@ -1516,9 +1517,9 @@ Private Sub PropertyPage_SelectionChanged()
     End If
     
     If ((Timer - gPagTabsApplyTime) < 3) And (gPagTabsApplyTime <> 0) Then
-        mTabSel = gPagTabsLastTabSel
+        mTab = gPagTabsLastTabSel
     Else
-        mTabSel = iSC.TabSel
+        mTab = iSC.TabSel
     End If
     
     CopyControlProperties iSC, NewTab1
@@ -1542,9 +1543,9 @@ Private Sub DoShowTabData()
     
     If mShowingTabData Then Exit Sub
     mShowingTabData = True
-    t = mTabSel
-    txtTabSel.Text = t
-    txtTabSel.Refresh
+    t = mTab
+    txtTab.Text = t
+    txtTab.Refresh
     lblTabCaption.Caption = mTabData(t).Caption
     
     cmdTabPrev.Enabled = t > 0
@@ -1590,7 +1591,7 @@ Private Sub DoShowTabData()
     If Not SelectInCombo(cboTabIconFont, mTabData(t).IconFont.Name) Then
         cboTabIconFont.ListIndex = 0
     End If
-    mIconCharSelected = mTabData(mTabSel).IconChar
+    mIconCharSelected = mTabData(mTab).IconChar
     
     If mTabData(t).IconChar = 0 Then
         txtIconCharHex.Text = "&H"
@@ -1600,10 +1601,10 @@ Private Sub DoShowTabData()
     Else
         txtIconCharHex.Text = "&H" & Hex$(mTabData(t).IconChar)
         cmdRemoveIconChar.Enabled = True
-        If Not picCharSelected.Font Is mTabData(mTabSel).IconFont Then
-            Set picCharSelected.Font = mTabData(mTabSel).IconFont
+        If Not picCharSelected.Font Is mTabData(mTab).IconFont Then
+            Set picCharSelected.Font = mTabData(mTab).IconFont
         End If
-        DrawChar mTabData(mTabSel).IconChar, picCharSelected
+        DrawChar mTabData(mTab).IconChar, picCharSelected
         ScrollCharMapToSelected
     End If
     lblFontSize.Caption = "Font size: " & mTabData(t).IconFont.Size
@@ -1659,21 +1660,21 @@ End Sub
 Private Sub txtIconLeftOffset_Change()
     If (Not mLoading) And (Not mShowingTabData) Then
         Changed = True
-        mTabData(mTabSel).IconLeftOffset = Val(txtIconLeftOffset.Text)
-        NewTab1.IconLeftOffset = mTabData(mTabSel).IconLeftOffset
+        mTabData(mTab).IconLeftOffset = Val(txtIconLeftOffset.Text)
+        NewTab1.IconLeftOffset = mTabData(mTab).IconLeftOffset
     End If
 End Sub
 
 Private Sub txtIconTopOffset_Change()
     If (Not mLoading) And (Not mShowingTabData) Then
         Changed = True
-        mTabData(mTabSel).IconTopOffset = Val(txtIconTopOffset.Text)
-        NewTab1.IconTopOffset = mTabData(mTabSel).IconTopOffset
+        mTabData(mTab).IconTopOffset = Val(txtIconTopOffset.Text)
+        NewTab1.IconTopOffset = mTabData(mTab).IconTopOffset
     End If
 End Sub
 
-Private Sub txtTabSel_Change()
-    NewTab1.TabSel = Val(txtTabSel.Text)
+Private Sub txtTab_Change()
+    NewTab1.TabSel = Val(txtTab.Text)
 End Sub
 
 Private Function WindowsUnderMouse() As Long
@@ -1800,13 +1801,13 @@ Private Sub txtIconCharHex_Change()
     End If
     If (Not mLoading) And (Not mShowingTabData) Then
         Changed = True
-        mTabData(mTabSel).IconChar = Val(txtIconCharHex.Text & "&")
-        mIconCharSelected = mTabData(mTabSel).IconChar
-        If mTabData(mTabSel).IconChar > 0 Then
-            If Not picCharSelected.Font Is mTabData(mTabSel).IconFont Then
-                Set picCharSelected.Font = mTabData(mTabSel).IconFont
+        mTabData(mTab).IconChar = Val(txtIconCharHex.Text & "&")
+        mIconCharSelected = mTabData(mTab).IconChar
+        If mTabData(mTab).IconChar > 0 Then
+            If Not picCharSelected.Font Is mTabData(mTab).IconFont Then
+                Set picCharSelected.Font = mTabData(mTab).IconFont
             End If
-            DrawChar mTabData(mTabSel).IconChar, picCharSelected
+            DrawChar mTabData(mTab).IconChar, picCharSelected
             cmdRemoveIconChar.Enabled = True
         Else
             picCharSelected.Cls
@@ -1911,11 +1912,11 @@ Private Sub DoScrollCharMapToSelected()
     Dim s As Long
     
     EnsureCharPicsAndFontDataReady
-    If mTabData(mTabSel).IconChar = 0 Then
+    If mTabData(mTab).IconChar = 0 Then
         scrChars.Value = scrChars.Min
         DoDrawCharMapFromScrollPosition
     Else
-        If (mIconCharCurrentlySelectedInCharMap <> mTabData(mTabSel).IconChar) Then
+        If (mIconCharCurrentlySelectedInCharMap <> mTabData(mTab).IconChar) Then
             ReDim s3(0)
             For s1 = scrChars.Min To scrChars.Max Step scrChars.LargeChange
                 ReDim Preserve s3(UBound(s3) + 1)
@@ -1929,7 +1930,7 @@ Private Sub DoScrollCharMapToSelected()
                 s = s3(s4) * mCharColumns
                 For c = s To s + mCharColumns * mCharSelectableRows - 1
                     If (c > -1) And (c < mCharCount) Then
-                        If mChars(c) = mTabData(mTabSel).IconChar Then
+                        If mChars(c) = mTabData(mTab).IconChar Then
                             If (mIconCharSelected < mFirstCharInMap) Or (mIconCharSelected > mLastCharInMap) Then
                                 scrChars.Value = s3(s4)
                             End If
@@ -1959,7 +1960,7 @@ End Sub
 Private Function GetIconFontString() As String
     Dim f As StdFont
     
-    Set f = mTabData(mTabSel).IconFont
+    Set f = mTabData(mTab).IconFont
     GetIconFontString = f.Name & "|" & f.Bold & "|" & f.Charset & "|" & f.Italic & "|" & f.Size & "|" & f.Strikethrough & "|" & f.Underline & "|" & f.Weight
 End Function
 
@@ -1971,7 +1972,7 @@ Private Sub PrepareIconFontData()
     Dim iStr As String
     Dim ub As Long
     
-    Set mFontForCharMap = CloneFont(mTabData(mTabSel).IconFont)
+    Set mFontForCharMap = CloneFont(mTabData(mTab).IconFont)
     ' limit charmap font size
     If mFontForCharMap.Size < 11 Then mFontForCharMap.Size = 11
     If mFontForCharMap.Size > 30 Then mFontForCharMap.Size = 30
@@ -2189,17 +2190,17 @@ End Function
 Private Sub CheckOtherTabsFonts()
     Dim t As Long
     
-    If Not FontsAreEqual(mTabData(mTabSel).IconFont, mDefaultIconFont) Then
+    If Not FontsAreEqual(mTabData(mTab).IconFont, mDefaultIconFont) Then
         For t = 0 To mTabs - 1
-            If t <> mTabSel Then
+            If t <> mTab Then
                 If mTabData(t).IconChar = 0 Then
                     If FontsAreEqual(mTabData(t).IconFont, mDefaultIconFont) Then
-                        Set mTabData(t).IconFont = CloneFont(mTabData(mTabSel).IconFont)
+                        Set mTabData(t).IconFont = CloneFont(mTabData(mTab).IconFont)
                     End If
                 End If
             End If
         Next
-        Set mDefaultIconFont = CloneFont(mTabData(mTabSel).IconFont)
+        Set mDefaultIconFont = CloneFont(mTabData(mTab).IconFont)
     End If
 End Sub
 

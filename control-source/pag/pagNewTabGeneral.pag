@@ -717,6 +717,7 @@ Private Enum NTMouseButtonsConstants
     bsMBRight = 2&
 End Enum
 
+Private Declare Function WindowFromPoint Lib "user32" (ByVal xPoint As Long, ByVal yPoint As Long) As Long
 Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
 Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
 Private Const VK_LBUTTON = &H1
@@ -1617,6 +1618,7 @@ End Sub
 
 Private Sub tmrPicDropped_Timer()
     Dim iHide As Boolean
+    Dim iHwnd As Long
     
     If IsMouseButtonPressed(bsMBRight) Then
         iHide = True
@@ -1628,7 +1630,10 @@ Private Sub tmrPicDropped_Timer()
         GetWindowRect picHighlightDropDown.hWnd, iRect
         
         If (iPt.X < iRect.Left) Or (iPt.X > iRect.Right) Or (iPt.Y < iRect.Top) Or (iPt.Y > iRect.Bottom) Then
-            iHide = True
+            iHwnd = WindowFromPoint(iPt.X, iPt.Y)
+            If (iHwnd <> cboHighlightMode.hWnd) And (iHwnd <> cboHighlightModeTabSel.hWnd) Then
+                iHide = True
+            End If
         End If
     End If
     If iHide Then

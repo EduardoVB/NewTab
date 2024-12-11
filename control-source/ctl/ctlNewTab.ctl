@@ -8919,6 +8919,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     Dim iIconColorMouseHover As Long
     Dim iIconColorMouseHoverTabSel As Long
     Dim iIconColorTabHighlighted As Long
+    Dim iAuxTop As Long
     
     If Not mTabData(nTab).Visible Then Exit Sub
     If Not mTabData(nTab).PicToUseSet Then SetPicToUse nTab
@@ -9527,7 +9528,8 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     If mTDIMode = ntTDIModeForms Then
         If iTabData.Data <> 0 Then
             If Not mTDIModeFormsFormData_FormIcon(iTabData.Data) Is Nothing Then
-                picDraw.PaintPicture mTDIModeFormsFormData_FormIcon(iTabData.Data), iTabRect.Left + 6, iTabRect.Top + 2, 32, 32, 1, 1, 32, 32
+                iAuxTop = iCaptionRect.Top + (iCaptionRect.Bottom - iCaptionRect.Top) / 2 - 16 + 0.49
+                picDraw.PaintPicture mTDIModeFormsFormData_FormIcon(iTabData.Data), iTabRect.Left + 6, iAuxTop, 32, 32, 1, 1, 32, 32
             End If
         End If
     End If
@@ -14832,7 +14834,11 @@ Private Function GetUniqueCaption(nCaption As String) As String
                     End If
                 End If
             Next
-            iCaption = nCaption & "(" & n2 & ")"
+            If mRightToLeft Then
+                iCaption = "(" & n2 & ") " & nCaption
+            Else
+                iCaption = nCaption & " (" & n2 & ")"
+            End If
         Else
             iCaption = nCaption
         End If
