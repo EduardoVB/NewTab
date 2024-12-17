@@ -816,6 +816,7 @@ Event TDIBeforeClosingTab(ByVal TabNumber As Long, ByVal IsLastTab As Boolean, B
 Attribute TDIBeforeClosingTab.VB_Description = "When in TDI mode, it occurs before closing a tab."
 Event TDITabClosed(ByVal TabNumber As Long, ByVal IsLastTab As Boolean)
 Attribute TDITabClosed.VB_Description = "When in TDI mode, it occurs after a tab was closed."
+Event TDIFormsShowTabIcon(ByVal TabNumber As Long, ByVal FormhWnd As Long, ByRef IconPicture As StdPicture, ByRef IconLeft As Long, ByRef IconTop As Long, ByRef IconWidth As Long, ByRef IconHeigh As Long)
 
 Private Type T_TabData
     ' Properties
@@ -858,6 +859,16 @@ Private Type T_TabData
     FixedWidth As Long
     CustomColors As New cTabColors
     Key As String
+End Type
+
+Private Type TDIFormIconCustomData
+    Icon As StdPicture
+    Left As Long
+    Top As Long
+    Width As Long
+    Height As Long
+    hWnd As Long
+    TabPosString As String
 End Type
 
 Private Const cRowPerspectiveSpace As Long = 150&  ' in Twips
@@ -1088,6 +1099,7 @@ Private mTDIModeFormsUnhooked As Boolean
 Private mTDIModeFormsFormData_FormHwnd() As Long
 Private mTDIModeFormsFormData_OldParentHwnd() As Long
 Private mTDIModeFormsFormData_FormIcon() As StdPicture
+Private mTDIFormIconCustomData() As TDIFormIconCustomData
 Private mShowingModalForm As Boolean
 Private mAppDeactivated As Boolean
 Private mUserControlSizeCorrectionsCounter As Long
@@ -8920,6 +8932,13 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     Dim iIconColorMouseHoverTabSel As Long
     Dim iIconColorTabHighlighted As Long
     Dim iAuxTop As Long
+    Dim iTDIFormIcon_Icon As StdPicture
+    Dim iTDIFormIcon_Left As Long
+    Dim iTDIFormIcon_Top As Long
+    Dim iTDIFormIcon_Width As Long
+    Dim iTDIFormIcon_Height As Long
+    Dim iTDIFormsNoIcons As Boolean
+    Dim iTabPosString As String
     
     If Not mTabData(nTab).Visible Then Exit Sub
     If Not mTabData(nTab).PicToUseSet Then SetPicToUse nTab
@@ -9523,16 +9542,59 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
         iCaptionRect.Top = iCaptionRect.Top - iTabCenterY
     End If
     
-    DrawTextW picDraw.hDC, StrPtr(iCaption & IIf(iFlags And DT_MODIFYSTRING, "    ", "")), IIf(iFlags And DT_MODIFYSTRING, Len(iCaption), -1), iCaptionRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
-    
     If mTDIMode = ntTDIModeForms Then
         If iTabData.Data <> 0 Then
+            iTDIFormsNoIcons = True
             If Not mTDIModeFormsFormData_FormIcon(iTabData.Data) Is Nothing Then
                 iAuxTop = iCaptionRect.Top + (iCaptionRect.Bottom - iCaptionRect.Top) / 2 - 16 + 0.49
-                picDraw.PaintPicture mTDIModeFormsFormData_FormIcon(iTabData.Data), iTabRect.Left + 6, iAuxTop, 32, 32, 1, 1, 32, 32
+                iTabPosString = CStr(iTabRect.Left + 6) & "-" & iAuxTop
+                If (mTDIFormIconCustomData(iTabData.Data).hWnd <> mTDIModeFormsFormData_FormHwnd(iTabData.Data)) Or (iTabPosString <> mTDIFormIconCustomData(iTabData.Data).TabPosString) Then
+                    If (mTDIFormIconCustomData(iTabData.Data).hWnd = mTDIModeFormsFormData_FormHwnd(iTabData.Data)) And (Not mTDIFormIconCustomData(iTabData.Data).Icon Is Nothing) Then
+                        Set iTDIFormIcon_Icon = mTDIFormIconCustomData(iTabData.Data).Icon
+                    Else
+                        Set iTDIFormIcon_Icon = mTDIModeFormsFormData_FormIcon(iTabData.Data)
+                    End If
+                    iTDIFormIcon_Left = UserControl.ScaleX(iTabRect.Left + 6, vbPixels, vbTwips)
+                    iTDIFormIcon_Top = UserControl.ScaleY(iAuxTop, vbPixels, vbTwips)
+                    iTDIFormIcon_Width = UserControl.ScaleX(32, vbPixels, vbTwips)
+                    iTDIFormIcon_Height = UserControl.ScaleY(32, vbPixels, vbTwips)
+                    RaiseEvent TDIFormsShowTabIcon(nTab, mTDIModeFormsFormData_FormHwnd(iTabData.Data), iTDIFormIcon_Icon, iTDIFormIcon_Left, iTDIFormIcon_Top, iTDIFormIcon_Width, iTDIFormIcon_Height)
+                    iTDIFormIcon_Left = UserControl.ScaleX(iTDIFormIcon_Left, vbTwips, vbPixels)
+                    iTDIFormIcon_Top = UserControl.ScaleY(iTDIFormIcon_Top, vbTwips, vbPixels)
+                    iTDIFormIcon_Width = UserControl.ScaleX(iTDIFormIcon_Width, vbTwips, vbPixels)
+                    iTDIFormIcon_Height = UserControl.ScaleY(iTDIFormIcon_Height, vbTwips, vbPixels)
+                    Set mTDIFormIconCustomData(iTabData.Data).Icon = iTDIFormIcon_Icon
+                    mTDIFormIconCustomData(iTabData.Data).Left = iTDIFormIcon_Left
+                    mTDIFormIconCustomData(iTabData.Data).Top = iTDIFormIcon_Top
+                    mTDIFormIconCustomData(iTabData.Data).Width = iTDIFormIcon_Width
+                    mTDIFormIconCustomData(iTabData.Data).Height = iTDIFormIcon_Height
+                    mTDIFormIconCustomData(iTabData.Data).hWnd = mTDIModeFormsFormData_FormHwnd(iTabData.Data)
+                    mTDIFormIconCustomData(iTabData.Data).TabPosString = iTabPosString
+                Else
+                    Set iTDIFormIcon_Icon = mTDIFormIconCustomData(iTabData.Data).Icon
+                    iTDIFormIcon_Left = mTDIFormIconCustomData(iTabData.Data).Left
+                    iTDIFormIcon_Top = mTDIFormIconCustomData(iTabData.Data).Top
+                    iTDIFormIcon_Width = mTDIFormIconCustomData(iTabData.Data).Width
+                    iTDIFormIcon_Height = mTDIFormIconCustomData(iTabData.Data).Height
+                End If
+                If Not iTDIFormIcon_Icon Is Nothing Then
+                    If Not (iTDIFormIcon_Icon.Handle = 0) Then
+                        If iTDIFormIcon_Icon.Type = vbPicTypeBitmap And mUseMaskColor Then
+                            Call DrawImage(picDraw.hDC, iTDIFormIcon_Icon.Handle, TranslatedColor(mMaskColor), iTDIFormIcon_Left, iTDIFormIcon_Top, iTDIFormIcon_Width, iTDIFormIcon_Height, iPicSourceShiftX, iPicSourceShiftY)
+                        Else
+                            picDraw.PaintPicture iTDIFormIcon_Icon, iTDIFormIcon_Left, iTDIFormIcon_Top, iTDIFormIcon_Width, iTDIFormIcon_Height, 1, 1, UserControl.ScaleX(iTDIFormIcon_Icon.Width, vbHimetric, vbPixels), UserControl.ScaleY(iTDIFormIcon_Icon.Height, vbHimetric, vbPixels)
+                        End If
+                        iTDIFormsNoIcons = False
+                    End If
+                End If
+            End If
+            If iTDIFormsNoIcons And (Not mTDIModeFormsFormData_FormIcon(iTabData.Data) Is Nothing) Then
+                iCaptionRect.Left = iCaptionRect.Left - cTDIForms_FormIconSpace + 4
             End If
         End If
     End If
+    
+    DrawTextW picDraw.hDC, StrPtr(iCaption & IIf(iFlags And DT_MODIFYSTRING, "    ", "")), IIf(iFlags And DT_MODIFYSTRING, Len(iCaption), -1), iCaptionRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
     
     ' Draw the focus rect
     If mAmbientUserMode Then    'only at run time
@@ -14483,6 +14545,7 @@ Private Sub SetTDIMode()
             ReDim mTDIModeFormsFormData_FormHwnd(100)
             ReDim mTDIModeFormsFormData_OldParentHwnd(100)
             ReDim mTDIModeFormsFormData_FormIcon(100)
+            ReDim mTDIFormIconCustomData(100)
             InstallCBTHook Me
         End If
     End If
@@ -14749,6 +14812,7 @@ Friend Sub TDIPutFormIntoTab(ByVal nHwndForm As Long)
             ReDim Preserve mTDIModeFormsFormData_FormHwnd(mTabs + 100)
             ReDim Preserve mTDIModeFormsFormData_OldParentHwnd(mTabs + 100)
             ReDim Preserve mTDIModeFormsFormData_FormIcon(mTabs + 100)
+            ReDim Preserve mTDIFormIconCustomData(mTabs + 100)
         End If
         mTDIModeFormsFormData_FormHwnd(mTabs - 1) = nHwndForm
         mTabData(mTabs - 1).Data = mTabs - 1
@@ -15459,13 +15523,13 @@ Attribute TDIGetFormHwndByTab.VB_Description = "When in TDI mode forms, it retur
     TDIGetFormHwndByTab = mTDIModeFormsFormData_FormHwnd(mTabData(Index).Data)
 End Function
 
-Public Function TDIGetTabByFormHwnd(ByVal FormHwnd As Long) As Long
+Public Function TDIGetTabByFormHwnd(ByVal FormhWnd As Long) As Long
 Attribute TDIGetTabByFormHwnd.VB_Description = "When in TDI mode forms, it returns the tab index by supplying the hWnd of the form."
     Dim c As Long
     
     TDIGetTabByFormHwnd = -1
     For c = 0 To mTabs - 1
-        If mTDIModeFormsFormData_FormHwnd(mTabData(c).Data) = FormHwnd Then
+        If mTDIModeFormsFormData_FormHwnd(mTabData(c).Data) = FormhWnd Then
             TDIGetTabByFormHwnd = c
             Exit For
         End If
@@ -15499,7 +15563,7 @@ End Function
 #Const COMPILE_WITH_TAB_PROPERTY = 0
 #If COMPILE_WITH_TAB_PROPERTY Then
 Public Property Get Tab() As Variant
-Attribute Tab.VB_Description = "Returns or sets the current ('selected' or 'active') tab by its index."
+
 'Attribute Tab.VB_Description = "Returns or sets the index of the current (""selected"" or ""active"") tab."
     Tab = TabSel
 End Property
