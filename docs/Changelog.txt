@@ -1,4 +1,4 @@
-2024-12-17 Updated documentation.
+2024-12-18 Updated documentation.
 2024-12-17 Added event TDIFormsShowTabIcon that allows for more control over the tab icon and its position for TDIMode = ntTDIModeForms.
 2024-12-11 Fix in pagNewTabGeneral property page for comboboxes handling HightLightMode and HightLightModeTabSel properties, in some situations left clicking was seen twice.
 2024-12-11 Fix when RightToLeft = True, for position in tabs captions when TDIMode = ntTDIModeForms, for the number that uniquely identifies a form when its name is repeated (like (1), (2)).
