@@ -1067,7 +1067,7 @@ TDIGetFormHwndByTab function:
 TDIGetTabByFormHwnd function:
 	Return Type:	Long
 	Parameter(s):
-	    In	Required	FormHwnd	As	Long
+	    In	Required	FormhWnd	As	Long
 
 	When in TDI mode forms, it returns the tab index by supplying the hWnd of the form.
 
@@ -1336,6 +1336,18 @@ TDIBeforeNewTab event:
 	    Returns value	LoadControls	As	Boolean
 	    Returns value	Cancel	As	Boolean
 	It occurs before opening a new tab in TDI mode.
+
+
+TDIFormsShowTabIcon event:
+	Parameter(s):
+	    Info	TabNumber	As	Long
+	    Info	FormhWnd	As	Long
+	    Returns value	IconPicture	As	Picture
+	    Returns value	IconLeft	As	Long
+	    Returns value	IconTop	As	Long
+	    Returns value	IconWidth	As	Long
+	    Returns value	IconHeigh	As	Long
+	In TDI mode forms, it allows full control  for the icon that is displayed on the tab, including the icon itself and the size and position.
 
 
 TDINewTabAdded event:

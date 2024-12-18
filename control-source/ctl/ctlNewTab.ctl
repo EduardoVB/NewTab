@@ -817,6 +817,7 @@ Attribute TDIBeforeClosingTab.VB_Description = "When in TDI mode, it occurs befo
 Event TDITabClosed(ByVal TabNumber As Long, ByVal IsLastTab As Boolean)
 Attribute TDITabClosed.VB_Description = "When in TDI mode, it occurs after a tab was closed."
 Event TDIFormsShowTabIcon(ByVal TabNumber As Long, ByVal FormhWnd As Long, ByRef IconPicture As StdPicture, ByRef IconLeft As Long, ByRef IconTop As Long, ByRef IconWidth As Long, ByRef IconHeigh As Long)
+Attribute TDIFormsShowTabIcon.VB_Description = "In TDI mode forms, it allows full control  for the icon that is displayed on the tab, including the icon itself and the size and position."
 
 Private Type T_TabData
     ' Properties
@@ -13619,6 +13620,7 @@ End Property
 
 
 Public Property Get TabTag(ByVal Index As Long) As String
+Attribute TabTag.VB_Description = "Returns/sets a custom String data for each tab."
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
