@@ -1,3 +1,4 @@
+2024-12-19 Fix in ControlSetTab method.
 2024-12-18 Updated documentation.
 2024-12-17 Added event TDIFormsShowTabIcon that allows for more control over the tab icon and its position for TDIMode = ntTDIModeForms.
 2024-12-11 Fix in pagNewTabGeneral property page for comboboxes handling HightLightMode and HightLightModeTabSel properties, in some situations left clicking was seen twice.

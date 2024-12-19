@@ -13320,6 +13320,7 @@ Attribute ControlSetTab.VB_Description = "Sets or change the tab where a contain
             ControlMove nControlName, ControlLeft(nControlName), iCtl.Y1, iCtl.X2 - iCtl.X1, iCtl.Y2 - iCtl.Y1, nTab
         Else
             ControlMove nControlName, ControlLeft(nControlName), iCtl.Top, iCtl.Width, iCtl.Height, nTab
+            MakeContainedControlsInSelTabVisible
         End If
     End If
 End Sub
