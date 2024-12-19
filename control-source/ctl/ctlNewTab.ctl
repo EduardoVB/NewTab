@@ -1101,6 +1101,7 @@ Private mTDIModeFormsFormData_FormHwnd() As Long
 Private mTDIModeFormsFormData_OldParentHwnd() As Long
 Private mTDIModeFormsFormData_FormIcon() As StdPicture
 Private mTDIFormIconCustomData() As TDIFormIconCustomData
+Private mTDIFormWithoutCloseButton() As Boolean
 Private mShowingModalForm As Boolean
 Private mAppDeactivated As Boolean
 Private mUserControlSizeCorrectionsCounter As Long
@@ -4280,9 +4281,10 @@ End Sub
 
 Private Sub UserControl_Hide()
     Dim c As Long
-    Const WM_SYSCOMMAND = &H112
-    Const SC_CLOSE = &HF060&
-    Const SW_HIDE = 0
+    Const WM_SYSCOMMAND As Long = &H112
+    Const SC_CLOSE As Long = &HF060&
+    Const SW_HIDE As Long = 0
+    Const WM_CLOSE As Long = &H10&
     Dim iHwnd As Long
     Dim iLng As Long
     
@@ -4299,7 +4301,11 @@ Private Sub UserControl_Hide()
                     If IsWindow(iHwnd) <> 0 Then
                         ShowWindow iHwnd, SW_HIDE
                         SetParent iHwnd, mTDIModeFormsFormData_OldParentHwnd(mTabData(c).Data)
-                        SendMessage iHwnd, WM_SYSCOMMAND, SC_CLOSE, 0&
+                        If mTDIFormWithoutCloseButton(mTabData(c).Data) Then
+                            PostMessage iHwnd, WM_CLOSE, 0, 0
+                        Else
+                            SendMessage iHwnd, WM_SYSCOMMAND, SC_CLOSE, 0&
+                        End If
                     End If
                 End If
             Next
@@ -5039,9 +5045,10 @@ Private Sub HandleTabTDIEvents()
     Dim iCancel As Boolean
     Dim iLoadTabControls As Boolean
     Dim iUnloadTabControls As Boolean
-    Const WM_SYSCOMMAND = &H112
-    Const SC_CLOSE = &HF060&
-    Const SW_HIDE = 0
+    Const WM_SYSCOMMAND As Long = &H112
+    Const SC_CLOSE As Long = &HF060&
+    Const SW_HIDE As Long = 0
+    Const WM_CLOSE As Long = &H10&
     Dim iHwnd As Long
     Dim iTabUnderMouse As Long
     
@@ -5072,7 +5079,11 @@ Private Sub HandleTabTDIEvents()
                 If IsWindow(iHwnd) <> 0 Then
                     ShowWindow iHwnd, SW_HIDE
                     SetParent iHwnd, mTDIModeFormsFormData_OldParentHwnd(mTabData(iTabUnderMouse).Data)
-                    SendMessage iHwnd, WM_SYSCOMMAND, SC_CLOSE, 0&
+                    If mTDIFormWithoutCloseButton(mTabData(iTabUnderMouse).Data) Then
+                        PostMessage iHwnd, WM_CLOSE, 0, 0
+                    Else
+                        SendMessage iHwnd, WM_SYSCOMMAND, SC_CLOSE, 0&
+                    End If
                 End If
                 If IsWindow(iHwnd) <> 0 Then
                     iCancel = True
@@ -8940,6 +8951,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     Dim iTDIFormIcon_Height As Long
     Dim iTDIFormsNoIcons As Boolean
     Dim iTabPosString As String
+    Dim iDo As Boolean
     
     If Not mTabData(nTab).Visible Then Exit Sub
     If Not mTabData(nTab).PicToUseSet Then SetPicToUse nTab
@@ -9191,7 +9203,9 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
         iIconCharRect.Bottom = 0 ' iTabSpaceRect.Bottom
         iFlags = DT_CALCRECT Or DT_SINGLELINE Or DT_CENTER
         Set picAuxIconFont.Font = iIconFont
-        DrawTextW picAuxIconFont.hDC, StrPtr(iIconCharacter), -1, iIconCharRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
+        iDo = True
+        If mTDIMode = ntTDIModeForms Then iDo = Not mTDIFormWithoutCloseButton(iTabData.Data)
+        If iDo Then DrawTextW picAuxIconFont.hDC, StrPtr(iIconCharacter), -1, iIconCharRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
         iPicWidth = (iIconCharRect.Right - iIconCharRect.Left)
         iPicHeight = (iIconCharRect.Bottom - iIconCharRect.Top)
     ElseIf Not iTabData.PicToUse Is Nothing Then
@@ -14549,6 +14563,7 @@ Private Sub SetTDIMode()
             ReDim mTDIModeFormsFormData_OldParentHwnd(100)
             ReDim mTDIModeFormsFormData_FormIcon(100)
             ReDim mTDIFormIconCustomData(100)
+            ReDim mTDIFormWithoutCloseButton(100)
             InstallCBTHook Me
         End If
     End If
@@ -14805,6 +14820,7 @@ Friend Sub TDIPutFormIntoTab(ByVal nHwndForm As Long)
     Const GWL_STYLE As Long = (-16)
     Const WM_GETICON As Long = &H7F
     Const ICON_BIG As Long = 1
+    Const WS_SYSMENU = &H80000
     Dim iIconHandle As Long
     Dim iFormCaption As String
     
@@ -14816,6 +14832,7 @@ Friend Sub TDIPutFormIntoTab(ByVal nHwndForm As Long)
             ReDim Preserve mTDIModeFormsFormData_OldParentHwnd(mTabs + 100)
             ReDim Preserve mTDIModeFormsFormData_FormIcon(mTabs + 100)
             ReDim Preserve mTDIFormIconCustomData(mTabs + 100)
+            ReDim Preserve mTDIFormWithoutCloseButton(mTabs + 100)
         End If
         mTDIModeFormsFormData_FormHwnd(mTabs - 1) = nHwndForm
         mTabData(mTabs - 1).Data = mTabs - 1
@@ -14826,6 +14843,7 @@ Friend Sub TDIPutFormIntoTab(ByVal nHwndForm As Long)
         SetScaleMode
         SetWindowLong nHwndForm, GWL_STYLE, GetWindowLong(nHwndForm, GWL_STYLE) And Not (WS_CAPTION Or WS_THICKFRAME)
         MoveWindow nHwndForm, 0, 0, mClientRect.Right - mClientRect.Left + 2, mClientRect.Bottom - mClientRect.Top + 3, 1
+        mTDIFormWithoutCloseButton(mTabs - 1) = (GetWindowLong(nHwndForm, GWL_STYLE) And WS_SYSMENU) = 0
         
         mTDISubclassedFormsHwnds.Add nHwndForm, CStr(nHwndForm)
         AttachMessage Me, nHwndForm, WM_STYLECHANGING
