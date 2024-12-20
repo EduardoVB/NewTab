@@ -53,7 +53,7 @@ Private Function FormCreationHookProc(ByVal uMsg As Long, ByVal wParam As Long, 
     ElseIf uMsg = HCBT_DESTROYWND Then
         iStr = GetWindowClassName(wParam)
         If (iStr = "ThunderFormDC") Or (iStr = "ThunderRT6FormDC") Then
-            mNewTabControl.TDIFormClosing wParam
+            If Not mNewTabControl Is Nothing Then mNewTabControl.TDIFormClosing wParam
         End If
     ElseIf (uMsg = HCBT_ACTIVATE) Or (uMsg = HCBT_SETFOCUS) Then
         iStr = GetWindowClassName(wParam)
