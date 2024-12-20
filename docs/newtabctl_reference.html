@@ -283,6 +283,7 @@ Backward compatible with SSTab (fully), and with SSTabEx (mostly).</p><br>
 <li class="toc1"><a href="#TDIBeforeClosingTab-Event">TDIBeforeClosingTab</a><br>
 <li class="toc1"><a href="#TDIBeforeNewTab-Event">TDIBeforeNewTab</a><br>
 <li class="toc1"><a href="#TDIFormsShowTabIcon-Event">TDIFormsShowTabIcon</a><br>
+<li class="toc1"><a href="#TDIModeFormsReady-Event">TDIModeFormsReady</a><br>
 <li class="toc1"><a href="#TDINewTabAdded-Event">TDINewTabAdded</a><br>
 <li class="toc1"><a href="#TDITabClosed-Event">TDITabClosed</a><br>
 
@@ -1522,6 +1523,10 @@ The <b>X</b> and <b>Y</b> parameters return a number that specifies the current 
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabNumber</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>FormhWnd</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IconPicture</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspPicture&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IconLeft</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IconTop</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IconWidth</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IconHeigh</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>In TDI mode forms, it allows full control  for the icon that is displayed on the tab, including the icon itself and the size and position.</p><br>
+<a name="TDIModeFormsReady-Event" /><h2><p class"section">TDIModeFormsReady Event</p></h2></a>
+<p>No parameters.</p>
+<h3>Description:</h3>
+<p>Occurs in TDI mode forms, when the control is ready to open forms in tabs. In the Form_Load event it is still not ready, but alternatively you can also use the Form_Activate event to open forms at startup.</p><br>
 <a name="TDINewTabAdded-Event" /><h2><p class"section">TDINewTabAdded Event</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabNumber</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>

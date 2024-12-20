@@ -1,4 +1,5 @@
-2024-12-2 Added event TDIModeFormsReady.
+2024-12-20 Updated documentation to include the TDIModeFormsReady event.
+2024-12-20 Added event TDIModeFormsReady.
 2024-12-19 Better handling for TDIMode = ntTDIModeForms when the form has ControlBox = False.
 2024-12-19 Fix in ControlSetTab method.
 2024-12-18 Updated documentation.

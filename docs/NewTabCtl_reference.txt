@@ -1350,6 +1350,11 @@ TDIFormsShowTabIcon event:
 	In TDI mode forms, it allows full control  for the icon that is displayed on the tab, including the icon itself and the size and position.
 
 
+TDIModeFormsReady event:
+	No parameters.
+	Occurs in TDI mode forms, when the control is ready to open forms in tabs. In the Form_Load event it is still not ready, but alternatively you can also use the Form_Activate event to open forms at startup.
+
+
 TDINewTabAdded event:
 	Parameter(s):
 	    Info	TabNumber	As	Long
