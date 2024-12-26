@@ -1,3 +1,4 @@
+2024-12-26 Bug fix for mTDIMode = ntTDIModeForms setting icon of main tab at design time.
 2024-12-20 Updated documentation to include the TDIModeFormsReady event.
 2024-12-20 Added event TDIModeFormsReady.
 2024-12-19 Better handling for TDIMode = ntTDIModeForms when the form has ControlBox = False.

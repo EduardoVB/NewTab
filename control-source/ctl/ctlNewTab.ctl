@@ -4312,7 +4312,7 @@ Private Sub UserControl_Hide()
                 End If
             Next
         End If
-        For c = picTDIFormContainer.LBound + 1 To picTDIFormContainer.UBound
+        For c = picTDIFormContainer.LBound + 1 To picTDIFormContainer.ubound
             Unload picTDIFormContainer(c)
         Next
         UninstallCBTHook
@@ -5092,7 +5092,7 @@ Private Sub HandleTabTDIEvents()
                     mTDIClosingATab = True
                     TabVisible(iTabUnderMouse) = True
                     mTDIClosingATab = False
-                    If (mTabData(iTabUnderMouse).Data >= picTDIFormContainer.LBound) And (mTabData(iTabUnderMouse).Data <= picTDIFormContainer.UBound) Then
+                    If (mTabData(iTabUnderMouse).Data >= picTDIFormContainer.LBound) And (mTabData(iTabUnderMouse).Data <= picTDIFormContainer.ubound) Then
                         SetParent iHwnd, picTDIFormContainer(mTabData(iTabUnderMouse).Data).hWnd
                     End If
                 End If
@@ -5804,6 +5804,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         mFormIsActive = True
     End If
     mPropertiesReady = True
+    If mTDIMode = ntTDIModeForms Then ReDim mTDIFormWithoutCloseButton(0)
     
     PostDrawMessage
     If tmrDraw.Enabled Then
@@ -5828,7 +5829,7 @@ End Sub
 Private Sub UserControl_Show()
     If mUserControlTerminated Then Exit Sub
     If mResizeEventPending Then RaiseEvent_Resize
-    If mTDIMode <> ntTDIModeNone Then
+    If mAmbientUserMode And (mTDIMode <> ntTDIModeNone) Then
         If mSettingTDIMode Then Exit Sub
         If IsWindowVisible(mUserControlHwnd) <> 0 Then
             Static sDone As Boolean
@@ -7743,7 +7744,7 @@ Private Sub TDIResizeFormContainers()
     UserControl.ScaleMode = vbTwips
     For c = 1 To mTabs - 1
         If mTabData(c).Visible Then
-            If (mTabData(c).Data >= picTDIFormContainer.LBound) And (mTabData(c).Data <= picTDIFormContainer.UBound) Then
+            If (mTabData(c).Data >= picTDIFormContainer.LBound) And (mTabData(c).Data <= picTDIFormContainer.ubound) Then
                 If IsIconic(mFormHwnd) = 0 Then
                     On Error Resume Next
                     picTDIFormContainer(mTabData(c).Data).Move ClientLeft, ClientTop, ClientWidth, ClientHeight
@@ -9207,7 +9208,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
         iFlags = DT_CALCRECT Or DT_SINGLELINE Or DT_CENTER
         Set picAuxIconFont.Font = iIconFont
         iDo = True
-        If mTDIMode = ntTDIModeForms Then iDo = Not mTDIFormWithoutCloseButton(iTabData.Data)
+        If mAmbientUserMode And (mTDIMode = ntTDIModeForms) Then iDo = Not mTDIFormWithoutCloseButton(iTabData.Data)
         If iDo Then DrawTextW picAuxIconFont.hDC, StrPtr(iIconCharacter), -1, iIconCharRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
         iPicWidth = (iIconCharRect.Right - iIconCharRect.Left)
         iPicHeight = (iIconCharRect.Bottom - iIconCharRect.Top)
@@ -11612,13 +11613,13 @@ Private Sub SetVisibleControls(ByVal iPreviousTab As Long)
     
     If mTDIMode = ntTDIModeForms Then
         If iPreviousTab > -1 Then
-            If (mTabData(iPreviousTab).Data >= picTDIFormContainer.LBound) And (mTabData(iPreviousTab).Data <= picTDIFormContainer.UBound) Then
+            If (mTabData(iPreviousTab).Data >= picTDIFormContainer.LBound) And (mTabData(iPreviousTab).Data <= picTDIFormContainer.ubound) Then
                picTDIFormContainer(mTabData(iPreviousTab).Data).Visible = False
             End If
         End If
         If mTab > -1 Then
             If mTabData(mTab).Data > 0 Then
-                If (mTabData(mTab).Data >= picTDIFormContainer.LBound) And (mTabData(mTab).Data <= picTDIFormContainer.UBound) Then
+                If (mTabData(mTab).Data >= picTDIFormContainer.LBound) And (mTabData(mTab).Data <= picTDIFormContainer.ubound) Then
                     picTDIFormContainer(mTabData(mTab).Data).Visible = True
                 End If
             End If
@@ -14979,7 +14980,7 @@ Friend Sub TDIFormClosing(ByVal nHwndForm As Long)
     
     i = TDIGetTabByFormHwnd(nHwndForm)
     If i > -1 Then
-        If (mTabData(i).Data >= picTDIFormContainer.LBound) And (mTabData(i).Data <= picTDIFormContainer.UBound) Then
+        If (mTabData(i).Data >= picTDIFormContainer.LBound) And (mTabData(i).Data <= picTDIFormContainer.ubound) Then
            picTDIFormContainer(mTabData(i).Data).Visible = False
         End If
         mTabData(i).Visible = False
