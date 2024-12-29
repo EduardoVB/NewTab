@@ -215,7 +215,7 @@ Begin VB.PropertyPage pagNewTabGeneral
       Top             =   3670
       Width           =   4420
    End
-   Begin VB.ComboBox cboHighlightModeTabSel 
+   Begin VB.ComboBox cboHighlightModeSelectedTab 
       Height          =   300
       ItemData        =   "pagNewTabGeneral.pgx":0008
       Left            =   2320
@@ -533,9 +533,9 @@ Begin VB.PropertyPage pagNewTabGeneral
       Top             =   3682
       Width           =   2270
    End
-   Begin VB.Label lblHighlightModeTabSel 
+   Begin VB.Label lblHighlightModeSelectedTab 
       Alignment       =   1  'Right Justify
-      Caption         =   "HightLightModeTabSel:"
+      Caption         =   "HightLightModeSelectedTab:"
       Height          =   230
       Left            =   0
       TabIndex        =   12
@@ -741,7 +741,7 @@ Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, lpRect 
 
 Private Enum NTHighlightDropDownControlConstants
     ntHighlightMode = 0
-    ntHighlightModeTabSel = 1
+    ntHighlightModeSelectedTab = 1
 End Enum
 
 Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As Long, lprcUpdate As Any, ByVal hrgnUpdate As Long, ByVal fuRedraw As Long) As Long
@@ -752,7 +752,7 @@ Private Const RDW_INVALIDATE = &H1
 Private mLoading As Boolean
 Private mTDIMode As Boolean
 Private mHighlightMode As Long
-Private mHighlightModeTabSel As Long
+Private mHighlightModeSelectedTab As Long
 Private mControlHighlightModeDropDown As NTHighlightDropDownControlConstants
 Private mLoadingHighlightDropDown As Boolean
 
@@ -791,8 +791,8 @@ Private Sub ShowHighlightModeDropDown(nControl As NTHighlightDropDownControlCons
         LoadHighlightDropDown mHighlightMode
         Set iCombo = cboHighlightMode
     Else
-        LoadHighlightDropDown mHighlightModeTabSel
-        Set iCombo = cboHighlightModeTabSel
+        LoadHighlightDropDown mHighlightModeSelectedTab
+        Set iCombo = cboHighlightModeSelectedTab
     End If
     picHighlightDropDown.Move cboHighlightMode.Left, iCombo.Top + iCombo.Height
     picHighlightDropDown.Visible = True
@@ -896,10 +896,10 @@ Private Sub SetVariablesFromPicHighlightDropDown()
             SetHLComboText cboHighlightMode, mHighlightMode
         End If
     Else
-        If mHighlightModeTabSel <> iValue Then
-            mHighlightModeTabSel = iValue
+        If mHighlightModeSelectedTab <> iValue Then
+            mHighlightModeSelectedTab = iValue
             Changed = True
-            SetHLComboText cboHighlightModeTabSel, mHighlightModeTabSel
+            SetHLComboText cboHighlightModeSelectedTab, mHighlightModeSelectedTab
         End If
     End If
 End Sub
@@ -955,22 +955,22 @@ Private Sub SetHLComboText(nCombo As Object, nValue As NTHighlightModeFlagsConst
     nCombo.ListIndex = 0
 End Sub
 
-Private Sub cboHighlightModeTabSel_DropDown()
+Private Sub cboHighlightModeSelectedTab_DropDown()
     Dim iShow As Boolean
     
-    cboHighlightModeTabSel.Visible = False
-    cboHighlightModeTabSel.Visible = True
+    cboHighlightModeSelectedTab.Visible = False
+    cboHighlightModeSelectedTab.Visible = True
     
     If picHighlightDropDown.Visible Then
         HighlightDropUp
-        If mControlHighlightModeDropDown <> ntHighlightModeTabSel Then
+        If mControlHighlightModeDropDown <> ntHighlightModeSelectedTab Then
             iShow = True
         End If
     Else
         iShow = True
     End If
     If iShow Then
-        ShowHighlightModeDropDown ntHighlightModeTabSel
+        ShowHighlightModeDropDown ntHighlightModeSelectedTab
     End If
 End Sub
 
@@ -1013,8 +1013,8 @@ End Sub
 Private Sub SetHighlightModeEnabledState()
     cboHighlightMode.Enabled = (cboStyle.ItemData(cboStyle.ListIndex) <> ntStyleWindows)
     lblHighlightMode.Enabled = cboHighlightMode.Enabled
-    cboHighlightModeTabSel.Enabled = cboHighlightMode.Enabled
-    lblHighlightModeTabSel.Enabled = cboHighlightMode.Enabled
+    cboHighlightModeSelectedTab.Enabled = cboHighlightMode.Enabled
+    lblHighlightModeSelectedTab.Enabled = cboHighlightMode.Enabled
     chkHighlightEffect.Enabled = cboHighlightMode.Enabled
 End Sub
     
@@ -1317,7 +1317,7 @@ Private Sub PropertyPage_ApplyChanges()
     SelectedControls(0).SoftEdges = CBool(chkSoftEdges.Value)
     SelectedControls(0).HandleHighContrastTheme = CBool(chkHandleHighContrastTheme.Value)
     SelectedControls(0).HighlightMode = mHighlightMode
-    SelectedControls(0).HighlightModeTabSel = mHighlightModeTabSel
+    SelectedControls(0).HighlightModeSelectedTab = mHighlightModeSelectedTab
     SelectedControls(0).AutoRelocateControls = cboAutoRelocateControls.ItemData(cboAutoRelocateControls.ListIndex)
     If Not SelectedControls(0).AutoTabHeight Then
         SelectedControls(0).TabHeight = CSng(txtTabHeight.Text)
@@ -1531,7 +1531,7 @@ Private Sub tmrLoad_Timer()
     cboBackStyle.Clear
     cboBackStyle.AddItem ntTransparent & " - ntTransparent": cboBackStyle.ItemData(cboBackStyle.NewIndex) = ntTransparent
     cboBackStyle.AddItem ntOpaque & " - ntOpaque": cboBackStyle.ItemData(cboBackStyle.NewIndex) = ntOpaque
-    cboBackStyle.AddItem ntOpaqueTabSel & " - ntOpaqueTabSel": cboBackStyle.ItemData(cboBackStyle.NewIndex) = ntOpaqueTabSel
+    cboBackStyle.AddItem ntOpaqueSelectedTab & " - ntOpaqueSelectedTab": cboBackStyle.ItemData(cboBackStyle.NewIndex) = ntOpaqueSelectedTab
     
     cboStyle.Clear
     cboStyle.AddItem ssStyleTabbedDialog & " - ssStyleTabbedDialog": cboStyle.ItemData(cboStyle.NewIndex) = ssStyleTabbedDialog
@@ -1555,7 +1555,7 @@ Private Sub tmrLoad_Timer()
     
     cboFlatBorderMode.Clear
     cboFlatBorderMode.AddItem ntBorderTabs & " - ntBorderTabs": cboFlatBorderMode.ItemData(cboFlatBorderMode.NewIndex) = ntBorderTabs
-    cboFlatBorderMode.AddItem ntBorderTabSel & " - ntBorderTabSel": cboFlatBorderMode.ItemData(cboFlatBorderMode.NewIndex) = ntBorderTabSel
+    cboFlatBorderMode.AddItem ntBorderSelectedTab & " - ntBorderSelectedTab": cboFlatBorderMode.ItemData(cboFlatBorderMode.NewIndex) = ntBorderSelectedTab
     
     cboFlatBarPosition.Clear
     cboFlatBarPosition.AddItem ntBarPositionTop & " - ntBarPositionTop": cboFlatBarPosition.ItemData(cboFlatBarPosition.NewIndex) = ntBarPositionTop
@@ -1571,8 +1571,8 @@ Private Sub tmrLoad_Timer()
     cboShowRowsInPerspective.Tag = iCtl.ShowRowsInPerspective
     mHighlightMode = iCtl.HighlightMode
     SetHLComboText cboHighlightMode, mHighlightMode
-    mHighlightModeTabSel = iCtl.HighlightModeTabSel
-    SetHLComboText cboHighlightModeTabSel, mHighlightModeTabSel
+    mHighlightModeSelectedTab = iCtl.HighlightModeSelectedTab
+    SetHLComboText cboHighlightModeSelectedTab, mHighlightModeSelectedTab
     
     SelectInComboByItemData cboStyle, iCtl.Style
     
@@ -1592,7 +1592,7 @@ Private Sub tmrLoad_Timer()
     chkSoftEdges.Value = IIf(iCtl.SoftEdges, 1, 0)
     chkHandleHighContrastTheme.Value = IIf(iCtl.HandleHighContrastTheme, 1, 0)
     SelectInComboByItemData cboHighlightMode, iCtl.HighlightMode
-    SelectInComboByItemData cboHighlightModeTabSel, iCtl.HighlightModeTabSel
+    SelectInComboByItemData cboHighlightModeSelectedTab, iCtl.HighlightModeSelectedTab
     SelectInComboByItemData cboAutoRelocateControls, iCtl.AutoRelocateControls
     txtTabHeight.Text = iCtl.TabHeight
     txtFlatRoundnessTop.Text = iCtl.FlatRoundnessTop
@@ -1631,7 +1631,7 @@ Private Sub tmrPicDropped_Timer()
         
         If (iPt.X < iRect.Left) Or (iPt.X > iRect.Right) Or (iPt.Y < iRect.Top) Or (iPt.Y > iRect.Bottom) Then
             iHwnd = WindowFromPoint(iPt.X, iPt.Y)
-            If (iHwnd <> cboHighlightMode.hWnd) And (iHwnd <> cboHighlightModeTabSel.hWnd) Then
+            If (iHwnd <> cboHighlightMode.hWnd) And (iHwnd <> cboHighlightModeSelectedTab.hWnd) Then
                 iHide = True
             End If
         End If

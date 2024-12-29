@@ -615,7 +615,7 @@ Begin VB.PropertyPage pagNewTabIcons
       EndProperty
       TabHeight       =   579
       AutoTabHeight   =   -1  'True
-      ControlVersion  =   9
+      ControlVersion  =   10
       TabCaption(0)   =   ""
       TabCaption(1)   =   ""
       TabCaption(2)   =   ""
@@ -1271,14 +1271,13 @@ Private Sub NewTab1_Click(PreviousTab As Integer)
         mTab = NewTab1.TabSel
         ShowTabData
         mLoading = False
-        
-        If (NewTab1.Left + NewTab1.GetTabLeft(mTab) + NewTab1.GetTabWidth(mTab)) > PropertyPage.ScaleWidth Then
-            tmrTabChanged.Enabled = True
-            NewTab1.Left = PropertyPage.ScaleWidth - (NewTab1.GetTabLeft(mTab) + NewTab1.GetTabWidth(mTab)) - 120
-        ElseIf (NewTab1.Left + NewTab1.GetTabLeft(mTab)) < 0 Then
-            tmrTabChanged.Enabled = True
-            NewTab1.Left = 120 - NewTab1.GetTabLeft(mTab)
-        End If
+    End If
+    If (NewTab1.Left + NewTab1.GetTabLeft(mTab) + NewTab1.GetTabWidth(mTab)) > PropertyPage.ScaleWidth Then
+        tmrTabChanged.Enabled = True
+        NewTab1.Left = PropertyPage.ScaleWidth - (NewTab1.GetTabLeft(mTab) + NewTab1.GetTabWidth(mTab)) - 120
+    ElseIf (NewTab1.Left + NewTab1.GetTabLeft(mTab)) < 0 Then
+        tmrTabChanged.Enabled = True
+        NewTab1.Left = 120 - NewTab1.GetTabLeft(mTab)
     End If
 End Sub
 
@@ -1396,7 +1395,7 @@ Private Sub PropertyPage_ApplyChanges()
     End If
     iSC.MakeContainedControlsInSelTabVisible
     gPagTabsApplyTime = Timer
-    gPagTabsLastTabSel = mTab
+    gPagTabsLastSelectedTab = mTab
     Unsubclass
 End Sub
 
@@ -1517,7 +1516,7 @@ Private Sub PropertyPage_SelectionChanged()
     End If
     
     If ((Timer - gPagTabsApplyTime) < 3) And (gPagTabsApplyTime <> 0) Then
-        mTab = gPagTabsLastTabSel
+        mTab = gPagTabsLastSelectedTab
     Else
         mTab = iSC.TabSel
     End If

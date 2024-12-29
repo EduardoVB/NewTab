@@ -1,3 +1,13 @@
+2024-12-29 Changed to OLE version 10.
+2024-12-29 Updated documentation.
+2024-12-29 All properties with names including 'TabSel' have been changed to 'SelectedTab' for clarity and better naming. The TabSel property is retained (hidden) for backward compatibility.
+2024-12-29 SetActiveTab method renamed to SelectTab.
+2024-12-29 Fixed bug in flat style when the control shows the bottom bar, when there is more than one rows of tabs.
+2024-12-29 When the control is running in source code and #Const NOSUBCLASSINIDE = 1 (default, for IDE crash protection), now the currently selected tab can be changed at design time from the Tabs property page (from 'Current tab' control at the top left).
+2024-12-29 Fixed bug in property pages Tabs and TabIcons when in the sample control shown at the bottom the current tab is not visible due to property page smaller width.
+2024-12-29 Bug fix related to control font being changed to Ambient Font when applying themes.
+2024-12-29 Event TDIFormsShowTabIcon now includes the possibility to use an IconFont for the icon.
+2024-12-29 Added RefreshContainedControls method.
 2024-12-26 Bug fix for mTDIMode = ntTDIModeForms setting icon of main tab at design time.
 2024-12-20 Updated documentation to include the TDIModeFormsReady event.
 2024-12-20 Added event TDIModeFormsReady.
@@ -17,6 +27,7 @@
 2024-08-13 Fix in raising Resize event.
 2024-08-12 In the pagNewTabTabs property page now the default tab displayed is the current tab in the control.
 2024-08-12 Added TabCaption label to pagNewTabIcons property page.
+2024-06-12 Added a MIT license.
 2024-08-08 Fixed bug in pagNewTabTabs propety page, when adding a new tab. 
 2024-04-25 Fixed: TabKey must be unique.
 2024-04-25 TabKeys are now case insensitive.

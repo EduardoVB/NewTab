@@ -100,8 +100,8 @@ Backward compatible with SSTab (fully), and with SSTabEx (mostly).</p><br>
 <li class="toc1"><a href="#AutoRelocateControls-Property">AutoRelocateControls</a><br>
 <li class="toc1"><a href="#AutoTabHeight-Property">AutoTabHeight</a><br>
 <li class="toc1"><a href="#BackColor-Property">BackColor</a><br>
+<li class="toc1"><a href="#BackColorSelectedTab-Property">BackColorSelectedTab</a><br>
 <li class="toc1"><a href="#BackColorTabs-Property">BackColorTabs</a><br>
-<li class="toc1"><a href="#BackColorTabSel-Property">BackColorTabSel</a><br>
 <li class="toc1"><a href="#BackStyle-Property">BackStyle</a><br>
 <li class="toc1"><a href="#CanReorderTabs-Property">CanReorderTabs</a><br>
 <li class="toc1"><a href="#Caption-Property">Caption</a><br>
@@ -121,7 +121,7 @@ Backward compatible with SSTab (fully), and with SSTabEx (mostly).</p><br>
 <li class="toc1"><a href="#EndOfTabs-Property">EndOfTabs</a><br>
 <li class="toc1"><a href="#FlatBarColorHighlight-Property">FlatBarColorHighlight</a><br>
 <li class="toc1"><a href="#FlatBarColorInactive-Property">FlatBarColorInactive</a><br>
-<li class="toc1"><a href="#FlatBarColorTabSel-Property">FlatBarColorTabSel</a><br>
+<li class="toc1"><a href="#FlatBarColorSelectedTab-Property">FlatBarColorSelectedTab</a><br>
 <li class="toc1"><a href="#FlatBarGripHeight-Property">FlatBarGripHeight</a><br>
 <li class="toc1"><a href="#FlatBarHeight-Property">FlatBarHeight</a><br>
 <li class="toc1"><a href="#FlatBarPosition-Property">FlatBarPosition</a><br>
@@ -133,29 +133,29 @@ Backward compatible with SSTab (fully), and with SSTabEx (mostly).</p><br>
 <li class="toc1"><a href="#FlatRoundnessTabs-Property">FlatRoundnessTabs</a><br>
 <li class="toc1"><a href="#FlatRoundnessTop-Property">FlatRoundnessTop</a><br>
 <li class="toc1"><a href="#FlatTabBorderColorHighlight-Property">FlatTabBorderColorHighlight</a><br>
-<li class="toc1"><a href="#FlatTabBorderColorTabSel-Property">FlatTabBorderColorTabSel</a><br>
+<li class="toc1"><a href="#FlatTabBorderColorSelectedTab-Property">FlatTabBorderColorSelectedTab</a><br>
 <li class="toc1"><a href="#FlatTabsSeparationLineColor-Property">FlatTabsSeparationLineColor</a><br>
 <li class="toc1"><a href="#Font-Property">Font</a><br>
 <li class="toc1"><a href="#ForeColor-Property">ForeColor</a><br>
 <li class="toc1"><a href="#ForeColorHighlighted-Property">ForeColorHighlighted</a><br>
-<li class="toc1"><a href="#ForeColorTabSel-Property">ForeColorTabSel</a><br>
+<li class="toc1"><a href="#ForeColorSelectedTab-Property">ForeColorSelectedTab</a><br>
 <li class="toc1"><a href="#HandleHighContrastTheme-Property">HandleHighContrastTheme</a><br>
 <li class="toc1"><a href="#Height-Property">Height</a><br>
 <li class="toc1"><a href="#HelpContextID-Property">HelpContextID</a><br>
 <li class="toc1"><a href="#HighlightColor-Property">HighlightColor</a><br>
-<li class="toc1"><a href="#HighlightColorTabSel-Property">HighlightColorTabSel</a><br>
+<li class="toc1"><a href="#HighlightColorSelectedTab-Property">HighlightColorSelectedTab</a><br>
 <li class="toc1"><a href="#HighlightEffect-Property">HighlightEffect</a><br>
 <li class="toc1"><a href="#HighlightMode-Property">HighlightMode</a><br>
-<li class="toc1"><a href="#HighlightModeTabSel-Property">HighlightModeTabSel</a><br>
+<li class="toc1"><a href="#HighlightModeSelectedTab-Property">HighlightModeSelectedTab</a><br>
 <li class="toc1"><a href="#HighlightTabExtraHeight-Property">HighlightTabExtraHeight</a><br>
 <li class="toc1"><a href="#hWnd-Property">hWnd</a><br>
 <li class="toc1"><a href="#IconAlignment-Property">IconAlignment</a><br>
 <li class="toc1"><a href="#IconCharHex-Property">IconCharHex</a><br>
 <li class="toc1"><a href="#IconColor-Property">IconColor</a><br>
 <li class="toc1"><a href="#IconColorMouseHover-Property">IconColorMouseHover</a><br>
-<li class="toc1"><a href="#IconColorMouseHoverTabSel-Property">IconColorMouseHoverTabSel</a><br>
+<li class="toc1"><a href="#IconColorMouseHoverSelectedTab-Property">IconColorMouseHoverSelectedTab</a><br>
+<li class="toc1"><a href="#IconColorSelectedTab-Property">IconColorSelectedTab</a><br>
 <li class="toc1"><a href="#IconColorTabHighlighted-Property">IconColorTabHighlighted</a><br>
-<li class="toc1"><a href="#IconColorTabSel-Property">IconColorTabSel</a><br>
 <li class="toc1"><a href="#IconFont-Property">IconFont</a><br>
 <li class="toc1"><a href="#IconLeftOffset-Property">IconLeftOffset</a><br>
 <li class="toc1"><a href="#IconTopOffset-Property">IconTopOffset</a><br>
@@ -242,7 +242,8 @@ Backward compatible with SSTab (fully), and with SSTabEx (mostly).</p><br>
 <li class="toc1"><a href="#IsThemed-Method">IsThemed</a><br>
 <li class="toc1"><a href="#MoveTab-Method">MoveTab</a><br>
 <li class="toc1"><a href="#Refresh-Method">Refresh</a><br>
-<li class="toc1"><a href="#SetActiveTab-Method">SetActiveTab</a><br>
+<li class="toc1"><a href="#RefreshContainedControls-Method">RefreshContainedControls</a><br>
+<li class="toc1"><a href="#SelectTab-Method">SelectTab</a><br>
 <li class="toc1"><a href="#SetFocus-Method">SetFocus</a><br>
 <li class="toc1"><a href="#SetTabsOrder-Method">SetTabsOrder</a><br>
 <li class="toc1"><a href="#SetThemeData-Method">SetThemeData</a><br>
@@ -311,26 +312,14 @@ For newly added controls, its default it <b>True</b>, but if you are updating fr
 <a name="BackColor-Property" /><h2><p class"section">BackColor Property</p></h2></a>
 <p>Type: <b>Long</b></p>
 <h3>Description:</h3>
-<p>Returns or sets the background color. The background color is not the color of the tabs background (that color is handled by the <a href="#BackColorTabs-Property">BackColorTabs</a> property, nor the color of the selected tab, hadled by <a href="#BackColorTabSel-Property">BackColorTabSel</a> property) but the color ouside the tabs.<br>
+<p>Returns or sets the background color. The background color is not the color of the tabs background (that color is handled by the <a href="#BackColorTabs-Property">BackColorTabs</a> property, nor the color of the selected tab, hadled by <a href="#BackColorSelectedTab-Property">BackColorSelectedTab</a> property) but the color ouside the tabs.<br>
 <br>
 <h3>See Also:</h3><a href="#BackColorTabs-Property">BackColorTabs</a> property<br>
-<a href="#BackColorTabSel-Property">BackColorTabSel</a> property<br>
+<a href="#BackColorSelectedTab-Property">BackColorSelectedTab</a> property<br>
 <a href="#BackStyle-Property">BackStyle</a> property<br>
 <a href="#ChangeControlsBackColor-Property">ChangeControlsBackColor</a> property<br>
 </p><br>
-<a name="BackColorTabs-Property" /><h2><p class"section">BackColorTabs Property</p></h2></a>
-<p>Type: <b>Long</b></p>
-<h3>Description:</h3>
-<p>Returns or sets the background color of the tabs, except the active tab that is set by <a href="#BackColorTabSel-Property">BackColorTabSel</a>.<br>
-When the control is themed, this property value has no effect.<br>
-<br>
-<h3>See Also:</h3><a href="#BackColor-Property">BackColor</a> property<br>
-<a href="#BackColorTabSel-Property">BackColorTabSel</a> property<br>
-<a href="#ForeColor-Property">ForeColor</a> property<br>
-<a href="#HighlightMode-Property">HighlightMode</a> property<br>
-<a href="#HighlightColor-Property">HighlightColor</a> property<br>
-</p><br>
-<a name="BackColorTabSel-Property" /><h2><p class"section">BackColorTabSel Property</p></h2></a>
+<a name="BackColorSelectedTab-Property" /><h2><p class"section">BackColorSelectedTab Property</p></h2></a>
 <p>Type: <b>Long</b></p>
 <h3>Description:</h3>
 <p>Returns or sets the color of the active tab, including the tab body (the space were the contained controls are located).<br>
@@ -339,9 +328,21 @@ When the control is themed, this property value has no effect.<br>
 <br>
 <h3>See Also:</h3><a href="#BackColor-Property">BackColor</a> property<br>
 <a href="#BackColorTabs-Property">BackColorTabs</a> property<br>
-<a href="#ForeColorTabSel-Property">ForeColorTabSel</a> property<br>
-<a href="#HighlightModeTabSel-Property">HighlightModeTabSel</a> property<br>
-<a href="#HighlightColorTabSel-Property">HighlightColorTabSel</a> property</p><br>
+<a href="#ForeColorSelectedTab-Property">ForeColorSelectedTab</a> property<br>
+<a href="#HighlightModeSelectedTab-Property">HighlightModeSelectedTab</a> property<br>
+<a href="#HighlightColorSelectedTab-Property">HighlightColorSelectedTab</a> property</p><br>
+<a name="BackColorTabs-Property" /><h2><p class"section">BackColorTabs Property</p></h2></a>
+<p>Type: <b>Long</b></p>
+<h3>Description:</h3>
+<p>Returns or sets the background color of the tabs, except the active tab that is set by <a href="#BackColorSelectedTab-Property">BackColorSelectedTab</a>.<br>
+When the control is themed, this property value has no effect.<br>
+<br>
+<h3>See Also:</h3><a href="#BackColor-Property">BackColor</a> property<br>
+<a href="#BackColorSelectedTab-Property">BackColorSelectedTab</a> property<br>
+<a href="#ForeColor-Property">ForeColor</a> property<br>
+<a href="#HighlightMode-Property">HighlightMode</a> property<br>
+<a href="#HighlightColor-Property">HighlightColor</a> property<br>
+</p><br>
 <a name="BackStyle-Property" /><h2><p class"section">BackStyle Property</p></h2></a>
 <p>Type: <b><a href="#NTBackStyleConstants-Enum">NTBackStyleConstants</a></b></p>
 <h3>Description:</h3>
@@ -360,7 +361,7 @@ This feature is only available for <a href="#TabOrientation-Property">TabOrienta
 <a href="#GetTabsOrder-Method">GetTabsOrder</a> method<br>
 <a href="#SetTabsOrder-Method">SetTabsOrder</a> method<br>
 <a href="#FindTab-Method">FindTab</a> method<br>
-<a href="#SetActiveTab-Method">SetActiveTab</a> method</p><br>
+<a href="#SelectTab-Method">SelectTab</a> method</p><br>
 <a name="Caption-Property" /><h2><p class"section">Caption Property</p></h2></a>
 <p>Type: <b>String</b></p>
 <h3>Description:</h3>
@@ -375,12 +376,12 @@ Captions can have accelerators by adding "&" before the letter that will act as 
 <a name="ChangeControlsBackColor-Property" /><h2><p class"section">ChangeControlsBackColor Property</p></h2></a>
 <p>Type: <b>Boolean</b></p>
 <h3>Description:</h3>
-<p>Returns or sets a value that determines if the background color of the contained controls will be changed according to the background color of the tabs (the <a href="#BackColorTabSel-Property">BackColorTabSel</a> property value).<br>
+<p>Returns or sets a value that determines if the background color of the contained controls will be changed according to the background color of the tabs (the <a href="#BackColorSelectedTab-Property">BackColorSelectedTab</a> property value).<br>
 <br>
 If Windows Visual Styles are applied (<a href="#Style-Property">Style</a> = <b>ntStyleWindows</b>), the background of the controls are painted with the background of the themed tab body, so this property has no effect in that case.<br>
 If <b>ChangeControlsBackColor</b> is <b>False</b>, the <b>BackColor</b> of the contained controls is left unchanged.<br>
-If <b>ChangeControlsBackColor</b> is <b>True</b>, and the control is not themed, changing the <a href="#BackColorTabSel-Property">BackColorTabSel</a> propery value will also change the <b>BackColor</b> of the contained controls, but only when their BackColor's has the same color as the previous <a href="#BackColorTabSel-Property">BackColorTabSel</a> setting.<br>
-If <b>ChangeControlsBackColor</b> is <b>True</b>, and the control is themed, only the controls that has the <b>BackColor</b> property value set to the same color of <a href="#BackColorTabSel-Property">BackColorTabSel</a> are changed.<br>
+If <b>ChangeControlsBackColor</b> is <b>True</b>, and the control is not themed, changing the <a href="#BackColorSelectedTab-Property">BackColorSelectedTab</a> propery value will also change the <b>BackColor</b> of the contained controls, but only when their BackColor's has the same color as the previous <a href="#BackColorSelectedTab-Property">BackColorSelectedTab</a> setting.<br>
+If <b>ChangeControlsBackColor</b> is <b>True</b>, and the control is themed, only the controls that has the <b>BackColor</b> property value set to the same color of <a href="#BackColorSelectedTab-Property">BackColorSelectedTab</a> are changed.<br>
 <br>
 <h3>See Also:</h3><a href="#ChangeControlsForeColor-Property">ChangeControlsForeColor</a> property<br>
 <a href="#ChangeControlBackColor-Event">ChangeControlBackColor</a> event<br>
@@ -388,11 +389,11 @@ If <b>ChangeControlsBackColor</b> is <b>True</b>, and the control is themed, onl
 <a name="ChangeControlsForeColor-Property" /><h2><p class"section">ChangeControlsForeColor Property</p></h2></a>
 <p>Type: <b>Boolean</b></p>
 <h3>Description:</h3>
-<p>Returns or sets a value that determines if the text color of the contained controls will be changed according to the <a href="#ForeColorTabSel-Property">ForeColorTabSel</a> property value.<br>
+<p>Returns or sets a value that determines if the text color of the contained controls will be changed according to the <a href="#ForeColorSelectedTab-Property">ForeColorSelectedTab</a> property value.<br>
 <br>
 If <b>ChangeControlsForeColor</b> is <b>False</b>, the <b>ForeColor</b> of the contained controls is left unchanged.<br>
-If <b>ChangeControlsForeColor</b> is <b>True</b>, and the control is not themed, changing the <a href="#ForeColorTabSel-Property">ForeColorTabSel</a> propery value will also change the <b>ForeColor</b> of the contained controls, but only when their ForeColor's has the same color as the previous <a href="#ForeColorTabSel-Property">ForeColorTabSel</a> setting.<br>
-If <b>ChangeControlsBackColor</b> is <b>True</b>, and the control is themed, only the controls that has the <b>ForeColor</b> property value set to the same color of <a href="#ForeColorTabSel-Property">ForeColorTabSel</a> are changed.<br>
+If <b>ChangeControlsForeColor</b> is <b>True</b>, and the control is not themed, changing the <a href="#ForeColorSelectedTab-Property">ForeColorSelectedTab</a> propery value will also change the <b>ForeColor</b> of the contained controls, but only when their ForeColor's has the same color as the previous <a href="#ForeColorSelectedTab-Property">ForeColorSelectedTab</a> setting.<br>
+If <b>ChangeControlsBackColor</b> is <b>True</b>, and the control is themed, only the controls that has the <b>ForeColor</b> property value set to the same color of <a href="#ForeColorSelectedTab-Property">ForeColorSelectedTab</a> are changed.<br>
 <br>
 <h3>See Also:</h3><a href="#ChangeControlsBackColor-Property">ChangeControlsBackColor</a> property<br>
 <a href="#ChangeControlForeColor-Event">ChangeControlForeColor</a> event<br>
@@ -450,7 +451,7 @@ The argument <b>ControlName</b> must be the name of a contained control.<br>
 <a name="Controls-Property" /><h2><p class"section">Controls Property</p></h2></a>
 <p>Type: <b>ContainedControls</b> (Read only)</p>
 <h3>Description:</h3>
-<p>Returns a collection of the controls that were added to the SSTabEx.<br>
+<p>Returns a collection of the controls that were added to the NewTab.<br>
 <br>
 It only holds controls that are directly contained in the control, it does not include controls that are inside others controls. Also see the <a href="#TabControls-Property">TabControls</a> property.<br>
 It is not available at design time, and is read-only at run time.<br>
@@ -489,7 +490,7 @@ It is not available at design time, and is read-only at run time.<br>
 <p>Type: <b>Long</b></p>
 <h3>Description:</h3>
 <p>Returns or sets the color of the bar when a tab is inactive in flat style.</p><br>
-<a name="FlatBarColorTabSel-Property" /><h2><p class"section">FlatBarColorTabSel Property</p></h2></a>
+<a name="FlatBarColorSelectedTab-Property" /><h2><p class"section">FlatBarColorSelectedTab Property</p></h2></a>
 <p>Type: <b>Long</b></p>
 <h3>Description:</h3>
 <p>Returns or sets the color of the bar when a tab is selected in flat style.</p><br>
@@ -521,7 +522,7 @@ It is not available at design time, and is read-only at run time.<br>
 <p>Type: <b><a href="#NTFlatBorderModeConstants-Enum">NTFlatBorderModeConstants</a></b></p>
 <h3>Description:</h3>
 <p>Returns or sets the way the border will be drawn in flat style.<br>
-It may be around the selected tab (<b>ntBorderTabSel</b>) or all the control (<b>ntBorderTabs</b>).</p><br>
+It may be around the selected tab (<b>ntBorderSelectedTab</b>) or all the control (<b>ntBorderTabs</b>).</p><br>
 <a name="FlatRoundnessBottom-Property" /><h2><p class"section">FlatRoundnessBottom Property</p></h2></a>
 <p>Type: <b>Long</b></p>
 <h3>Description:</h3>
@@ -549,14 +550,14 @@ It may be around the selected tab (<b>ntBorderTabSel</b>) or all the control (<b
 <p>Returns or sets the color that is used to highlight the tabs with a border when the mouse hovers on them, and the <a href="#HighlightMode-Property">HighlightMode</a> property has the corresponding flag <b>ntHLFlatDrawBorder</b>.<br>
 <br>
 <h3>See Also:</h3><a href="#HighlightMode-Property">HighlightMode</a> property<br>
-<a href="#FlatTabBorderColorTabSel-Property">FlatTabBorderColorTabSel</a> property<br>
+<a href="#FlatTabBorderColorSelectedTab-Property">FlatTabBorderColorSelectedTab</a> property<br>
 </p><br>
-<a name="FlatTabBorderColorTabSel-Property" /><h2><p class"section">FlatTabBorderColorTabSel Property</p></h2></a>
+<a name="FlatTabBorderColorSelectedTab-Property" /><h2><p class"section">FlatTabBorderColorSelectedTab Property</p></h2></a>
 <p>Type: <b>Long</b></p>
 <h3>Description:</h3>
-<p>Returns or sets the color that is used to highlight the active tab with a border when the <a href="#HighlightModeTabSel-Property">HighlightModeTabSel</a> property has the corresponding flag <b>ntHLFlatDrawBorder</b>.<br>
+<p>Returns or sets the color that is used to highlight the active tab with a border when the <a href="#HighlightModeSelectedTab-Property">HighlightModeSelectedTab</a> property has the corresponding flag <b>ntHLFlatDrawBorder</b>.<br>
 <br>
-<h3>See Also:</h3><a href="#HighlightModeTabSel-Property">HighlightModeTabSel</a> property<br>
+<h3>See Also:</h3><a href="#HighlightModeSelectedTab-Property">HighlightModeSelectedTab</a> property<br>
 <a href="#FlatTabBorderColorHighlight-Property">FlatTabBorderColorHighlight</a> property<br>
 </p><br>
 <a name="FlatTabsSeparationLineColor-Property" /><h2><p class"section">FlatTabsSeparationLineColor Property</p></h2></a>
@@ -581,12 +582,12 @@ It may be around the selected tab (<b>ntBorderTabSel</b>) or all the control (<b
 <br>
 <h3>See Also:</h3><a href="#HighlightColor-Property">HighlightColor</a> property<br>
 <a href="#HighlightMode-Property">HighlightMode</a> property</p><br>
-<a name="ForeColorTabSel-Property" /><h2><p class"section">ForeColorTabSel Property</p></h2></a>
+<a name="ForeColorSelectedTab-Property" /><h2><p class"section">ForeColorSelectedTab Property</p></h2></a>
 <p>Type: <b>Long</b></p>
 <h3>Description:</h3>
 <p>Returns or sets the the caption color <b>of the active tab</b>.<br>
 <br>
-<h3>See Also:</h3><a href="#HighlightColorTabSel-Property">HighlightColorTabSel</a> property<br>
+<h3>See Also:</h3><a href="#HighlightColorSelectedTab-Property">HighlightColorSelectedTab</a> property<br>
 <a href="#ForeColorHighlighted-Property">ForeColorHighlighted</a> property<br>
 <a href="#ForeColor-Property">ForeColor</a> property<br>
 </p><br>
@@ -609,18 +610,18 @@ It may be around the selected tab (<b>ntBorderTabSel</b>) or all the control (<b
 <br>
 <h3>See Also:</h3><a href="#HighlightMode-Property">HighlightMode</a> property<br>
 <a href="#HighlightEffect-Property">HighlightEffect</a> property<br>
-<a href="#ForeColorTabSel-Property">ForeColorTabSel</a> property<br>
-<a href="#BackColorTabSel-Property">BackColorTabSel</a> property<br>
-<a href="#HighlightColorTabSel-Property">HighlightColorTabSel</a> property<br>
+<a href="#ForeColorSelectedTab-Property">ForeColorSelectedTab</a> property<br>
+<a href="#BackColorSelectedTab-Property">BackColorSelectedTab</a> property<br>
+<a href="#HighlightColorSelectedTab-Property">HighlightColorSelectedTab</a> property<br>
 <br>
 </p><br>
-<a name="HighlightColorTabSel-Property" /><h2><p class"section">HighlightColorTabSel Property</p></h2></a>
+<a name="HighlightColorSelectedTab-Property" /><h2><p class"section">HighlightColorSelectedTab Property</p></h2></a>
 <p>Type: <b>Long</b></p>
 <h3>Description:</h3>
 <p>Returns or sets the color used to highlight the selected tab.<br>
 <br>
-<h3>See Also:</h3><a href="#HighlightModeTabSel-Property">HighlightModeTabSel</a> property<br>
-<a href="#ForeColorTabSel-Property">ForeColorTabSel</a> property<br>
+<h3>See Also:</h3><a href="#HighlightModeSelectedTab-Property">HighlightModeSelectedTab</a> property<br>
+<a href="#ForeColorSelectedTab-Property">ForeColorSelectedTab</a> property<br>
 </p><br>
 <a name="HighlightEffect-Property" /><h2><p class"section">HighlightEffect Property</p></h2></a>
 <p>Type: <b>Boolean</b></p>
@@ -645,9 +646,9 @@ When the control is themed, this setting is mostly ignored, the only flags that 
 <br>
 <h3>See Also:</h3><a href="#HighlightColor-Property">HighlightColor</a> property<br>
 <a href="#HighlightEffect-Property">HighlightEffect</a> property<br>
-<a href="#HighlightModeTabSel-Property">HighlightModeTabSel</a> property<br>
+<a href="#HighlightModeSelectedTab-Property">HighlightModeSelectedTab</a> property<br>
 </p><br>
-<a name="HighlightModeTabSel-Property" /><h2><p class"section">HighlightModeTabSel Property</p></h2></a>
+<a name="HighlightModeSelectedTab-Property" /><h2><p class"section">HighlightModeSelectedTab Property</p></h2></a>
 <p>Type: <b>Long</b></p>
 <h3>Description:</h3>
 <p>Returns or sets a value that determines if and how the selected tab will be highlighted.<br>
@@ -664,7 +665,7 @@ This value consists in a group of flags that determine how to highlight a tab.<b
 <br>
 When the control is themed, this setting is mostly ignored, the only flags that has effect are CaptionBold and CaptionUnderlined.<br>
 <br>
-<h3>See Also:</h3><a href="#HighlightColorTabSel-Property">HighlightColorTabSel</a> property<br>
+<h3>See Also:</h3><a href="#HighlightColorSelectedTab-Property">HighlightColorSelectedTab</a> property<br>
 <a href="#HighlightMode-Property">HighlightMode</a> property</p><br>
 <a name="HighlightTabExtraHeight-Property" /><h2><p class"section">HighlightTabExtraHeight Property</p></h2></a>
 <p>Type: <b>Single</b></p>
@@ -694,7 +695,7 @@ When the control is themed, this setting is mostly ignored, the only flags that 
 <br>
 <h3>See Also:</h3><a href="#IconColorTabHighlighted-Property">IconColorTabHighlighted</a> property<br>
 <a href="#IconColorMouseHover-Property">IconColorMouseHover</a> property<br>
-<a href="#IconColorTabSel-Property">IconColorTabSel</a> property<br>
+<a href="#IconColorSelectedTab-Property">IconColorSelectedTab</a> property<br>
 <a href="#IconFont-Property">IconFont</a> property<br>
 <a href="#IconClick-Event">IconClick</a> event</p><br>
 <a name="IconColorMouseHover-Property" /><h2><p class"section">IconColorMouseHover Property</p></h2></a>
@@ -702,29 +703,29 @@ When the control is themed, this setting is mostly ignored, the only flags that 
 <h3>Description:</h3>
 <p>Returns or sets the color that the icon will show when the mouse hovers it, for the non active tabs.<br>
 <br>
-<a href="#IconColorMouseHoverTabSel-Property">IconColorMouseHoverTabSel</a> property<br>
+<a href="#IconColorMouseHoverSelectedTab-Property">IconColorMouseHoverSelectedTab</a> property<br>
 <a href="#IconColorTabHighlighted-Property">IconColorTabHighlighted</a> property</p><br>
-<a name="IconColorMouseHoverTabSel-Property" /><h2><p class"section">IconColorMouseHoverTabSel Property</p></h2></a>
+<a name="IconColorMouseHoverSelectedTab-Property" /><h2><p class"section">IconColorMouseHoverSelectedTab Property</p></h2></a>
 <p>Type: <b>Long</b></p>
 <h3>Description:</h3>
 <p>Returns or sets the color that the icon will show when the mouse hovers it, for the active tab.<br>
 <br>
 <a href="#IconColorMouseHover-Property">IconColorMouseHover</a> property<br>
 <a href="#IconColorTabHighlighted-Property">IconColorTabHighlighted</a> property</p><br>
+<a name="IconColorSelectedTab-Property" /><h2><p class"section">IconColorSelectedTab Property</p></h2></a>
+<p>Type: <b>Long</b></p>
+<h3>Description:</h3>
+<p>Returns or sets the color used to draw the icon when the tab is seleted.</p><br>
 <a name="IconColorTabHighlighted-Property" /><h2><p class"section">IconColorTabHighlighted Property</p></h2></a>
 <p>Type: <b>Long</b></p>
 <h3>Description:</h3>
 <p>Returns or sets the color used to draw the icon when the tab is highlighted (not the icon itself).<br>
 <br>
 <h3>See Also:</h3><a href="#IconColorMouseHover-Property">IconColorMouseHover</a> property<br>
-<a href="#IconColorMouseHoverTabSel-Property">IconColorMouseHoverTabSel</a> property<br>
+<a href="#IconColorMouseHoverSelectedTab-Property">IconColorMouseHoverSelectedTab</a> property<br>
 <a href="#ForeColorHighlighted-Property">ForeColorHighlighted</a> property<br>
 <br>
 </p><br>
-<a name="IconColorTabSel-Property" /><h2><p class"section">IconColorTabSel Property</p></h2></a>
-<p>Type: <b>Long</b></p>
-<h3>Description:</h3>
-<p>Returns or sets the color used to draw the icon when the tab is seleted.</p><br>
 <a name="IconFont-Property" /><h2><p class"section">IconFont Property</p></h2></a>
 <p>Type: <b>Font</b></p>
 <h3>Description:</h3>
@@ -757,7 +758,7 @@ Each tab can have a different font for its icon.<br>
 <a name="LeftOffsetToHide-Property" /><h2><p class"section">LeftOffsetToHide Property</p></h2></a>
 <p>Type: <b>Long</b> (Read only)</p>
 <h3>Description:</h3>
-<p>Returns the shift to the left in twips that the SStabEx is using to hide the controls in the non-active tabs.<br>
+<p>Returns the shift to the left in twips that the NewTab is using to hide the controls in the non-active tabs.<br>
 <br>
 With the original SSTab control that was fixed to 75000 <b>twips</b>, but now in hight DPI screen settings it can change to avoid overflow due to a Windows limitation.</p><br>
 <a name="MaskColor-Property" /><h2><p class"section">MaskColor Property</p></h2></a>
@@ -891,7 +892,7 @@ With styles Flat and Windows it has no effect.</p><br>
 <p>Returns or sets the style of the tabs.<br>
 <br>
 For some other properties, it acts as a meta-property. It means that it sets at once certain features that can be set individually through other properties.<br>
-It performs internal settings for <a href="#TabAppearance-Property">TabAppearance</a>, <a href="#TabWidthStyle-Property">TabWidthStyle</a>, <a href="#ShowRowsInPerspective-Property">ShowRowsInPerspective</a>, <a href="#HighlightMode-Property">HighlightMode</a> and <a href="#HighlightModeTabSel-Property">HighlightModeTabSel</a> as long as these properties are set to <b>Auto</b>.<br>
+It performs internal settings for <a href="#TabAppearance-Property">TabAppearance</a>, <a href="#TabWidthStyle-Property">TabWidthStyle</a>, <a href="#ShowRowsInPerspective-Property">ShowRowsInPerspective</a>, <a href="#HighlightMode-Property">HighlightMode</a> and <a href="#HighlightModeSelectedTab-Property">HighlightModeSelectedTab</a> as long as these properties are set to <b>Auto</b>.<br>
 The changes are internal, they are not reflected on these properties values (they remain set to <b>Auto</b>).<br>
 <br>
 It also can set if the control will have Windows Styles (the Windows "theme" look) or alrernatively a Flat appearance that unlocks other properties.<br>
@@ -906,7 +907,7 @@ It also can set if the control will have Windows Styles (the Windows "theme" loo
 <p>Returns or sets the current ('selected' or 'active') tab by its index or by a <a href="#TabKey-Property">TabKey</a>.<br>
 <br>
 <h3>See Also:</h3><a href="#TabKey-Property">TabKey</a> property<br>
-<a href="#SetActiveTab-Method">SetActiveTab</a> method<br>
+<a href="#SelectTab-Method">SelectTab</a> method<br>
 <a href="#TabChange-Event">TabChange</a> event<br>
 </p><br>
 <a name="TabAppearance-Property" /><h2><p class"section">TabAppearance Property</p></h2></a>
@@ -927,7 +928,7 @@ Captions can have accelerators by adding "&" before the letter that will act as 
 <h3>Description:</h3>
 <p>Returns a collection of the controls that are inside a tab. The tab must be identified by the nTab parameter.<br>
 <br>
-The optional <b>GetChilds</b> parameter determines if only the controls that are directly contained in the SSTabEx will be returned, or also the controls contained into them. Its default value is <b>True</b>.<br>
+The optional <b>GetChilds</b> parameter determines if only the controls that are directly contained in the NewTab will be returned, or also the controls contained into them. Its default value is <b>True</b>.<br>
 <br>
 It is not available at design time, and is read-only at run time.<br>
 <br>
@@ -1218,8 +1219,8 @@ In a control that its size and/or the tab texts change dinamically, to make sure
 <h3>Description:</h3>
 <p>Finds a tab based on the values provided in the parameters and returns its index. If the tab is not found, it returns -1.<br>
 <br>
-This method is similar to <a href="#SetActiveTab-Method">SetActiveTab</a> but it does not change the current tab.<br>
-Please read <a href="#SetActiveTab-Method">SetActiveTab</a> for an explanation of the parameters.</p><br>
+This method is similar to <a href="#SelectTab-Method">SelectTab</a> but it does not change the current tab.<br>
+Please read <a href="#SelectTab-Method">SelectTab</a> for an explanation of the parameters.</p><br>
 <a name="GetTabHeight-Method" /><h2><p class"section">GetTabHeight Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Single</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Index</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
@@ -1279,7 +1280,11 @@ Please read <a href="#SetActiveTab-Method">SetActiveTab</a> for an explanation o
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbspNone.&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspNo parameters.&nbsp&nbsp</td>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Redraws the control.</p><br>
-<a name="SetActiveTab-Method" /><h2><p class"section">SetActiveTab Method</p></h2></a>
+<a name="RefreshContainedControls-Method" /><h2><p class"section">RefreshContainedControls Method</p></h2></a>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbspNone.&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspNo parameters.&nbsp&nbsp</td>    </tr>  </tbody></table></p>
+<h3>Description:</h3>
+<p>Forces the redraw of some controls that can be problematic because they don't draw correctly after changing tab. Invoke it in the Click event of the control (after changing tab).</p><br>
+<a name="SelectTab-Method" /><h2><p class"section">SelectTab Method</p></h2></a>
 <p><table><tbody>    <tr>    <td>&nbsp&nbspReturn Type:&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Boolean</b>&nbsp&nbsp</td>    </tr><tr><td>&nbsp</td></tr>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspRequired&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Find</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In&nbsp&nbsp</td>    <td>&nbsp&nbspOptional&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Method</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbsp<a href="#NTFindTabMethodConstants-Enum">NTFindTabMethodConstants</a>&nbsp&nbsp</td>    <td>&nbsp&nbspDefault value: ntFindCaption (0)&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    In/Out&nbsp&nbsp</td>    <td>&nbsp&nbspOptional&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>StartingTab</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Sets the current ('selected' or 'active') tab by other means than its index (that can be done with the <a href="#Tab-Property">Tab</a> property).<br>
@@ -1347,7 +1352,7 @@ This method is mainly useful when you don't know the position of the tab because
 <p>Places the control at the front or back of the z-order within its graphical level.</p><br>
 
 <br><br><br><h1>Events</h1><br><a name="BeforeClick-Event" /><h2><p class"section">BeforeClick Event</p></h2></a>
-<p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>CurrentTabSel</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>NewTabSel</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Cancel</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>CurrentSelectedTab</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>NewSelectedTab</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Cancel</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>Occurs when the current tab (<a href="#Tab-Property">Tab</a>) is about to change.<br>
 Use the <b>BeforeClick</b> event to validate the information on the old tab before actually generating a <a href="#Click-Event">Click</a> event that selects the new tab.<br>
@@ -1388,7 +1393,7 @@ The <b>ControlTypeName</b> parameter specifies the type of the control (for exam
 <a href="#TabChange-Event">TabChange</a> event<br>
 <a href="#TabRightClick-Event">TabRightClick</a> event<br>
 <a href="#IconClick-Event">IconClick</a> event<br>
-<a href="#SetActiveTab-Method">SetActiveTab</a> method</p><br>
+<a href="#SelectTab-Method">SelectTab</a> method</p><br>
 <a name="DblClick-Event" /><h2><p class"section">DblClick Event</p></h2></a>
 <p>No parameters.</p>
 <h3>Description:</h3>
@@ -1477,7 +1482,7 @@ For the events that occur before, see <a href="#BeforeClick-Event">BeforeClick</
 This event is also generated when the control is first shown.<br>
 <br>
 <h3>See Also:</h3><a href="#Tab-Property">Tab</a> property<br>
-<a href="#SetActiveTab-Method">SetActiveTab</a> method<br>
+<a href="#SelectTab-Method">SelectTab</a> method<br>
 <br>
 </p><br>
 <a name="TabMouseEnter-Event" /><h2><p class"section">TabMouseEnter Event</p></h2></a>
@@ -1518,11 +1523,15 @@ The <b>X</b> and <b>Y</b> parameters return a number that specifies the current 
 <p>It occurs before opening a new tab in TDI mode.<br>
 <br>
 <h3>See Also:</h3><a href="#TDIMode-Property">TDIMode</a> property<br>
-<a href="#TDINewTabAdded-Event">TDINewTabAdded</a> event</p><br>
+<a href="#TDINewTabAdded-Event">TDINewTabAdded</a> event<br>
+<a href="#TDIFormsShowTabIcon-Event">TDIFormsShowTabIcon</a> event</p><br>
 <a name="TDIFormsShowTabIcon-Event" /><h2><p class"section">TDIFormsShowTabIcon Event</p></h2></a>
-<p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabNumber</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>FormhWnd</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IconPicture</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspPicture&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IconLeft</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IconTop</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IconWidth</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IconHeigh</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabNumber</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>FormCaption</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspString&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>FormhWnd</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IconPicture</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspObject&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IconLeftOffset</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IconTopOffset</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IconWidth</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IconHeight</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>UseIconFont</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IconFont</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspObject&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IconChar</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspVariant&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IconColor</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IconColorHovered</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>IconColorSelected</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>NoIcon</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
-<p>In TDI mode forms, it allows full control  for the icon that is displayed on the tab, including the icon itself and the size and position.</p><br>
+<p>In TDI mode forms, it allows full control  for the icon that is displayed on the tab, including the icon itself and the size and position. It is also possible to use an icon font for the icon.<br>
+<br>
+<h3>See Also:</h3><a href="#TDIMode-Property">TDIMode</a> property<br>
+<a href="#TDIBeforeNewTab-Event">TDIBeforeNewTab</a> event</p><br>
 <a name="TDIModeFormsReady-Event" /><h2><p class"section">TDIModeFormsReady Event</p></h2></a>
 <p>No parameters.</p>
 <h3>Description:</h3>
@@ -1667,7 +1676,7 @@ Use the names of the themes to set one into the <a href="#Theme-Property">Theme<
     <td>1    </td>
   </tr>
   <tr>
-    <td><b>ntOpaqueTabSel</b> =     </td>
+    <td><b>ntOpaqueSelectedTab</b> =     </td>
     <td>2    </td>
   </tr>
 </table>
@@ -1723,7 +1732,7 @@ Use the names of the themes to set one into the <a href="#Theme-Property">Theme<
     <td>0    </td>
   </tr>
   <tr>
-    <td><b>ntBorderTabSel</b> =     </td>
+    <td><b>ntBorderSelectedTab</b> =     </td>
     <td>1    </td>
   </tr>
 </table>
@@ -1999,7 +2008,7 @@ Use the names of the themes to set one into the <a href="#Theme-Property">Theme<
     <td>0    </td>
   </tr>
   <tr>
-    <td><b>ntCCBackColorTabSel</b> =     </td>
+    <td><b>ntCCBackColorSelectedTab</b> =     </td>
     <td>1    </td>
   </tr>
   <tr>
@@ -2007,7 +2016,7 @@ Use the names of the themes to set one into the <a href="#Theme-Property">Theme<
     <td>2    </td>
   </tr>
   <tr>
-    <td><b>ntCCHighlightColorTabSel</b> =     </td>
+    <td><b>ntCCHighlightColorSelectedTab</b> =     </td>
     <td>3    </td>
   </tr>
   <tr>
@@ -2019,7 +2028,7 @@ Use the names of the themes to set one into the <a href="#Theme-Property">Theme<
     <td>5    </td>
   </tr>
   <tr>
-    <td><b>ntCCFlatBarColorTabSel</b> =     </td>
+    <td><b>ntCCFlatBarColorSelectedTab</b> =     </td>
     <td>6    </td>
   </tr>
   <tr>
@@ -2027,7 +2036,7 @@ Use the names of the themes to set one into the <a href="#Theme-Property">Theme<
     <td>7    </td>
   </tr>
   <tr>
-    <td><b>ntCCFlatTabBorderColorTabSel</b> =     </td>
+    <td><b>ntCCFlatTabBorderColorSelectedTab</b> =     </td>
     <td>8    </td>
   </tr>
   <tr>
@@ -2039,7 +2048,7 @@ Use the names of the themes to set one into the <a href="#Theme-Property">Theme<
     <td>10    </td>
   </tr>
   <tr>
-    <td><b>ntCCForeColorTabSel</b> =     </td>
+    <td><b>ntCCForeColorSelectedTab</b> =     </td>
     <td>11    </td>
   </tr>
   <tr>
@@ -2047,7 +2056,7 @@ Use the names of the themes to set one into the <a href="#Theme-Property">Theme<
     <td>12    </td>
   </tr>
   <tr>
-    <td><b>ntCCIconColorTabSel</b> =     </td>
+    <td><b>ntCCIconColorSelectedTab</b> =     </td>
     <td>13    </td>
   </tr>
   <tr>
@@ -2055,7 +2064,7 @@ Use the names of the themes to set one into the <a href="#Theme-Property">Theme<
     <td>14    </td>
   </tr>
   <tr>
-    <td><b>ntCCIconColorMouseHoverTabSel</b> =     </td>
+    <td><b>ntCCIconColorMouseHoverSelectedTab</b> =     </td>
     <td>15    </td>
   </tr>
   <tr>

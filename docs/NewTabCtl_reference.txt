@@ -37,19 +37,19 @@ AutoTabHeight property:
 
 BackColor property:
 	Type: Long
-	Returns or sets the background color. The background color is not the color of the tabs background (that color is handled by the BackColorTabs property, nor the color of the selected tab, hadled by BackColorTabSel property) but the color ouside the tabs.
+	Returns or sets the background color. The background color is not the color of the tabs background (that color is handled by the BackColorTabs property, nor the color of the selected tab, hadled by BackColorSelectedTab property) but the color ouside the tabs.
+
+
+BackColorSelectedTab property:
+	Type: Long
+	Returns or sets the color of the active tab, including the tab body (the space were the contained controls are located).
+	If ChangeControlsBackColor is True, changing this color will change also the BackColor of the contained controls.
+	When the control is themed, this property value has no effect.
 
 
 BackColorTabs property:
 	Type: Long
-	Returns or sets the background color of the tabs, except the active tab that is set by BackColorTabSel.
-	When the control is themed, this property value has no effect.
-
-
-BackColorTabSel property:
-	Type: Long
-	Returns or sets the color of the active tab, including the tab body (the space were the contained controls are located).
-	If ChangeControlsBackColor is True, changing this color will change also the BackColor of the contained controls.
+	Returns or sets the background color of the tabs, except the active tab that is set by BackColorSelectedTab.
 	When the control is themed, this property value has no effect.
 
 
@@ -78,21 +78,21 @@ CaptionAlignment property:
 
 ChangeControlsBackColor property:
 	Type: Boolean
-	Returns or sets a value that determines if the background color of the contained controls will be changed according to the background color of the tabs (the BackColorTabSel property value).
+	Returns or sets a value that determines if the background color of the contained controls will be changed according to the background color of the tabs (the BackColorSelectedTab property value).
 	
 	If Windows Visual Styles are applied (Style = ntStyleWindows), the background of the controls are painted with the background of the themed tab body, so this property has no effect in that case.
 	If ChangeControlsBackColor is False, the BackColor of the contained controls is left unchanged.
-	If ChangeControlsBackColor is True, and the control is not themed, changing the BackColorTabSel propery value will also change the BackColor of the contained controls, but only when their BackColor's has the same color as the previous BackColorTabSel setting.
-	If ChangeControlsBackColor is True, and the control is themed, only the controls that has the BackColor property value set to the same color of BackColorTabSel are changed.
+	If ChangeControlsBackColor is True, and the control is not themed, changing the BackColorSelectedTab propery value will also change the BackColor of the contained controls, but only when their BackColor's has the same color as the previous BackColorSelectedTab setting.
+	If ChangeControlsBackColor is True, and the control is themed, only the controls that has the BackColor property value set to the same color of BackColorSelectedTab are changed.
 
 
 ChangeControlsForeColor property:
 	Type: Boolean
-	Returns or sets a value that determines if the text color of the contained controls will be changed according to the ForeColorTabSel property value.
+	Returns or sets a value that determines if the text color of the contained controls will be changed according to the ForeColorSelectedTab property value.
 	
 	If ChangeControlsForeColor is False, the ForeColor of the contained controls is left unchanged.
-	If ChangeControlsForeColor is True, and the control is not themed, changing the ForeColorTabSel propery value will also change the ForeColor of the contained controls, but only when their ForeColor's has the same color as the previous ForeColorTabSel setting.
-	If ChangeControlsBackColor is True, and the control is themed, only the controls that has the ForeColor property value set to the same color of ForeColorTabSel are changed.
+	If ChangeControlsForeColor is True, and the control is not themed, changing the ForeColorSelectedTab propery value will also change the ForeColor of the contained controls, but only when their ForeColor's has the same color as the previous ForeColorSelectedTab setting.
+	If ChangeControlsBackColor is True, and the control is themed, only the controls that has the ForeColor property value set to the same color of ForeColorSelectedTab are changed.
 
 
 ClientHeight property:
@@ -135,7 +135,7 @@ ControlLeft property:
 
 Controls property:
 	Type: ContainedControls (Read only)
-	Returns a collection of the controls that were added to the SSTabEx.
+	Returns a collection of the controls that were added to the NewTab.
 	
 	It only holds controls that are directly contained in the control, it does not include controls that are inside others controls. Also see the TabControls property.
 	It is not available at design time, and is read-only at run time.
@@ -171,7 +171,7 @@ FlatBarColorInactive property:
 	Returns or sets the color of the bar when a tab is inactive in flat style.
 
 
-FlatBarColorTabSel property:
+FlatBarColorSelectedTab property:
 	Type: Long
 	Returns or sets the color of the bar when a tab is selected in flat style.
 
@@ -209,7 +209,7 @@ FlatBorderColor property:
 FlatBorderMode property:
 	Type: NTFlatBorderModeConstants
 	Returns or sets the way the border will be drawn in flat style.
-	It may be around the selected tab (ntBorderTabSel) or all the control (ntBorderTabs).
+	It may be around the selected tab (ntBorderSelectedTab) or all the control (ntBorderTabs).
 
 
 FlatRoundnessBottom property:
@@ -232,9 +232,9 @@ FlatTabBorderColorHighlight property:
 	Returns or sets the color that is used to highlight the tabs with a border when the mouse hovers on them, and the HighlightMode property has the corresponding flag ntHLFlatDrawBorder.
 
 
-FlatTabBorderColorTabSel property:
+FlatTabBorderColorSelectedTab property:
 	Type: Long
-	Returns or sets the color that is used to highlight the active tab with a border when the HighlightModeTabSel property has the corresponding flag ntHLFlatDrawBorder.
+	Returns or sets the color that is used to highlight the active tab with a border when the HighlightModeSelectedTab property has the corresponding flag ntHLFlatDrawBorder.
 
 
 FlatTabsSeparationLineColor property:
@@ -257,7 +257,7 @@ ForeColorHighlighted property:
 	Returns or sets the color used to draw the captions of the inactive tabs when they are highlighted because the mouse is over them.
 
 
-ForeColorTabSel property:
+ForeColorSelectedTab property:
 	Type: Long
 	Returns or sets the the caption color of the active tab.
 
@@ -282,7 +282,7 @@ HighlightColor property:
 	Returns or sets the color used to highlight an inactive tab when the user hovers over it.
 
 
-HighlightColorTabSel property:
+HighlightColorSelectedTab property:
 	Type: Long
 	Returns or sets the color used to highlight the selected tab.
 
@@ -309,7 +309,7 @@ HighlightMode property:
 	When the control is themed, this setting is mostly ignored, the only flags that has effect are CaptionBold and CaptionUnderlined.
 
 
-HighlightModeTabSel property:
+HighlightModeSelectedTab property:
 	Type: Long
 	Returns or sets a value that determines if and how the selected tab will be highlighted.
 	
@@ -355,11 +355,11 @@ IconColorMouseHover property:
 	Type: Long
 	Returns or sets the color that the icon will show when the mouse hovers it, for the non active tabs.
 	
-	IconColorMouseHoverTabSel property
+	IconColorMouseHoverSelectedTab property
 	IconColorTabHighlighted property
 
 
-IconColorMouseHoverTabSel property:
+IconColorMouseHoverSelectedTab property:
 	Type: Long
 	Returns or sets the color that the icon will show when the mouse hovers it, for the active tab.
 	
@@ -367,14 +367,14 @@ IconColorMouseHoverTabSel property:
 	IconColorTabHighlighted property
 
 
+IconColorSelectedTab property:
+	Type: Long
+	Returns or sets the color used to draw the icon when the tab is seleted.
+
+
 IconColorTabHighlighted property:
 	Type: Long
 	Returns or sets the color used to draw the icon when the tab is highlighted (not the icon itself).
-
-
-IconColorTabSel property:
-	Type: Long
-	Returns or sets the color used to draw the icon when the tab is seleted.
 
 
 IconFont property:
@@ -400,7 +400,7 @@ Left property:
 
 LeftOffsetToHide property:
 	Type: Long (Read only)
-	Returns the shift to the left in twips that the SStabEx is using to hide the controls in the non-active tabs.
+	Returns the shift to the left in twips that the NewTab is using to hide the controls in the non-active tabs.
 	
 	With the original SSTab control that was fixed to 75000 twips, but now in hight DPI screen settings it can change to avoid overflow due to a Windows limitation.
 
@@ -541,7 +541,7 @@ Style property:
 	Returns or sets the style of the tabs.
 	
 	For some other properties, it acts as a meta-property. It means that it sets at once certain features that can be set individually through other properties.
-	It performs internal settings for TabAppearance, TabWidthStyle, ShowRowsInPerspective, HighlightMode and HighlightModeTabSel as long as these properties are set to Auto.
+	It performs internal settings for TabAppearance, TabWidthStyle, ShowRowsInPerspective, HighlightMode and HighlightModeSelectedTab as long as these properties are set to Auto.
 	The changes are internal, they are not reflected on these properties values (they remain set to Auto).
 	
 	It also can set if the control will have Windows Styles (the Windows "theme" look) or alrernatively a Flat appearance that unlocks other properties.
@@ -579,7 +579,7 @@ TabControls property:
 	    In/Out	Optional	GetChilds	As	Boolean
 	Returns a collection of the controls that are inside a tab. The tab must be identified by the nTab parameter.
 	
-	The optional GetChilds parameter determines if only the controls that are directly contained in the SSTabEx will be returned, or also the controls contained into them. Its default value is True.
+	The optional GetChilds parameter determines if only the controls that are directly contained in the NewTab will be returned, or also the controls contained into them. Its default value is True.
 	
 	It is not available at design time, and is read-only at run time.
 
@@ -931,8 +931,8 @@ FindTab function:
 
 	Finds a tab based on the values provided in the parameters and returns its index. If the tab is not found, it returns -1.
 	
-	This method is similar to SetActiveTab but it does not change the current tab.
-	Please read SetActiveTab for an explanation of the parameters.
+	This method is similar to SelectTab but it does not change the current tab.
+	Please read SelectTab for an explanation of the parameters.
 
 
 GetTabHeight function:
@@ -1010,7 +1010,13 @@ Refresh method:
 	Redraws the control.
 
 
-SetActiveTab function:
+RefreshContainedControls method:
+	No parameters.
+
+	Forces the redraw of some controls that can be problematic because they don't draw correctly after changing tab. Invoke it in the Click event of the control (after changing tab).
+
+
+SelectTab function:
 	Return Type:	Boolean
 	Parameter(s):
 	    In	Required	Find	As	Variant
@@ -1099,8 +1105,8 @@ Events:
 
 BeforeClick event:
 	Parameter(s):
-	    Info	CurrentTabSel	As	Long
-	    Returns value	NewTabSel	As	Long
+	    Info	CurrentSelectedTab	As	Long
+	    Returns value	NewSelectedTab	As	Long
 	    Returns value	Cancel	As	Boolean
 	Occurs when the current tab (Tab) is about to change.
 	Use the BeforeClick event to validate the information on the old tab before actually generating a Click event that selects the new tab.
@@ -1341,13 +1347,21 @@ TDIBeforeNewTab event:
 TDIFormsShowTabIcon event:
 	Parameter(s):
 	    Info	TabNumber	As	Long
+	    Info	FormCaption	As	String
 	    Info	FormhWnd	As	Long
-	    Returns value	IconPicture	As	Picture
-	    Returns value	IconLeft	As	Long
-	    Returns value	IconTop	As	Long
+	    Returns value	IconPicture	As	Object
+	    Returns value	IconLeftOffset	As	Long
+	    Returns value	IconTopOffset	As	Long
 	    Returns value	IconWidth	As	Long
-	    Returns value	IconHeigh	As	Long
-	In TDI mode forms, it allows full control  for the icon that is displayed on the tab, including the icon itself and the size and position.
+	    Returns value	IconHeight	As	Long
+	    Returns value	UseIconFont	As	Boolean
+	    Returns value	IconFont	As	Object
+	    Returns value	IconChar	As	Variant
+	    Returns value	IconColor	As	Long
+	    Returns value	IconColorHovered	As	Long
+	    Returns value	IconColorSelected	As	Long
+	    Returns value	NoIcon	As	Boolean
+	In TDI mode forms, it allows full control  for the icon that is displayed on the tab, including the icon itself and the size and position. It is also possible to use an icon font for the icon.
 
 
 TDIModeFormsReady event:
@@ -1464,7 +1478,7 @@ NTBackStyleConstants ENUMERATION
 
 	ntTransparent = 0
 	ntOpaque = 1
-	ntOpaqueTabSel = 2
+	ntOpaqueSelectedTab = 2
 
 NTFindTabMethodConstants ENUMERATION
 
@@ -1484,7 +1498,7 @@ NTFlatBarPositionConstants ENUMERATION
 NTFlatBorderModeConstants ENUMERATION
 
 	ntBorderTabs = 0
-	ntBorderTabSel = 1
+	ntBorderSelectedTab = 1
 
 NTHighlightModeFlagsConstants ENUMERATION
 
@@ -1569,21 +1583,21 @@ NTTabAppearanceConstants ENUMERATION
 NTTabCustomColorIDConstants ENUMERATION
 
 	ntCCBackColorTab = 0
-	ntCCBackColorTabSel = 1
+	ntCCBackColorSelectedTab = 1
 	ntCCHighlightColor = 2
-	ntCCHighlightColorTabSel = 3
+	ntCCHighlightColorSelectedTab = 3
 	ntCCFlatBarColorInactive = 4
 	ntCCFlatBarColorHighlight = 5
-	ntCCFlatBarColorTabSel = 6
+	ntCCFlatBarColorSelectedTab = 6
 	ntCCFlatTabBorderColorHighlight = 7
-	ntCCFlatTabBorderColorTabSel = 8
+	ntCCFlatTabBorderColorSelectedTab = 8
 	ntCCForeColor = 9
 	ntCCForeColorHighlighted = 10
-	ntCCForeColorTabSel = 11
+	ntCCForeColorSelectedTab = 11
 	ntCCIconColor = 12
-	ntCCIconColorTabSel = 13
+	ntCCIconColorSelectedTab = 13
 	ntCCIconColorMouseHover = 14
-	ntCCIconColorMouseHoverTabSel = 15
+	ntCCIconColorMouseHoverSelectedTab = 15
 	ntCCIconColorTabHighlighted = 16
 
 NTTabOrientationConstants ENUMERATION

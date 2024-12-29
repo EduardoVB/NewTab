@@ -1,4 +1,4 @@
 VBGROUP 5.0
-Project=control-source\NewTabCtl.vbp
-StartupProject=test in source code\Test.vbp
+StartupProject=control-source\NewTabCtl.vbp
+Project=test in source code\Test.vbp
 Project=test in source code\TDIForms test\TDIFormsTest.vbp

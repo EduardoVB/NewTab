@@ -46,7 +46,7 @@ Begin VB.PropertyPage pagNewTabThemes
       EndProperty
       TabHeight       =   600
       AutoTabHeight   =   -1  'True
-      ControlVersion  =   9
+      ControlVersion  =   10
    End
    Begin VB.CommandButton cmdCompare 
       Caption         =   "Compare"
@@ -242,7 +242,7 @@ Begin VB.PropertyPage pagNewTabThemes
          EndProperty
          TabHeight       =   600
          AutoTabHeight   =   -1  'True
-         ControlVersion  =   9
+         ControlVersion  =   10
       End
       Begin NewTabCtl.NewTab NewTab2 
          Height          =   2172
@@ -264,7 +264,7 @@ Begin VB.PropertyPage pagNewTabThemes
          EndProperty
          TabHeight       =   600
          AutoTabHeight   =   -1  'True
-         ControlVersion  =   9
+         ControlVersion  =   10
          TabCaption(3)   =   "Tab 3 wider caption"
          TabCaption(4)   =   "Tab 4 wider caption"
       End
@@ -408,7 +408,6 @@ Private Type T_ThemeLookupData
     Source As NTThemeSource
 End Type
 
-Private mAmbientFont As StdFont
 Private mAmbientBackColor As Long
 Private mAmbientForeColor As Long
 Private mCurrentSettings As NewTabTheme
@@ -461,7 +460,7 @@ Private Sub cboThemes_Click()
     chkSaveInFile.Value = CLng(IsThemeInColection(mThemesFile, mSelectedSettings)) * -1
     chkSaveInRegistry.Value = CLng(IsThemeInColection(mThemesRegistry, mSelectedSettings)) * -1
     
-    ApplyThemeToControl mSelectedSettings.Data, NewTab1, mAmbientBackColor, mAmbientForeColor, mAmbientFont
+    ApplyThemeToControl mSelectedSettings.Data, NewTab1, mAmbientBackColor, mAmbientForeColor
     CopyControlProperties NewTab1, NewTab2
     
     Set mColorsSelectedTheme = GetCurrentColors
@@ -517,7 +516,7 @@ Private Sub chkSaveInControl_Click()
             iName = cboThemes.Text
         End If
         Set iTheme = New NewTabTheme
-        iTheme.ThemeString = GetThemeStringFromControl(NewTab1, mAmbientBackColor, mAmbientForeColor, mAmbientFont)
+        iTheme.ThemeString = GetThemeStringFromControl(NewTab1, mAmbientBackColor, mAmbientForeColor)
         iTheme.Custom = True
         iTheme.Name = iName
         mThemesControl.Add iTheme
@@ -570,7 +569,7 @@ Private Sub chkSaveInFile_Click()
             iName = cboThemes.Text
         End If
         Set iTheme = New NewTabTheme
-        iTheme.ThemeString = GetThemeStringFromControl(NewTab1, mAmbientBackColor, mAmbientForeColor, mAmbientFont)
+        iTheme.ThemeString = GetThemeStringFromControl(NewTab1, mAmbientBackColor, mAmbientForeColor)
         iTheme.Custom = True
         iTheme.Name = iName
         mThemesFile.Add iTheme
@@ -609,7 +608,7 @@ Private Sub chkSaveInRegistry_Click()
             iName = cboThemes.Text
         End If
         Set iTheme = New NewTabTheme
-        iTheme.ThemeString = GetThemeStringFromControl(NewTab1, mAmbientBackColor, mAmbientForeColor, mAmbientFont)
+        iTheme.ThemeString = GetThemeStringFromControl(NewTab1, mAmbientBackColor, mAmbientForeColor)
         iTheme.Custom = True
         iTheme.Name = iName
         mThemesRegistry.Add iTheme
@@ -775,7 +774,7 @@ End Sub
 
 Private Sub mnuCopy_Click()
     Clipboard.Clear
-    Clipboard.SetText GetThemeStringFromControl(NewTab1, mAmbientBackColor, mAmbientForeColor, mAmbientFont)
+    Clipboard.SetText GetThemeStringFromControl(NewTab1, mAmbientBackColor, mAmbientForeColor)
 End Sub
 
 Private Sub mnuPaste_Click()
@@ -787,11 +786,10 @@ Private Sub mnuPaste_Click()
     On Error GoTo 0
     If iStr <> "" Then
         iTheme.ThemeString = iStr
-'        Set mCurrentSettings = iTheme.Clone
-        ApplyThemeToControl iTheme.Data, NewTab1, mAmbientBackColor, mAmbientForeColor, mAmbientFont
+        ApplyThemeToControl iTheme.Data, NewTab1, mAmbientBackColor, mAmbientForeColor
         CopyControlProperties NewTab1, NewTab2
         Set mCurrentSettings = New NewTabTheme
-        mCurrentSettings.ThemeString = GetThemeStringFromControl(NewTab1, mAmbientBackColor, mAmbientForeColor, mAmbientFont)
+        mCurrentSettings.ThemeString = GetThemeStringFromControl(NewTab1, mAmbientBackColor, mAmbientForeColor)
         Set mSelectedSettings = mCurrentSettings.Clone
         mSelectedSettingsHash = mSelectedSettings.Hash
         LoadThemes
@@ -827,9 +825,8 @@ Private Sub PropertyPage_SelectionChanged()
     If TypeName(SelectedControls(0)) <> "NewTab" Then Exit Sub
     Set iCtl = SelectedControls(0)
     SetControlTypeName TypeName(iCtl) 'for Themes module
-    Set mAmbientFont = iCtl.AmbienFont
-    Set f = CloneFont(mAmbientFont)
-    Set PropertyPage.Font = f
+    Set PropertyPage.Font = CloneFont(iCtl.AmbientFont)
+    Set f = CloneFont(iCtl.Font)
     Set NewTab1.Font = f
     Set NewTab2.Font = f
     Set AuxNewTab(0).Font = f
@@ -842,7 +839,7 @@ Private Sub PropertyPage_SelectionChanged()
     mAmbientForeColor = iCtl.AmbientForeColor
     SetPropertyPageColors mAmbientBackColor, mAmbientForeColor
     Set mCurrentSettings = New NewTabTheme
-    mCurrentSettings.ThemeString = GetThemeStringFromControl(SelectedControls(0), mAmbientBackColor, mAmbientForeColor, mAmbientFont)
+    mCurrentSettings.ThemeString = GetThemeStringFromControl(SelectedControls(0), mAmbientBackColor, mAmbientForeColor)
     Set mSelectedSettings = mCurrentSettings.Clone
     mSelectedSettingsHash = mSelectedSettings.Hash
     mLoadTimeThemeHash = mSelectedSettingsHash
@@ -853,9 +850,9 @@ Private Sub PropertyPage_SelectionChanged()
 #Const RELOADTHEMES = 0
 #If RELOADTHEMES Then
         Load AuxNewTab(1)
-        ApplyThemeToControl iTheme.Data, AuxNewTab(1), mAmbientBackColor, mAmbientForeColor, mAmbientFont
+        ApplyThemeToControl iTheme.Data, AuxNewTab(1), mAmbientBackColor, mAmbientForeColor
         Set iTheme2 = New NewTabTheme
-        iTheme2.ThemeString = GetThemeStringFromControl(AuxNewTab(1), mAmbientBackColor, mAmbientForeColor, mAmbientFont)
+        iTheme2.ThemeString = GetThemeStringFromControl(AuxNewTab(1), mAmbientBackColor, mAmbientForeColor)
         Unload AuxNewTab(1)
 #Else
         Set iTheme2 = iTheme.Clone
@@ -877,9 +874,9 @@ Private Sub PropertyPage_SelectionChanged()
     mThemesFile.DoNotCopyDefaultThemes = True
     For Each iTheme In GetThemesFile
         Load AuxNewTab(1)
-        ApplyThemeToControl iTheme.Data, AuxNewTab(1), mAmbientBackColor, mAmbientForeColor, mAmbientFont
+        ApplyThemeToControl iTheme.Data, AuxNewTab(1), mAmbientBackColor, mAmbientForeColor
         Set iTheme2 = New NewTabTheme
-        iTheme2.ThemeString = GetThemeStringFromControl(AuxNewTab(1), mAmbientBackColor, mAmbientForeColor, mAmbientFont)
+        iTheme2.ThemeString = GetThemeStringFromControl(AuxNewTab(1), mAmbientBackColor, mAmbientForeColor)
         Unload AuxNewTab(1)
         iTheme2.Custom = True
         If Not IsDefaultTheme(iTheme) Then
@@ -893,9 +890,9 @@ Private Sub PropertyPage_SelectionChanged()
     mThemesRegistry.DoNotCopyDefaultThemes = True
     For Each iTheme In GetThemesRegistry
         Load AuxNewTab(1)
-        ApplyThemeToControl iTheme.Data, AuxNewTab(1), mAmbientBackColor, mAmbientForeColor, mAmbientFont
+        ApplyThemeToControl iTheme.Data, AuxNewTab(1), mAmbientBackColor, mAmbientForeColor
         Set iTheme2 = New NewTabTheme
-        iTheme2.ThemeString = GetThemeStringFromControl(AuxNewTab(1), mAmbientBackColor, mAmbientForeColor, mAmbientFont)
+        iTheme2.ThemeString = GetThemeStringFromControl(AuxNewTab(1), mAmbientBackColor, mAmbientForeColor)
         Unload AuxNewTab(1)
         iTheme2.Custom = True
         If Not IsDefaultTheme(iTheme) Then
@@ -1143,18 +1140,18 @@ Private Sub ModifyColors()
                     nt.BackColor = iProp.Value
                 Case "ForeColor"
                     nt.ForeColor = iProp.Value
-                Case "ForeColorTabSel"
-                    nt.ForeColorTabSel = iProp.Value
+                Case "ForeColorSelectedTab"
+                    nt.ForeColorSelectedTab = iProp.Value
                 Case "ForeColorHighlighted"
                     nt.ForeColorHighlighted = iProp.Value
                 Case "FlatTabBorderColorHighlight"
                     nt.FlatTabBorderColorHighlight = iProp.Value
-                Case "FlatTabBorderColorTabSel"
-                    nt.FlatTabBorderColorTabSel = iProp.Value
+                Case "FlatTabBorderColorSelectedTab"
+                    nt.FlatTabBorderColorSelectedTab = iProp.Value
                 Case "BackColorTabs"
                     nt.BackColorTabs = iProp.Value
-                Case "BackColorTabSel"
-                    If Not nt.BackColorTabSel_IsAutomatic Then nt.BackColorTabSel = iProp.Value
+                Case "BackColorSelectedTab"
+                    If Not nt.BackColorSelectedTab_IsAutomatic Then nt.BackColorSelectedTab = iProp.Value
                 Case "FlatBarColorInactive"
                     If Not nt.FlatBarColorInactive_IsAutomatic Then nt.FlatBarColorInactive = iProp.Value
                 Case "FlatTabsSeparationLineColor"
@@ -1165,24 +1162,24 @@ Private Sub ModifyColors()
                     If Not nt.FlatBorderColor_IsAutomatic Then nt.FlatBorderColor = iProp.Value
                 Case "FlatBarColorHighlight"
                     If Not nt.FlatBarColorHighlight_IsAutomatic Then nt.FlatBarColorHighlight = iProp.Value
-                Case "FlatBarColorTabSel"
-                    nt.FlatBarColorTabSel = iProp.Value
+                Case "FlatBarColorSelectedTab"
+                    nt.FlatBarColorSelectedTab = iProp.Value
                 Case "IconColor"
                     nt.IconColor = iProp.Value
-                Case "IconColorTabSel"
-                    nt.IconColorTabSel = iProp.Value
+                Case "IconColorSelectedTab"
+                    nt.IconColorSelectedTab = iProp.Value
                 Case "IconColorTabHighlighted"
                     nt.IconColorTabHighlighted = iProp.Value
                 Case "HighlightColor"
                     If Not nt.HighlightColor_IsAutomatic Then nt.HighlightColor = iProp.Value
-                Case "HighlightColorTabSel"
-                    If Not nt.HighlightColorTabSel_IsAutomatic Then nt.HighlightColorTabSel = iProp.Value
+                Case "HighlightColorSelectedTab"
+                    If Not nt.HighlightColorSelectedTab_IsAutomatic Then nt.HighlightColorSelectedTab = iProp.Value
             End Select
         End If
     Next
     CopyControlProperties NewTab1, NewTab2
     Set iCurrSettings = New NewTabTheme
-    iCurrSettings.ThemeString = GetThemeStringFromControl(NewTab1, mAmbientBackColor, mAmbientForeColor, mAmbientFont)
+    iCurrSettings.ThemeString = GetThemeStringFromControl(NewTab1, mAmbientBackColor, mAmbientForeColor)
     chkSaveInControl.Value = CLng(IsThemeInColection(mThemesControl, iCurrSettings)) * -1
     chkSaveInFile.Value = CLng(IsThemeInColection(mThemesFile, iCurrSettings)) * -1
     chkSaveInRegistry.Value = CLng(IsThemeInColection(mThemesRegistry, iCurrSettings)) * -1
@@ -1193,10 +1190,10 @@ End Sub
 Private Function ThemeUsesAmbientColors(ByVal nAmbientBackColor As Long, ByVal nAmbientForeColor As Long) As Boolean
     If NewTab1.ForeColor = nAmbientForeColor Then
         If NewTab1.BackColorTabs = nAmbientBackColor Then
-            If NewTab1.BackColorTabSel = nAmbientBackColor Then
-                If NewTab1.ForeColorTabSel = nAmbientForeColor Then
+            If NewTab1.BackColorSelectedTab = nAmbientBackColor Then
+                If NewTab1.ForeColorSelectedTab = nAmbientForeColor Then
                     If NewTab1.IconColor = nAmbientForeColor Then
-                        If NewTab1.IconColorTabSel = nAmbientForeColor Then
+                        If NewTab1.IconColorSelectedTab = nAmbientForeColor Then
                             ThemeUsesAmbientColors = True
                         End If
                     End If
@@ -1373,7 +1370,7 @@ Private Function CloneFont(nOrigFont As iFont) As StdFont
 End Function
 
 Private Function GetCurrentColors() As Collection
-    Const cPropertyList As String = "|BackColor|ForeColor|ForeColorTabSel|ForeColorHighlighted|FlatTabBorderColorHighlight|FlatTabBorderColorTabSel|BackColorTabs|BackColorTabSel|FlatBarColorInactive|FlatTabsSeparationLineColor|FlatBodySeparationLineColor|FlatBorderColor|FlatBarColorHighlight|FlatBarColorTabSel|IconColor|IconColorTabSel|IconColorTabHighlighted|HighlightColor|HighlightColorTabSel|"
+    Const cPropertyList As String = "|BackColor|ForeColor|ForeColorSelectedTab|ForeColorHighlighted|FlatTabBorderColorHighlight|FlatTabBorderColorSelectedTab|BackColorTabs|BackColorSelectedTab|FlatBarColorInactive|FlatTabsSeparationLineColor|FlatBodySeparationLineColor|FlatBorderColor|FlatBarColorHighlight|FlatBarColorSelectedTab|IconColor|IconColorSelectedTab|IconColorTabHighlighted|HighlightColor|HighlightColorSelectedTab|"
     Dim iPropNames() As String
     Dim c As Long
     Dim nt As NewTab
@@ -1391,18 +1388,18 @@ Private Function GetCurrentColors() As Collection
                     iProp.Value = nt.BackColor
                 Case "ForeColor"
                     iProp.Value = nt.ForeColor
-                Case "ForeColorTabSel"
-                    iProp.Value = nt.ForeColorTabSel
+                Case "ForeColorSelectedTab"
+                    iProp.Value = nt.ForeColorSelectedTab
                 Case "ForeColorHighlighted"
                     iProp.Value = nt.ForeColorHighlighted
                 Case "FlatTabBorderColorHighlight"
                     iProp.Value = nt.FlatTabBorderColorHighlight
-                Case "FlatTabBorderColorTabSel"
-                    iProp.Value = nt.FlatTabBorderColorTabSel
+                Case "FlatTabBorderColorSelectedTab"
+                    iProp.Value = nt.FlatTabBorderColorSelectedTab
                 Case "BackColorTabs"
                     iProp.Value = nt.BackColorTabs
-                Case "BackColorTabSel"
-                    iProp.Value = nt.BackColorTabSel
+                Case "BackColorSelectedTab"
+                    iProp.Value = nt.BackColorSelectedTab
                 Case "FlatBarColorInactive"
                     iProp.Value = nt.FlatBarColorInactive
                 Case "FlatTabsSeparationLineColor"
@@ -1413,18 +1410,18 @@ Private Function GetCurrentColors() As Collection
                     iProp.Value = nt.FlatBorderColor
                 Case "FlatBarColorHighlight"
                     iProp.Value = nt.FlatBarColorHighlight
-                Case "FlatBarColorTabSel"
-                    iProp.Value = nt.FlatBarColorTabSel
+                Case "FlatBarColorSelectedTab"
+                    iProp.Value = nt.FlatBarColorSelectedTab
                 Case "IconColor"
                     iProp.Value = nt.IconColor
-                Case "IconColorTabSel"
-                    iProp.Value = nt.IconColorTabSel
+                Case "IconColorSelectedTab"
+                    iProp.Value = nt.IconColorSelectedTab
                 Case "IconColorTabHighlighted"
                     iProp.Value = nt.IconColorTabHighlighted
                 Case "HighlightColor"
                     iProp.Value = nt.HighlightColor
-                Case "HighlightColorTabSel"
-                    iProp.Value = nt.HighlightColorTabSel
+                Case "HighlightColorSelectedTab"
+                    iProp.Value = nt.HighlightColorSelectedTab
             End Select
             GetCurrentColors.Add iProp, iProp.Name
         End If

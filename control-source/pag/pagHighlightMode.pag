@@ -205,8 +205,8 @@ Private Sub PropertyPage_ApplyChanges()
     Set iCtl = SelectedControls(0)
     If mPropertyName = "HighlightMode" Then
         iCtl.HighlightMode = mPropertyValue
-    ElseIf mPropertyName = "HighlightModeTabSel" Then
-        iCtl.HighlightModeTabSel = mPropertyValue
+    ElseIf mPropertyName = "HighlightModeSelectedTab" Then
+        iCtl.HighlightModeSelectedTab = mPropertyValue
     End If
     PropertyPage.Changed = False
 End Sub
@@ -318,8 +318,8 @@ Private Sub tmrLoad_Timer()
     Set iCtl = SelectedControls(0)
     If mPropertyName = "HighlightMode" Then
         mPropertyValue = iCtl.HighlightMode
-    ElseIf mPropertyName = "HighlightModeTabSel" Then
-        mPropertyValue = iCtl.HighlightModeTabSel
+    ElseIf mPropertyName = "HighlightModeSelectedTab" Then
+        mPropertyValue = iCtl.HighlightModeSelectedTab
     End If
     LoadHighlightDropDown mPropertyValue
     lblProperyName.Caption = mPropertyName & ":"

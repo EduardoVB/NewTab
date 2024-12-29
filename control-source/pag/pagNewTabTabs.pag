@@ -374,7 +374,7 @@ Begin VB.PropertyPage pagNewTabTabs
       EndProperty
       TabHeight       =   579
       AutoTabHeight   =   -1  'True
-      ControlVersion  =   9
+      ControlVersion  =   10
       TabCaption(0)   =   ""
       TabCaption(1)   =   ""
       TabCaption(2)   =   ""
@@ -1085,10 +1085,11 @@ Private Sub PropertyPage_ApplyChanges()
             Set iSC.TabControlsNames(t) = New Collection
         Next
         iSC.Tabs = mTabs
+        If Not iSC.Subclassed Then iSC.TabSel = Val(txtTab.Text)
     End If
     iSC.MakeContainedControlsInSelTabVisible
     gPagTabsApplyTime = Timer
-    gPagTabsLastTabSel = mTab
+    gPagTabsLastSelectedTab = mTab
     Set mSC = Nothing
 End Sub
 
@@ -1213,7 +1214,7 @@ Private Sub PropertyPage_SelectionChanged()
     End If
     
     If ((Timer - gPagTabsApplyTime) < 3) And (gPagTabsApplyTime <> 0) Then
-        mTab = gPagTabsLastTabSel
+        mTab = gPagTabsLastSelectedTab
     Else
         mTab = mSC.TabSel
     End If
@@ -1223,21 +1224,21 @@ Private Sub PropertyPage_SelectionChanged()
     
     cboColorID.Clear
     cboColorID.AddItem ntCCBackColorTab & " - ntCCBackColorTab": cboColorID.ItemData(cboColorID.NewIndex) = ntCCBackColorTab
-    cboColorID.AddItem ntCCBackColorTabSel & " - ntCCBackColorTabSel": cboColorID.ItemData(cboColorID.NewIndex) = ntCCBackColorTabSel
+    cboColorID.AddItem ntCCBackColorSelectedTab & " - ntCCBackColorSelectedTab": cboColorID.ItemData(cboColorID.NewIndex) = ntCCBackColorSelectedTab
     cboColorID.AddItem ntCCHighlightColor & " - ntCCHighlightColor": cboColorID.ItemData(cboColorID.NewIndex) = ntCCHighlightColor
-    cboColorID.AddItem ntCCHighlightColorTabSel & " - ntCCHighlightColorTabSel": cboColorID.ItemData(cboColorID.NewIndex) = ntCCHighlightColorTabSel
+    cboColorID.AddItem ntCCHighlightColorSelectedTab & " - ntCCHighlightColorSelectedTab": cboColorID.ItemData(cboColorID.NewIndex) = ntCCHighlightColorSelectedTab
     cboColorID.AddItem ntCCFlatBarColorInactive & " - ntCCFlatBarColorInactive": cboColorID.ItemData(cboColorID.NewIndex) = ntCCFlatBarColorInactive
     cboColorID.AddItem ntCCFlatBarColorHighlight & " - ntCCFlatBarColorHighlight": cboColorID.ItemData(cboColorID.NewIndex) = ntCCFlatBarColorHighlight
-    cboColorID.AddItem ntCCFlatBarColorTabSel & " - ntCCFlatBarColorTabSel": cboColorID.ItemData(cboColorID.NewIndex) = ntCCFlatBarColorTabSel
+    cboColorID.AddItem ntCCFlatBarColorSelectedTab & " - ntCCFlatBarColorSelectedTab": cboColorID.ItemData(cboColorID.NewIndex) = ntCCFlatBarColorSelectedTab
     cboColorID.AddItem ntCCFlatTabBorderColorHighlight & " - ntCCFlatTabBorderColorHighlight": cboColorID.ItemData(cboColorID.NewIndex) = ntCCFlatTabBorderColorHighlight
-    cboColorID.AddItem ntCCFlatTabBorderColorTabSel & " - ntCCFlatTabBorderColorTabSel": cboColorID.ItemData(cboColorID.NewIndex) = ntCCFlatTabBorderColorTabSel
+    cboColorID.AddItem ntCCFlatTabBorderColorSelectedTab & " - ntCCFlatTabBorderColorSelectedTab": cboColorID.ItemData(cboColorID.NewIndex) = ntCCFlatTabBorderColorSelectedTab
     cboColorID.AddItem ntCCForeColor & " - ntCCForeColor": cboColorID.ItemData(cboColorID.NewIndex) = ntCCForeColor
     cboColorID.AddItem ntCCForeColorHighlighted & " - ntCCForeColorHighlighted": cboColorID.ItemData(cboColorID.NewIndex) = ntCCForeColorHighlighted
-    cboColorID.AddItem ntCCForeColorTabSel & " - ntCCForeColorTabSel": cboColorID.ItemData(cboColorID.NewIndex) = ntCCForeColorTabSel
+    cboColorID.AddItem ntCCForeColorSelectedTab & " - ntCCForeColorSelectedTab": cboColorID.ItemData(cboColorID.NewIndex) = ntCCForeColorSelectedTab
     cboColorID.AddItem ntCCIconColor & " - ntCCIconColor": cboColorID.ItemData(cboColorID.NewIndex) = ntCCIconColor
-    cboColorID.AddItem ntCCIconColorTabSel & " - ntCCIconColorTabSel": cboColorID.ItemData(cboColorID.NewIndex) = ntCCIconColorTabSel
+    cboColorID.AddItem ntCCIconColorSelectedTab & " - ntCCIconColorSelectedTab": cboColorID.ItemData(cboColorID.NewIndex) = ntCCIconColorSelectedTab
     cboColorID.AddItem ntCCIconColorMouseHover & " - ntCCIconColorMouseHover": cboColorID.ItemData(cboColorID.NewIndex) = ntCCIconColorMouseHover
-    cboColorID.AddItem ntCCIconColorMouseHoverTabSel & " - ntCCIconColorMouseHoverTabSel": cboColorID.ItemData(cboColorID.NewIndex) = ntCCIconColorMouseHoverTabSel
+    cboColorID.AddItem ntCCIconColorMouseHoverSelectedTab & " - ntCCIconColorMouseHoverSelectedTab": cboColorID.ItemData(cboColorID.NewIndex) = ntCCIconColorMouseHoverSelectedTab
     cboColorID.AddItem ntCCIconColorTabHighlighted & " - ntCCIconColorTabHighlighted": cboColorID.ItemData(cboColorID.NewIndex) = ntCCIconColorTabHighlighted
     cboColorID.ListIndex = 0
     
@@ -1560,36 +1561,36 @@ Private Function GetGeneralColor(nColorID As NTTabCustomColorIDConstants) As Lon
     Select Case nColorID
         Case ntCCBackColorTab
             GetGeneralColor = mSC.BackColorTabs
-        Case ntCCBackColorTabSel
-            GetGeneralColor = mSC.BackColorTabSel
+        Case ntCCBackColorSelectedTab
+            GetGeneralColor = mSC.BackColorSelectedTab
         Case ntCCHighlightColor
             GetGeneralColor = mSC.HighlightColor
-        Case ntCCHighlightColorTabSel
-            GetGeneralColor = mSC.HighlightColorTabSel
+        Case ntCCHighlightColorSelectedTab
+            GetGeneralColor = mSC.HighlightColorSelectedTab
         Case ntCCFlatBarColorInactive
             GetGeneralColor = mSC.FlatBarColorInactive
         Case ntCCFlatBarColorHighlight
             GetGeneralColor = mSC.FlatBarColorHighlight
-        Case ntCCFlatBarColorTabSel
-            GetGeneralColor = mSC.FlatBarColorTabSel
+        Case ntCCFlatBarColorSelectedTab
+            GetGeneralColor = mSC.FlatBarColorSelectedTab
         Case ntCCFlatTabBorderColorHighlight
             GetGeneralColor = mSC.FlatTabBorderColorHighlight
-        Case ntCCFlatTabBorderColorTabSel
-            GetGeneralColor = mSC.FlatTabBorderColorTabSel
+        Case ntCCFlatTabBorderColorSelectedTab
+            GetGeneralColor = mSC.FlatTabBorderColorSelectedTab
         Case ntCCForeColor
             GetGeneralColor = mSC.ForeColor
         Case ntCCForeColorHighlighted
             GetGeneralColor = mSC.ForeColorHighlighted
-        Case ntCCForeColorTabSel
-            GetGeneralColor = mSC.ForeColorTabSel
+        Case ntCCForeColorSelectedTab
+            GetGeneralColor = mSC.ForeColorSelectedTab
         Case ntCCIconColor
             GetGeneralColor = mSC.IconColor
-        Case ntCCIconColorTabSel
-            GetGeneralColor = mSC.IconColorTabSel
+        Case ntCCIconColorSelectedTab
+            GetGeneralColor = mSC.IconColorSelectedTab
         Case ntCCIconColorMouseHover
             GetGeneralColor = mSC.IconColorMouseHover
-        Case ntCCIconColorMouseHoverTabSel
-            GetGeneralColor = mSC.IconColorMouseHoverTabSel
+        Case ntCCIconColorMouseHoverSelectedTab
+            GetGeneralColor = mSC.IconColorMouseHoverSelectedTab
         Case ntCCIconColorTabHighlighted
             GetGeneralColor = mSC.IconColorTabHighlighted
     End Select
@@ -1605,14 +1606,14 @@ Private Sub NewTab1_Click(PreviousTab As Integer)
         mTab = NewTab1.TabSel
         ShowTabData
         mLoading = False
+    End If
         
-        If (NewTab1.Left + NewTab1.GetTabLeft(mTab) + NewTab1.GetTabWidth(mTab)) > PropertyPage.ScaleWidth Then
-            tmrTabChanged.Enabled = True
-            NewTab1.Left = PropertyPage.ScaleWidth - (NewTab1.GetTabLeft(mTab) + NewTab1.GetTabWidth(mTab)) - 120
-        ElseIf (NewTab1.Left + NewTab1.GetTabLeft(mTab)) < 0 Then
-            tmrTabChanged.Enabled = True
-            NewTab1.Left = 120 - NewTab1.GetTabLeft(mTab)
-        End If
+    If (NewTab1.Left + NewTab1.GetTabLeft(mTab) + NewTab1.GetTabWidth(mTab)) > PropertyPage.ScaleWidth Then
+        tmrTabChanged.Enabled = True
+        NewTab1.Left = PropertyPage.ScaleWidth - (NewTab1.GetTabLeft(mTab) + NewTab1.GetTabWidth(mTab)) - 120
+    ElseIf (NewTab1.Left + NewTab1.GetTabLeft(mTab)) < 0 Then
+        tmrTabChanged.Enabled = True
+        NewTab1.Left = 120 - NewTab1.GetTabLeft(mTab)
     End If
 End Sub
 
@@ -1648,4 +1649,5 @@ End Sub
 
 Private Sub txtTab_Change()
     NewTab1.TabSel = Val(txtTab.Text)
+    If Not mSC.Subclassed Then Changed = True
 End Sub
