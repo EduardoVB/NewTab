@@ -1363,22 +1363,28 @@ TDIFormsShowTabIcon event:
 	    Returns value	NoIcon	As	Boolean
 	In TDI mode forms, it allows full control  for the icon that is displayed on the tab, including the icon itself and the size and position. It is also possible to use an icon font for the icon.
 	
-	To draw the icon with the IconFont, set UseIconFont to True.
+	TabNumber: The number (or index) of the tab.
 	
-	IconChar is a Variant that can accept the Unicode character itself like ChrW(&HE00B&), the String representation of the character number, like "&HE00B&" or the character number like &HE00B& (the long value).
+	FormCaption: The form caption. May be used to identify the form.
 	
-	IconFont is the StdFont object, passed as Object to avoid issues with typelib external dependency to stdole2.tlb.
-	You can change the font name, size, etc. using the IconFont .
-	Also IconPicture is the StdPicture passed as Object for the same reason. 
-	Use IconPicture for changing the icon using images (usually bmp or ico) when UseIconFont is False.
+	FormhWnd: The form hWnd.  May be used to identify the form.
 	
-	IconLeftOffset and IconTopOffset can be used to change the icon position. Some characters in some fonts may need manual adjustment to be centered. But they also work for the image mode (using IconPicture).
+	IconPicture: It is a StdPicture. If UseIconFont is False (default), it is the icon that will be displayed. You can set another icon by setting this picture. It can be a bitmap or an icon. By default it has the form icon.
+	It comes As Object to avoid dependency with the Stdole2 typelib.
 	
-	IconWidth and IconHeight can be used to resize the image.
+	IconLeftOffset and IconTopOffset: change the position of the icon. They can be negative. They also work when UseIconFont is set to True.
 	
-	IconColor, IconColorHovered and IconColorSelected work for UseIconFont mode.
+	IconWidth and IconHeight: Size of the icon. Not used when UseIconFont is set to True.
 	
-	If NoIcon is set to True, the form icon is not shown.
+	UseIconFont: defines that the icon will be rendered using the icon font, not the IconPicture.
+	
+	IconFont: It is a StdFont object containing the font that will be used to render the icon. By default it uses the "Segoe MDL2 Assets" font (if it is available, otherwise it uses "Arial"), but you can change it to another font. Its default size depends on the TabHeight property. Bold is set to True by default. Like IconPicture, it comes As Object to avoid dependency with the Stdole2 typelib.
+	
+	IconChar: The character that will be rendered. It is a Variant that can accept the Unicode character itself like ChrW(&HE00B&), the String representation of the character number, like "&HE00B&" or the character number like &HE00B& (the long value). By default it shows the &HE160& character that is a icon for document in the "Segoe MDL2 Assets" font.
+	
+	IconColor, IconColorHovered and IconColorSelected work when UseIconFont is True and can set the icon color for each condition (normal, hovered, selected). Their defaults are taken from IconColor, IconColorTabHighlighted and IconColorSelectedTab properties.
+	
+	NoIcon: If is set to True, the form icon is not shown.
 
 
 TDIModeFormsReady event:

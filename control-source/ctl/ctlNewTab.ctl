@@ -11509,6 +11509,8 @@ Private Function MeasureTabIconAndCaption(ByVal nTab As Long) As Long
     Else
         MeasureTabIconAndCaption = iPicWidth + mTabIconDistanceToCaptionDPIScaled + iCaptionWidth
     End If
+    
+    ' TDI mode forms
     If mTDIMode = ntTDIModeForms Then
         If mTabData(nTab).Data > 0 Then
             Dim iTabData As T_TabData
@@ -11552,7 +11554,6 @@ Private Function MeasureTabIconAndCaption(ByVal nTab As Long) As Long
                 iTDIFormIcon_UseIconFont = False
                 Set iTDIFormIcon_IconFont = New StdFont
                 If FontExists(iTabData.IconFont.Name) Then
-                'If False Then
                     iTDIFormIcon_IconFont.Name = iTabData.IconFont.Name
                     iTDIFormIcon_IconFont.Size = 41
                     iTDIFormIcon_IconFont.Bold = True
