@@ -9634,8 +9634,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
                     iTDIFormIcon_IconCharRect.Left = iTDIFormIcon_Left
                     iTDIFormIcon_IconCharRect.Top = iTDIFormIcon_Top
                     iTDIFormIcon_IconCharRect.Right = iTDIFormIcon_Left + mTDIFormIconCustomData(iTabData.Data).Width
-                    iTDIFormIcon_IconCharRect.Bottom = iTDIFormIcon_Top + mTDIFormIconCustomData(iTabData.Data).Height + 10
-                    If iTDIFormIcon_IconCharRect.Bottom > iTabRect.Bottom Then iTDIFormIcon_IconCharRect.Bottom = iTabRect.Bottom
+                    iTDIFormIcon_IconCharRect.Bottom = iTabRect.Bottom ' iTDIFormIcon_Top + mTDIFormIconCustomData(iTabData.Data).Height
                     
                     iForeColorPrev = picDraw.ForeColor
                     If mAmbientUserMode And iTabData.Hovered And (Not iActive) And iTabData.Enabled Then
