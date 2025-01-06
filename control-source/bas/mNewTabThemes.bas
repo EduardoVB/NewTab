@@ -24,7 +24,7 @@ Public Const cThemeIsCustomSettings As String = "Current custom settings, not sa
 ' Default Themes strings
 Private Const cThemeString_Default                       As String = ""
 Private Const cThemeString_SSTab                         As String = "HighlightEffect=0|HighlightMode=1|HighlightModeSelectedTab=16|ShowFocusRect=-1|SoftEdges=0|Style=0"
-Private Const cThemeString_SSTabWindows                  As String = "HighlightModeSelectedTab=16|ShowFocusRect=-1"
+Private Const cThemeString_SSTabWindows                  As String = "HighlightModeSelectedTab=16|ShowFocusRect=-1|ShowRowsInPerspective=1|TabWidthStyle=2"
 Private Const cThemeString_SSTabPropertyPage             As String = "HighlightEffect=0|HighlightMode=1|HighlightModeSelectedTab=1|ShowFocusRect=-1|SoftEdges=0|Style=1"
 Private Const cThemeString_SSTabPropertyPageWindows      As String = "ShowFocusRect=-1|ShowRowsInPerspective=1|TabWidthStyle=1"
 Private Const cThemeString_TabStrip                      As String = "HighlightEffect=0|HighlightMode=1|HighlightModeSelectedTab=1|ShowFocusRect=-1|SoftEdges=0|Style=2"

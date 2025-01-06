@@ -1,3 +1,4 @@
+2025-01-06 Fixed bug i the 'SSTab with Windows styles' theme.
 2024-12-29 Changed to OLE version 10.
 2024-12-29 Updated documentation.
 2024-12-29 All properties with names including 'TabSel' have been changed to 'SelectedTab' for clarity and better naming. The TabSel property is retained (hidden) for backward compatibility.
