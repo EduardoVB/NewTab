@@ -2016,7 +2016,7 @@ Public Property Let Style(ByVal nValue As NTStyleConstants)
     If iStyle <> mStyle Then
         mStyle = iStyle
         SetPropertyChanged "Style"
-        VisualStyles = mStyle = ntStyleWindows
+        If mStyle <> ntStyleWindows Then VisualStyles = False
         If mBackColorSelectedTab_IsAutomatic Then mBackColorSelectedTab = GetAutomaticBackColorSelectedTab
         If mTabAppearance <> ntTAAuto Then
             mAppearanceIsFlat = (mTabAppearance = ntTAFlat)
@@ -2025,6 +2025,8 @@ Public Property Let Style(ByVal nValue As NTStyleConstants)
         End If
         SetHighlightMode
         mSetAutoTabHeightPending = True
+        mShowFocusRect = (mStyle = ssStyleTabbedDialog) Or (mStyle = ssStylePropertyPage) Or (mStyle = ntStyleTabStrip)
+        If mStyle = ntStyleWindows Then VisualStyles = True
         DrawDelayed
     End If
 End Property
@@ -14166,7 +14168,7 @@ Private Sub SetHighlightMode()
         ElseIf mStyle = ssStyleTabbedDialog Then
             iHighlightMode = ntHLNone
         Else
-            iHighlightMode = ntHLBackgroundDoubleGradient
+            iHighlightMode = ntHLNone ' ntHLBackgroundDoubleGradient
         End If
     End If
     If (iHighlightMode And ntHLBackgroundTypeFilter) = ntHLBackgroundDoubleGradient Then
@@ -14202,7 +14204,7 @@ Private Sub SetHighlightMode()
         ElseIf mStyle = ssStyleTabbedDialog Then
             iHighlightModeSelectedTab = ntHLCaptionBold
         Else
-            iHighlightModeSelectedTab = ntHLBackgroundDoubleGradient
+            iHighlightModeSelectedTab = ntHLNone ' ntHLBackgroundDoubleGradient
         End If
     End If
     

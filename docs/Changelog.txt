@@ -1,4 +1,5 @@
-2025-01-06 Reordered and fixes property Categories, as they appear in the property window.
+2025-01-09 Adjustment in Style property setting.
+2025-01-08 Reordered and fixes property Categories, as they appear in the property window.
 2025-01-06 The Tab property now accepts the tab caption along with the TabKey and the tab number.
 2025-01-06 Fixed bug i the 'SSTab with Windows styles' theme.
 2024-12-29 Changed to OLE version 10.
