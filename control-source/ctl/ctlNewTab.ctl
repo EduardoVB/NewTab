@@ -5631,9 +5631,11 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     mChangeControlsForeColor = PropBag.ReadProperty("ChangeControlsForeColor", cPropDef_ChangeControlsForeColor)
     mTabTransition = PropBag.ReadProperty("TabTransition", cPropDef_TabTransition)
     mHighlightMode = PropBag.ReadProperty("HighlightMode", cPropDef_HighlightMode)
-    mHighlightModeSelectedTab = PropBag.ReadProperty("HighlightModeSelectedTab", -1)
-    If mHighlightModeSelectedTab = -1 Then
-        mHighlightModeSelectedTab = PropBag.ReadProperty("HighlightModeTabSel", cPropDef_HighlightModeSelectedTab)
+    If Not iUpgradingFromSSTab Then
+        mHighlightModeSelectedTab = PropBag.ReadProperty("HighlightModeSelectedTab", -1)
+        If mHighlightModeSelectedTab = -1 Then
+            mHighlightModeSelectedTab = PropBag.ReadProperty("HighlightModeTabSel", cPropDef_HighlightModeSelectedTab)
+        End If
     End If
     mCaptionAlignment = PropBag.ReadProperty("CaptionAlignment", cPropDef_CaptionAlignment)
     If mCaptionAlignment = ntAlignmentLeft Then
@@ -5663,7 +5665,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         mTabTransition = ntTransitionImmediate
         mHighlightEffect = False
         mHighlightMode = ntHLNone
-        mHighlightModeSelectedTab = ntHLNone
+        mHighlightModeSelectedTab = ntHLCaptionBold
         iUpgradingFromSSTab = True
     ElseIf PropBag.ReadProperty("Themed", False) Then
         ' upgrading from SSTab Ex
