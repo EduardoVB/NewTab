@@ -554,7 +554,7 @@ SubclassingMethod property:
 
 Tab property:
 	Type: Variant
-	Returns or sets the current ('selected' or 'active') tab by its index or by a TabKey.
+	Returns or sets the selected tab by its index, TabKey or TabCaption.
 
 
 TabAppearance property:

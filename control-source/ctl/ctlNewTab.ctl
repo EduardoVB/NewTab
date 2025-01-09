@@ -1230,7 +1230,7 @@ Private mThemedBodyBackColor_B As Long
 ' Returns/sets the background color.
 Public Property Get BackColor() As OLE_COLOR
 Attribute BackColor.VB_Description = "Returns/sets the background color used to display text and graphics in an object."
-Attribute BackColor.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute BackColor.VB_ProcData.VB_Invoke_Property = ";Colors"
 Attribute BackColor.VB_UserMemId = -501
 Attribute BackColor.VB_MemberFlags = "c"
     BackColor = mBackColor
@@ -1252,7 +1252,7 @@ End Property
 ' Returns a Font object.
 Public Property Get Font() As StdFont
 Attribute Font.VB_Description = "Returns/sets the Font that will be used to draw the tab captions."
-Attribute Font.VB_ProcData.VB_Invoke_Property = ";Fuente"
+Attribute Font.VB_ProcData.VB_Invoke_Property = ";Font"
 Attribute Font.VB_UserMemId = -512
     Set Font = mFont
 End Property
@@ -1274,7 +1274,7 @@ End Property
 
 Public Property Get IconFont() As StdFont
 Attribute IconFont.VB_Description = "Returns/sets the Font that will be used to draw the icon of the currently selected tab."
-Attribute IconFont.VB_ProcData.VB_Invoke_Property = ";Fuente"
+Attribute IconFont.VB_ProcData.VB_Invoke_Property = ";Icon"
     Set IconFont = TabIconFont(mTab)
 End Property
 
@@ -1289,7 +1289,7 @@ End Property
 
 Public Property Get TabIconFont(ByVal Index As Long) As StdFont
 Attribute TabIconFont.VB_Description = "Returns/sets the Font that will be used to draw the icon in the tab pointed by the Index parameter."
-Attribute TabIconFont.VB_ProcData.VB_Invoke_Property = ";Fuente"
+Attribute TabIconFont.VB_ProcData.VB_Invoke_Property = ";Font"
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -1345,6 +1345,7 @@ End Sub
 ' Determines if the control is enabled.
 Public Property Get Enabled() As Boolean
 Attribute Enabled.VB_Description = "Returns/sets a value that determines whether a form or control can respond to user-generated events."
+Attribute Enabled.VB_ProcData.VB_Invoke_Property = ";Behavior"
 Attribute Enabled.VB_UserMemId = -514
     Enabled = mEnabled
 End Property
@@ -1386,7 +1387,7 @@ End Property
 ' Returns/sets the text color.
 Public Property Get ForeColor() As OLE_COLOR
 Attribute ForeColor.VB_Description = "Returns/sets the color used to draw the captions of inactive tabs. This setting in inherited by other foreground color properties if they are not set specifically."
-Attribute ForeColor.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute ForeColor.VB_ProcData.VB_Invoke_Property = ";Colors"
 Attribute ForeColor.VB_UserMemId = -513
 Attribute ForeColor.VB_MemberFlags = "c"
     If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
@@ -1431,7 +1432,7 @@ End Property
 
 Public Property Get ForeColorSelectedTab() As OLE_COLOR
 Attribute ForeColorSelectedTab.VB_Description = "Returns/sets the color used to draw the selected tab caption. "
-Attribute ForeColorSelectedTab.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute ForeColorSelectedTab.VB_ProcData.VB_Invoke_Property = ";Colors"
     If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
         ForeColorSelectedTab = mHandleHighContrastTheme_OrigForeColorSelectedTab
     Else
@@ -1490,6 +1491,7 @@ End Sub
 
 Public Property Get ForeColorHighlighted() As OLE_COLOR
 Attribute ForeColorHighlighted.VB_Description = "Returns/sets the color used to draw the captions of tabs when the are highlighted."
+Attribute ForeColorHighlighted.VB_ProcData.VB_Invoke_Property = ";Colors"
     If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
         ForeColorHighlighted = mHandleHighContrastTheme_OrigForeColorHighlighted
     Else
@@ -1516,6 +1518,7 @@ End Property
 
 Public Property Get FlatTabBorderColorHighlight() As OLE_COLOR
 Attribute FlatTabBorderColorHighlight.VB_Description = "Returns/sets the color that is used to highlight the tabs with a border when the mouse hovers on them, and the HighlightMode property has the corresponding flag ntHLFlatDrawBorder."
+Attribute FlatTabBorderColorHighlight.VB_ProcData.VB_Invoke_Property = ";Colors"
     If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
         FlatTabBorderColorHighlight = mHandleHighContrastTheme_OrigFlatTabBorderColorHighlight
     Else
@@ -1539,6 +1542,7 @@ End Property
 
 Public Property Get FlatTabBorderColorSelectedTab() As OLE_COLOR
 Attribute FlatTabBorderColorSelectedTab.VB_Description = "Returns/sets the color that is used to highlight the active tab with a border when the HighlightModeSelectedTab property has the corresponding flag ntHLFlatDrawBorder."
+Attribute FlatTabBorderColorSelectedTab.VB_ProcData.VB_Invoke_Property = ";Colors"
     If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
         FlatTabBorderColorSelectedTab = mHandleHighContrastTheme_OrigFlatTabBorderColorSelectedTab
     Else
@@ -1563,7 +1567,7 @@ End Property
 ' Returns/sets the text displayed in the active tab.
 Public Property Get Caption() As String
 Attribute Caption.VB_Description = "Returns/sets the text displayed in the active tab."
-Attribute Caption.VB_ProcData.VB_Invoke_Property = ";Texto"
+Attribute Caption.VB_ProcData.VB_Invoke_Property = ";Appearance"
 Attribute Caption.VB_UserMemId = -518
 Attribute Caption.VB_MemberFlags = "c"
     Caption = mTabData(mTab).Caption
@@ -1586,7 +1590,7 @@ End Property
 ' Returns/sets the number of tabs to appear on each row.
 Public Property Get TabsPerRow() As Long
 Attribute TabsPerRow.VB_Description = "Returns/sets the number of tabs to appear on each row. It only works in some styles."
-Attribute TabsPerRow.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute TabsPerRow.VB_ProcData.VB_Invoke_Property = ";Tabs"
     TabsPerRow = mTabsPerRow
 End Property
 
@@ -1607,6 +1611,7 @@ End Property
 ' Returns/sets the number of tabs.
 Public Property Get Tabs() As Long
 Attribute Tabs.VB_Description = "Returns/sets the number of tabs."
+Attribute Tabs.VB_ProcData.VB_Invoke_Property = ";Tabs"
     Tabs = mTabs
 End Property
 
@@ -1701,6 +1706,7 @@ End Property
 ' Returns the number of rows of tabs.
 Public Property Get Rows() As Long
 Attribute Rows.VB_Description = "Returns the number of rows of tabs."
+Attribute Rows.VB_ProcData.VB_Invoke_Property = ";Data"
 Attribute Rows.VB_UserMemId = 0
 Attribute Rows.VB_MemberFlags = "400"
     Rows = mRows
@@ -1710,6 +1716,7 @@ End Property
 ' included for backward compatibility
 Public Property Get TabSel() As Long
 Attribute TabSel.VB_Description = "Returns/sets the active tab number."
+Attribute TabSel.VB_ProcData.VB_Invoke_Property = ";Tabs"
 Attribute TabSel.VB_MemberFlags = "40"
     TabSel = mTab
 End Property
@@ -1807,7 +1814,7 @@ End Property
 ' Returns/sets a value that determines which side of the control the tabs will appear.
 Public Property Get TabOrientation() As NTTabOrientationConstants
 Attribute TabOrientation.VB_Description = "Returns/sets a value that determines on which side of the control the tabs will appear."
-Attribute TabOrientation.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute TabOrientation.VB_ProcData.VB_Invoke_Property = ";Appearance"
     TabOrientation = mTabOrientation
 End Property
 
@@ -1839,7 +1846,7 @@ End Property
 
 Public Property Get IconAlignment() As NTIconAlignmentConstants
 Attribute IconAlignment.VB_Description = "Returns/sets the alignment of the icon (or picture) with respect of the tab caption."
-Attribute IconAlignment.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute IconAlignment.VB_ProcData.VB_Invoke_Property = ";Icon"
     IconAlignment = mIconAlignment
 End Property
 
@@ -1860,7 +1867,7 @@ End Property
 ' Specifies a bitmap to display on the current tab.
 Public Property Get Picture() As Picture
 Attribute Picture.VB_Description = "Specifies a bitmap or icon to display on the current tab."
-Attribute Picture.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute Picture.VB_ProcData.VB_Invoke_Property = ";Icon"
     Set Picture = TabPicture(mTab)
 End Property
 
@@ -1877,7 +1884,7 @@ End Property
 
 Public Property Get Pic16() As Picture
 Attribute Pic16.VB_Description = "Specifies a bitmap to display on the current tab at 96 DPI, when the application is DPI aware."
-Attribute Pic16.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute Pic16.VB_ProcData.VB_Invoke_Property = ";Icon"
     Set Pic16 = TabPic16(mTab)
 End Property
 
@@ -1894,7 +1901,7 @@ End Property
 
 Public Property Get Pic20() As Picture
 Attribute Pic20.VB_Description = "Specifies a bitmap to display on the current tab at 120 DPI, when the application is DPI aware."
-Attribute Pic20.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute Pic20.VB_ProcData.VB_Invoke_Property = ";Icon"
     Set Pic20 = TabPic20(mTab)
 End Property
 
@@ -1911,7 +1918,7 @@ End Property
 
 Public Property Get Pic24() As Picture
 Attribute Pic24.VB_Description = "Specifies a bitmap to display on the current tab at 144 DPI, when the application is DPI aware."
-Attribute Pic24.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute Pic24.VB_ProcData.VB_Invoke_Property = ";Icon"
     Set Pic24 = TabPic24(mTab)
 End Property
 
@@ -1928,7 +1935,7 @@ End Property
 
 Public Property Get IconCharHex() As String
 Attribute IconCharHex.VB_Description = "Returns/sets a string representing the hexadecimal value of the character that will be used as the icon in the currently selected tab."
-Attribute IconCharHex.VB_ProcData.VB_Invoke_Property = "pagNewTabIcons;Apariencia"
+Attribute IconCharHex.VB_ProcData.VB_Invoke_Property = "pagNewTabIcons;Icon"
     IconCharHex = TabIconCharHex(mTab)
 End Property
 
@@ -1939,7 +1946,7 @@ End Property
 
 Public Property Get IconLeftOffset() As Long
 Attribute IconLeftOffset.VB_Description = "Returns/sets the value in pixels of the offset for the left position when drawing the icon of the currently selected tab. It can be negative."
-Attribute IconLeftOffset.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute IconLeftOffset.VB_ProcData.VB_Invoke_Property = ";Icon"
     IconLeftOffset = TabIconLeftOffset(mTab)
 End Property
 
@@ -1950,7 +1957,7 @@ End Property
 
 Public Property Get IconTopOffset() As Long
 Attribute IconTopOffset.VB_Description = "Returns/sets the value in pixels of the offset for the top position when drawing the icon of the currently selected tab. It can be negative."
-Attribute IconTopOffset.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute IconTopOffset.VB_ProcData.VB_Invoke_Property = ";Icon"
     IconTopOffset = TabIconTopOffset(mTab)
 End Property
 
@@ -1962,7 +1969,7 @@ End Property
 ' Determines whether a focus rectangle will be drawn in the caption when the control has the focus.
 Public Property Get ShowFocusRect() As Boolean
 Attribute ShowFocusRect.VB_Description = "Determines whether a focus rectangle will be drawn in the caption when the control has the focus."
-Attribute ShowFocusRect.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute ShowFocusRect.VB_ProcData.VB_Invoke_Property = ";Behavior"
     ShowFocusRect = mShowFocusRect
 End Property
 
@@ -1978,7 +1985,7 @@ End Property
 ' Determines whether text in the caption of each tab will wrap to the next line if it is too long.
 Public Property Get WordWrap() As Boolean
 Attribute WordWrap.VB_Description = "Determines whether text in the caption of each tab will wrap to the next line if it is too long."
-Attribute WordWrap.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute WordWrap.VB_ProcData.VB_Invoke_Property = ";Behavior"
     WordWrap = mWordWrap
 End Property
 
@@ -1994,7 +2001,7 @@ End Property
 ' Returns/sets the style of the tabs.
 Public Property Get Style() As NTStyleConstants
 Attribute Style.VB_Description = "Returns/sets the style of the tabs."
-Attribute Style.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute Style.VB_ProcData.VB_Invoke_Property = ";Appearance"
     Style = mStyle
 End Property
 
@@ -2026,6 +2033,7 @@ End Property
 ' Returns/sets the height of the tabs.
 Public Property Get TabHeight() As Single
 Attribute TabHeight.VB_Description = "Returns/sets the height of tabs."
+Attribute TabHeight.VB_ProcData.VB_Invoke_Property = ";Tabs"
     TabHeight = FixRoundingError(ToContainerSizeY(mTabHeight, vbHimetric))
 End Property
 
@@ -2060,7 +2068,7 @@ End Property
 ' Returns/sets the maximum width of each tab.
 Public Property Get TabMaxWidth() As Single
 Attribute TabMaxWidth.VB_Description = "Returns/sets the maximum width of each tab."
-Attribute TabMaxWidth.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute TabMaxWidth.VB_ProcData.VB_Invoke_Property = ";Tabs"
     TabMaxWidth = FixRoundingError(ToContainerSizeX(mTabMaxWidth, vbHimetric))
 End Property
 
@@ -2088,7 +2096,7 @@ End Property
 ' Returns/sets the minimun width of each tab.
 Public Property Get TabMinWidth() As Single
 Attribute TabMinWidth.VB_Description = "Returns/sets the minimun width of each tab."
-Attribute TabMinWidth.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute TabMinWidth.VB_ProcData.VB_Invoke_Property = ";Tabs"
     TabMinWidth = FixRoundingError(ToContainerSizeX(mTabMinWidth, vbHimetric))
 End Property
 
@@ -2113,7 +2121,7 @@ End Property
 
 Public Property Get TabWidthStyle() As NTTabWidthStyleConstants
 Attribute TabWidthStyle.VB_Description = "Returns or sets a value that determines the justification or width of the tabs."
-Attribute TabWidthStyle.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute TabWidthStyle.VB_ProcData.VB_Invoke_Property = ";Appearance"
     TabWidthStyle = mTabWidthStyle
 End Property
 
@@ -2132,7 +2140,7 @@ End Property
 
 Public Property Get TabAppearance() As NTTabAppearanceConstants
 Attribute TabAppearance.VB_Description = "Returns/sets a value that determines the appearance of the tabs."
-Attribute TabAppearance.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute TabAppearance.VB_ProcData.VB_Invoke_Property = ";Appearance"
     TabAppearance = mTabAppearance
 End Property
 
@@ -2159,6 +2167,7 @@ End Property
 ' Returns/sets the type of mouse pointer displayed when over the control.
 Public Property Get MousePointer() As NTMousePointerConstants
 Attribute MousePointer.VB_Description = "Returns/sets the type of mouse pointer displayed when over the control."
+Attribute MousePointer.VB_ProcData.VB_Invoke_Property = ";Misc"
     MousePointer = mMousePointer
 End Property
 
@@ -2179,6 +2188,7 @@ End Property
 ' Returns/sets the icon used as the mouse pointer when the MousePointer property is set to 99 (custom).
 Public Property Get MouseIcon() As Picture
 Attribute MouseIcon.VB_Description = "Returns/sets the icon used as the mouse pointer when the MousePointer property is set to 99 (custom)."
+Attribute MouseIcon.VB_ProcData.VB_Invoke_Property = ";Misc"
     Set MouseIcon = mMouseIcon
 End Property
 
@@ -2203,6 +2213,7 @@ End Property
 ' Returns/Sets whether this control can act as an OLE drop target.
 Public Property Get OLEDropMode() As NTOLEDropConstants
 Attribute OLEDropMode.VB_Description = "Returns/sets how a target component handles drop operations."
+Attribute OLEDropMode.VB_ProcData.VB_Invoke_Property = ";Behavior"
     OLEDropMode = mOLEDropMode
 End Property
 
@@ -2232,7 +2243,7 @@ End Property
 ' Returns the picture displayed on the specified tab.
 Public Property Get TabPicture(ByVal Index As Long) As Picture
 Attribute TabPicture.VB_Description = "Returns/sets the picture to be displayed on the specified tab."
-Attribute TabPicture.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute TabPicture.VB_ProcData.VB_Invoke_Property = ";Icon"
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -2268,7 +2279,7 @@ End Property
 
 Public Property Get TabPic16(ByVal Index As Long) As Picture
 Attribute TabPic16.VB_Description = "Specifies a bitmap to display on the specified tab at 96 DPI, when the application is DPI aware."
-Attribute TabPic16.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute TabPic16.VB_ProcData.VB_Invoke_Property = ";Icon"
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -2304,7 +2315,7 @@ End Property
 
 Public Property Get TabPic20(ByVal Index As Long) As Picture
 Attribute TabPic20.VB_Description = "Specifies a bitmap to display on the specified tab at 120 DPI, when the application is DPI aware."
-Attribute TabPic20.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute TabPic20.VB_ProcData.VB_Invoke_Property = ";Icon"
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -2340,7 +2351,7 @@ End Property
 
 Public Property Get TabPic24(ByVal Index As Long) As Picture
 Attribute TabPic24.VB_Description = "Specifies a bitmap to display on the specified tab at 144 DPI, when the application is DPI aware."
-Attribute TabPic24.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute TabPic24.VB_ProcData.VB_Invoke_Property = ";Icon"
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -2376,7 +2387,7 @@ End Property
 
 Public Property Get TabIconCharHex(ByVal Index As Long) As String
 Attribute TabIconCharHex.VB_Description = "Returns/sets a string representing the hexadecimal value of the character that will be used as the icon for the tab pointed by the Index parameter."
-Attribute TabIconCharHex.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute TabIconCharHex.VB_ProcData.VB_Invoke_Property = ";Icon"
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -2415,6 +2426,7 @@ End Property
 
 Public Property Get TabIconLeftOffset(ByVal Index As Long) As Long
 Attribute TabIconLeftOffset.VB_Description = "Returns/sets the value in pixels of the offset for the left position when drawing the icon of the tab pointed by the Index parameter. It can be negative."
+Attribute TabIconLeftOffset.VB_ProcData.VB_Invoke_Property = ";Font"
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -2439,6 +2451,7 @@ End Property
 
 Public Property Get TabIconTopOffset(ByVal Index As Long) As Long
 Attribute TabIconTopOffset.VB_Description = "Returns/sets the value in pixels of the offset for the top position when drawing the icon of the tab pointed by the Index parameter. It can be negative."
+Attribute TabIconTopOffset.VB_ProcData.VB_Invoke_Property = ";Font"
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -2556,6 +2569,7 @@ End Property
 ' Determines if the specified tab is enabled.
 Public Property Get TabEnabled(ByVal Index As Long) As Boolean
 Attribute TabEnabled.VB_Description = "Determines if the specified tab is enabled."
+Attribute TabEnabled.VB_ProcData.VB_Invoke_Property = ";Appearance"
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -2580,7 +2594,7 @@ End Property
 ' Returns the text displayed on the specified tab.
 Public Property Get TabCaption(ByVal Index As Long) As String
 Attribute TabCaption.VB_Description = "Returns/sets  the text displayed on the specified tab."
-Attribute TabCaption.VB_ProcData.VB_Invoke_Property = ";Texto"
+Attribute TabCaption.VB_ProcData.VB_Invoke_Property = ";Appearance"
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -2604,7 +2618,7 @@ End Property
 
 Public Property Get TabToolTipText(ByVal Index As Long) As String
 Attribute TabToolTipText.VB_Description = "Returns/sets the text that will be shown as tooltip text when the mouse pointer is over the specified tab."
-Attribute TabToolTipText.VB_ProcData.VB_Invoke_Property = ";Texto"
+Attribute TabToolTipText.VB_ProcData.VB_Invoke_Property = ";Misc"
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -2635,6 +2649,7 @@ End Property
 
 Public Property Get MaskColor() As OLE_COLOR
 Attribute MaskColor.VB_Description = "Returns/sets a color in the tabs pictures to be a mask (that is, transparent)."
+Attribute MaskColor.VB_ProcData.VB_Invoke_Property = ";Colors"
     MaskColor = mMaskColor
 End Property
 
@@ -2650,7 +2665,7 @@ End Property
 
 Public Property Get HighlightTabExtraHeight() As Single
 Attribute HighlightTabExtraHeight.VB_Description = "Returns/sets a value that determines the extra height that a tab will have when it is highlighted. This value is in units of the container."
-Attribute HighlightTabExtraHeight.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute HighlightTabExtraHeight.VB_ProcData.VB_Invoke_Property = ";Appearance"
     HighlightTabExtraHeight = FixRoundingError(ToContainerSizeY(mHighlightTabExtraHeight, vbHimetric))
 End Property
 
@@ -2675,7 +2690,7 @@ End Property
 
 Public Property Get HighlightEffect() As Boolean
 Attribute HighlightEffect.VB_Description = "Returns/sets a value that determines whether tabs will display a progressive effect when they are highlighted due to hovering over them."
-Attribute HighlightEffect.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute HighlightEffect.VB_ProcData.VB_Invoke_Property = ";Appearance"
     HighlightEffect = mHighlightEffect
 End Property
 
@@ -2689,7 +2704,7 @@ End Property
 
 Public Property Get VisualStyles() As Boolean
 Attribute VisualStyles.VB_Description = "Returns/sets a value that determines whether the appearance of the control will use Windows visual styles-"
-Attribute VisualStyles.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute VisualStyles.VB_ProcData.VB_Invoke_Property = ";Appearance"
 Attribute VisualStyles.VB_MemberFlags = "40"
     VisualStyles = mVisualStyles
 End Property
@@ -2727,7 +2742,7 @@ End Property
 
 Public Property Get BackColorTabs() As OLE_COLOR
 Attribute BackColorTabs.VB_Description = "Returns/sets the background color of the tabs."
-Attribute BackColorTabs.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute BackColorTabs.VB_ProcData.VB_Invoke_Property = ";Colors"
     If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
         BackColorTabs = mHandleHighContrastTheme_OrigBackColorTabs
     Else
@@ -2780,7 +2795,7 @@ End Property
 
 Public Property Get BackColorSelectedTab() As OLE_COLOR
 Attribute BackColorSelectedTab.VB_Description = "Returns/sets the color of the active tab including the tab body."
-Attribute BackColorSelectedTab.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute BackColorSelectedTab.VB_ProcData.VB_Invoke_Property = ";Colors"
     If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
         BackColorSelectedTab = mHandleHighContrastTheme_OrigBackColorSelectedTab
     Else
@@ -2840,7 +2855,7 @@ End Property
 
 Public Property Get FlatBarColorSelectedTab() As OLE_COLOR
 Attribute FlatBarColorSelectedTab.VB_Description = "Returns/sets the color of the bar when a tab is selected in flat style."
-Attribute FlatBarColorSelectedTab.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute FlatBarColorSelectedTab.VB_ProcData.VB_Invoke_Property = ";Colors"
     FlatBarColorSelectedTab = mFlatBarColorSelectedTab
 End Property
 
@@ -2857,7 +2872,7 @@ End Property
 
 Public Property Get FlatBarColorHighlight() As OLE_COLOR
 Attribute FlatBarColorHighlight.VB_Description = "Returns/sets the color of the bar when a tab is highlighted in flat style."
-Attribute FlatBarColorHighlight.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute FlatBarColorHighlight.VB_ProcData.VB_Invoke_Property = ";Colors"
     FlatBarColorHighlight = mFlatBarColorHighlight
 End Property
 
@@ -2878,7 +2893,7 @@ End Property
 
 Public Property Get FlatBarColorInactive() As OLE_COLOR
 Attribute FlatBarColorInactive.VB_Description = "Returns/sets the color of the bar when a tab is inactive in flat style."
-Attribute FlatBarColorInactive.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute FlatBarColorInactive.VB_ProcData.VB_Invoke_Property = ";Colors"
     FlatBarColorInactive = mFlatBarColorInactive
 End Property
 
@@ -2899,7 +2914,7 @@ End Property
 
 Public Property Get FlatTabsSeparationLineColor() As OLE_COLOR
 Attribute FlatTabsSeparationLineColor.VB_Description = "Returns/sets the color of the separation line between tabs in flat style."
-Attribute FlatTabsSeparationLineColor.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute FlatTabsSeparationLineColor.VB_ProcData.VB_Invoke_Property = ";Colors"
     FlatTabsSeparationLineColor = mFlatTabsSeparationLineColor
 End Property
 
@@ -2920,7 +2935,7 @@ End Property
 
 Public Property Get FlatBodySeparationLineColor() As OLE_COLOR
 Attribute FlatBodySeparationLineColor.VB_Description = "Returns/sets the color of the separation line between the tabs and the body in flat style."
-Attribute FlatBodySeparationLineColor.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute FlatBodySeparationLineColor.VB_ProcData.VB_Invoke_Property = ";Colors"
     FlatBodySeparationLineColor = mFlatBodySeparationLineColor
 End Property
 
@@ -2941,7 +2956,7 @@ End Property
 
 Public Property Get FlatBorderColor() As OLE_COLOR
 Attribute FlatBorderColor.VB_Description = "Returns/sets the color of the border in flat style."
-Attribute FlatBorderColor.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute FlatBorderColor.VB_ProcData.VB_Invoke_Property = ";Colors"
     FlatBorderColor = mFlatBorderColor
 End Property
 
@@ -2962,7 +2977,7 @@ End Property
 
 Public Property Get HighlightColor() As OLE_COLOR
 Attribute HighlightColor.VB_Description = "Returns/sets the color used to highlight an inactive tab when the user hovers over it."
-Attribute HighlightColor.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute HighlightColor.VB_ProcData.VB_Invoke_Property = ";Colors"
     HighlightColor = mHighlightColor
 End Property
 
@@ -2983,7 +2998,7 @@ End Property
 
 Public Property Get HighlightColorSelectedTab() As OLE_COLOR
 Attribute HighlightColorSelectedTab.VB_Description = "Returns/sets the color used to highlight the selected tab."
-Attribute HighlightColorSelectedTab.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute HighlightColorSelectedTab.VB_ProcData.VB_Invoke_Property = ";Colors"
     HighlightColorSelectedTab = mHighlightColorSelectedTab
 End Property
 
@@ -3004,7 +3019,7 @@ End Property
 
 Public Property Get IconColor() As OLE_COLOR
 Attribute IconColor.VB_Description = "Returns/sets the color of the icon."
-Attribute IconColor.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute IconColor.VB_ProcData.VB_Invoke_Property = ";Colors"
     If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
         IconColor = mHandleHighContrastTheme_OrigIconColor
     Else
@@ -3047,7 +3062,7 @@ End Property
 
 Public Property Get IconColorSelectedTab() As OLE_COLOR
 Attribute IconColorSelectedTab.VB_Description = "Returns/sets the color used to draw the icon when the tab is seleted."
-Attribute IconColorSelectedTab.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute IconColorSelectedTab.VB_ProcData.VB_Invoke_Property = ";Colors"
     If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
         IconColorSelectedTab = mHandleHighContrastTheme_OrigIconColorSelectedTab
     Else
@@ -3071,6 +3086,7 @@ End Property
 
 Public Property Get IconColorMouseHover() As OLE_COLOR
 Attribute IconColorMouseHover.VB_Description = "Returns/sets the color that the icon will show when the mouse hovers it, for the non active tabs."
+Attribute IconColorMouseHover.VB_ProcData.VB_Invoke_Property = ";Colors"
     If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
         IconColorMouseHover = mHandleHighContrastTheme_OrigIconColorMouseHover
     Else
@@ -3097,6 +3113,7 @@ End Property
 
 Public Property Get IconColorMouseHoverSelectedTab() As OLE_COLOR
 Attribute IconColorMouseHoverSelectedTab.VB_Description = "Returns/sets the color that the icon will show when the mouse hovers it, for the active tab."
+Attribute IconColorMouseHoverSelectedTab.VB_ProcData.VB_Invoke_Property = ";Colors"
     If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
         IconColorMouseHoverSelectedTab = mHandleHighContrastTheme_OrigIconColorMouseHoverSelectedTab
     Else
@@ -3120,7 +3137,7 @@ End Property
 
 Public Property Get IconColorTabHighlighted() As OLE_COLOR
 Attribute IconColorTabHighlighted.VB_Description = "Returns/sets the color used to draw the icon when the tab is highlighted (not the icon itself)."
-Attribute IconColorTabHighlighted.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute IconColorTabHighlighted.VB_ProcData.VB_Invoke_Property = ";Colors"
     If mAmbientUserMode And mHandleHighContrastTheme And mHighContrastThemeOn Then
         IconColorTabHighlighted = mHandleHighContrastTheme_OrigIconColorTabHighlighted
     Else
@@ -3143,7 +3160,7 @@ End Property
 
 Public Property Get ShowDisabledState() As Boolean
 Attribute ShowDisabledState.VB_Description = "Returns/sets a value that determines if the tabs color will be darkened when the control is disabled."
-Attribute ShowDisabledState.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute ShowDisabledState.VB_ProcData.VB_Invoke_Property = ";Appearance"
 Attribute ShowDisabledState.VB_MemberFlags = "400"
     ShowDisabledState = mShowDisabledState
 End Property
@@ -3185,6 +3202,7 @@ End Property
 
 Public Property Get UseMaskColor() As Boolean
 Attribute UseMaskColor.VB_Description = "Returns/sets a value that determines whether the color assigned in the MaskColor property is used as a mask. (That is, used to create transparent regions.)"
+Attribute UseMaskColor.VB_ProcData.VB_Invoke_Property = ";Appearance"
     UseMaskColor = mUseMaskColor
 End Property
 
@@ -3199,7 +3217,7 @@ End Property
 
 Public Property Get TabTransition() As NTTabTransitionConstants
 Attribute TabTransition.VB_Description = "Returns/sets a value that determines whether the transition between tabs will be with an effect that smooths the transition (and its speed)."
-Attribute TabTransition.VB_ProcData.VB_Invoke_Property = ";Comportamiento"
+Attribute TabTransition.VB_ProcData.VB_Invoke_Property = ";Behavior"
     TabTransition = mTabTransition
 End Property
 
@@ -3217,7 +3235,7 @@ End Property
 
 Public Property Get FlatRoundnessTop() As Long
 Attribute FlatRoundnessTop.VB_Description = "Returns/sets the size in pixels of the roundness of the top corners."
-Attribute FlatRoundnessTop.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute FlatRoundnessTop.VB_ProcData.VB_Invoke_Property = ";Appearance"
     FlatRoundnessTop = mFlatRoundnessTop
 End Property
 
@@ -3237,7 +3255,7 @@ End Property
 
 Public Property Get FlatRoundnessBottom() As Long
 Attribute FlatRoundnessBottom.VB_Description = "Returns/sets the size in pixels of the roundness of the bottom corners."
-Attribute FlatRoundnessBottom.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute FlatRoundnessBottom.VB_ProcData.VB_Invoke_Property = ";Appearance"
     FlatRoundnessBottom = mFlatRoundnessBottom
 End Property
 
@@ -3257,7 +3275,7 @@ End Property
 
 Public Property Get FlatRoundnessTabs() As Long
 Attribute FlatRoundnessTabs.VB_Description = "Returns/sets the size in pixels of the roundness of the tabs corners."
-Attribute FlatRoundnessTabs.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute FlatRoundnessTabs.VB_ProcData.VB_Invoke_Property = ";Appearance"
     FlatRoundnessTabs = mFlatRoundnessTabs
 End Property
 
@@ -3277,7 +3295,7 @@ End Property
 
 Public Property Get HighlightMode() As Long
 Attribute HighlightMode.VB_Description = "Returns/sets the mode that the inactive tabs are highlighted when the mouse hovers over them."
-Attribute HighlightMode.VB_ProcData.VB_Invoke_Property = "pagHighlightMode;Apariencia"
+Attribute HighlightMode.VB_ProcData.VB_Invoke_Property = "pagHighlightMode;Appearance"
     HighlightMode = mHighlightMode
 End Property
 
@@ -3298,7 +3316,7 @@ End Property
 
 Public Property Get HighlightModeSelectedTab() As Long
 Attribute HighlightModeSelectedTab.VB_Description = "Returns/sets the mode that the selected tab is highlighted (it is always highlighted)."
-Attribute HighlightModeSelectedTab.VB_ProcData.VB_Invoke_Property = "pagHighlightMode;Apariencia"
+Attribute HighlightModeSelectedTab.VB_ProcData.VB_Invoke_Property = "pagHighlightMode;Appearance"
     HighlightModeSelectedTab = mHighlightModeSelectedTab
 End Property
 
@@ -3319,7 +3337,7 @@ End Property
 
 Public Property Get FlatBorderMode() As NTFlatBorderModeConstants
 Attribute FlatBorderMode.VB_Description = "Returns/sets the way the border will be drawn in flat style. It may be around the selected tab or all the control."
-Attribute FlatBorderMode.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute FlatBorderMode.VB_ProcData.VB_Invoke_Property = ";Appearance"
     FlatBorderMode = mFlatBorderMode
 End Property
 
@@ -3339,6 +3357,7 @@ End Property
 
 Public Property Get FlatBarHeight() As Long
 Attribute FlatBarHeight.VB_Description = "Returns/sets the height in pixels of the bar in flat style."
+Attribute FlatBarHeight.VB_ProcData.VB_Invoke_Property = ";Appearance"
     FlatBarHeight = mFlatBarHeight
 End Property
 
@@ -3359,6 +3378,7 @@ End Property
 
 Public Property Get FlatBarGripHeight() As Long
 Attribute FlatBarGripHeight.VB_Description = "Returns/sets a value in pixels that determines the height of a grip for the highlight bar in the flat style. A negative value defines a notch instead."
+Attribute FlatBarGripHeight.VB_ProcData.VB_Invoke_Property = ";Appearance"
     FlatBarGripHeight = mFlatBarGripHeight
 End Property
 
@@ -3379,6 +3399,7 @@ End Property
 
 Public Property Get FlatBodySeparationLineHeight() As Long
 Attribute FlatBodySeparationLineHeight.VB_Description = "Returns/sets the height in pixels of the separation line between the tabs and the body in flat style."
+Attribute FlatBodySeparationLineHeight.VB_ProcData.VB_Invoke_Property = ";Appearance"
     FlatBodySeparationLineHeight = mFlatBodySeparationLineHeight
 End Property
 
@@ -3398,7 +3419,7 @@ End Property
 
 Public Property Get FlatBarPosition() As NTFlatBarPositionConstants
 Attribute FlatBarPosition.VB_Description = "Returns/sets the position of the bar in flat style."
-Attribute FlatBarPosition.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute FlatBarPosition.VB_ProcData.VB_Invoke_Property = ";Appearance"
     FlatBarPosition = mFlatBarPosition
 End Property
 
@@ -3418,7 +3439,7 @@ End Property
 
 Public Property Get ShowRowsInPerspective() As NTAutoYesNoConstants
 Attribute ShowRowsInPerspective.VB_Description = "Returns/sets a value that determines when the control has more that one row of tabs, if they will be drawn changing the horizontal position on each row."
-Attribute ShowRowsInPerspective.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute ShowRowsInPerspective.VB_ProcData.VB_Invoke_Property = ";Tabs"
     ShowRowsInPerspective = mShowRowsInPerspective
 End Property
 
@@ -3440,7 +3461,7 @@ End Property
 
 Public Property Get TabSeparation() As Long
 Attribute TabSeparation.VB_Description = "Returns/sets the number of pixels of separation between tabs."
-Attribute TabSeparation.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute TabSeparation.VB_ProcData.VB_Invoke_Property = ";Appearance"
     TabSeparation = mTabSeparation
 End Property
 
@@ -3460,6 +3481,7 @@ End Property
 
 Public Property Get ChangeControlsBackColor() As Boolean
 Attribute ChangeControlsBackColor.VB_Description = "Returns/sets a value that determines if the BackColor property value of the contained controls will be changed according to BackColorSelectedTab property value (applied only when they are the same)."
+Attribute ChangeControlsBackColor.VB_ProcData.VB_Invoke_Property = ";Behavior"
     ChangeControlsBackColor = mChangeControlsBackColor
 End Property
 
@@ -3488,6 +3510,7 @@ End Property
 
 Public Property Get ChangeControlsForeColor() As Boolean
 Attribute ChangeControlsForeColor.VB_Description = "Returns/sets a value that determines if the ForeColor property value of the contained controls will be changed according to ForeColor property value of the tab control (applied only when they are the same)."
+Attribute ChangeControlsForeColor.VB_ProcData.VB_Invoke_Property = ";Behavior"
     ChangeControlsForeColor = mChangeControlsForeColor
 End Property
 
@@ -3516,7 +3539,7 @@ End Property
 
 Public Property Get AutoRelocateControls() As NTAutoRelocateControlsConstants
 Attribute AutoRelocateControls.VB_Description = "Returns/sets a value that determines if the contained controls will be automatically relocated when the tab body changes."
-Attribute AutoRelocateControls.VB_ProcData.VB_Invoke_Property = ";Comportamiento"
+Attribute AutoRelocateControls.VB_ProcData.VB_Invoke_Property = ";Behavior"
     AutoRelocateControls = mAutoRelocateControls
 End Property
 
@@ -3534,7 +3557,7 @@ End Property
 
 Public Property Get SoftEdges() As Boolean
 Attribute SoftEdges.VB_Description = "Returns/sets a value that determines if the edges will be displayed with less contrast."
-Attribute SoftEdges.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute SoftEdges.VB_ProcData.VB_Invoke_Property = ";Appearance"
     SoftEdges = mSoftEdges
 End Property
 
@@ -3550,6 +3573,7 @@ End Property
 
 Public Property Get RightToLeft() As Boolean
 Attribute RightToLeft.VB_Description = "Returns/Sets the text display direction and control visual appearance on a bidirectional system."
+Attribute RightToLeft.VB_ProcData.VB_Invoke_Property = ";Behavior"
     RightToLeft = mRightToLeft
 End Property
 
@@ -3579,7 +3603,7 @@ End Property
 
 Public Property Get BackStyle() As NTBackStyleConstants
 Attribute BackStyle.VB_Description = "Returns/sets the background style, opaque or transparent."
-Attribute BackStyle.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute BackStyle.VB_ProcData.VB_Invoke_Property = ";Appearance"
     BackStyle = mBackStyle
 End Property
 
@@ -3599,7 +3623,7 @@ End Property
 
 Public Property Get AutoTabHeight() As Boolean
 Attribute AutoTabHeight.VB_Description = "Returns/sets a value that determines if the tab height is set automatically according to the font (and pictures)."
-Attribute AutoTabHeight.VB_ProcData.VB_Invoke_Property = ";Comportamiento"
+Attribute AutoTabHeight.VB_ProcData.VB_Invoke_Property = ";Behavior"
     AutoTabHeight = mAutoTabHeight
 End Property
 
@@ -10630,28 +10654,28 @@ End Function
 
 Public Property Get ClientLeft() As Single
 Attribute ClientLeft.VB_Description = "Returns the left of the tab body."
-Attribute ClientLeft.VB_ProcData.VB_Invoke_Property = ";Posici n"
+Attribute ClientLeft.VB_ProcData.VB_Invoke_Property = ";Position"
     EnsureDrawn
     ClientLeft = FixRoundingError(UserControl.ScaleX(mClientRect.Left, vbPixels, vbTwips))
 End Property
 
 Public Property Get ClientTop() As Single
 Attribute ClientTop.VB_Description = "Returns the space occupied by tabs, or where the tab body begins."
-Attribute ClientTop.VB_ProcData.VB_Invoke_Property = ";Posici n"
+Attribute ClientTop.VB_ProcData.VB_Invoke_Property = ";Position"
     EnsureDrawn
     ClientTop = FixRoundingError(UserControl.ScaleY(mClientRect.Top, vbPixels, vbTwips))
 End Property
 
 Public Property Get ClientWidth() As Single
 Attribute ClientWidth.VB_Description = "Returns the width of the tab body."
-Attribute ClientWidth.VB_ProcData.VB_Invoke_Property = ";Posici n"
+Attribute ClientWidth.VB_ProcData.VB_Invoke_Property = ";Position"
     EnsureDrawn
     ClientWidth = FixRoundingError(UserControl.ScaleX(mClientRect.Right - mClientRect.Left, vbPixels, vbTwips))
 End Property
 
 Public Property Get ClientHeight() As Single
 Attribute ClientHeight.VB_Description = "Returns the height of the tab body."
-Attribute ClientHeight.VB_ProcData.VB_Invoke_Property = ";Posici n"
+Attribute ClientHeight.VB_ProcData.VB_Invoke_Property = ";Position"
     EnsureDrawn
     ClientHeight = FixRoundingError(UserControl.ScaleY(mClientRect.Bottom - mClientRect.Top, vbPixels, vbTwips))
 End Property
@@ -12865,7 +12889,6 @@ End Function
 
 Public Property Get Controls() As VBRUN.ContainedControls
 Attribute Controls.VB_Description = "Returns a collection of the controls that were added to the control."
-Attribute Controls.VB_ProcData.VB_Invoke_Property = ";Datos"
     Set Controls = UserControlContainedControls
 End Property
 
@@ -12988,7 +13011,6 @@ End Sub
 
 Public Property Get TabControls(ByVal nTab As Long, Optional GetChilds As Boolean = True) As Collection
 Attribute TabControls.VB_Description = "Returns a collection of the controls that are inside a tab."
-Attribute TabControls.VB_ProcData.VB_Invoke_Property = ";Datos"
     Dim iCtlName As Variant
     Dim iCtl As Object
     Dim iCtl2 As Object
@@ -13028,7 +13050,6 @@ End Property
 
 Public Property Get EndOfTabs() As Single
 Attribute EndOfTabs.VB_Description = "Returns a value that indicates where the last tab ends."
-Attribute EndOfTabs.VB_ProcData.VB_Invoke_Property = ";Posici n"
     EnsureDrawn
     If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ssTabOrientationBottom) Then
         EndOfTabs = FixRoundingError(ToContainerSizeX(mEndOfTabs, vbPixels))
@@ -13039,6 +13060,7 @@ End Property
 
 Public Property Get MinSizeNeeded() As Single
 Attribute MinSizeNeeded.VB_Description = "Returns the minimun Width (or Height, depending on the TabOpientation setting) of the control needed to show all the tabs in one row (without adding new rows)."
+Attribute MinSizeNeeded.VB_ProcData.VB_Invoke_Property = ";Data"
     EnsureDrawn
     If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ssTabOrientationBottom) Then
         MinSizeNeeded = FixRoundingError(ToContainerSizeX(mMinSizeNeeded, vbPixels))
@@ -13049,7 +13071,7 @@ End Property
 
 Public Property Get HandleHighContrastTheme() As Boolean
 Attribute HandleHighContrastTheme.VB_Description = "When True (default setting), handles the system changes to High contrast theme automatically."
-Attribute HandleHighContrastTheme.VB_ProcData.VB_Invoke_Property = ";Comportamiento"
+Attribute HandleHighContrastTheme.VB_ProcData.VB_Invoke_Property = ";Behavior"
     HandleHighContrastTheme = mHandleHighContrastTheme
 End Property
 
@@ -13298,14 +13320,14 @@ End Sub
 
 Public Property Get LeftOffsetToHide() As Long
 Attribute LeftOffsetToHide.VB_Description = "Returns the shift to the left in twips that it is using to hide the controls in not active tabs."
-Attribute LeftOffsetToHide.VB_ProcData.VB_Invoke_Property = ";Posici n"
+Attribute LeftOffsetToHide.VB_ProcData.VB_Invoke_Property = ";Data"
     LeftOffsetToHide = mLeftOffsetToHide
 End Property
 
 
 Public Property Get ControlLeft(ByVal ControlName As String) As Single
 Attribute ControlLeft.VB_Description = "Returns/sets the left of the contained control whose name was provided by the ControlName parameter."
-Attribute ControlLeft.VB_ProcData.VB_Invoke_Property = ";Posici n"
+Attribute ControlLeft.VB_ProcData.VB_Invoke_Property = ";Position"
     Dim iCtl As Object
     Dim iFound As Boolean
     Dim iWithIndex As Boolean
@@ -13666,6 +13688,7 @@ End Property
 
 Public Property Get OLEDropOnOtherTabs() As Boolean
 Attribute OLEDropOnOtherTabs.VB_Description = "Returns/sets a value that determines if the user in a OLE drag operation will be able to drop over inactive tabs or just over the selected tab."
+Attribute OLEDropOnOtherTabs.VB_ProcData.VB_Invoke_Property = ";Behavior"
     OLEDropOnOtherTabs = mOLEDropOnOtherTabs
 End Property
 
@@ -13679,6 +13702,7 @@ End Property
 
 Public Property Get TabMousePointerHand() As Boolean
 Attribute TabMousePointerHand.VB_Description = "Returns/sets a value that determines if the mouse pointer over tabs will be the hand."
+Attribute TabMousePointerHand.VB_ProcData.VB_Invoke_Property = ";Behavior"
     TabMousePointerHand = mTabMousePointerHand
 End Property
 
@@ -13692,7 +13716,7 @@ End Property
 
 Public Property Get CanReorderTabs() As Boolean
 Attribute CanReorderTabs.VB_Description = "Returns/sets a value that determines whether the user will be able to change tab positions by dragging them."
-Attribute CanReorderTabs.VB_ProcData.VB_Invoke_Property = ";Comportamiento"
+Attribute CanReorderTabs.VB_ProcData.VB_Invoke_Property = ";Behavior"
     CanReorderTabs = mCanReorderTabs
 End Property
 
@@ -13707,7 +13731,7 @@ End Property
 
 Public Property Get TDIMode() As NTTDIModeConstants
 Attribute TDIMode.VB_Description = "Returns/sets a value that determines if the control will be used for TDI (tabbed document interface) and which mode (controls or forms). The control behavior changes significantly in this mode because some things are automated. "
-Attribute TDIMode.VB_ProcData.VB_Invoke_Property = ";Comportamiento"
+Attribute TDIMode.VB_ProcData.VB_Invoke_Property = ";Behavior"
     TDIMode = mTDIMode
 End Property
 
@@ -13749,7 +13773,7 @@ End Property
 
 Public Property Get Theme() As String
 Attribute Theme.VB_Description = "Returns/sets a value in string format that determines a set of property settings with a name, called ""theme""."
-Attribute Theme.VB_ProcData.VB_Invoke_Property = "pagNewTabThemes;Apariencia"
+Attribute Theme.VB_ProcData.VB_Invoke_Property = "pagNewTabThemes;Appearance"
 Attribute Theme.VB_MemberFlags = "200"
     If mCurrentTheme Is Nothing Then SetCurrentTheme
     Theme = mCurrentThemeName
@@ -13788,7 +13812,7 @@ End Property
 
 Public Property Get Themes() As NewTabThemes
 Attribute Themes.VB_Description = "Returns a collection of NewTabTheme objects. They basically provide the names of the themes that are available (and you can set in the Theme property)."
-Attribute Themes.VB_ProcData.VB_Invoke_Property = ";Apariencia"
+Attribute Themes.VB_ProcData.VB_Invoke_Property = ";Appearance"
     If mThemesCollection Is Nothing Then Set mThemesCollection = New NewTabThemes
     Set Themes = mThemesCollection
 End Property
@@ -13814,7 +13838,7 @@ End Property
 
 Public Property Get TabData(ByVal Index As Long) As Long
 Attribute TabData.VB_Description = "Used to store any data in Long format, similar to ListBox's ItemData. If the tabs are reordered, it will keep this data for this tab."
-Attribute TabData.VB_ProcData.VB_Invoke_Property = ";Datos"
+Attribute TabData.VB_ProcData.VB_Invoke_Property = ";Data"
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -13836,6 +13860,7 @@ End Property
 
 Public Property Get TabTag(ByVal Index As Long) As String
 Attribute TabTag.VB_Description = "Returns/sets a custom String data for each tab."
+Attribute TabTag.VB_ProcData.VB_Invoke_Property = ";Data"
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -13857,6 +13882,7 @@ End Property
 
 Public Property Get TabKey(ByVal Index As Long) As String
 Attribute TabKey.VB_Description = "A key that can be used to set the current/active/selected tab with the 'Tab' property.  Keys are case insensitive."
+Attribute TabKey.VB_ProcData.VB_Invoke_Property = ";Data"
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -13900,6 +13926,7 @@ End Property
 
 Public Property Get SubclassingMethod() As NTSubclassingMethodConstants
 Attribute SubclassingMethod.VB_Description = "Returns/sets the sublassing method, what to subclass (only the UserControl or the Form too) and if the subclassing will be enabled at all. If subclassing is disabled or partially disabled some features may not work."
+Attribute SubclassingMethod.VB_ProcData.VB_Invoke_Property = ";Advanced"
     SubclassingMethod = mSubclassingMethod
 End Property
 
@@ -14331,7 +14358,7 @@ End Sub
 
 Public Property Get VisibleTabs() As Long
 Attribute VisibleTabs.VB_Description = "Returns the numbers of tabs that are visible. [TabVisible(Index) = True]."
-Attribute VisibleTabs.VB_ProcData.VB_Invoke_Property = ";Datos"
+Attribute VisibleTabs.VB_ProcData.VB_Invoke_Property = ";Data"
     EnsureDrawn
     VisibleTabs = mVisibleTabs
 End Property
@@ -14437,12 +14464,13 @@ End Property
 ' Extender properties and methods
 Public Property Get Name() As String
 Attribute Name.VB_Description = "Returns the name used in code to identify the control."
+Attribute Name.VB_ProcData.VB_Invoke_Property = ";Misc"
     Name = Ambient.DisplayName
 End Property
 
 Public Property Get Tag() As String
 Attribute Tag.VB_Description = "Returns/sets an expression that stores any extra data needed for your program. "
-Attribute Tag.VB_ProcData.VB_Invoke_Property = ";Datos"
+Attribute Tag.VB_ProcData.VB_Invoke_Property = ";Data"
     Tag = Extender.Tag
 End Property
 
@@ -14466,7 +14494,7 @@ End Property
 
 Public Property Get Left() As Single
 Attribute Left.VB_Description = "Returns/sets the distance between the internal left edge of the control and the left edge of its container."
-Attribute Left.VB_ProcData.VB_Invoke_Property = ";Posici n"
+Attribute Left.VB_ProcData.VB_Invoke_Property = ";Position"
     Left = Extender.Left
 End Property
 
@@ -14476,7 +14504,7 @@ End Property
 
 Public Property Get Top() As Single
 Attribute Top.VB_Description = "Returns/sets the distance between the internal top edge of the control and the top edge of its container."
-Attribute Top.VB_ProcData.VB_Invoke_Property = ";Posici n"
+Attribute Top.VB_ProcData.VB_Invoke_Property = ";Position"
     Top = Extender.Top
 End Property
 
@@ -14486,7 +14514,7 @@ End Property
 
 Public Property Get Width() As Single
 Attribute Width.VB_Description = "Returns/sets the width of the control."
-Attribute Width.VB_ProcData.VB_Invoke_Property = ";Posici n"
+Attribute Width.VB_ProcData.VB_Invoke_Property = ";Position"
     Width = Extender.Width
 End Property
 
@@ -14496,7 +14524,7 @@ End Property
 
 Public Property Get Height() As Single
 Attribute Height.VB_Description = "Returns/sets the height of the control."
-Attribute Height.VB_ProcData.VB_Invoke_Property = ";Posici n"
+Attribute Height.VB_ProcData.VB_Invoke_Property = ";Position"
     Height = Extender.Height
 End Property
 
@@ -14506,6 +14534,7 @@ End Property
 
 Public Property Get Visible() As Boolean
 Attribute Visible.VB_Description = "Returns/sets a value indicating whether the control is visible or hidden."
+Attribute Visible.VB_ProcData.VB_Invoke_Property = ";Behavior"
     Visible = Extender.Visible
 End Property
 
@@ -14515,7 +14544,7 @@ End Property
 
 Public Property Get ToolTipText() As String
 Attribute ToolTipText.VB_Description = "Returns/sets a the tool tip text to be displayed when the mouse is over the control."
-Attribute ToolTipText.VB_ProcData.VB_Invoke_Property = ";Texto"
+Attribute ToolTipText.VB_ProcData.VB_Invoke_Property = ";Misc"
     ToolTipText = Extender.ToolTipText
 End Property
 
@@ -14525,6 +14554,7 @@ End Property
 
 Public Property Get HelpContextID() As Long
 Attribute HelpContextID.VB_Description = "Returns/sets a string expression containing the context ID for a topic in a Help file."
+Attribute HelpContextID.VB_ProcData.VB_Invoke_Property = ";Misc"
     HelpContextID = Extender.HelpContextID
 End Property
 
@@ -14534,6 +14564,7 @@ End Property
 
 Public Property Get WhatsThisHelpID() As Long
 Attribute WhatsThisHelpID.VB_Description = "Returns/sets an associated context number for the control. "
+Attribute WhatsThisHelpID.VB_ProcData.VB_Invoke_Property = ";Misc"
     WhatsThisHelpID = Extender.WhatsThisHelpID
 End Property
 
@@ -14543,6 +14574,7 @@ End Property
 
 Public Property Get DragIcon() As IPictureDisp
 Attribute DragIcon.VB_Description = "Returns/sets the icon to be used as mouse pointer in a drag-and-drop operation."
+Attribute DragIcon.VB_ProcData.VB_Invoke_Property = ";Behavior"
     Set DragIcon = Extender.DragIcon
 End Property
 
@@ -14556,6 +14588,7 @@ End Property
 
 Public Property Get DragMode() As Integer
 Attribute DragMode.VB_Description = "Returns/sets a value that determines whether manual or automatic drag mode is used for a drag-and-drop operation."
+Attribute DragMode.VB_ProcData.VB_Invoke_Property = ";Behavior"
     DragMode = Extender.DragMode
 End Property
 
@@ -14989,6 +15022,7 @@ End Sub
 
 Public Property Let TabsEndFreeSpace(ByVal nValue As Long)
 Attribute TabsEndFreeSpace.VB_Description = "Returns/sets the size of an optional free space after the last tab (for top-otiented tabs that is the rightmost tab)."
+Attribute TabsEndFreeSpace.VB_ProcData.VB_Invoke_PropertyPut = ";Tabs"
     If nValue <> mTabsEndFreeSpace Then
         mTabsEndFreeSpace = nValue
         PropertyChanged "TabsEndFreeSpace"
@@ -15227,7 +15261,7 @@ Friend Sub ShowsModalForm()
 End Sub
     
 Public Function SelectTab(ByVal Find As Variant, Optional ByVal Method As NTFindTabMethodConstants = ntFindCaption, Optional StartingTab As Variant) As Boolean
-Attribute SelectTab.VB_Description = "Sets the current ('selected' or 'active') tab by other means than its index."
+Attribute SelectTab.VB_Description = "Sets the selected tab by means some not available in the Tab property."
     Dim t As Long
     
     t = FindTab(Find, Method, StartingTab)
@@ -15377,6 +15411,7 @@ End Sub
 
 Public Property Get TabFixedWidth(ByVal Index As Long) As Long
 Attribute TabFixedWidth.VB_Description = "Returns/sets a fixed width for a tab. To set it for its automatic width (according to the TabWidthStyle setting), set it to 0."
+Attribute TabFixedWidth.VB_ProcData.VB_Invoke_Property = ";Tabs"
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -15421,6 +15456,7 @@ End Function
 
 Public Property Get TabCustomColor(ByVal Index As Long, Optional ByVal ColorID As NTTabCustomColorIDConstants = ntCCBackColorTab) As OLE_COLOR
 Attribute TabCustomColor.VB_Description = "Returns/sets a custom color for a tab. It may be a color when it is inactive or active."
+Attribute TabCustomColor.VB_ProcData.VB_Invoke_Property = ";Appearance"
     If (Index < 0) Or (Index >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
@@ -15711,6 +15747,7 @@ End Property
 
 Public Property Get CaptionAlignment() As NTAlignmentConstants
 Attribute CaptionAlignment.VB_Description = "Returns/sets the alignment of the tab captions."
+Attribute CaptionAlignment.VB_ProcData.VB_Invoke_Property = ";Appearance"
     CaptionAlignment = mCaptionAlignment
 End Property
 
@@ -15796,7 +15833,8 @@ End Property
 #Const COMPILE_WITH_TAB_PROPERTY = 0
 #If COMPILE_WITH_TAB_PROPERTY Then
 Public Property Get Tab() As Variant
-Attribute Tab.VB_Description = "Returns or sets the index of the current (""""selected"""" or """"active"""") tab."
+Attribute Tab.VB_Description = "Returns or sets the selected tab by its index, TabKey or TabCaption."
+Attribute Tab.VB_ProcData.VB_Invoke_Property = ";Tabs"
 
 'Attribute Tab.VB_Description = "Returns or sets the index of the current (""selected"" or ""active"") tab."
     Tab = mTab
@@ -15810,8 +15848,13 @@ Public Property Let Tab(ByVal nValue As Variant)
     ElseIf VarType(nValue) = vbString Then
         iTab = FindTab(nValue, ntFindKey)
         If iTab = -1 Then
-            RaiseError 5, TypeName(Me), "Invalid procedure call or argument. TabKey not found or nValue must be numeric integer if it is a tab index."   ' Invalid procedure call or argument
-            Exit Property
+            iTab = FindTab(nValue, ntFindCaption)
+            If iTab = -1 Then
+                RaiseError 5, TypeName(Me), "Invalid procedure call or argument. String not found as TabKey or Caption. Or nValue must be numeric integer if it is a tab index."   ' Invalid procedure call or argument
+                Exit Property
+            Else
+                nValue = iTab
+            End If
         Else
             nValue = iTab
         End If
@@ -15823,7 +15866,8 @@ Public Property Let Tab(ByVal nValue As Variant)
 End Property
 #Else
 Public Property Get SelectedTab() As Variant
-Attribute SelectedTab.VB_Description = "Returns or sets the index of the current (""""selected"""" or """"active"""") tab."
+Attribute SelectedTab.VB_Description = "Returns or sets the selected tab by its index, TabKey or TabCaption."
+Attribute SelectedTab.VB_ProcData.VB_Invoke_Property = ";Tabs"
 
 'Attribute Tab.VB_Description = "Returns or sets the index of the current (""selected"" or ""active"") tab."
     SelectedTab = mTab
@@ -15837,8 +15881,13 @@ Public Property Let SelectedTab(ByVal nValue As Variant)
     ElseIf VarType(nValue) = vbString Then
         iTab = FindTab(nValue, ntFindKey)
         If iTab = -1 Then
-            RaiseError 5, TypeName(Me), "Invalid procedure call or argument. TabKey not found or nValue must be numeric integer if it is a tab index."   ' Invalid procedure call or argument
-            Exit Property
+            iTab = FindTab(nValue, ntFindCaption)
+            If iTab = -1 Then
+                RaiseError 5, TypeName(Me), "Invalid procedure call or argument. String not found as TabKey or Caption. Or nValue must be numeric integer if it is a tab index."   ' Invalid procedure call or argument
+                Exit Property
+            Else
+                nValue = iTab
+            End If
         Else
             nValue = iTab
         End If
