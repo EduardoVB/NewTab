@@ -291,7 +291,7 @@ Backward compatible with SSTab (fully), and with SSTabEx (mostly).</p><br>
 <br><br><br><h1>Properties</h1><br><a name="AutoRelocateControls-Property" /><h2><p class"section">AutoRelocateControls Property</p></h2></a>
 <p>Type: <b><a href="#NTAutoRelocateControlsConstants-Enum">NTAutoRelocateControlsConstants</a></b></p>
 <h3>Description:</h3>
-<p>Returns or sets a value that determines if the contained controls will be automatically relocated when the tab body changes in size or position.<br>
+<p>Returns or sets a value that determines if the contained controls will be automatically relocated when the tab body changes in position.<br>
 <br>
 Values:<br>
 <b>ntRelocateOnTabOrientationChange</b>: The contained controls will be automatically relocated when <a href="#TabOrientation-Property">TabOrientation</a> changes.<br>
@@ -308,6 +308,7 @@ If the property <a href="#TabHeight-Property">TabHeight</a> is manually set, <b>
 For newly added controls, its default it <b>True</b>, but if you are updating from a previous version or an SSTab control, it will be set to <b>False</b>.<br>
 <br>
 <h3>See Also:</h3><a href="#TabHeight-Property">TabHeight</a> property<br>
+<a href="#AutoRelocateControls-Property">AutoRelocateControls</a> propery.<br>
 <a href="#Resize-Event">Resize</a> event</p><br>
 <a name="BackColor-Property" /><h2><p class"section">BackColor Property</p></h2></a>
 <p>Type: <b>Long</b></p>
@@ -1517,9 +1518,11 @@ The <b>X</b> and <b>Y</b> parameters return a number that specifies the current 
 <a href="#TDITabClosed-Event">TDITabClosed</a> event<br>
 </p><br>
 <a name="TDIBeforeNewTab-Event" /><h2><p class"section">TDIBeforeNewTab Event</p></h2></a>
-<p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabType</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbsp<a href="#NTTDINewTabTypeConstants-Enum">NTTDINewTabTypeConstants</a>&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabNumber</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabCaption</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspString&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>LoadControls</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Cancel</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
+<p><table><tbody>    <tr>    <td>&nbsp&nbspParameter(s):&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabType</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbsp<a href="#NTTDINewTabTypeConstants-Enum">NTTDINewTabTypeConstants</a>&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Info&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabNumber</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspLong&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>TabCaption</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspString&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>LoadControls</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>ShowTabCloseButton</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    <td>&nbsp&nbsp    Returns value&nbsp&nbsp</td>    <td>&nbsp&nbsp<b>Cancel</b>&nbsp&nbsp</td>    <td>&nbsp&nbspAs&nbsp&nbsp</td>    <td>&nbsp&nbspBoolean&nbsp&nbsp</td>    </tr>    <tr>    </tr>  </tbody></table></p>
 <h3>Description:</h3>
 <p>It occurs before opening a new tab in TDI mode.<br>
+<br>
+If <b>ShowTabCloseButton</b> is set to <b>False</b>, the X to close the tab is not shown.<br>
 <br>
 <h3>See Also:</h3><a href="#TDIMode-Property">TDIMode</a> property<br>
 <a href="#TDINewTabAdded-Event">TDINewTabAdded</a> event<br>

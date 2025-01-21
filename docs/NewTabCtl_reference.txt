@@ -20,7 +20,7 @@ Properties:
 
 AutoRelocateControls property:
 	Type: NTAutoRelocateControlsConstants
-	Returns or sets a value that determines if the contained controls will be automatically relocated when the tab body changes in size or position.
+	Returns or sets a value that determines if the contained controls will be automatically relocated when the tab body changes in position.
 	
 	Values:
 	ntRelocateOnTabOrientationChange: The contained controls will be automatically relocated when TabOrientation changes.
@@ -1340,8 +1340,11 @@ TDIBeforeNewTab event:
 	    Info	TabNumber	As	Long
 	    Returns value	TabCaption	As	String
 	    Returns value	LoadControls	As	Boolean
+	    Returns value	ShowTabCloseButton	As	Boolean
 	    Returns value	Cancel	As	Boolean
 	It occurs before opening a new tab in TDI mode.
+	
+	If ShowTabCloseButton is set to False, the X to close the tab is not shown.
 
 
 TDIFormsShowTabIcon event:

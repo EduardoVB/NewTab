@@ -807,8 +807,7 @@ Event IconMouseEnter(ByVal nTab As Long)
 Attribute IconMouseEnter.VB_Description = "Occurs when the mouse enters hovering over a tab icon (not picture)."
 Event IconMouseLeave(ByVal nTab As Long)
 Attribute IconMouseLeave.VB_Description = "Occurs when the mouse goes out after hovering over a tab icon (not picture)."
-Event TDIBeforeNewTab(ByVal TabType As NTTDINewTabTypeConstants, ByVal TabNumber As Long, ByRef TabCaption As String, ByRef LoadControls As Boolean, ByRef Cancel As Boolean)
-Attribute TDIBeforeNewTab.VB_Description = "When in TDI mode, it occurs before opening a new tab."
+Event TDIBeforeNewTab(ByVal TabType As NTTDINewTabTypeConstants, ByVal TabNumber As Long, ByRef TabCaption As String, ByRef LoadControls As Boolean, ByRef ShowTabCloseButton As Boolean, ByRef Cancel As Boolean)
 Event TDINewTabAdded(ByVal TabNumber As Long)
 Attribute TDINewTabAdded.VB_Description = "When in TDI mode, it occurs after a new tab was opened."
 Event TDIBeforeClosingTab(ByVal TabNumber As Long, ByVal IsLastTab As Boolean, ByRef OpenNewOnLastClosed As Boolean, ByRef UnloadControls As Boolean, ByRef Cancel As Boolean)
@@ -1855,6 +1854,10 @@ Public Property Let IconAlignment(ByVal nValue As NTIconAlignmentConstants)
         RaiseError 380, TypeName(Me) ' invalid property value
         Exit Property
     End If
+    If mTDIMode <> ntTDIModeNone Then
+        RaiseError 1386, TypeName(Me), "Property not available in TDI mode."
+        Exit Property
+    End If
     If nValue <> mIconAlignment Then
         mIconAlignment = nValue
         mSetAutoTabHeightPending = True
@@ -2001,7 +2004,7 @@ End Property
 ' Returns/sets the style of the tabs.
 Public Property Get Style() As NTStyleConstants
 Attribute Style.VB_Description = "Returns/sets the style of the tabs."
-Attribute Style.VB_ProcData.VB_Invoke_Property = ";Appearance"
+Attribute Style.VB_ProcData.VB_Invoke_Property = ";Tabs"
     Style = mStyle
 End Property
 
@@ -2123,7 +2126,7 @@ End Property
 
 Public Property Get TabWidthStyle() As NTTabWidthStyleConstants
 Attribute TabWidthStyle.VB_Description = "Returns or sets a value that determines the justification or width of the tabs."
-Attribute TabWidthStyle.VB_ProcData.VB_Invoke_Property = ";Appearance"
+Attribute TabWidthStyle.VB_ProcData.VB_Invoke_Property = ";Tabs"
     TabWidthStyle = mTabWidthStyle
 End Property
 
@@ -3625,7 +3628,7 @@ End Property
 
 Public Property Get AutoTabHeight() As Boolean
 Attribute AutoTabHeight.VB_Description = "Returns/sets a value that determines if the tab height is set automatically according to the font (and pictures)."
-Attribute AutoTabHeight.VB_ProcData.VB_Invoke_Property = ";Behavior"
+Attribute AutoTabHeight.VB_ProcData.VB_Invoke_Property = ";Tabs"
     AutoTabHeight = mAutoTabHeight
 End Property
 
@@ -4516,7 +4519,7 @@ Friend Sub SetDefaultPropertyValuesForThemedProperties(Optional nSetControlsColo
     mStyle = cPropDef_Style
     If Not nSetControlsColors Then
         If cPropDef_Style = ntStyleWindows Then
-            If (Ambient.BackColor = vbButtonFace) And (Ambient.ForeColor = vbButtonText) Then
+            If ((Ambient.BackColor = vbButtonFace) And (Ambient.ForeColor = vbButtonText)) Or (TypeName(Parent) = "MDIForm") Then
                 mStyle = cPropDef_Style
             Else
                 mStyle = ntStyleFlat
@@ -5084,6 +5087,7 @@ Private Sub HandleTabTDIEvents()
     Const WM_CLOSE As Long = &H10&
     Dim iHwnd As Long
     Dim iTabUnderMouse As Long
+    Dim iShowTabCloseButton As Boolean
     
     iTabUnderMouse = mTabUnderMouse
     If mTabData(iTabUnderMouse).Data = -1 Then
@@ -5134,8 +5138,9 @@ Private Sub HandleTabTDIEvents()
                     mTDILastTabNumber = mTDILastTabNumber + 1
                     iTabCaption = "Default tab"
                     iLoadTabControls = True
-                    RaiseEvent TDIBeforeNewTab(ntLastTabClosed, mTDILastTabNumber, iTabCaption, iLoadTabControls, False)
-                    TDIPrepareNewTab iTabCaption, iLoadTabControls
+                    iShowTabCloseButton = True
+                    RaiseEvent TDIBeforeNewTab(ntLastTabClosed, mTDILastTabNumber, iTabCaption, iLoadTabControls, iShowTabCloseButton, False)
+                    TDIPrepareNewTab iTabCaption, iLoadTabControls, , , iShowTabCloseButton
                 End If
             End If
             Redraw = True
@@ -6398,7 +6403,7 @@ Private Sub Draw()
     Dim iColumnTabCount As Long
     Dim iTabExtraHeightIsNeeded As Boolean
     
-    If mUserControlTerminated Then Exit Sub
+    If mUserControlTerminated Or mTDIAddingNewTabForForm Then Exit Sub
     
     'If mResizeEventPending Then RaiseEvent_Resize
     If Not mRedraw Then
@@ -9285,7 +9290,6 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     End If
     
     If (Not iTabData.DoNotUseIconFont) And (iTabData.IconChar <> 0) Then
-        iDrawIcon = True
         iIconCharacter = ChrU(iTabData.IconChar)
         iIconCharRect.Left = 0
         iIconCharRect.Top = 0
@@ -9295,9 +9299,12 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
         Set picAuxIconFont.Font = iIconFont
         iDo = True
         If mAmbientUserMode And (mTDIMode = ntTDIModeForms) Then iDo = Not mTDIFormWithoutCloseButton(iTabData.Data)
-        If iDo Then DrawTextW picAuxIconFont.hDC, StrPtr(iIconCharacter), -1, iIconCharRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
-        iPicWidth = (iIconCharRect.Right - iIconCharRect.Left)
-        iPicHeight = (iIconCharRect.Bottom - iIconCharRect.Top)
+        If iDo Then
+            DrawTextW picAuxIconFont.hDC, StrPtr(iIconCharacter), -1, iIconCharRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
+            iPicWidth = (iIconCharRect.Right - iIconCharRect.Left)
+            iPicHeight = (iIconCharRect.Bottom - iIconCharRect.Top)
+            iDrawIcon = True
+        End If
     ElseIf Not iTabData.PicToUse Is Nothing Then
         iDrawIcon = True
         If iTabData.Enabled Then
@@ -11448,6 +11455,7 @@ Private Function MeasureTabIconAndCaption(ByVal nTab As Long) As Long
     Dim iFlags As Long
     Dim iFontBoldPrev As Boolean
     Dim iCaption As String
+    Dim iTabHeight As Long
     
     ' pic
     If (Not mTabData(nTab).DoNotUseIconFont) And (mTabData(nTab).IconChar <> 0) Then
@@ -11581,21 +11589,25 @@ Private Function MeasureTabIconAndCaption(ByVal nTab As Long) As Long
                 
                 iTDIFormIcon_UseIconFont = False
                 Set iTDIFormIcon_IconFont = New StdFont
-                If FontExists(iTabData.IconFont.Name) Then
-                    iTDIFormIcon_IconFont.Name = iTabData.IconFont.Name
-                    iTDIFormIcon_IconFont.Size = 41
-                    iTDIFormIcon_IconFont.Bold = True
-                    iTDIFormIcon_IconChar = "&HE160&"
-                Else
-                    iTDIFormIcon_IconFont.Name = "Arial"
-                    iTDIFormIcon_IconFont.Size = 41
-                    iTDIFormIcon_IconFont.Bold = True
-                    iTDIFormIcon_IconChar = "&H2666&"
+                If (Not mTabData(nTab).IconFont Is Nothing) Then
+                    If FontExists(iTabData.IconFont.Name) Then
+                        iTDIFormIcon_IconFont.Name = iTabData.IconFont.Name
+                        iTDIFormIcon_IconFont.Size = 41
+                        iTDIFormIcon_IconFont.Bold = True
+                        iTDIFormIcon_IconChar = "&HE160&"
+                    Else
+                        iTDIFormIcon_IconFont.Name = "Arial"
+                        iTDIFormIcon_IconFont.Size = 41
+                        iTDIFormIcon_IconFont.Bold = True
+                        iTDIFormIcon_IconChar = "&H2666&"
+                    End If
                 End If
                 
                 Set iTDIFormsFontPrev = picDraw.Font
                 Set picDraw.Font = iTDIFormIcon_IconFont
                 
+                iTabHeight = (iTabData.TabRect.Bottom - iTabData.TabRect.Top)
+                If iTabHeight = 0 Then iTabHeight = ScaleY(mTabHeight, vbHimetric, vbPixels)
                 Do
                     iTDIFormIcon_IconFont.Size = iTDIFormIcon_IconFont.Size - 1
                     iTDIFormIcon_IconCharRect.Left = 0
@@ -11604,7 +11616,7 @@ Private Function MeasureTabIconAndCaption(ByVal nTab As Long) As Long
                     iTDIFormIcon_IconCharRect.Bottom = 0
                     DrawTextW picDraw.hDC, StrPtr(iTDIFormIcon_IconChar), -1, iTDIFormIcon_IconCharRect, DT_CALCRECT Or DT_SINGLELINE Or DT_CENTER Or IIf(mRightToLeft, DT_RTLREADING, 0)
                     If iTDIFormIcon_IconFont.Size < 5 Then Exit Do
-                Loop While ((iTDIFormIcon_IconCharRect.Bottom - iTDIFormIcon_IconCharRect.Top) + 6) > (iTabData.TabRect.Bottom - iTabData.TabRect.Top)
+                Loop While ((iTDIFormIcon_IconCharRect.Bottom - iTDIFormIcon_IconCharRect.Top) + 6) > iTabHeight
                 Set picDraw.Font = iTDIFormsFontPrev
                 
                 iTDIFormIcon_IconColor = mIconColor
@@ -11629,7 +11641,7 @@ Private Function MeasureTabIconAndCaption(ByVal nTab As Long) As Long
                     ElseIf IsNumeric(iTDIFormIcon_IconChar) Then
                         mTDIFormIconCustomData(iTabData.Data).IconCharStr = ChrU(iTDIFormIcon_IconChar)
                     Else
-                        RaiseError 1385, "IconChar format not recognized."
+                        RaiseError 1385, TypeName(Me), "IconChar format not recognized."
                     End If
                     iTDIFormIcon_IconCharStr = mTDIFormIconCustomData(iTabData.Data).IconCharStr
                     
@@ -14696,6 +14708,7 @@ Private Sub SetTDIMode()
     Dim iTabCaption As String
     Dim iLoadTabControls As Boolean
     Dim iFont As StdFont
+    Dim iShowTabCloseButton As Boolean
     
     Redraw = False
     mSettingTDIMode = True
@@ -14712,8 +14725,7 @@ Private Sub SetTDIMode()
         TabCaption(1) = ""
         mTabData(1).Data = -1
     End If
-    'TabWidthStyle = ntTWTabCaptionWidthFillRows
-    IconAlignment = ntIconAlignEnd
+    mIconAlignment = ntIconAlignEnd
     mBackColor = Ambient.BackColor
     
     If Not mAmbientUserMode Then
@@ -14783,8 +14795,9 @@ Private Sub SetTDIMode()
                 iTabCaption = "Default tab"
             End If
             iLoadTabControls = True
-            RaiseEvent TDIBeforeNewTab(ntDefaultTab, mTDILastTabNumber, iTabCaption, iLoadTabControls, False)
-            TDIPrepareNewTab iTabCaption, iLoadTabControls
+            iShowTabCloseButton = True
+            RaiseEvent TDIBeforeNewTab(ntDefaultTab, mTDILastTabNumber, iTabCaption, iLoadTabControls, iShowTabCloseButton, False)
+            TDIPrepareNewTab iTabCaption, iLoadTabControls, , , iShowTabCloseButton
             TabVisible(0) = False
         End If
     End If
@@ -14838,6 +14851,7 @@ End Sub
 Private Function TDIAddNewTab(Optional Position As Variant, Optional Focused As Boolean = True, Optional ByVal nTabType As NTTDINewTabTypeConstants = ntNewTabByClickingIcon, Optional nTabCaption As String = "") As Boolean
     Dim iCancel As Boolean
     Dim iLoadTabControls As Boolean
+    Dim iShowTabCloseButton As Boolean
     
     If Not mTDIAddingNewTabForForm Then
         If mTDIMode <> ntTDIModeControls Then
@@ -14860,14 +14874,15 @@ Private Function TDIAddNewTab(Optional Position As Variant, Optional Focused As 
         nTabCaption = "New tab"
     End If
     iLoadTabControls = True
-    RaiseEvent TDIBeforeNewTab(nTabType, mTDILastTabNumber, nTabCaption, iLoadTabControls, iCancel)
+    iShowTabCloseButton = True
+    RaiseEvent TDIBeforeNewTab(nTabType, mTDILastTabNumber, nTabCaption, iLoadTabControls, iShowTabCloseButton, iCancel)
     If Not iCancel Then
-        TDIPrepareNewTab nTabCaption, iLoadTabControls, IIf(IsMissing(Position), -1, CLng(Position)), Focused
+        TDIPrepareNewTab nTabCaption, iLoadTabControls, IIf(IsMissing(Position), -1, CLng(Position)), Focused, iShowTabCloseButton
         TDIAddNewTab = True
     End If
 End Function
 
-Private Sub TDIPrepareNewTab(nTabCaption As String, nLoadTabControls As Boolean, Optional ByVal nPosition As Long = -1, Optional nFocused As Boolean = True)
+Private Sub TDIPrepareNewTab(nTabCaption As String, nLoadTabControls As Boolean, Optional ByVal nPosition As Long = -1, Optional nFocused As Boolean = True, Optional nShowTabCloseButton As Boolean = True)
     Dim iRedraw As Boolean
     
     iRedraw = mRedraw
@@ -14886,11 +14901,12 @@ Private Sub TDIPrepareNewTab(nTabCaption As String, nLoadTabControls As Boolean,
         Set TabIconFont(mTabs - 2) = TabIconFont(0)
     End If
     
-    TabIconLeftOffset(mTabs - 2) = -3 * mDPIScale
-    TabIconTopOffset(mTabs - 2) = 1 * mDPIScale
-    TabIconCharHex(mTabs - 2) = "&HE106&"
-    
-    TabCaption(mTabs - 2) = nTabCaption & "   "
+    If nShowTabCloseButton Then
+        TabIconLeftOffset(mTabs - 2) = -3 * mDPIScale
+        TabIconTopOffset(mTabs - 2) = 1 * mDPIScale
+        TabIconCharHex(mTabs - 2) = "&HE106&"
+    End If
+    TabCaption(mTabs - 2) = nTabCaption & IIf(nShowTabCloseButton, "   ", "")
     If mAmbientUserMode Then
         mIconColorMouseHover = mIconColor
         mIconColorMouseHoverSelectedTab = mIconColor
@@ -14913,7 +14929,7 @@ Private Sub TDIPrepareNewTab(nTabCaption As String, nLoadTabControls As Boolean,
     RaiseEvent TDINewTabAdded(mTDILastTabNumber)
     mTabData(mTabs - 1).Hovered = False
     mRedraw = iRedraw
-    Draw
+    DrawDelayed
 End Sub
 
 Private Sub TDILoadNewTabControls(ByVal nTabPosition As Long)
@@ -15092,6 +15108,7 @@ Friend Sub TDIPutFormIntoTab(ByVal nHwndForm As Long)
         End If
         
         mTabData(mTabs - 1).Caption = GetUniqueCaption(iFormCaption)
+        mTDIAddingNewTabForForm = False
         DrawDelayed
     End If
     mTDIAddingNewTabForForm = False

@@ -38,13 +38,13 @@ Begin VB.Form frmTDIFormsTest
          Strikethrough   =   0   'False
       EndProperty
       TabHeight       =   783
-      Themed          =   0   'False
       IconAlignment   =   5
       AutoTabHeight   =   -1  'True
       IconColorMouseHover=   255
-      IconColorMouseHoverTabSel=   255
+      IconColorMouseHoverSelectedTab=   255
       CanReorderTabs  =   -1  'True
       TDIMode         =   2
+      ControlVersion  =   11
       TabCaption(0)   =   "Home"
       Tab(0).ControlCount=   6
       Tab(0).Control(0)=   "Command6"
@@ -177,8 +177,7 @@ Private Sub Command5_Click()
     Next
 End Sub
 
-
-Private Sub NewTab1_TDIBeforeNewTab(ByVal TabType As NewTabCtl.NTTDINewTabTypeConstants, ByVal TabNumber As Long, TabCaption As String, LoadControls As Boolean, Cancel As Boolean)
+Private Sub NewTab1_TDIBeforeNewTab(ByVal TabType As NewTabCtl.NTTDINewTabTypeConstants, ByVal TabNumber As Long, TabCaption As String, LoadControls As Boolean, ShowTabCloseButton As Boolean, Cancel As Boolean)
     If TabCaption = "Form4" Then
         Cancel = True
     End If
