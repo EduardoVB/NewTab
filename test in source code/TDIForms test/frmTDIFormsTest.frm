@@ -55,7 +55,7 @@ Begin VB.Form frmTDIFormsTest
       Tab(0).Control(5)=   "Command3"
       BeginProperty IconFont(0) {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Segoe MDL2 Assets"
-         Size            =   6
+         Size            =   12
          Charset         =   0
          Weight          =   700
          Underline       =   0   'False

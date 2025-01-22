@@ -1,3 +1,4 @@
+2025-01-21 Fixed the icon alignment of the first tab in TDI mode forms. 
 2025-01-21 Changed to OLE version 11.
 2025-01-21 Added ShowTabCloseButton parameter to the TDIBeforeNewTab event.
 2025-01-21 Fixed bug regarding form's icon size in the tab in TDI mode forms.

@@ -19,13 +19,13 @@ Begin VB.Form frmTDIFormsTest
    ScaleHeight     =   8112
    ScaleWidth      =   13632
    Begin NewTabCtl.NewTab NewTab1 
-      Height          =   3852
+      Height          =   4332
       Left            =   720
       TabIndex        =   0
       Top             =   600
       Width           =   5892
       _ExtentX        =   10393
-      _ExtentY        =   6795
+      _ExtentY        =   7641
       ControlJustAdded=   0   'False
       Tabs            =   1
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
@@ -55,7 +55,7 @@ Begin VB.Form frmTDIFormsTest
       Tab(0).Control(5)=   "Command3"
       BeginProperty IconFont(0) {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Segoe MDL2 Assets"
-         Size            =   6
+         Size            =   12
          Charset         =   0
          Weight          =   700
          Underline       =   0   'False

@@ -374,7 +374,7 @@ Begin VB.PropertyPage pagNewTabTabs
       EndProperty
       TabHeight       =   579
       AutoTabHeight   =   -1  'True
-      ControlVersion  =   10
+      ControlVersion  =   11
       TabCaption(0)   =   ""
       TabCaption(1)   =   ""
       TabCaption(2)   =   ""
@@ -1122,6 +1122,7 @@ Private Sub PropertyPage_SelectionChanged()
     Dim t As Integer
     Dim iVar As Variant
     Dim c As Long
+    Dim iAuxNT As NewTab
     
     SetTextBoxNumeric txtTabFixedWidth
     'Debug.Print PropertyPage.Name & " Start: " & Round(Timer, 2)
@@ -1199,6 +1200,9 @@ Private Sub PropertyPage_SelectionChanged()
     Else
         Set mLastIconFont = CloneFont(mDefaultIconFont)
     End If
+    
+    Set iAuxNT = NewTab1
+    iAuxNT.IsTDIFormsSampleInPropertyPage = (mSC.TDIMode = ntTDIModeForms)
     
     NewTab1.Width = mSC.Width
     NewTab1.Height = mSC.Height

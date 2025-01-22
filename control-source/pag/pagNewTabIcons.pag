@@ -21,14 +21,14 @@ Begin VB.PropertyPage pagNewTabIcons
    Begin VB.PictureBox picIconFontNote 
       BorderStyle     =   0  'None
       Height          =   372
-      Left            =   1920
+      Left            =   2000
       ScaleHeight     =   372
       ScaleWidth      =   4812
       TabIndex        =   47
       Top             =   2360
       Visible         =   0   'False
       Width           =   4812
-      Begin VB.Label Label6 
+      Begin VB.Label lblIconFontNote 
          Caption         =   "The Icon Font is per tab. Each tab has its own icon font (you can have different fonts for each tab icon)"
          BeginProperty Font 
             Name            =   "Tahoma"
@@ -615,7 +615,7 @@ Begin VB.PropertyPage pagNewTabIcons
       EndProperty
       TabHeight       =   579
       AutoTabHeight   =   -1  'True
-      ControlVersion  =   10
+      ControlVersion  =   11
       TabCaption(0)   =   ""
       TabCaption(1)   =   ""
       TabCaption(2)   =   ""
@@ -668,7 +668,7 @@ Begin VB.PropertyPage pagNewTabIcons
       EndProperty
       ForeColor       =   &H000000FF&
       Height          =   336
-      Left            =   2004
+      Left            =   2000
       TabIndex        =   35
       Top             =   3440
       Width           =   4200
@@ -768,7 +768,7 @@ Begin VB.PropertyPage pagNewTabIcons
       Visible         =   0   'False
       Width           =   3840
    End
-   Begin VB.Label Label4 
+   Begin VB.Label lblDPIAwarePictures 
       Alignment       =   1  'Right Justify
       Caption         =   "DPI aware pictures:"
       Height          =   590
@@ -876,7 +876,7 @@ Private Const DT_CALCRECT = &H400&
 Private Const DT_CENTER = &H1&
 Private Const DT_SINGLELINE = &H20&
 
-Private Const cMsgBugIcons As String = "Note: If you are going to load *.ico files, do it from the property window (not from here). There seems to be a bug in VB6 that cause them to lose the transparency." & vbCrLf & "This operation will be Canceled." & vbCrLf & "To load pictures for different tabs in the property window (the one that appears pressing F4 on a control), select the appropriate tab with the Tab property and then load the picture in the Picture property (or Pic16, Pic20 and Pic24)."
+Private Const cMsgBugIcons As String = "Note: If you are going to load *.ico files, do it from the property window (not from here). There seems to be a bug in VB6 that causes them to lose the transparency." & vbCrLf & "This operation will be Canceled." & vbCrLf & "To load pictures for different tabs in the property window (the one that appears pressing F4 on a control), select the appropriate tab with the Tab property and then load the picture in the Picture property (or Pic16, Pic20 and Pic24)."
 Private Const cCopyImageTTT As String = "Double click on the image to copy it to the clipboard"
 
 Private mLoading As Boolean
@@ -1359,7 +1359,7 @@ Private Sub PropertyPage_ApplyChanges()
     
     Set iSC = SelectedControls(0)
     iSC.HideAllContainedControls
-    iSC.IconAlignment = cboIconAlignment.ItemData(cboIconAlignment.ListIndex)
+    If Not mTDIMode Then iSC.IconAlignment = cboIconAlignment.ItemData(cboIconAlignment.ListIndex)
     iTabsPrev = iSC.Tabs
     If Not mTDIMode Then
         If mTabs > iSC.Tabs Then
@@ -1410,6 +1410,7 @@ Private Sub PropertyPage_SelectionChanged()
     Dim iSC As NewTab
     Dim iVar As Variant
     Dim c As Long
+    Dim iAuxNT As NewTab
     
     'Debug.Print PropertyPage.Name & " Start: " & Round(Timer, 2)
     mLoading = True
@@ -1491,6 +1492,16 @@ Private Sub PropertyPage_SelectionChanged()
         Set mLastIconFont = CloneFont(iSC.TabIconFont(mTabs - 1))
     Else
         Set mLastIconFont = CloneFont(mDefaultIconFont)
+    End If
+    
+    Set iAuxNT = NewTab1
+    
+    If iSC.TDIMode = ntTDIModeForms Then
+        iAuxNT.IsTDIFormsSampleInPropertyPage = True
+        picIconFontNote.Width = PropertyPage.ScaleWidth - picIconFontNote.Left
+        lblIconFontNote.Width = picIconFontNote.ScaleWidth
+        lblIconFontNote.Caption = "This icon setting is for the first tab only, for forms tabs use the TDIFormsShowTabIcon event, parameters UseIconFont, IconFont, etc."
+        picIconFontNote.Visible = True
     End If
     
     SelectInComboByItemData cboIconAlignment, iSC.IconAlignment
