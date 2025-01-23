@@ -66,13 +66,13 @@ End Function
 Private Function WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal uIdSubclass As Long, ByVal dwRefData As Long) As Long
     Const WM_DESTROY As Long = &H2
     Const WM_NCDESTROY As Long = &H82&
-    Const WM_SHOWWINDOW As Long = &H18&
+    Const WM_CREATE As Long = &H1&
     Const GWL_EXSTYLE As Long = (-20)
     Const WS_EX_TOOLWINDOW As Long = &H80&
     
-    If (iMsg = WM_SHOWWINDOW) Or (iMsg = WM_DESTROY) Or (iMsg = WM_NCDESTROY) Then
+    If (iMsg = WM_CREATE) Or (iMsg = WM_DESTROY) Or (iMsg = WM_NCDESTROY) Then
         RemoveWindowSubclass hWnd, mAddressOfWindowProc, 1&
-        If iMsg = WM_SHOWWINDOW Then
+        If iMsg = WM_CREATE Then
             If Not mNewTabControl Is Nothing Then
                 If mNewTabControl.IsParentEnabled Then
                     If WindowHasCaption(mHwndSubclassed) Then
