@@ -5883,7 +5883,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         mHandIconHandle = LoadCursor(ByVal 0&, IDC_HAND)
     End If
     
-    If mAmbientUserMode And (mTDIMode <> ntTDIModeNone) Then
+    If mAmbientUserMode And (mTDIMode = ntTDIModeForms) Then
         If mSettingTDIMode Then Exit Sub
         If Not mTDIModeAlreadySet Then
             mTDIModeAlreadySet = True
@@ -13787,7 +13787,7 @@ Public Property Let TDIMode(ByVal nValue As NTTDIModeConstants)
             If mAmbientUserMode Then UninstallCBTHook
         End If
         mTDIMode = nValue
-        ConfigureTDIModeOnce
+        TDIConfigureTDIModeOnce
         If mTDIMode <> ntTDIModeNone Then SetTDIMode
         If Not Ambient.UserMode Then lblTDILabel.Visible = (mTDIMode <> ntTDIModeNone)
         If mTDIMode = ntTDIModeControls Then
@@ -14641,7 +14641,7 @@ Attribute ZOrder.VB_Description = "Places the control at the front or back of th
     If IsMissing(Position) Then Extender.ZOrder Else Extender.ZOrder Position
 End Sub
 
-Private Sub ConfigureTDIModeOnce()
+Private Sub TDIConfigureTDIModeOnce()
     Dim iFont As StdFont
     
     CanReorderTabs = True
@@ -14675,15 +14675,11 @@ Private Sub ConfigureTDIModeOnce()
     If FontExists("Segoe MDL2 Assets") Then
         iFont.Name = "Segoe MDL2 Assets"
         iFont.Bold = True
-        If mTDIMode = ntTDIModeControls Then
-            iFont.Size = 6
-        Else
-            iFont.Size = 12
-        End If
+        iFont.Size = 10 ' size of the X to close the tab
         Set TabIconFont(0) = iFont
         If mTDIMode = ntTDIModeControls Then
             Set TabIconFont(1) = CloneFont(iFont)
-            TabIconFont(1).Size = 8
+            TabIconFont(1).Size = 14 ' size of the + to add a new tab
             TabIconFont(1).Bold = True
             TabToolTipText(1) = "Add a new tab"
             TabIconLeftOffset(1) = -2 * mDPIScale

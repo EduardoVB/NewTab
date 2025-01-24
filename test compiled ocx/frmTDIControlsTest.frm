@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{66E63055-5A66-4C79-9327-4BC077858695}#8.0#0"; "NewTab01.ocx"
+Object = "{66E63055-5A66-4C79-9327-4BC077858695}#11.0#0"; "NewTab01.ocx"
 Begin VB.Form frmTDIControlsTest 
    Caption         =   "TDI"
    ClientHeight    =   5748
@@ -27,8 +27,9 @@ Begin VB.Form frmTDIControlsTest
       Width           =   5290
       _ExtentX        =   9335
       _ExtentY        =   4466
+      ControlJustAdded=   0   'False
       Tabs            =   2
-      ForeColorTabSel =   10184001
+      ForeColorSelectedTab=   10184001
       ForeColorHighlighted=   16777215
       BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Tahoma"
@@ -40,9 +41,8 @@ Begin VB.Form frmTDIControlsTest
          Strikethrough   =   0   'False
       EndProperty
       Style           =   3
-      TabHeight       =   600
-      Themed          =   0   'False
-      BackColorTabSel =   16250871
+      TabHeight       =   631
+      BackColorSelectedTab=   16250871
       FlatBarColorInactive=   14211288
       FlatBorderColor =   10184001
       HighlightColor  =   16477710
@@ -51,14 +51,15 @@ Begin VB.Form frmTDIControlsTest
       FlatRoundnessTabs=   8
       TabMousePointerHand=   -1  'True
       IconColorMouseHover=   255
-      IconColorMouseHoverTabSel=   255
+      IconColorMouseHoverSelectedTab=   255
       IconColorTabHighlighted=   16777215
       HighlightMode   =   12
-      HighlightModeTabSel=   10
+      HighlightModeSelectedTab=   10
       FlatBorderMode  =   1
       FlatBarHeight   =   0
       CanReorderTabs  =   -1  'True
       TDIMode         =   1
+      ControlVersion  =   11
       TabIconChar(0)  =   57606
       TabIconLeftOffset(0)=   -3
       TabIconTopOffset(0)=   1
@@ -70,7 +71,7 @@ Begin VB.Form frmTDIControlsTest
       Tab(0).Control(3)=   "Label1(0)"
       BeginProperty IconFont(0) {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Segoe MDL2 Assets"
-         Size            =   6
+         Size            =   10.2
          Charset         =   0
          Weight          =   700
          Underline       =   0   'False
@@ -81,11 +82,11 @@ Begin VB.Form frmTDIControlsTest
       TabIconChar(1)  =   63658
       TabIconLeftOffset(1)=   -2
       TabIconTopOffset(1)=   1
+      TabCaption(1)   =   ""
       TabToolTipText(1)=   "Add a new tab"
-      Tab(1).ControlCount=   0
       BeginProperty IconFont(1) {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Segoe MDL2 Assets"
-         Size            =   7.8
+         Size            =   13.8
          Charset         =   0
          Weight          =   700
          Underline       =   0   'False
@@ -100,7 +101,7 @@ Begin VB.Form frmTDIControlsTest
          Left            =   120
          MultiLine       =   -1  'True
          TabIndex        =   4
-         Top             =   1116
+         Top             =   1140
          Width           =   5050
       End
       Begin VB.CommandButton Command1 
@@ -110,7 +111,7 @@ Begin VB.Form frmTDIControlsTest
          Index           =   0
          Left            =   3840
          TabIndex        =   3
-         Top             =   516
+         Top             =   540
          Width           =   1330
       End
       Begin VB.TextBox txtSearch 
@@ -119,7 +120,7 @@ Begin VB.Form frmTDIControlsTest
          Index           =   0
          Left            =   1320
          TabIndex        =   2
-         Top             =   516
+         Top             =   540
          Width           =   2410
       End
       Begin VB.Label Label1 
@@ -131,7 +132,7 @@ Begin VB.Form frmTDIControlsTest
          Index           =   0
          Left            =   240
          TabIndex        =   1
-         Top             =   566
+         Top             =   590
          Width           =   970
       End
    End
