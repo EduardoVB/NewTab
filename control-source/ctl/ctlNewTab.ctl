@@ -5092,6 +5092,13 @@ Private Sub HandleTabTDIEvents()
     Dim iHwnd As Long
     Dim iTabUnderMouse As Long
     Dim iShowTabCloseButton As Boolean
+    Dim iDo As Boolean
+    
+    iDo = (mTabData(mTabUnderMouse).IconChar <> 0)
+    If iDo And (mTDIMode = ntTDIModeForms) Then
+        iDo = Not mTDIFormWithoutCloseButton(mTabData(mTabUnderMouse).Data)
+    End If
+    If Not iDo Then Exit Sub
     
     iTabUnderMouse = mTabUnderMouse
     If mTabData(iTabUnderMouse).Data = -1 Then
