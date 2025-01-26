@@ -817,8 +817,6 @@ Event TDITabClosed(ByVal TabNumber As Long, ByVal IsLastTab As Boolean)
 Attribute TDITabClosed.VB_Description = "When in TDI mode, it occurs after a tab was closed."
 Event TDIFormsShowTabIcon(ByVal TabNumber As Long, ByVal FormCaption As String, ByVal FormhWnd As Long, ByRef IconPicture As Object, ByRef IconLeftOffset As Long, ByRef IconTopOffset As Long, ByRef IconWidth As Long, ByRef IconHeight As Long, UseIconFont As Boolean, ByRef IconFont As Object, IconChar As Variant, IconColor As Long, IconColorHovered As Long, IconColorSelected As Long, NoIcon As Boolean)
 Attribute TDIFormsShowTabIcon.VB_Description = "In TDI mode forms, it allows full control  for the icon that is displayed on the tab, including the icon itself and the size and position. It is also possible to use an icon font for the icon."
-Event TDIModeFormsReady()
-Attribute TDIModeFormsReady.VB_Description = "Occurs in TDI mode forms, when the control is ready to open forms in tabs. In the Form_Load event it is still not ready, but alternatively you can also use the Form_Activate event to open forms at startup."
 
 Private Type T_TabData
     ' Properties
@@ -5923,7 +5921,6 @@ Private Sub UserControl_Show()
         If mTDIMode = ntTDIModeForms Then
             If mAmbientUserMode Then
                 InstallCBTHook Me
-                RaiseEvent TDIModeFormsReady
             End If
         End If
         mTDIModeFormsUnhooked = False
@@ -14824,7 +14821,6 @@ Private Sub SetTDIMode()
             ReDim mTDIFormIconCustomData(100)
             ReDim mTDIFormWithoutCloseButton(100)
             InstallCBTHook Me
-            RaiseEvent TDIModeFormsReady
         End If
     End If
     Redraw = True

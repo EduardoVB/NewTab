@@ -1,3 +1,5 @@
+2025-01-26 Changed to OLE version 12.
+2025-01-26 Removed TDIModeFormsReady event. After latest changes it became unnecessary.
 2025-01-23 Change in hooking/subclass for the parent TDI form to be ready earlier, and to be able to load TDI child forms in its Form_Load event.
 2025-01-21 Fixed the icon alignment of the first tab in TDI mode forms. 
 2025-01-21 Changed to OLE version 11.
