@@ -1390,11 +1390,6 @@ TDIFormsShowTabIcon event:
 	NoIcon: If is set to True, the form icon is not shown.
 
 
-TDIModeFormsReady event:
-	No parameters.
-	Occurs in TDI mode forms, when the control is ready to open forms in tabs. In the Form_Load event it is still not ready, but alternatively you can also use the Form_Activate event to open forms at startup.
-
-
 TDINewTabAdded event:
 	Parameter(s):
 	    Info	TabNumber	As	Long
