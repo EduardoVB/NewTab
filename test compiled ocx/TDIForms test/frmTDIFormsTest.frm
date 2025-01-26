@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{66E63055-5A66-4C79-9327-4BC077858695}#11.0#0"; "NewTab01.ocx"
+Object = "{66E63055-5A66-4C79-9327-4BC077858695}#12.0#0"; "NewTab01.ocx"
 Begin VB.Form frmTDIFormsTest 
    Caption         =   "TDI forms test"
    ClientHeight    =   8112
@@ -44,7 +44,7 @@ Begin VB.Form frmTDIFormsTest
       IconColorMouseHoverSelectedTab=   255
       CanReorderTabs  =   -1  'True
       TDIMode         =   2
-      ControlVersion  =   11
+      ControlVersion  =   12
       TabCaption(0)   =   "Home"
       Tab(0).ControlCount=   6
       Tab(0).Control(0)=   "Command6"
@@ -55,7 +55,7 @@ Begin VB.Form frmTDIFormsTest
       Tab(0).Control(5)=   "Command3"
       BeginProperty IconFont(0) {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
          Name            =   "Segoe MDL2 Assets"
-         Size            =   10.8
+         Size            =   10.2
          Charset         =   0
          Weight          =   700
          Underline       =   0   'False
