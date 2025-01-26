@@ -5094,9 +5094,11 @@ Private Sub HandleTabTDIEvents()
     Dim iShowTabCloseButton As Boolean
     Dim iDo As Boolean
     
-    iDo = (mTabData(mTabUnderMouse).IconChar <> 0)
-    If iDo And (mTDIMode = ntTDIModeForms) Then
-        iDo = Not mTDIFormWithoutCloseButton(mTabData(mTabUnderMouse).Data)
+    If mTabUnderMouse > -1 Then
+        iDo = (mTabData(mTabUnderMouse).IconChar <> 0)
+        If iDo And (mTDIMode = ntTDIModeForms) Then
+            iDo = Not mTDIFormWithoutCloseButton(mTabData(mTabUnderMouse).Data)
+        End If
     End If
     If Not iDo Then Exit Sub
     
@@ -9630,7 +9632,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
                 End If
                 iLng = iIconCharRect.Left: iIconCharRect.Left = iIconCharRect.Right: iIconCharRect.Right = iLng
             End If
-            mTabData(mTab).IconRect = iIconCharRect
+            mTabData(nTab).IconRect = iIconCharRect
             Set picDraw.Font = iFontPrev
             picDraw.ForeColor = iForeColorPrev
         Else
@@ -14695,7 +14697,7 @@ Private Sub TDIConfigureTDIModeOnce()
         End If
     Else
         iFont.Name = "Arial"
-        iFont.Size = 14
+        iFont.Size = 15
         iFont.Bold = True
         Set TabIconFont(0) = iFont
         If mTDIMode = ntTDIModeControls Then
@@ -14713,6 +14715,8 @@ End Sub
     
 Private Function FontExists(nFontName As String) As Boolean
     Dim iFont As New StdFont
+    
+    'If mInIDE Then If nFontName = "Segoe MDL2 Assets" Then Exit Function
     
     If nFontName = "[Auto]" Then Exit Function
     If Trim$(nFontName) = "" Then Exit Function
@@ -14763,20 +14767,20 @@ Private Sub SetTDIMode()
             Set iFont = New StdFont
             If FontExists("Segoe MDL2 Assets") Then
                 iFont.Name = "Segoe MDL2 Assets"
-                iFont.Size = 6
+                iFont.Size = 8
                 iFont.Bold = True
                 Set TabIconFont(0) = iFont
                 TabIconLeftOffset(0) = -3 * mDPIScale
                 TabIconTopOffset(0) = 1 * mDPIScale
-                TabIconCharHex(0) = "&HE106&"
+                If TabIconCharHex(0) <> "" Then TabIconCharHex(0) = "&HE106&"
             Else
                 iFont.Name = "Arial"
-                iFont.Size = 14
+                iFont.Size = 15
                 iFont.Bold = True
                 Set TabIconFont(0) = iFont
                 TabIconLeftOffset(0) = 0
                 TabIconTopOffset(0) = 0
-                TabIconCharHex(0) = "&H78&"
+                If TabIconCharHex(0) <> "" Then TabIconCharHex(0) = "&H78&"
             End If
         End If
         If mTDIMode = ntTDIModeControls Then
@@ -14790,16 +14794,16 @@ Private Sub SetTDIMode()
                     TabToolTipText(1) = "Add a new tab"
                     TabIconLeftOffset(1) = -2 * mDPIScale
                     TabIconTopOffset(1) = 1 * mDPIScale
-                    TabIconCharHex(1) = "&HF8AA&"
+                    If TabIconCharHex(1) <> "" Then TabIconCharHex(1) = "&HF8AA&"
                 Else
                     iFont.Name = "Arial"
-                    iFont.Size = 14
+                    iFont.Size = 15
                     iFont.Bold = True
                     Set TabIconFont(1) = iFont
                     TabToolTipText(1) = "Add a new tab"
                     TabIconLeftOffset(1) = -2 * mDPIScale
                     TabIconTopOffset(1) = 2 * mDPIScale
-                    TabIconCharHex(1) = "&H2B&"
+                    If TabIconCharHex(1) <> "" Then TabIconCharHex(1) = "&H2B&"
                 End If
             End If
         End If
@@ -14919,9 +14923,15 @@ Private Sub TDIPrepareNewTab(nTabCaption As String, nLoadTabControls As Boolean,
     End If
     
     If nShowTabCloseButton Then
-        TabIconLeftOffset(mTabs - 2) = -3 * mDPIScale
-        TabIconTopOffset(mTabs - 2) = 1 * mDPIScale
-        TabIconCharHex(mTabs - 2) = "&HE106&"
+        If TabIconFont(mTabs - 2).Name = "Arial" Then
+            TabIconLeftOffset(mTabs - 2) = -3 * mDPIScale
+            TabIconTopOffset(mTabs - 2) = -1 * mDPIScale
+            TabIconCharHex(mTabs - 2) = "&H78&"
+        Else
+            TabIconLeftOffset(mTabs - 2) = -3 * mDPIScale
+            TabIconTopOffset(mTabs - 2) = 1 * mDPIScale
+            TabIconCharHex(mTabs - 2) = "&HE106&"
+        End If
     End If
     TabCaption(mTabs - 2) = nTabCaption & IIf(nShowTabCloseButton, "   ", "")
     If mAmbientUserMode Then

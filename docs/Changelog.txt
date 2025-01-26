@@ -1,3 +1,5 @@
+2025-01-26 Fixed bug in icon color on mouse over when there is more than one row of tabs.
+2025-01-26 Fixed bug related to X for closing tabs.
 2025-01-26 Fixed bug in TDI forms, first tab was being closed after closing another tab.
 2025-01-26 Changed to OLE version 12.
 2025-01-26 Removed TDIModeFormsReady event. After latest changes it became unnecessary.
