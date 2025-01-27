@@ -17,8 +17,8 @@ Begin VB.UserControl NewTab
       Height          =   612
       Index           =   0
       Left            =   3120
-      ScaleHeight     =   612
-      ScaleWidth      =   492
+      ScaleHeight     =   615
+      ScaleWidth      =   495
       TabIndex        =   9
       Top             =   240
       Visible         =   0   'False
@@ -34,9 +34,9 @@ Begin VB.UserControl NewTab
       BorderStyle     =   0  'None
       Height          =   492
       Left            =   2400
-      ScaleHeight     =   41
+      ScaleHeight     =   33
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   61
+      ScaleWidth      =   49
       TabIndex        =   7
       Top             =   1920
       Visible         =   0   'False
@@ -71,9 +71,9 @@ Begin VB.UserControl NewTab
       BorderStyle     =   0  'None
       Height          =   624
       Left            =   1920
-      ScaleHeight     =   52
+      ScaleHeight     =   42
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   76
+      ScaleWidth      =   61
       TabIndex        =   6
       Top             =   684
       Visible         =   0   'False
@@ -84,8 +84,8 @@ Begin VB.UserControl NewTab
       BorderStyle     =   0  'None
       Height          =   492
       Left            =   1440
-      ScaleHeight     =   492
-      ScaleWidth      =   732
+      ScaleHeight     =   495
+      ScaleWidth      =   735
       TabIndex        =   5
       Top             =   1920
       Visible         =   0   'False
@@ -143,9 +143,9 @@ Begin VB.UserControl NewTab
       BorderStyle     =   0  'None
       Height          =   624
       Left            =   972
-      ScaleHeight     =   52
+      ScaleHeight     =   42
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   76
+      ScaleWidth      =   61
       TabIndex        =   4
       Top             =   684
       Visible         =   0   'False
@@ -156,9 +156,9 @@ Begin VB.UserControl NewTab
       BorderStyle     =   0  'None
       Height          =   624
       Left            =   0
-      ScaleHeight     =   52
+      ScaleHeight     =   42
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   76
+      ScaleWidth      =   61
       TabIndex        =   3
       Top             =   684
       Visible         =   0   'False
@@ -169,9 +169,9 @@ Begin VB.UserControl NewTab
       BorderStyle     =   0  'None
       Height          =   624
       Left            =   1944
-      ScaleHeight     =   52
+      ScaleHeight     =   42
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   76
+      ScaleWidth      =   61
       TabIndex        =   2
       Top             =   0
       Visible         =   0   'False
@@ -194,9 +194,9 @@ Begin VB.UserControl NewTab
       BorderStyle     =   0  'None
       Height          =   624
       Left            =   972
-      ScaleHeight     =   52
+      ScaleHeight     =   42
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   76
+      ScaleWidth      =   61
       TabIndex        =   1
       Top             =   0
       Visible         =   0   'False
@@ -207,9 +207,9 @@ Begin VB.UserControl NewTab
       BorderStyle     =   0  'None
       Height          =   624
       Left            =   0
-      ScaleHeight     =   52
+      ScaleHeight     =   42
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   76
+      ScaleWidth      =   61
       TabIndex        =   0
       Top             =   0
       Visible         =   0   'False
@@ -4533,7 +4533,7 @@ Friend Sub SetDefaultPropertyValuesForThemedProperties(Optional nSetControlsColo
         End If
     End If
     PropertyChanged "Style"
-    mVisualStyles = (mStyle = ntStyleWindows)
+    mVisualStyles = (mStyle = ntStyleWindows) 'And IsThemed
     mBackColorSelectedTab_IsAutomatic = True: mBackColorSelectedTab = GetAutomaticBackColorSelectedTab: PropertyChanged "BackColorSelectedTab"
     mWordWrap = cPropDef_WordWrap: PropertyChanged "WordWrap"
     mMaskColor = cPropDef_MaskColor: PropertyChanged "MaskColor"
@@ -5695,7 +5695,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
             mTabWidthStyle = ntTWFixed
         End If
     End If
-    mVisualStyles = (mStyle = ntStyleWindows)
+    mVisualStyles = (mStyle = ntStyleWindows) 'And IsThemed
     mShowDisabledState = PropBag.ReadProperty("ShowDisabledState", cPropDef_ShowDisabledState)
     mTabSeparation = PropBag.ReadProperty("TabSeparation", cPropDef_TabSeparation)
     mTabSeparationDPIScaled = mTabSeparation * mDPIScale
@@ -7400,7 +7400,7 @@ Private Sub Draw()
                                 .Right = .Left + iTabWidth - 1 '- mTabSeparation2 ' no volver a sacar el -1!!
                             Else
                                 If iTabData.LeftTab Then
-                                    iTabLeft = IIf(((mTabWidthStyle2 = ntTWStretchToFill) Or (mTabWidthStyle2 = ntTWTabCaptionWidthFillRows)) And (Not (mAppearanceIsFlat Or mControlIsThemed)), 0, 1) + iRowPerspectiveSpace * (mRows - mTabData(t).RowPos - 1) + 1
+                                    iTabLeft = IIf(((mTabWidthStyle2 = ntTWStretchToFill) Or (mTabWidthStyle2 = ntTWTabCaptionWidthFillRows)) And (Not (mAppearanceIsFlat Or (mStyle = ntStyleWindows))), 0, 1) + iRowPerspectiveSpace * (mRows - mTabData(t).RowPos - 1) + 1
                                 Else
                                     iTabLeft = iTabLeft + mTabSeparation2
                                 End If
@@ -14717,6 +14717,25 @@ Private Sub TDISetTDIMode()
             TabIconTopOffset(0) = 1 * mDPIScale
             TabIconCharHex(0) = "&HE106&"
         End If
+    ElseIf FontExists("Marlett") Then
+        iFont.Name = "Marlett"
+        'iFont.Bold = True
+        iFont.Size = 15 ' size of the X to close the tab
+        Set TabIconFont(0) = iFont
+        If mTDIMode = ntTDIModeControls Then
+            Set iFont = New StdFont
+            iFont.Name = "Arial"
+            iFont.Size = 15
+            iFont.Bold = True
+            Set TabIconFont(1) = CloneFont(iFont)
+            TabToolTipText(1) = "Add a new tab"
+            TabIconLeftOffset(1) = -2 * mDPIScale
+            TabIconTopOffset(1) = 2 * mDPIScale
+            TabIconCharHex(1) = "&H2B&"
+            TabIconLeftOffset(0) = -3 * mDPIScale
+            TabIconTopOffset(0) = 1 * mDPIScale
+            TabIconCharHex(0) = "&H72&"
+        End If
     Else
         iFont.Name = "Arial"
         iFont.Size = 15
@@ -14774,6 +14793,14 @@ Private Sub TDISetTDIMode()
                 TabIconLeftOffset(0) = -3 * mDPIScale
                 TabIconTopOffset(0) = 1 * mDPIScale
                 If TabIconCharHex(0) <> "" Then TabIconCharHex(0) = "&HE106&"
+            ElseIf FontExists("Marlett") Then
+                iFont.Name = "Marlett"
+                iFont.Size = 15
+                iFont.Bold = True
+                Set TabIconFont(0) = iFont
+                TabIconLeftOffset(0) = 0
+                TabIconTopOffset(0) = 0
+                If TabIconCharHex(0) <> "" Then TabIconCharHex(0) = "&H72&"
             Else
                 iFont.Name = "Arial"
                 iFont.Size = 15
@@ -14928,6 +14955,10 @@ Private Sub TDIPrepareNewTab(nTabCaption As String, nLoadTabControls As Boolean,
             TabIconLeftOffset(mTabs - 2) = -3 * mDPIScale
             TabIconTopOffset(mTabs - 2) = -1 * mDPIScale
             TabIconCharHex(mTabs - 2) = "&H78&"
+        ElseIf TabIconFont(mTabs - 2).Name = "Marlett" Then
+            TabIconLeftOffset(mTabs - 2) = -3 * mDPIScale
+            TabIconTopOffset(mTabs - 2) = -1 * mDPIScale
+            TabIconCharHex(mTabs - 2) = "&H72&"
         Else
             TabIconLeftOffset(mTabs - 2) = -3 * mDPIScale
             TabIconTopOffset(mTabs - 2) = 1 * mDPIScale
