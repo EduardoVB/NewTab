@@ -5894,7 +5894,7 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
         If mSettingTDIMode Then Exit Sub
         If Not mTDIModeAlreadySet Then
             mTDIModeAlreadySet = True
-            SetTDIMode
+            TDISetTDIMode
         End If
     End If
 End Sub
@@ -5917,7 +5917,7 @@ Private Sub UserControl_Show()
         If IsWindowVisible(mUserControlHwnd) <> 0 Then
             If Not mTDIModeAlreadySet Then
                 mTDIModeAlreadySet = True
-                SetTDIMode
+                TDISetTDIMode
             End If
         End If
     End If
@@ -13794,7 +13794,7 @@ Public Property Let TDIMode(ByVal nValue As NTTDIModeConstants)
         End If
         mTDIMode = nValue
         TDIConfigureTDIModeOnce
-        If mTDIMode <> ntTDIModeNone Then SetTDIMode
+        If mTDIMode <> ntTDIModeNone Then TDISetTDIMode
         If Not Ambient.UserMode Then lblTDILabel.Visible = (mTDIMode <> ntTDIModeNone)
         If mTDIMode = ntTDIModeControls Then
             lblTDILabel.Caption = "Tabbed Document Interface mode 'Controls'. Use Tab 0 as a template. Add all controls here, all them must be control arrays with Index = 0."
@@ -14676,6 +14676,28 @@ Private Sub TDIConfigureTDIModeOnce()
         mIconColorMouseHoverSelectedTab = Ambient.ForeColor
     End If
     mTDIChangingTabCount = False
+End Sub
+    
+Private Function FontExists(nFontName As String) As Boolean
+    Dim iFont As New StdFont
+    
+    'If mInIDE Then If nFontName = "Segoe MDL2 Assets" Then Exit Function
+    
+    If nFontName = "[Auto]" Then Exit Function
+    If Trim$(nFontName) = "" Then Exit Function
+    
+    iFont.Name = nFontName
+    FontExists = StrComp(nFontName, iFont.Name, vbTextCompare) = 0
+End Function
+    
+    
+Private Sub TDISetTDIMode()
+    Dim iTabCaption As String
+    Dim iLoadTabControls As Boolean
+    Dim iFont As StdFont
+    Dim iShowTabCloseButton As Boolean
+    
+    Redraw = False
     
     Set iFont = New StdFont
     If FontExists("Segoe MDL2 Assets") Then
@@ -14711,28 +14733,7 @@ Private Sub TDIConfigureTDIModeOnce()
             TabIconCharHex(0) = "&H78&"
         End If
     End If
-End Sub
     
-Private Function FontExists(nFontName As String) As Boolean
-    Dim iFont As New StdFont
-    
-    'If mInIDE Then If nFontName = "Segoe MDL2 Assets" Then Exit Function
-    
-    If nFontName = "[Auto]" Then Exit Function
-    If Trim$(nFontName) = "" Then Exit Function
-    
-    iFont.Name = nFontName
-    FontExists = StrComp(nFontName, iFont.Name, vbTextCompare) = 0
-End Function
-    
-    
-Private Sub SetTDIMode()
-    Dim iTabCaption As String
-    Dim iLoadTabControls As Boolean
-    Dim iFont As StdFont
-    Dim iShowTabCloseButton As Boolean
-    
-    Redraw = False
     mSettingTDIMode = True
     mTDIIconColorMouseHover = IconColorMouseHover
     mTDIChangingTabCount = True

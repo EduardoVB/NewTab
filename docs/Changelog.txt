@@ -1,3 +1,4 @@
+2025-01-27 Improved the size of X for closing tabs in TDI mode when using Arial font.
 2025-01-26 Fixed bug in icon color on mouse over when there is more than one row of tabs.
 2025-01-26 Fixed bug related to X for closing tabs.
 2025-01-26 Fixed bug in TDI forms, first tab was being closed after closing another tab.
