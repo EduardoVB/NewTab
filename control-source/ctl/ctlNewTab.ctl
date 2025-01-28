@@ -15186,7 +15186,7 @@ Friend Sub TDIPutFormIntoTab(ByVal nHwndForm As Long)
             Set mTDIModeFormsFormData_FormIcon(mTabs - 1) = CreatePicture(iIconHandle, vbPicTypeIcon)
         End If
         
-        mTabData(mTabs - 1).Caption = GetUniqueCaption(iFormCaption)
+        mTabData(mTabs - 1).Caption = GetUniqueCaption(iFormCaption, mTabs - 1)
         mTDIAddingNewTabForForm = False
         DrawDelayed
     End If
@@ -15224,7 +15224,7 @@ Private Function CreatePicture(ByVal hImage As Long, ByVal nType As PictureTypeC
  
 End Function
 
-Private Function GetUniqueCaption(nCaption As String) As String
+Private Function GetUniqueCaption(nCaption As String, nTabToIgnore As Long) As String
     Dim c As Long
     Dim iFound As Boolean
     Dim iCaption As String
@@ -15259,9 +15259,11 @@ Private Function GetUniqueCaption(nCaption As String) As String
         End If
         For c = 1 To mTabs - 1
             If mTabData(c).Visible Then
-                If mTabData(c).Caption = iCaption Then
-                    iFound = True
-                    Exit For
+                If c <> nTabToIgnore Then
+                    If mTabData(c).Caption = iCaption Then
+                        iFound = True
+                        Exit For
+                    End If
                 End If
             End If
         Next

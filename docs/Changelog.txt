@@ -1,3 +1,5 @@
+
+2025-01-28 Fixed bug when the ShowTabCloseButton parameter of the TDIBeforeNewTab event in TDI mode forms is True.
 2025-01-28 Adjusted the space between the Iconfont icon and the caption in tabs.
 2025-01-28 Adjusted the size of X (and +) in TDI mode.
 2025-01-27 Now the X for closing tabs in TDI mode defaults to Marlett font first instead of Arial when Segoe MDL2 Assets is not present.
