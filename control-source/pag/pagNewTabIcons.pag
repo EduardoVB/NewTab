@@ -615,7 +615,7 @@ Begin VB.PropertyPage pagNewTabIcons
       EndProperty
       TabHeight       =   579
       AutoTabHeight   =   -1  'True
-      ControlVersion  =   11
+      ControlVersion  =   12
       TabCaption(0)   =   ""
       TabCaption(1)   =   ""
       TabCaption(2)   =   ""
@@ -1550,6 +1550,7 @@ End Sub
 
 Private Sub DoShowTabData()
     Dim t As Long
+    Dim iSS As Long
     
     If mShowingTabData Then Exit Sub
     mShowingTabData = True
@@ -1609,7 +1610,9 @@ Private Sub DoShowTabData()
         picCharSelected.Cls
         DrawCharMapFromScrollPosition
     Else
+        iSS = txtIconCharHex.SelStart
         txtIconCharHex.Text = "&H" & Hex$(mTabData(t).IconChar)
+        txtIconCharHex.SelStart = iSS
         cmdRemoveIconChar.Enabled = True
         If Not picCharSelected.Font Is mTabData(mTab).IconFont Then
             Set picCharSelected.Font = mTabData(mTab).IconFont

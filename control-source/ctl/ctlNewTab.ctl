@@ -17,8 +17,8 @@ Begin VB.UserControl NewTab
       Height          =   612
       Index           =   0
       Left            =   3120
-      ScaleHeight     =   615
-      ScaleWidth      =   495
+      ScaleHeight     =   612
+      ScaleWidth      =   492
       TabIndex        =   9
       Top             =   240
       Visible         =   0   'False
@@ -34,9 +34,9 @@ Begin VB.UserControl NewTab
       BorderStyle     =   0  'None
       Height          =   492
       Left            =   2400
-      ScaleHeight     =   33
+      ScaleHeight     =   41
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   49
+      ScaleWidth      =   61
       TabIndex        =   7
       Top             =   1920
       Visible         =   0   'False
@@ -71,9 +71,9 @@ Begin VB.UserControl NewTab
       BorderStyle     =   0  'None
       Height          =   624
       Left            =   1920
-      ScaleHeight     =   42
+      ScaleHeight     =   52
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   61
+      ScaleWidth      =   76
       TabIndex        =   6
       Top             =   684
       Visible         =   0   'False
@@ -84,8 +84,8 @@ Begin VB.UserControl NewTab
       BorderStyle     =   0  'None
       Height          =   492
       Left            =   1440
-      ScaleHeight     =   495
-      ScaleWidth      =   735
+      ScaleHeight     =   492
+      ScaleWidth      =   732
       TabIndex        =   5
       Top             =   1920
       Visible         =   0   'False
@@ -143,9 +143,9 @@ Begin VB.UserControl NewTab
       BorderStyle     =   0  'None
       Height          =   624
       Left            =   972
-      ScaleHeight     =   42
+      ScaleHeight     =   52
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   61
+      ScaleWidth      =   76
       TabIndex        =   4
       Top             =   684
       Visible         =   0   'False
@@ -156,9 +156,9 @@ Begin VB.UserControl NewTab
       BorderStyle     =   0  'None
       Height          =   624
       Left            =   0
-      ScaleHeight     =   42
+      ScaleHeight     =   52
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   61
+      ScaleWidth      =   76
       TabIndex        =   3
       Top             =   684
       Visible         =   0   'False
@@ -169,9 +169,9 @@ Begin VB.UserControl NewTab
       BorderStyle     =   0  'None
       Height          =   624
       Left            =   1944
-      ScaleHeight     =   42
+      ScaleHeight     =   52
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   61
+      ScaleWidth      =   76
       TabIndex        =   2
       Top             =   0
       Visible         =   0   'False
@@ -194,9 +194,9 @@ Begin VB.UserControl NewTab
       BorderStyle     =   0  'None
       Height          =   624
       Left            =   972
-      ScaleHeight     =   42
+      ScaleHeight     =   52
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   61
+      ScaleWidth      =   76
       TabIndex        =   1
       Top             =   0
       Visible         =   0   'False
@@ -207,9 +207,9 @@ Begin VB.UserControl NewTab
       BorderStyle     =   0  'None
       Height          =   624
       Left            =   0
-      ScaleHeight     =   42
+      ScaleHeight     =   52
       ScaleMode       =   3  'Pixel
-      ScaleWidth      =   61
+      ScaleWidth      =   76
       TabIndex        =   0
       Top             =   0
       Visible         =   0   'False
@@ -5037,7 +5037,7 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Sing
                 If (iXp - mIconClickExtendDPIScaled) <= mTabData(mTabUnderMouse).IconRect.Right Then
                     If (iYp + mIconClickExtendDPIScaled) >= mTabData(mTabUnderMouse).IconRect.Top Then
                         If (iYp - mIconClickExtendDPIScaled) <= mTabData(mTabUnderMouse).IconRect.Bottom Then
-                            If mTDIMode <> ntTDIModeNone Then
+                            If (mTDIMode <> ntTDIModeNone) And Not ((mTDIMode = ntTDIModeForms) And (mTabUnderMouse = FindTab(0, ntFindOriginalIndex))) Then
                                 HandleTabTDIEvents
                             Else
                                 iForwardClickToTab = True
@@ -5098,6 +5098,9 @@ Private Sub HandleTabTDIEvents()
         iDo = (mTabData(mTabUnderMouse).IconChar <> 0)
         If iDo And (mTDIMode = ntTDIModeForms) Then
             iDo = Not mTDIFormWithoutCloseButton(mTabData(mTabUnderMouse).Data)
+        End If
+        If iDo Then
+            iDo = Not ((mTDIMode = ntTDIModeForms) And (mTabUnderMouse = FindTab(0, ntFindOriginalIndex)))
         End If
     End If
     If Not iDo Then Exit Sub
@@ -5297,14 +5300,16 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
                     If (iXp - mIconClickExtendDPIScaled) <= mTabData(mTabUnderMouse).IconRect.Right Then
                         If (iYp + mIconClickExtendDPIScaled) >= mTabData(mTabUnderMouse).IconRect.Top Then
                             If (iYp - mIconClickExtendDPIScaled) <= mTabData(mTabUnderMouse).IconRect.Bottom Then
-                                mMouseIsOverIcon = True
-                                mMouseIsOverIcon_Tab = mTabUnderMouse
-                                RaiseEvent IconMouseEnter(mTabUnderMouse)
-                                tmrHighlightIcon.Enabled = False
-                                tmrHighlightIcon.Enabled = True
-                                tmrPreHighlightIcon.Enabled = False
-                                tmrPreHighlightIcon.Enabled = True
-                                tmrHighlightIcon.Tag = mMouseIsOverIcon_Tab
+                                If Not ((mTDIMode = ntTDIModeForms) And (mTabUnderMouse = FindTab(0, ntFindOriginalIndex))) Then
+                                    mMouseIsOverIcon = True
+                                    mMouseIsOverIcon_Tab = mTabUnderMouse
+                                    RaiseEvent IconMouseEnter(mTabUnderMouse)
+                                    tmrHighlightIcon.Enabled = False
+                                    tmrHighlightIcon.Enabled = True
+                                    tmrPreHighlightIcon.Enabled = False
+                                    tmrPreHighlightIcon.Enabled = True
+                                    tmrHighlightIcon.Tag = mMouseIsOverIcon_Tab
+                                End If
                             End If
                         End If
                     End If
@@ -9066,6 +9071,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     Dim iTDIFormsNoIcons As Boolean
     Dim iDo As Boolean
     Dim iTDIFormsFontPrev As StdFont
+    Dim iIsTDIFormsFirstTab As Boolean
     
     If Not mTabData(nTab).Visible Then Exit Sub
     If Not mTabData(nTab).PicToUseSet Then SetPicToUse nTab
@@ -9371,7 +9377,12 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     End If
     If iDrawIcon Then
         iIconAlignment = mIconAlignment
-        If (mTDIMode = ntTDIModeForms) Or mIsTDIFormsSampleInPropertyPage Then If nTab = 0 Then iIconAlignment = ntIconAlignStart
+        If (mTDIMode = ntTDIModeForms) Or mIsTDIFormsSampleInPropertyPage Then
+            If nTab = FindTab(0, ntFindOriginalIndex) Then
+                iIconAlignment = ntIconAlignStart
+                iIsTDIFormsFirstTab = True
+            End If
+        End If
         If (mTabOrientation = ssTabOrientationLeft) Then
             If iIconAlignment = ntIconAlignAfterCaption Then
                 iIconAlignment = ntIconAlignBeforeCaption
@@ -9446,7 +9457,7 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     
     iMeasureRect.Right = iTabSpaceRect.Right
     If iDrawIcon And ((iIconAlignment <> ntIconAlignCenteredOnTab) And (iIconAlignment <> ntIconAlignAtTop) And (iIconAlignment <> ntIconAlignAtBottom)) Then
-        iMeasureRect.Left = iTabSpaceRect.Left + iPicWidthToShow + mTabIconDistanceToCaptionDPIScaled
+        iMeasureRect.Left = iTabSpaceRect.Left + iPicWidthToShow + IIf(iIsTDIFormsFirstTab, 0, mTabIconDistanceToCaptionDPIScaled)
     Else
         iMeasureRect.Left = iTabSpaceRect.Left
     End If
@@ -11623,21 +11634,24 @@ Private Function MeasureTabIconAndCaption(ByVal nTab As Long) As Long
                     End If
                 End If
                 
-                Set iTDIFormsFontPrev = picDraw.Font
-                Set picDraw.Font = iTDIFormIcon_IconFont
-                
-                iTabHeight = (iTabData.TabRect.Bottom - iTabData.TabRect.Top)
-                If iTabHeight = 0 Then iTabHeight = ScaleY(mTabHeight, vbHimetric, vbPixels)
-                Do
-                    iTDIFormIcon_IconFont.Size = iTDIFormIcon_IconFont.Size - 1
-                    iTDIFormIcon_IconCharRect.Left = 0
-                    iTDIFormIcon_IconCharRect.Right = 0
-                    iTDIFormIcon_IconCharRect.Top = 0
-                    iTDIFormIcon_IconCharRect.Bottom = 0
-                    DrawTextW picDraw.hDC, StrPtr(iTDIFormIcon_IconChar), -1, iTDIFormIcon_IconCharRect, DT_CALCRECT Or DT_SINGLELINE Or DT_CENTER Or IIf(mRightToLeft, DT_RTLREADING, 0)
-                    If iTDIFormIcon_IconFont.Size < 5 Then Exit Do
-                Loop While ((iTDIFormIcon_IconCharRect.Bottom - iTDIFormIcon_IconCharRect.Top) + 6) > iTabHeight
-                Set picDraw.Font = iTDIFormsFontPrev
+                If mTabData(0).IconChar <> 0 Then
+                    iTDIFormIcon_IconFont.Size = mTabData(0).IconFont.Size
+                Else
+                    Set iTDIFormsFontPrev = picDraw.Font
+                    Set picDraw.Font = iTDIFormIcon_IconFont
+                    iTabHeight = (iTabData.TabRect.Bottom - iTabData.TabRect.Top)
+                    If iTabHeight = 0 Then iTabHeight = ScaleY(mTabHeight, vbHimetric, vbPixels)
+                    Do
+                        iTDIFormIcon_IconFont.Size = iTDIFormIcon_IconFont.Size - 1
+                        iTDIFormIcon_IconCharRect.Left = 0
+                        iTDIFormIcon_IconCharRect.Right = 0
+                        iTDIFormIcon_IconCharRect.Top = 0
+                        iTDIFormIcon_IconCharRect.Bottom = 0
+                        DrawTextW picDraw.hDC, StrPtr(iTDIFormIcon_IconChar), -1, iTDIFormIcon_IconCharRect, DT_CALCRECT Or DT_SINGLELINE Or DT_CENTER Or IIf(mRightToLeft, DT_RTLREADING, 0)
+                        If iTDIFormIcon_IconFont.Size < 5 Then Exit Do
+                    Loop While ((iTDIFormIcon_IconCharRect.Bottom - iTDIFormIcon_IconCharRect.Top) + 8) > iTabHeight
+                    Set picDraw.Font = iTDIFormsFontPrev
+                End If
                 
                 iTDIFormIcon_IconColor = mIconColor
                 iTDIFormIcon_IconColorMouseHover = mIconColorTabHighlighted
@@ -14701,13 +14715,15 @@ Private Sub TDISetTDIMode()
     
     Set iFont = New StdFont
     If FontExists("Segoe MDL2 Assets") Then
-        iFont.Name = "Segoe MDL2 Assets"
-        iFont.Bold = True
-        iFont.Size = 10 ' size of the X to close the tab
-        Set TabIconFont(0) = iFont
+        If mTDIMode = ntTDIModeControls Then
+            iFont.Name = "Segoe MDL2 Assets"
+            iFont.Bold = True
+            iFont.Size = 10 ' size of the X to close the tab
+            Set TabIconFont(0) = iFont
+        End If
         If mTDIMode = ntTDIModeControls Then
             Set TabIconFont(1) = CloneFont(iFont)
-            TabIconFont(1).Size = 14 ' size of the + to add a new tab
+            TabIconFont(1).Size = 10 ' size of the + to add a new tab
             TabIconFont(1).Bold = True
             TabToolTipText(1) = "Add a new tab"
             TabIconLeftOffset(1) = -2 * mDPIScale
@@ -14787,7 +14803,7 @@ Private Sub TDISetTDIMode()
             Set iFont = New StdFont
             If FontExists("Segoe MDL2 Assets") Then
                 iFont.Name = "Segoe MDL2 Assets"
-                iFont.Size = 8
+                iFont.Size = 10
                 iFont.Bold = True
                 Set TabIconFont(0) = iFont
                 TabIconLeftOffset(0) = -3 * mDPIScale
@@ -14816,7 +14832,7 @@ Private Sub TDISetTDIMode()
                 Set iFont = New StdFont
                 If FontExists("Segoe MDL2 Assets") Then
                     iFont.Name = "Segoe MDL2 Assets"
-                    iFont.Size = 8
+                    iFont.Size = 10
                     iFont.Bold = True
                     Set TabIconFont(1) = iFont
                     TabToolTipText(1) = "Add a new tab"
@@ -14945,21 +14961,24 @@ Private Sub TDIPrepareNewTab(nTabCaption As String, nLoadTabControls As Boolean,
     mTabData(mTabs - 2).TDITabNumber = mTDILastTabNumber
     
     If mTDIMode = ntTDIModeForms Then
-        Set TabIconFont(mTabs - 2) = TabIconFont(mTabs - 1)
+        Set TabIconFont(mTabs - 2) = CloneFont(TabIconFont(mTabs - 1))
     Else
         Set TabIconFont(mTabs - 2) = TabIconFont(0)
     End If
     
     If nShowTabCloseButton Then
         If TabIconFont(mTabs - 2).Name = "Arial" Then
+            TabIconFont(mTabs - 2).Size = 15
             TabIconLeftOffset(mTabs - 2) = -3 * mDPIScale
             TabIconTopOffset(mTabs - 2) = -1 * mDPIScale
             TabIconCharHex(mTabs - 2) = "&H78&"
         ElseIf TabIconFont(mTabs - 2).Name = "Marlett" Then
+            TabIconFont(mTabs - 2).Size = 15
             TabIconLeftOffset(mTabs - 2) = -3 * mDPIScale
             TabIconTopOffset(mTabs - 2) = -1 * mDPIScale
             TabIconCharHex(mTabs - 2) = "&H72&"
         Else
+            TabIconFont(mTabs - 2).Size = 10
             TabIconLeftOffset(mTabs - 2) = -3 * mDPIScale
             TabIconTopOffset(mTabs - 2) = 1 * mDPIScale
             TabIconCharHex(mTabs - 2) = "&HE106&"
