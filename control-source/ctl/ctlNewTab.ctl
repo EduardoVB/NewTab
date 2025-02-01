@@ -877,6 +877,7 @@ Private Type TDIFormIconCustomData
     IconColorSelected As Long
     LeftOffset As Long
     TopOffset As Long
+    Redraw As Boolean
 End Type
 
 Private Const cRowPerspectiveSpace As Long = 150&  ' in Twips
@@ -6625,7 +6626,7 @@ Private Sub Draw()
         mRows = 1
     End If
     mVisibleTabs = 0
-    iMeasureCaptions = (mTabWidthStyle2 = ntTWTabCaptionWidth) Or (mTabWidthStyle2 = ntTWTabCaptionWidthFillRows) Or (mTabWidthStyle2 = ntTWTabStripEmulation) Or (mTabWidthStyle2 = ntTWStretchToFill) Or mTabsAreRotatedButCaptionsAreHorizontal
+    iMeasureCaptions = (mTabWidthStyle2 = ntTWTabCaptionWidth) Or (mTabWidthStyle2 = ntTWTabCaptionWidthFillRows) Or (mTabWidthStyle2 = ntTWTabStripEmulation) Or (mTabWidthStyle2 = ntTWStretchToFill) Or mTabsAreRotatedButCaptionsAreHorizontal Or (mTDIMode = ntTDIModeForms)
     For t = 0 To mTabs - 1
         If mTabData(t).Visible Then
             mVisibleTabs = mVisibleTabs + 1
@@ -11020,6 +11021,13 @@ End Sub
 Public Sub Refresh()
 Attribute Refresh.VB_Description = "Redraws the control."
     Dim iWv As Boolean
+    Dim c As Long
+    
+    If mTDIMode = ntTDIModeForms Then
+        For c = 0 To UBound(mTDIFormIconCustomData)
+            mTDIFormIconCustomData(c).Redraw = True
+        Next
+    End If
     
     iWv = IsWindowVisible(mUserControlHwnd) <> 0
     If iWv Then SendMessage mUserControlHwnd, WM_SETREDRAW, False, 0&
@@ -11603,8 +11611,8 @@ Private Function MeasureTabIconAndCaption(ByVal nTab As Long) As Long
             
             iTDIFormsNoIcons = True
             iTabPosString = CStr(iTabData.PosH) & "-" & CStr(iTabData.RowPos)
-            If (mTDIFormIconCustomData(iTabData.Data).hWnd <> mTDIModeFormsFormData_FormHwnd(iTabData.Data)) Then
-                If (mTDIFormIconCustomData(iTabData.Data).hWnd = mTDIModeFormsFormData_FormHwnd(iTabData.Data)) And (Not mTDIFormIconCustomData(iTabData.Data).Icon Is Nothing) Then
+            If (mTDIFormIconCustomData(iTabData.Data).hWnd <> mTDIModeFormsFormData_FormHwnd(iTabData.Data)) Or mTDIFormIconCustomData(iTabData.Data).Redraw Then
+                If (Not mTDIFormIconCustomData(iTabData.Data).Icon Is Nothing) Then
                     Set iTDIFormIcon_Icon = mTDIFormIconCustomData(iTabData.Data).Icon
                 Else
                     Set iTDIFormIcon_Icon = mTDIModeFormsFormData_FormIcon(iTabData.Data)
@@ -11724,6 +11732,7 @@ Private Function MeasureTabIconAndCaption(ByVal nTab As Long) As Long
                 mTDIFormIconCustomData(iTabData.Data).Height = iTDIFormIcon_Height
                 mTDIFormIconCustomData(iTabData.Data).LeftOffset = iTDIFormIcon_LeftOffset
                 mTDIFormIconCustomData(iTabData.Data).TopOffset = iTDIFormIcon_TopOffset
+                mTDIFormIconCustomData(iTabData.Data).Redraw = False
             End If
             
             If Not mTDIModeFormsFormData_FormIcon(mTabData(nTab).Data) Is Nothing Then
