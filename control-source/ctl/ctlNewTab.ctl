@@ -5132,8 +5132,6 @@ Private Sub HandleTabTDIEvents()
             ElseIf mTDIMode = ntTDIModeForms Then
                 iHwnd = mTDIModeFormsFormData_FormHwnd(mTabData(iTabUnderMouse).Data)
                 If IsWindow(iHwnd) <> 0 Then
-                    ShowWindow iHwnd, SW_HIDE
-                    SetParent iHwnd, mTDIModeFormsFormData_OldParentHwnd(mTabData(iTabUnderMouse).Data)
                     If mTDIFormWithoutCloseButton(mTabData(iTabUnderMouse).Data) Then
                         PostMessage iHwnd, WM_CLOSE, 0, 0
                     Else
@@ -5142,10 +5140,9 @@ Private Sub HandleTabTDIEvents()
                 End If
                 If IsWindow(iHwnd) <> 0 Then
                     iCancel = True
-                    If (mTabData(iTabUnderMouse).Data >= picTDIFormContainer.LBound) And (mTabData(iTabUnderMouse).Data <= picTDIFormContainer.UBound) Then
-                        SetParent iHwnd, picTDIFormContainer(mTabData(iTabUnderMouse).Data).hWnd
-                    End If
                 Else
+                    ShowWindow iHwnd, SW_HIDE
+                    SetParent iHwnd, mTDIModeFormsFormData_OldParentHwnd(mTabData(iTabUnderMouse).Data)
                     mTDIClosingATab = True
                     TabVisible(iTabUnderMouse) = False
                     mTDIClosingATab = False
