@@ -1,3 +1,4 @@
+2025-03-01 Fixed a ug in TDI forms when closing a form is canceled by the user.
 2025-02-01 Added in Refresh method the refresh of the TDI forms icons.
 2025-01-28 Fixed bug when the ShowTabCloseButton parameter of the TDIBeforeNewTab event in TDI mode forms is True.
 2025-01-28 Adjusted the space between the Iconfont icon and the caption in tabs.

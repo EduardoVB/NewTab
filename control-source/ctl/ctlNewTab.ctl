@@ -5094,6 +5094,7 @@ Private Sub HandleTabTDIEvents()
     Dim iTabUnderMouse As Long
     Dim iShowTabCloseButton As Boolean
     Dim iDo As Boolean
+    Dim iTabVisible As Boolean
     
     If mTabUnderMouse > -1 Then
         iDo = (mTabData(mTabUnderMouse).IconChar <> 0)
@@ -5121,10 +5122,10 @@ Private Sub HandleTabTDIEvents()
                 iOpenAnother = False
             End If
             Redraw = False
-            mTDIClosingATab = True
-            TabVisible(iTabUnderMouse) = False
-            mTDIClosingATab = False
             If mTDIMode = ntTDIModeControls Then
+                mTDIClosingATab = True
+                TabVisible(iTabUnderMouse) = False
+                mTDIClosingATab = False
                 If iUnloadTabControls Then
                     TDIUnloadTabControls iTabNumber
                 End If
@@ -5147,6 +5148,10 @@ Private Sub HandleTabTDIEvents()
                     If (mTabData(iTabUnderMouse).Data >= picTDIFormContainer.LBound) And (mTabData(iTabUnderMouse).Data <= picTDIFormContainer.UBound) Then
                         SetParent iHwnd, picTDIFormContainer(mTabData(iTabUnderMouse).Data).hWnd
                     End If
+                Else
+                    mTDIClosingATab = True
+                    TabVisible(iTabUnderMouse) = False
+                    mTDIClosingATab = False
                 End If
             End If
             If Not iCancel Then
