@@ -5142,9 +5142,6 @@ Private Sub HandleTabTDIEvents()
                 End If
                 If IsWindow(iHwnd) <> 0 Then
                     iCancel = True
-                    mTDIClosingATab = True
-                    TabVisible(iTabUnderMouse) = True
-                    mTDIClosingATab = False
                     If (mTabData(iTabUnderMouse).Data >= picTDIFormContainer.LBound) And (mTabData(iTabUnderMouse).Data <= picTDIFormContainer.UBound) Then
                         SetParent iHwnd, picTDIFormContainer(mTabData(iTabUnderMouse).Data).hWnd
                     End If
