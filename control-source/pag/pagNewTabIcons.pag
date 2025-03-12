@@ -18,13 +18,51 @@ Begin VB.PropertyPage pagNewTabIcons
    PaletteMode     =   0  'Halftone
    ScaleHeight     =   8508
    ScaleWidth      =   6804
+   Begin VB.Timer tmrStartDraggingSample 
+      Enabled         =   0   'False
+      Interval        =   500
+      Left            =   720
+      Top             =   7080
+   End
+   Begin VB.Timer tmrRestoreSampleContainer 
+      Enabled         =   0   'False
+      Interval        =   3000
+      Left            =   360
+      Top             =   7080
+   End
+   Begin VB.PictureBox picSampleContainer 
+      BorderStyle     =   0  'None
+      Height          =   972
+      Left            =   120
+      ScaleHeight     =   972
+      ScaleWidth      =   6612
+      TabIndex        =   52
+      Top             =   7440
+      Width           =   6612
+      Begin NewTabCtl.NewTab NewTab1 
+         Height          =   804
+         Left            =   0
+         TabIndex        =   53
+         Top             =   0
+         Width           =   6540
+         _extentx        =   11536
+         _extenty        =   1397
+         font            =   "pagNewTabIcons.pgx":0000
+         tabheight       =   579
+         autotabheight   =   -1
+         controlversion  =   12
+         tabcaption(0)   =   ""
+         tabcaption(1)   =   ""
+         tabcaption(2)   =   ""
+      End
+   End
    Begin VB.PictureBox picIconFontNote 
       BorderStyle     =   0  'None
       Height          =   372
       Left            =   2000
       ScaleHeight     =   372
       ScaleWidth      =   4812
-      TabIndex        =   47
+      TabIndex        =   46
       Top             =   2360
       Visible         =   0   'False
       Width           =   4812
@@ -42,7 +80,7 @@ Begin VB.PropertyPage pagNewTabIcons
          ForeColor       =   &H000000FF&
          Height          =   410
          Left            =   0
-         TabIndex        =   48
+         TabIndex        =   47
          Top             =   0
          Width           =   3840
       End
@@ -54,7 +92,7 @@ Begin VB.PropertyPage pagNewTabIcons
       Left            =   15400
       ScaleHeight     =   2256
       ScaleWidth      =   1332
-      TabIndex        =   46
+      TabIndex        =   45
       Top             =   480
       Visible         =   0   'False
       Width           =   1330
@@ -66,7 +104,7 @@ Begin VB.PropertyPage pagNewTabIcons
       Left            =   12520
       ScaleHeight     =   492
       ScaleWidth      =   4092
-      TabIndex        =   45
+      TabIndex        =   44
       Top             =   0
       Visible         =   0   'False
       Width           =   4090
@@ -78,7 +116,7 @@ Begin VB.PropertyPage pagNewTabIcons
       Left            =   10000
       ScaleHeight     =   2736
       ScaleWidth      =   5412
-      TabIndex        =   44
+      TabIndex        =   43
       Top             =   500
       Visible         =   0   'False
       Width           =   5410
@@ -87,7 +125,7 @@ Begin VB.PropertyPage pagNewTabIcons
          ForeColor       =   &H80000011&
          Height          =   612
          Left            =   935
-         TabIndex        =   52
+         TabIndex        =   51
          Top             =   700
          Width           =   3772
       End
@@ -96,7 +134,7 @@ Begin VB.PropertyPage pagNewTabIcons
       Enabled         =   0   'False
       Interval        =   300
       Left            =   0
-      Top             =   7680
+      Top             =   7080
    End
    Begin VB.Timer tmrScrollCharMapToSelected 
       Enabled         =   0   'False
@@ -596,34 +634,10 @@ Begin VB.PropertyPage pagNewTabIcons
       Top             =   70
       Width           =   588
    End
-   Begin NewTabCtl.NewTab NewTab1 
-      Height          =   800
-      Left            =   70
-      TabIndex        =   43
-      Top             =   7620
-      Width           =   6540
-      _ExtentX        =   11536
-      _ExtentY        =   1397
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.4
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      TabHeight       =   579
-      AutoTabHeight   =   -1  'True
-      ControlVersion  =   12
-      TabCaption(0)   =   ""
-      TabCaption(1)   =   ""
-      TabCaption(2)   =   ""
-   End
    Begin VB.Label lblTabCaption 
       Height          =   252
       Left            =   4680
-      TabIndex        =   51
+      TabIndex        =   50
       Top             =   105
       Width           =   2452
    End
@@ -641,16 +655,16 @@ Begin VB.PropertyPage pagNewTabIcons
       EndProperty
       Height          =   252
       Left            =   3480
-      TabIndex        =   50
+      TabIndex        =   49
       Top             =   105
       Width           =   1092
    End
    Begin VB.Label Label2 
-      Caption         =   $"pagNewTabIcons.pgx":0000
+      Caption         =   $"pagNewTabIcons.pgx":0028
       ForeColor       =   &H00C00000&
       Height          =   612
       Left            =   144
-      TabIndex        =   49
+      TabIndex        =   48
       Top             =   600
       Width           =   6468
       WordWrap        =   -1  'True
@@ -934,6 +948,8 @@ Private mTDIMode As Boolean
 Private mFontListLoaded As Boolean
 Private mSubclassed As Boolean
 Private mPPHwnd As Long
+Private mDraggingSample As Boolean
+Private mMouseDown As Boolean
 
 Private Sub cboIconAlignment_Click()
     If Not mLoading And Not mShowingTabData Then Changed = True
@@ -1265,8 +1281,12 @@ Private Sub lblWarningImgSizes_Click()
     MsgBox mStrImagesDifferences, vbInformation
 End Sub
 
+Private Sub NewTab1_BeforeClick(ByVal CurrentSelectedTab As Long, NewSelectedTab As Long, Cancel As Boolean)
+    If mDraggingSample Then Cancel = True
+End Sub
+
 Private Sub NewTab1_Click(PreviousTab As Integer)
-    If Not mLoading And Not mShowingTabData Then
+    If Not mLoading And Not mShowingTabData And Not mDraggingSample Then
         mLoading = True
         mTab = NewTab1.TabSel
         ShowTabData
@@ -1282,6 +1302,9 @@ Private Sub NewTab1_Click(PreviousTab As Integer)
 End Sub
 
 Private Sub NewTab1_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    mMouseDown = True
+    tmrStartDraggingSample.Enabled = False
+    tmrStartDraggingSample.Enabled = True
     If mEnableHorizontalDragging Then
         If Button = vbLeftButton Then
             mXMouseDown = X
@@ -1296,19 +1319,27 @@ End Sub
 
 Private Sub NewTab1_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     If Not tmrTabChanged.Enabled Then
-        If mEnableHorizontalDragging Then
-            If Button = vbLeftButton Then
-                NewTab1.Left = NewTab1.Left + X - mXMouseDown
-                DoEvents
-            End If
-        End If
-        If mEnableVerticalDragging Then
-            If Button = vbLeftButton Then
-                NewTab1.Top = NewTab1.Top + Y - mYMouseDown
+        If Button = vbLeftButton Then
+            If mEnableHorizontalDragging Or mEnableVerticalDragging Then
+                If mEnableHorizontalDragging Then
+                    NewTab1.Left = NewTab1.Left + X - mXMouseDown
+                End If
+                If mEnableVerticalDragging Then
+                    NewTab1.Top = NewTab1.Top + Y - mYMouseDown
+                End If
                 DoEvents
             End If
         End If
     End If
+End Sub
+
+Private Sub NewTab1_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    If mDraggingSample Then
+        tmrRestoreSampleContainer.Enabled = False
+        tmrRestoreSampleContainer.Enabled = True
+    End If
+    tmrStartDraggingSample.Enabled = False
+    mMouseDown = False
 End Sub
 
 Private Sub picChar_Click(Index As Integer)
@@ -1508,23 +1539,7 @@ Private Sub PropertyPage_SelectionChanged()
     
     NewTab1.Width = iSC.Width
     NewTab1.Height = iSC.Height
-    If NewTab1.Width < picCharMap.Width Then
-        NewTab1.Left = (picCharMap.Width - NewTab1.Width) / 2
-    End If
-    If NewTab1.Width > PropertyPage.ScaleWidth Then
-        mEnableHorizontalDragging = True
-        NewTab1.ToolTipText = "Drag to move the tab control and see other tabs"
-    End If
-    If (iSC.Height - iSC.ClientHeight) > 800 Then
-        mEnableVerticalDragging = True
-        NewTab1.ToolTipText = "Drag to move the tab control and see other tabs"
-        NewTab1.Top = 8400 - (iSC.Height - iSC.ClientHeight)
-        If NewTab1.Rows = 1 Then
-            If (picCharMap.Top + picCharMap.Height + 60) > NewTab1.Top Then
-                NewTab1.Top = picCharMap.Top + picCharMap.Height + 60
-            End If
-        End If
-    End If
+    NewTab1.Left = 0
     
     If ((Timer - gPagTabsApplyTime) < 3) And (gPagTabsApplyTime <> 0) Then
         mTab = gPagTabsLastSelectedTab
@@ -1551,8 +1566,10 @@ End Sub
 Private Sub DoShowTabData()
     Dim t As Long
     Dim iSS As Long
+    Dim iTop As Long
     
     If mShowingTabData Then Exit Sub
+    If tmrRestoreSampleContainer.Enabled Then tmrRestoreSampleContainer_Timer
     mShowingTabData = True
     t = mTab
     txtTab.Text = t
@@ -1637,6 +1654,27 @@ Private Sub DoShowTabData()
     NewTab1.TabIconLeftOffset(t) = mTabData(t).IconLeftOffset
     NewTab1.TabIconTopOffset(t) = mTabData(t).IconTopOffset
     
+    If NewTab1.Width < picCharMap.Width Then
+        NewTab1.Left = (picCharMap.Width - NewTab1.Width) / 2
+    End If
+    NewTab1.ToolTipText = ""
+    If NewTab1.Width > PropertyPage.ScaleWidth Then
+        mEnableHorizontalDragging = True
+        NewTab1.ToolTipText = "Drag to move the tab control and see other tabs"
+    End If
+    If (NewTab1.Height - NewTab1.ClientHeight) > 800 Then
+        mEnableVerticalDragging = True
+        NewTab1.ToolTipText = "Drag to move the tab control and see other tabs"
+    End If
+    
+    If NewTab1.Rows = 1 Then
+        NewTab1.Top = 0
+    Else
+        iTop = picSampleContainer.ScaleHeight - (NewTab1.GetTabTop(NewTab1.Tab) + NewTab1.GetTabHeight(NewTab1.Tab))
+        If iTop > 0 Then iTop = 0
+        NewTab1.Top = iTop
+    End If
+    
     mShowingTabData = False
 End Sub
 
@@ -1666,6 +1704,30 @@ Private Sub tmrClick_Timer()
     End If
 End Sub
 
+Private Sub tmrRestoreSampleContainer_Timer()
+    tmrRestoreSampleContainer.Enabled = False
+    Set NewTab1.Container = picSampleContainer
+    NewTab1.Move NewTab1.Left - picSampleContainer.Left, NewTab1.Top - picSampleContainer.Top
+    mDraggingSample = False
+End Sub
+
+Private Sub tmrStartDraggingSample_Timer()
+    Const WM_SETREDRAW = &HB
+    
+    tmrStartDraggingSample.Enabled = False
+    If mMouseDown Then
+        If Not tmrRestoreSampleContainer.Enabled Then
+            SendMessage PropertyPage.hWnd, WM_SETREDRAW, 0, 0
+            NewTab1.Visible = False
+            Set NewTab1.Container = Me
+            NewTab1.Visible = True
+            NewTab1.Move NewTab1.Left + picSampleContainer.Left, NewTab1.Top + picSampleContainer.Top
+            SendMessage PropertyPage.hWnd, WM_SETREDRAW, -1, 0
+            mDraggingSample = True
+        End If
+    End If
+End Sub
+
 Private Sub tmrTabChanged_Timer()
     tmrTabChanged.Enabled = False
 End Sub
@@ -1688,6 +1750,7 @@ End Sub
 
 Private Sub txtTab_Change()
     NewTab1.TabSel = Val(txtTab.Text)
+    If Not mLoading Then Changed = True
 End Sub
 
 Private Function WindowsUnderMouse() As Long

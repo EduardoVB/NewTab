@@ -18,11 +18,49 @@ Begin VB.PropertyPage pagNewTabTabs
    PaletteMode     =   0  'Halftone
    ScaleHeight     =   8508
    ScaleWidth      =   6804
+   Begin VB.Timer tmrStartDraggingSample 
+      Enabled         =   0   'False
+      Interval        =   500
+      Left            =   720
+      Top             =   7080
+   End
+   Begin VB.Timer tmrRestoreSampleContainer 
+      Enabled         =   0   'False
+      Interval        =   3000
+      Left            =   360
+      Top             =   7080
+   End
+   Begin VB.PictureBox picSampleContainer 
+      BorderStyle     =   0  'None
+      Height          =   972
+      Left            =   120
+      ScaleHeight     =   972
+      ScaleWidth      =   6612
+      TabIndex        =   44
+      Top             =   7440
+      Width           =   6612
+      Begin NewTabCtl.NewTab NewTab1 
+         Height          =   804
+         Left            =   0
+         TabIndex        =   45
+         Top             =   0
+         Width           =   6540
+         _extentx        =   11536
+         _extenty        =   1397
+         font            =   "pagNewTabTabs.pgx":0000
+         tabheight       =   579
+         autotabheight   =   -1
+         controlversion  =   12
+         tabcaption(0)   =   ""
+         tabcaption(1)   =   ""
+         tabcaption(2)   =   ""
+      End
+   End
    Begin VB.Timer tmrTabChanged 
       Enabled         =   0   'False
       Interval        =   300
-      Left            =   120
-      Top             =   7620
+      Left            =   0
+      Top             =   7080
    End
    Begin VB.PictureBox picTabKeyHolder 
       Appearance      =   0  'Flat
@@ -355,30 +393,6 @@ Begin VB.PropertyPage pagNewTabTabs
       Top             =   70
       Width           =   588
    End
-   Begin NewTabCtl.NewTab NewTab1 
-      Height          =   804
-      Left            =   192
-      TabIndex        =   44
-      Top             =   7560
-      Width           =   6540
-      _ExtentX        =   11536
-      _ExtentY        =   1397
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   8.4
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      TabHeight       =   579
-      AutoTabHeight   =   -1  'True
-      ControlVersion  =   11
-      TabCaption(0)   =   ""
-      TabCaption(1)   =   ""
-      TabCaption(2)   =   ""
-   End
    Begin VB.Line Line3 
       BorderColor     =   &H80000006&
       BorderStyle     =   3  'Dot
@@ -471,7 +485,7 @@ Begin VB.PropertyPage pagNewTabTabs
       Width           =   1370
    End
    Begin VB.Label Label4 
-      Caption         =   $"pagNewTabTabs.pgx":0000
+      Caption         =   $"pagNewTabTabs.pgx":0028
       ForeColor       =   &H00C00000&
       Height          =   900
       Left            =   2240
@@ -660,6 +674,8 @@ Private mUniTextTabTagSync As Boolean
 Private WithEvents mUniTextTabKey As cUniTextBox
 Attribute mUniTextTabKey.VB_VarHelpID = -1
 Private mUniTextTabKeySync As Boolean
+Private mDraggingSample As Boolean
+Private mMouseDown As Boolean
 
 Private mSC As NewTab
 
@@ -1001,6 +1017,19 @@ Private Sub mUniTextTabKey_LostFocus()
 End Sub
 
 
+Private Sub NewTab1_BeforeClick(ByVal CurrentSelectedTab As Long, NewSelectedTab As Long, Cancel As Boolean)
+    If mDraggingSample Then Cancel = True
+End Sub
+
+Private Sub NewTab1_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    If mDraggingSample Then
+        tmrRestoreSampleContainer.Enabled = False
+        tmrRestoreSampleContainer.Enabled = True
+    End If
+    tmrStartDraggingSample.Enabled = False
+    mMouseDown = False
+End Sub
+
 Private Sub picCustomColor_DblClick()
     cmdChangeCustomColor_Click
 End Sub
@@ -1207,15 +1236,6 @@ Private Sub PropertyPage_SelectionChanged()
     NewTab1.Width = mSC.Width
     NewTab1.Height = mSC.Height
     NewTab1.Left = (PropertyPage.ScaleWidth - NewTab1.Width) / 2
-    If NewTab1.Width > PropertyPage.ScaleWidth Then
-        mEnableHorizontalDragging = True
-        NewTab1.ToolTipText = "Drag to move the tab control and see other tabs"
-    End If
-    If (mSC.Height - mSC.ClientHeight) > 800 Then
-        mEnableVerticalDragging = True
-        NewTab1.ToolTipText = "Drag to move the tab control and see other tabs"
-        NewTab1.Top = 8400 - (mSC.Height - mSC.ClientHeight)
-    End If
     
     If ((Timer - gPagTabsApplyTime) < 3) And (gPagTabsApplyTime <> 0) Then
         mTab = gPagTabsLastSelectedTab
@@ -1258,8 +1278,10 @@ End Sub
 
 Private Sub DoShowTabData()
     Dim t As Long
+    Dim iTop As Long
     
     If mShowingTabData Then Exit Sub
+    If tmrRestoreSampleContainer.Enabled Then tmrRestoreSampleContainer_Timer
     mShowingTabData = True
     t = mTab
     txtTab.Text = t
@@ -1302,6 +1324,34 @@ Private Sub DoShowTabData()
     
     ShowCustomColor
     
+    If (NewTab1.Left + NewTab1.GetTabLeft(mTab) + NewTab1.GetTabWidth(mTab)) > PropertyPage.ScaleWidth Then
+        tmrTabChanged.Enabled = True
+        NewTab1.Left = PropertyPage.ScaleWidth - (NewTab1.GetTabLeft(mTab) + NewTab1.GetTabWidth(mTab)) - 120
+    ElseIf (NewTab1.Left + NewTab1.GetTabLeft(mTab)) < 0 Then
+        tmrTabChanged.Enabled = True
+        NewTab1.Left = 120 - NewTab1.GetTabLeft(mTab)
+    End If
+    
+    NewTab1.ToolTipText = ""
+    If NewTab1.Width > PropertyPage.ScaleWidth Then
+        mEnableHorizontalDragging = True
+        NewTab1.ToolTipText = "Drag to move the tab control and see other tabs"
+    End If
+    If (NewTab1.Height - NewTab1.ClientHeight) > 800 Then
+        mEnableVerticalDragging = True
+        NewTab1.ToolTipText = "Drag to move the tab control and see other tabs"
+    End If
+    
+    If NewTab1.Rows = 1 Then
+        NewTab1.Top = 0
+    Else
+        iTop = picSampleContainer.ScaleHeight - (NewTab1.GetTabTop(NewTab1.Tab) + NewTab1.GetTabHeight(NewTab1.Tab))
+        If iTop > 0 Then iTop = 0
+        NewTab1.Top = iTop
+    End If
+    
+    'Label13.Caption = NewTab1.Tab & " " & NewTab1.GetTabLeft(NewTab1.Tab) & " " & NewTab1.GetTabTop(NewTab1.Tab)
+
     mShowingTabData = False
 End Sub
 
@@ -1407,6 +1457,15 @@ Private Function MouseIsPressingAButton() As Boolean
     End If
 End Function
 
+Private Sub tmrRestoreSampleContainer_Timer()
+    tmrRestoreSampleContainer.Enabled = False
+    If mDraggingSample Then
+        Set NewTab1.Container = picSampleContainer
+        NewTab1.Move NewTab1.Left - picSampleContainer.Left, NewTab1.Top - picSampleContainer.Top
+        mDraggingSample = False
+    End If
+End Sub
+
 Private Sub tmrShowTabData_Timer()
     tmrShowTabData.Enabled = False
     DoShowTabData
@@ -1446,6 +1505,23 @@ Private Function FontsAreEqual(nFont1 As StdFont, nFont2 As StdFont) As Boolean
         End If
     End If
 End Function
+
+Private Sub tmrStartDraggingSample_Timer()
+    Const WM_SETREDRAW = &HB
+    
+    tmrStartDraggingSample.Enabled = False
+    If mMouseDown Then
+        If Not tmrRestoreSampleContainer.Enabled Then
+            SendMessage PropertyPage.hWnd, WM_SETREDRAW, 0, 0
+            NewTab1.Visible = False
+            Set NewTab1.Container = Me
+            NewTab1.Visible = True
+            NewTab1.Move NewTab1.Left + picSampleContainer.Left, NewTab1.Top + picSampleContainer.Top
+            SendMessage PropertyPage.hWnd, WM_SETREDRAW, -1, 0
+            mDraggingSample = True
+        End If
+    End If
+End Sub
 
 Private Sub txtCustomColor_Change()
     Dim iColor As Long
@@ -1605,23 +1681,18 @@ Private Sub tmrTabChanged_Timer()
 End Sub
 
 Private Sub NewTab1_Click(PreviousTab As Integer)
-    If Not mLoading And Not mShowingTabData Then
+    If Not mLoading And Not mShowingTabData And Not mDraggingSample Then
         mLoading = True
         mTab = NewTab1.TabSel
         ShowTabData
         mLoading = False
     End If
-        
-    If (NewTab1.Left + NewTab1.GetTabLeft(mTab) + NewTab1.GetTabWidth(mTab)) > PropertyPage.ScaleWidth Then
-        tmrTabChanged.Enabled = True
-        NewTab1.Left = PropertyPage.ScaleWidth - (NewTab1.GetTabLeft(mTab) + NewTab1.GetTabWidth(mTab)) - 120
-    ElseIf (NewTab1.Left + NewTab1.GetTabLeft(mTab)) < 0 Then
-        tmrTabChanged.Enabled = True
-        NewTab1.Left = 120 - NewTab1.GetTabLeft(mTab)
-    End If
 End Sub
 
 Private Sub NewTab1_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
+    mMouseDown = True
+    tmrStartDraggingSample.Enabled = False
+    tmrStartDraggingSample.Enabled = True
     If mEnableHorizontalDragging Then
         If Button = vbLeftButton Then
             mXMouseDown = X
@@ -1636,15 +1707,14 @@ End Sub
 
 Private Sub NewTab1_MouseMove(Button As Integer, Shift As Integer, X As Single, Y As Single)
     If Not tmrTabChanged.Enabled Then
-        If mEnableHorizontalDragging Then
-            If Button = vbLeftButton Then
-                NewTab1.Left = NewTab1.Left + X - mXMouseDown
-                DoEvents
-            End If
-        End If
-        If mEnableVerticalDragging Then
-            If Button = vbLeftButton Then
-                NewTab1.Top = NewTab1.Top + Y - mYMouseDown
+        If Button = vbLeftButton Then
+            If mEnableHorizontalDragging Or mEnableVerticalDragging Then
+                If mEnableHorizontalDragging Then
+                    NewTab1.Left = NewTab1.Left + X - mXMouseDown
+                End If
+                If mEnableVerticalDragging Then
+                    NewTab1.Top = NewTab1.Top + Y - mYMouseDown
+                End If
                 DoEvents
             End If
         End If
@@ -1653,5 +1723,5 @@ End Sub
 
 Private Sub txtTab_Change()
     NewTab1.TabSel = Val(txtTab.Text)
-    If Not mSC.Subclassed Then Changed = True
+    If Not mSC.Subclassed And Not mLoading Then Changed = True
 End Sub
