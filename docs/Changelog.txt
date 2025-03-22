@@ -1,3 +1,4 @@
+2025-03-22 Fixed bug in Tabs property page deleting a tab when tabs have a TabKey assigned.
 2025-03-12 Improvement in showing he sample in property pages Tabs and Tab Icons.
 2025-03-01 Fixed a ug in TDI forms when closing a form is canceled by the user.
 2025-02-01 Added in Refresh method the refresh of the TDI forms icons.
