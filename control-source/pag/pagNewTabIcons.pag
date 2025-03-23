@@ -45,15 +45,23 @@ Begin VB.PropertyPage pagNewTabIcons
          TabIndex        =   53
          Top             =   0
          Width           =   6540
-         _extentx        =   11536
-         _extenty        =   1397
-         font            =   "pagNewTabIcons.pgx":0000
-         tabheight       =   579
-         autotabheight   =   -1
-         controlversion  =   12
-         tabcaption(0)   =   ""
-         tabcaption(1)   =   ""
-         tabcaption(2)   =   ""
+         _ExtentX        =   11536
+         _ExtentY        =   1397
+         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+            Name            =   "Tahoma"
+            Size            =   8.4
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         TabHeight       =   579
+         AutoTabHeight   =   -1  'True
+         ControlVersion  =   12
+         TabCaption(0)   =   ""
+         TabCaption(1)   =   ""
+         TabCaption(2)   =   ""
       End
    End
    Begin VB.PictureBox picIconFontNote 
@@ -660,7 +668,7 @@ Begin VB.PropertyPage pagNewTabIcons
       Width           =   1092
    End
    Begin VB.Label Label2 
-      Caption         =   $"pagNewTabIcons.pgx":0028
+      Caption         =   $"pagNewTabIcons.pgx":0000
       ForeColor       =   &H00C00000&
       Height          =   612
       Left            =   144
@@ -1670,7 +1678,7 @@ Private Sub DoShowTabData()
     If NewTab1.Rows = 1 Then
         NewTab1.Top = 0
     Else
-        iTop = picSampleContainer.ScaleHeight - (NewTab1.GetTabTop(NewTab1.Tab) + NewTab1.GetTabHeight(NewTab1.Tab))
+        iTop = picSampleContainer.ScaleHeight - (NewTab1.GetTabTop(NewTab1.TabSel) + NewTab1.GetTabHeight(NewTab1.TabSel))
         If iTop > 0 Then iTop = 0
         NewTab1.Top = iTop
     End If

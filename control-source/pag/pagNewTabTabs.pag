@@ -1356,12 +1356,12 @@ Private Sub DoShowTabData()
     If NewTab1.Rows = 1 Then
         NewTab1.Top = 0
     Else
-        iTop = picSampleContainer.ScaleHeight - (NewTab1.GetTabTop(NewTab1.Tab) + NewTab1.GetTabHeight(NewTab1.Tab))
+        iTop = picSampleContainer.ScaleHeight - (NewTab1.GetTabTop(NewTab1.TabSel) + NewTab1.GetTabHeight(NewTab1.TabSel))
         If iTop > 0 Then iTop = 0
         NewTab1.Top = iTop
     End If
     
-    'Label13.Caption = NewTab1.Tab & " " & NewTab1.GetTabLeft(NewTab1.Tab) & " " & NewTab1.GetTabTop(NewTab1.Tab)
+    'Label13.Caption = NewTab1.TabSel & " " & NewTab1.GetTabLeft(NewTab1.TabSel) & " " & NewTab1.GetTabTop(NewTab1.TabSel)
 
     mShowingTabData = False
 End Sub
