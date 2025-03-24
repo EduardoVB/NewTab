@@ -1629,6 +1629,12 @@ NTTabOrientationConstants ENUMERATION
 	ssTabOrientationRight = 3
 	ntTabOrientationLeftHorizontal = 4
 	ntTabOrientationRightHorizontal = 5
+	ntTabOrientationTopRight = 6
+	ntTabOrientationBottomRight = 7
+	ntTabOrientationLeftTop = 8
+	ntTabOrientationRightBottom = 9
+	ntTabOrientationLeftTopHorizontal = 10
+	ntTabOrientationRightBottomHorizontal = 11
 
 NTTabTransitionConstants ENUMERATION
 

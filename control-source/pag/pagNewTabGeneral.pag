@@ -1527,6 +1527,12 @@ Private Sub tmrLoad_Timer()
     cboTabOrientation.AddItem ssTabOrientationRight & " - ssTabOrientationRight": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ssTabOrientationRight
     cboTabOrientation.AddItem ntTabOrientationLeftHorizontal & " - ntTabOrientationLeftHorizontal": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ntTabOrientationLeftHorizontal
     cboTabOrientation.AddItem ntTabOrientationRightHorizontal & " - ntTabOrientationRightHorizontal": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ntTabOrientationRightHorizontal
+    cboTabOrientation.AddItem ntTabOrientationTopRight & " - ntTabOrientationTopRight": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ntTabOrientationTopRight
+    cboTabOrientation.AddItem ntTabOrientationBottomRight & " - ntTabOrientationBottomRight": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ntTabOrientationBottomRight
+    cboTabOrientation.AddItem ntTabOrientationLeftTop & " - ntTabOrientationLeftTop": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ntTabOrientationLeftTop
+    cboTabOrientation.AddItem ntTabOrientationRightBottom & " - ntTabOrientationRightBottom": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ntTabOrientationRightBottom
+    cboTabOrientation.AddItem ntTabOrientationLeftTopHorizontal & " - ntTabOrientationLeftTopHorizontal": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ntTabOrientationLeftTopHorizontal
+    cboTabOrientation.AddItem ntTabOrientationRightBottomHorizontal & " - ntTabOrientationRightBottomHorizontal": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ntTabOrientationRightBottomHorizontal
     
     cboBackStyle.Clear
     cboBackStyle.AddItem ntTransparent & " - ntTransparent": cboBackStyle.ItemData(cboBackStyle.NewIndex) = ntTransparent
