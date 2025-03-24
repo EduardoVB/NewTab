@@ -8912,6 +8912,10 @@ Private Sub DrawInactiveBodyPart(ByVal nLeft As Long, ByVal nTop As Long, ByVal 
                             DrawRoundedCorner ntCornerTopRight, iLinePos, nTop, mFlatRoundnessTopDPIScaled, iLineColor
                         End If
                     End If
+                If mFlatRoundnessTopDPIScaled > 0 Then
+                    ' top left inactive rounded corner
+                    DrawRoundedCorner ntCornerTopleft, nLeft, nTop, mFlatRoundnessTopDPIScaled, iLineColor
+                End If
                 End If
             Else
                 If ((mTabOrientation <> ssTabOrientationLeft) And (mTabOrientation <> ntTabOrientationLeftTop) And (mTabOrientation <> ntTabOrientationLeftHorizontal) And (mTabOrientation <> ntTabOrientationLeftTopHorizontal)) Or (Not mAppearanceIsPP) Then
@@ -8920,11 +8924,6 @@ Private Sub DrawInactiveBodyPart(ByVal nLeft As Long, ByVal nTop As Long, ByVal 
                 Else
                     picDraw.Line (iLinePos, nTop)-(iLinePos, nTop + nHeight), m3DHighlightH
                 End If
-            End If
-            
-            If mFlatRoundnessTopDPIScaled > 0 Then
-                ' top left inactive rounded corner
-                DrawRoundedCorner ntCornerTopleft, nLeft, nTop, mFlatRoundnessTopDPIScaled, iLineColor
             End If
         End If
         
