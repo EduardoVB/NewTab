@@ -8333,11 +8333,7 @@ Private Sub DrawTab(ByVal nTab As Long)
                         iExtI = iExtI - 3
                     End If
                 Else
-                    If iRoundedTabs Then
-                        iLeftOffset = -1
-                    Else
-                        iLeftOffset = 0
-                    End If
+                    iLeftOffset = -1
                     iTopOffset = 0
                     iRightOffset = -1
                     iBottomOffset = 6
