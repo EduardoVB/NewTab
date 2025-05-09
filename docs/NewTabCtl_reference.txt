@@ -128,7 +128,7 @@ ControlLeft property:
 	Type: Single
 	
 	Additional parameter(s):
-	    In	Required	ControlName	As	String
+	    In/Out	Required	nControl	As	Variant
 	Returns or sets the Left of a contained control.
 	The argument ControlName must be the name of a contained control.
 
@@ -895,9 +895,17 @@ WordWrap property:
 
 Methods: 
 
+ControlGetTab function:
+	Return Type:	Long
+	Parameter(s):
+	    In/Out	Required	nControl	As	Variant
+
+	Returns the tab where a control is.
+
+
 ControlMove method:
 	Parameter(s):
-	    In	Required	nControlName	As	String
+	    In/Out	Required	nControl	As	Variant
 	    In	Required	Left	As	Single
 	    In	Required	Top	As	Single
 	    In	Optional	Width	As	Variant
@@ -909,7 +917,7 @@ ControlMove method:
 
 ControlSetTab method:
 	Parameter(s):
-	    In	Required	nControlName	As	String
+	    In/Out	Required	nControl	As	Variant
 	    In	Required	nTab	As	Long
 
 	Sets or change the tab where a contained control is.

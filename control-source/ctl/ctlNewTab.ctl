@@ -6084,6 +6084,18 @@ Private Function ControlIsInTab(nCtlName As String, ByVal nTab As Long) As Boole
         End If
     Next c
 End Function
+
+' the same as ControlIsInTab but it expects nCtlName LCase
+Private Function ControlIsInTab2(nCtlName As String, ByVal nTab As Long) As Boolean
+    Dim c As Long
+    
+    For c = 1 To mTabData(nTab).Controls.Count
+        If LCase$(mTabData(nTab).Controls(c)) = nCtlName Then
+            ControlIsInTab2 = True
+            Exit Function
+        End If
+    Next c
+End Function
     
 Private Sub UserControl_Terminate()
     DoTerminate
@@ -13498,7 +13510,7 @@ Attribute LeftOffsetToHide.VB_ProcData.VB_Invoke_Property = ";Data"
 End Property
 
 
-Public Property Get ControlLeft(ByVal ControlName As String) As Single
+Public Property Get ControlLeft(nControl As Variant) As Single
 Attribute ControlLeft.VB_Description = "Returns/sets the left of the contained control whose name was provided by the ControlName parameter."
 Attribute ControlLeft.VB_ProcData.VB_Invoke_Property = ";Position"
     Dim iCtl As Object
@@ -13508,9 +13520,24 @@ Attribute ControlLeft.VB_ProcData.VB_Invoke_Property = ";Position"
     Dim iIndex As Long
     Dim iLeft As Single
     Dim iIsLine As Boolean
+    Dim iControlName As String
     
-    ControlName = LCase$(ControlName)
-    iWithIndex = InStr(ControlName, "(") > 0
+    If IsObject(nControl) Then
+        On Error Resume Next
+        iControlName = LCase$(nControl.Name)
+        On Error GoTo 0
+        If iControlName = "" Then
+            RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
+            Exit Function
+        End If
+    ElseIf VarType(nControl) = vbString Then
+        iControlName = LCase$(nControl)
+    Else
+        RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
+        Exit Function
+    End If
+    
+    iWithIndex = InStr(iControlName, "(") > 0
     For Each iCtl In UserControlContainedControls
         iName = LCase$(iCtl.Name)
         If iWithIndex Then
@@ -13522,13 +13549,13 @@ Attribute ControlLeft.VB_ProcData.VB_Invoke_Property = ";Position"
                 iName = iName & "(" & iIndex & ")"
             End If
         End If
-        If iName = ControlName Then
+        If iName = iControlName Then
             iFound = True
             Exit For
         End If
     Next
     If Not iFound Then
-        RaiseError 1501, , "Control not found."
+        RaiseError 1501, , "nControl not found."
     Else
         iIsLine = TypeName(iCtl) = "Line"
         iLeft = 0
@@ -13547,17 +13574,32 @@ Attribute ControlLeft.VB_ProcData.VB_Invoke_Property = ";Position"
     End If
 End Property
 
-Public Property Let ControlLeft(ByVal ControlName As String, ByVal Left As Single)
+Public Property Let ControlLeft(nControl As Variant, ByVal Left As Single)
     Dim iCtl As Object
     Dim iFound As Boolean
     Dim iWithIndex As Boolean
     Dim iName As String
     Dim iIndex As Long
+    Dim iControlName As String
     
     Left = Left - mPendingLeftOffset
     
-    ControlName = LCase$(ControlName)
-    iWithIndex = InStr(ControlName, "(") > 0
+    If IsObject(nControl) Then
+        On Error Resume Next
+        iControlName = LCase$(nControl.Name)
+        On Error GoTo 0
+        If iControlName = "" Then
+            RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
+            Exit Property
+        End If
+    ElseIf VarType(nControl) = vbString Then
+        iControlName = LCase$(nControl)
+    Else
+        RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
+        Exit Property
+    End If
+    
+    iWithIndex = InStr(iControlName, "(") > 0
     For Each iCtl In UserControlContainedControls
         iName = LCase$(iCtl.Name)
         If iWithIndex Then
@@ -13569,7 +13611,7 @@ Public Property Let ControlLeft(ByVal ControlName As String, ByVal Left As Singl
                 iName = iName & "(" & iIndex & ")"
             End If
         End If
-        If iName = ControlName Then
+        If iName = iControlName Then
             iFound = True
             Exit For
         End If
@@ -13585,7 +13627,7 @@ Public Property Let ControlLeft(ByVal ControlName As String, ByVal Left As Singl
     End If
 End Property
 
-Public Sub ControlMove(ByVal nControlName As String, ByVal Left As Single, ByVal Top As Single, Optional ByVal Width As Variant, Optional ByVal Height As Variant, Optional ByVal IndexOfOtherTabToMoveTheControl As Long = -1)
+Public Sub ControlMove(nControl As Variant, ByVal Left As Single, ByVal Top As Single, Optional ByVal Width As Variant, Optional ByVal Height As Variant, Optional ByVal IndexOfOtherTabToMoveTheControl As Long = -1)
 Attribute ControlMove.VB_Description = "Replaces the ControlName.Move method. The difference is that it takes into account the Left offset of controls on inactive tabs."
     Dim iCtl As Object
     Dim iFound As Boolean
@@ -13597,11 +13639,26 @@ Attribute ControlMove.VB_Description = "Replaces the ControlName.Move method. Th
     Dim c As Long
     Dim iIsLine As Boolean
     Dim iAuxLeft As Single
+    Dim iControlName As String
     
     Left = Left - mPendingLeftOffset
     
-    nControlName = LCase$(nControlName)
-    iWithIndex = InStr(nControlName, "(") > 0
+    If IsObject(nControl) Then
+        On Error Resume Next
+        iControlName = LCase$(nControl.Name)
+        On Error GoTo 0
+        If iControlName = "" Then
+            RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
+            Exit Sub
+        End If
+    ElseIf VarType(nControl) = vbString Then
+        iControlName = LCase$(nControl)
+    Else
+        RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
+        Exit Sub
+    End If
+    
+    iWithIndex = InStr(iControlName, "(") > 0
     For Each iCtl In UserControlContainedControls
         iName = LCase$(iCtl.Name)
         If iWithIndex Then
@@ -13613,11 +13670,12 @@ Attribute ControlMove.VB_Description = "Replaces the ControlName.Move method. Th
                 iName = iName & "(" & iIndex & ")"
             End If
         End If
-        If iName = nControlName Then
+        If iName = iControlName Then
             iFound = True
             Exit For
         End If
     Next
+    
     If Not iFound Then
         RaiseError 1501, , "Control not found."
     Else
@@ -13675,7 +13733,9 @@ Attribute ControlMove.VB_Description = "Replaces the ControlName.Move method. Th
                 Next
                 If iFound Then Exit For
             Next
+            On Error Resume Next
             mTabData(IndexOfOtherTabToMoveTheControl).Controls.Add iCtlName, iCtlName
+            On Error GoTo 0
             If (iAuxLeft < -mLeftThresholdHided) And (IndexOfOtherTabToMoveTheControl = mTab) Then
                 If iIsLine Then
                     iCtl.X1 = iCtl.X1 + mLeftOffsetToHide
@@ -13695,41 +13755,85 @@ Attribute ControlMove.VB_Description = "Replaces the ControlName.Move method. Th
     End If
 End Sub
 
-Public Sub ControlSetTab(ByVal nControlName As String, ByVal nTab As Long)
-Attribute ControlSetTab.VB_Description = "Sets or change the tab where a contained control is."
+Public Function ControlGetTab(nControl As Variant) As Long
+Attribute ControlGetTab.VB_Description = "Returns the tab where a control is."
+    Dim iTab As Long
     Dim iControlName As String
+    
+    If IsObject(nControl) Then
+        On Error Resume Next
+        iControlName = LCase$(nControl.Name)
+        On Error GoTo 0
+        If iControlName = "" Then
+            RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
+            Exit Function
+        End If
+    ElseIf VarType(nControl) = vbString Then
+        iControlName = LCase$(nControl)
+    Else
+        RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
+        Exit Function
+    End If
+    
+    ControlGetTab = -1
+    For iTab = 0 To mTabs - 1
+        If ControlIsInTab2(iControlName, iTab) Then
+            ControlGetTab = iTab
+            Exit For
+        End If
+    Next
+End Function
+
+Public Sub ControlSetTab(nControl As Variant, ByVal nTab As Long)
+Attribute ControlSetTab.VB_Description = "Sets or change the tab where a contained control is."
     Dim iCtl As Object
     Dim iWithIndex As Boolean
     Dim iName As String
     Dim iIndex As Long
     Dim iFound As Boolean
+    Dim iControlName As String
     
-    iControlName = LCase$(nControlName)
-    iWithIndex = InStr(iControlName, "(") > 0
-    For Each iCtl In UserControlContainedControls
-        iName = LCase$(iCtl.Name)
-        If iWithIndex Then
-            iIndex = -1
-            On Error Resume Next
-            iIndex = iCtl.Index
-            On Error GoTo 0
-            If iIndex <> -1 Then
-                iName = iName & "(" & iIndex & ")"
-            End If
+    If IsObject(nControl) Then
+        On Error Resume Next
+        iControlName = LCase$(nControl.Name)
+        On Error GoTo 0
+        If iControlName = "" Then
+            RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
+            Exit Sub
         End If
-        If iName = iControlName Then
-            iFound = True
-            Exit For
-        End If
-    Next
-    If Not iFound Then
-        RaiseError 1501, , "Control not found."
+    ElseIf VarType(nControl) = vbString Then
+        iControlName = LCase$(nControl)
     Else
-        If TypeName(iCtl) = "Line" Then
-            ControlMove nControlName, ControlLeft(nControlName), iCtl.Y1, iCtl.X2 - iCtl.X1, iCtl.Y2 - iCtl.Y1, nTab
+        RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
+        Exit Sub
+    End If
+    
+    If ControlGetTab(iControlName) <> nTab Then
+        iWithIndex = InStr(iControlName, "(") > 0
+        For Each iCtl In UserControlContainedControls
+            iName = LCase$(iCtl.Name)
+            If iWithIndex Then
+                iIndex = -1
+                On Error Resume Next
+                iIndex = iCtl.Index
+                On Error GoTo 0
+                If iIndex <> -1 Then
+                    iName = iName & "(" & iIndex & ")"
+                End If
+            End If
+            If iName = iControlName Then
+                iFound = True
+                Exit For
+            End If
+        Next
+        If Not iFound Then
+            RaiseError 1501, , "Control not found."
         Else
-            ControlMove nControlName, ControlLeft(nControlName), iCtl.Top, iCtl.Width, iCtl.Height, nTab
-            MakeContainedControlsInSelTabVisible
+            If TypeName(iCtl) = "Line" Then
+                ControlMove iControlName, ControlLeft(iControlName), iCtl.Y1, iCtl.X2 - iCtl.X1, iCtl.Y2 - iCtl.Y1, nTab
+            Else
+                ControlMove iControlName, ControlLeft(iControlName), iCtl.Top, iCtl.Width, iCtl.Height, nTab
+            End If
         End If
     End If
 End Sub
