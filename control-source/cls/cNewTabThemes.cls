@@ -11,7 +11,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
-Attribute VB_Description = "Returns the colection of ""Themes""."
+Attribute VB_Description = "Returns the collection of avalable Themes."
 Option Explicit
 
 Event ThemeRenamed()

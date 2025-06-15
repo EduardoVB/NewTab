@@ -11,7 +11,7 @@ Attribute VB_GlobalNameSpace = False
 Attribute VB_Creatable = False
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
-Attribute VB_Description = """Themes"" are a set of property settings stored together."
+Attribute VB_Description = "A Theme is a set of property settings stored together."
 Option Explicit
 
 Private Declare Function HashData Lib "shlwapi" (ByVal pbData As Long, ByVal cbData As Long, ByRef pbHash As Any, ByVal cbHash As Long) As Long

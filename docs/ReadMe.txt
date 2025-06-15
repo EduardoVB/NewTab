@@ -16,5 +16,5 @@ Code for the manifest file to make a SxS installation:
 
   <file name="NewTab01.ocx">
     <typelib tlbid="{66E63055-5A66-4C79-9327-4BC077858695}" version="14.0" flags="control" helpdir="" />
-    <comClass clsid="{6C9D299A-B6CC-40B8-A155-4D3F154F6584}" tlbid="{66E63055-5A66-4C79-9327-4BC077858695}" threadingModel="Apartment" progid="NewTabCtl.NewTab" miscStatusIcon="recomposeonresize,cantlinkinside,insideout,activatewhenvisible,simpleframe,setclientsitefirst" description="Tabbed control for VB6." />
+    <comClass clsid="{D9DACE39-8348-4FC3-8BBF-9178D817C34B}" tlbid="{66E63055-5A66-4C79-9327-4BC077858695}" threadingModel="Apartment" progid="NewTabCtl.NewTab" miscStatusIcon="recomposeonresize,cantlinkinside,insideout,activatewhenvisible,alignable,simpleframe,setclientsitefirst" description="NewTab: tabbed control" />
   </file>
