@@ -13521,10 +13521,12 @@ Attribute ControlLeft.VB_ProcData.VB_Invoke_Property = ";Position"
     Dim iLeft As Single
     Dim iIsLine As Boolean
     Dim iControlName As String
+    Dim iObj As Object
     
     If IsObject(nControl) Then
         On Error Resume Next
-        iControlName = LCase$(nControl.Name)
+        Set iObj = nControl
+        iControlName = LCase$(ControlName(iObj))
         On Error GoTo 0
         If iControlName = "" Then
             RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
@@ -13581,12 +13583,14 @@ Public Property Let ControlLeft(nControl As Variant, ByVal Left As Single)
     Dim iName As String
     Dim iIndex As Long
     Dim iControlName As String
+    Dim iObj As Object
     
     Left = Left - mPendingLeftOffset
     
     If IsObject(nControl) Then
         On Error Resume Next
-        iControlName = LCase$(nControl.Name)
+        Set iObj = nControl
+        iControlName = LCase$(ControlName(iObj))
         On Error GoTo 0
         If iControlName = "" Then
             RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
@@ -13640,12 +13644,14 @@ Attribute ControlMove.VB_Description = "Replaces the ControlName.Move method. Th
     Dim iIsLine As Boolean
     Dim iAuxLeft As Single
     Dim iControlName As String
+    Dim iObj As Object
     
     Left = Left - mPendingLeftOffset
     
     If IsObject(nControl) Then
         On Error Resume Next
-        iControlName = LCase$(nControl.Name)
+        Set iObj = nControl
+        iControlName = LCase$(ControlName(iObj))
         On Error GoTo 0
         If iControlName = "" Then
             RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
@@ -13759,10 +13765,12 @@ Public Function ControlGetTab(nControl As Variant) As Long
 Attribute ControlGetTab.VB_Description = "Returns the tab where a control is."
     Dim iTab As Long
     Dim iControlName As String
+    Dim iObj As Object
     
     If IsObject(nControl) Then
         On Error Resume Next
-        iControlName = LCase$(nControl.Name)
+        Set iObj = nControl
+        iControlName = LCase$(ControlName(iObj))
         On Error GoTo 0
         If iControlName = "" Then
             RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
@@ -13792,10 +13800,12 @@ Attribute ControlSetTab.VB_Description = "Sets or change the tab where a contain
     Dim iIndex As Long
     Dim iFound As Boolean
     Dim iControlName As String
+    Dim iObj As Object
     
     If IsObject(nControl) Then
         On Error Resume Next
-        iControlName = LCase$(nControl.Name)
+        Set iObj = nControl
+        iControlName = LCase$(ControlName(iObj))
         On Error GoTo 0
         If iControlName = "" Then
             RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
