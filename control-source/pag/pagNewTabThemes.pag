@@ -46,7 +46,7 @@ Begin VB.PropertyPage pagNewTabThemes
       EndProperty
       TabHeight       =   600
       AutoTabHeight   =   -1  'True
-      ControlVersion  =   10
+      ControlVersion  =   13
    End
    Begin VB.CommandButton cmdCompare 
       Caption         =   "Compare"
@@ -112,11 +112,11 @@ Begin VB.PropertyPage pagNewTabThemes
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      Height          =   250
+      Height          =   350
       Left            =   470
       TabIndex        =   9
       ToolTipText     =   "Project wide availability and portable to other computers when copying the project files"
-      Top             =   6840
+      Top             =   6790
       Width           =   6570
    End
    Begin VB.CheckBox chkSaveInControl 
@@ -242,7 +242,7 @@ Begin VB.PropertyPage pagNewTabThemes
          EndProperty
          TabHeight       =   600
          AutoTabHeight   =   -1  'True
-         ControlVersion  =   10
+         ControlVersion  =   13
       End
       Begin NewTabCtl.NewTab NewTab2 
          Height          =   2172
@@ -264,7 +264,7 @@ Begin VB.PropertyPage pagNewTabThemes
          EndProperty
          TabHeight       =   600
          AutoTabHeight   =   -1  'True
-         ControlVersion  =   10
+         ControlVersion  =   13
          TabCaption(3)   =   "Tab 3 wider caption"
          TabCaption(4)   =   "Tab 4 wider caption"
       End
@@ -904,7 +904,7 @@ Private Sub PropertyPage_SelectionChanged()
 
     LoadThemes
     
-    chkSaveInFile.Caption = "Save in a file in the project folder (file name: " & ConfigFileName & "), portable"
+    chkSaveInFile.Caption = "Save in a file in the project folder (file name: " & ConfigFileName & ")"
     Changed = False
     mThemesControl_Changed = False
     mThemesFile_Changed = False

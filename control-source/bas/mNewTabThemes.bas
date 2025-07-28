@@ -1,6 +1,7 @@
 Attribute VB_Name = "mNewTabThemes"
 Option Explicit
 
+Private Declare Function PathGetCharType Lib "shlwapi.dll" Alias "PathGetCharTypeW" (ByVal ch As Long) As Long
 Private Declare Function TranslateColor Lib "olepro32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As Long, Col As Long) As Long
 Private Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
 Private Declare Function FindWindow Lib "user32.dll" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As Long
@@ -102,11 +103,12 @@ Private Function ConfigFilePathInProjectFolder() As String
     If sValue = "" Then
         sValue = ClientProjectFolder & ConfigFileName
     End If
+    Debug.Print sValue
     ConfigFilePathInProjectFolder = sValue
 End Function
 
 Public Function ConfigFileName() As String
-    ConfigFileName = App.Title & "Themes.ntt"
+    ConfigFileName = App.EXEName & "_Themes.ntt"
 End Function
 
 Private Sub EnsureThemesLoaded()
@@ -918,5 +920,4 @@ Public Function IsValidOLE_COLOR(ByVal nColor As Long) As Boolean
     Const S_OK As Long = 0
     IsValidOLE_COLOR = (TranslateColor(nColor, 0, nColor) = S_OK)
 End Function
-
 

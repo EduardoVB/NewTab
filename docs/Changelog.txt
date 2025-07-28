@@ -1,3 +1,4 @@
+2025-07-27 Fix in the hemes property page 
 2025-07-22 Fix in functions ControlGetTab and ControlLeft when the first argument is a control object and it is part of a control array.
 2025-06-15 Fixed SxS information that was outdated.
 2025-05-09 Changed to OLE version 14.
