@@ -9065,7 +9065,8 @@ Private Sub DrawBody(ByVal nScaleHeight As Long)
             If (iFlatBodySeparationLineColor <> mBackColorTabs2) Then
                 If Not (((mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight)) And (mFlatBarHeightDPIScaled > 0) And mHighlightFlatBar) Then
                     If mFlatBodySeparationLineHeight = 1 Then
-                        picDraw.Line (IIf(iTopLeftCornerIsRounded, mFlatRoundnessTopDPIScaled, 0), mClientStart)-(mClientWidth - 1 - IIf(mFlatBorderMode = ntBorderSelectedTab, mFlatRoundnessTopDPIScaled, 0) - IIf(iTopRightCornerIsRounded, mFlatRoundnessTopDPIScaled, 0), mClientStart), iFlatBodySeparationLineColor
+                        'picDraw.Line (IIf(iTopLeftCornerIsRounded, mFlatRoundnessTopDPIScaled, 0), mClientStart)-(mClientWidth - 1 - IIf(mFlatBorderMode = ntBorderSelectedTab, mFlatRoundnessTopDPIScaled, 0) - IIf(iTopRightCornerIsRounded, mFlatRoundnessTopDPIScaled, 0), mClientStart), iFlatBodySeparationLineColor
+                        picDraw.Line (IIf(iTopLeftCornerIsRounded, mFlatRoundnessTopDPIScaled, 0), mClientStart)-(mClientWidth - 1 - IIf(mFlatBorderMode = ntBorderSelectedTab, mFlatRoundnessTopDPIScaled, 0), mClientStart), iFlatBodySeparationLineColor
                     ElseIf mFlatBodySeparationLineHeight > 1 Then
                         picDraw.Line (0, mClientStart + 1)-(mClientWidth - 2, mClientStart + mFlatBodySeparationLineHeightDPIScaled), iFlatBodySeparationLineColor, BF
                     End If
