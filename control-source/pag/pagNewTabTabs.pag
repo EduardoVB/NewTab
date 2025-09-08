@@ -58,7 +58,7 @@ Begin VB.PropertyPage pagNewTabTabs
          EndProperty
          TabHeight       =   579
          AutoTabHeight   =   -1  'True
-         ControlVersion  =   12
+         ControlVersion  =   13
          TabCaption(0)   =   ""
          TabCaption(1)   =   ""
          TabCaption(2)   =   ""
@@ -629,8 +629,6 @@ Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As I
 Private Const VK_LBUTTON = &H1
 Private Const VK_RBUTTON = &H2
 Private Const SM_SWAPBUTTON = 23&
-
-Private Const cCopyImageTTT As String = "Double click on the image to copy it to the clipboard"
 
 Private mLoading As Boolean
 

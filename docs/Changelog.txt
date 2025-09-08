@@ -1,3 +1,4 @@
+2025-09-08 Handled clipboard error in pagNewTabThemes and pagNewTabIcons.
 2025-09-04 Fix in right tab of rounded tabs.
 2025-07-27 Fix in the themes property page.
 2025-07-22 Fix in functions ControlGetTab and ControlLeft when the first argument is a control object and it is part of a control array.

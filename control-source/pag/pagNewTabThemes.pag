@@ -389,6 +389,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
 Option Explicit
 
+Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 Private Declare Function TranslateColor Lib "olepro32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As Long, Col As Long) As Long
 Private Declare Sub ColorRGBToHLS Lib "shlwapi" (ByVal clrRGB As Long, ByRef pwHue As Integer, ByRef pwLuminance As Integer, ByRef pwSaturation As Integer)
 Private Declare Function ColorHLSToRGB Lib "shlwapi" (ByVal wHue As Integer, ByVal wLuminance As Integer, ByVal wSaturation As Integer) As Long
@@ -677,8 +678,13 @@ Private Sub cmdCompare_Click()
     End If
     iStr = "List of properties of theme '" & cboThemes.Text & "' with different values compared to current settings: " & vbCrLf & vbCrLf & iStr
     If MsgBox("Copy to the clipboard?" & vbCrLf & vbCrLf & iStr, vbYesNo) = vbYes Then
+        On Error Resume Next
         Clipboard.Clear
         Clipboard.SetText iStr
+        If Err.Number Then
+            MsgBox "Clipboard error.", vbCritical
+        End If
+        On Error GoTo 0
     End If
 End Sub
 
@@ -773,8 +779,28 @@ Private Sub hscLum_Scroll()
 End Sub
 
 Private Sub mnuCopy_Click()
+    Dim iStr As String
+    
+    iStr = GetThemeStringFromControl(NewTab1, mAmbientBackColor, mAmbientForeColor)
+    On Error Resume Next
     Clipboard.Clear
-    Clipboard.SetText GetThemeStringFromControl(NewTab1, mAmbientBackColor, mAmbientForeColor)
+    Clipboard.SetText iStr
+    If Clipboard.GetText <> iStr Then
+        DoEvents
+        Clipboard.Clear
+        Clipboard.SetText iStr
+        If Clipboard.GetText <> iStr Then
+            DoEvents
+            Sleep 100
+            DoEvents
+            Err.Clear
+            Clipboard.Clear
+            Clipboard.SetText iStr
+            If Err.Number Then
+                MsgBox "Clipboard error.", vbCritical
+            End If
+        End If
+    End If
 End Sub
 
 Private Sub mnuPaste_Click()

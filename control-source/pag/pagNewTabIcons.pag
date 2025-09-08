@@ -58,7 +58,7 @@ Begin VB.PropertyPage pagNewTabIcons
          EndProperty
          TabHeight       =   579
          AutoTabHeight   =   -1  'True
-         ControlVersion  =   12
+         ControlVersion  =   13
          TabCaption(0)   =   ""
          TabCaption(1)   =   ""
          TabCaption(2)   =   ""
@@ -1356,33 +1356,53 @@ End Sub
 
 Private Sub picImgPic16_DblClick()
     If Not picImgPic16.Picture Is Nothing Then
+        On Error Resume Next
         Clipboard.Clear
         Clipboard.SetData picImgPic16.Picture
-        MsgBox "Image copied"
+        If Err.Number Then
+            MsgBox "Clipboard error.", vbCritical
+        Else
+            MsgBox "Image copied"
+        End If
     End If
 End Sub
 
 Private Sub picImgPic20_DblClick()
     If Not picImgPic20.Picture Is Nothing Then
+        On Error Resume Next
         Clipboard.Clear
         Clipboard.SetData picImgPic20.Picture
-        MsgBox "Image copied"
+        If Err.Number Then
+            MsgBox "Clipboard error.", vbCritical
+        Else
+            MsgBox "Image copied"
+        End If
     End If
 End Sub
 
 Private Sub picImgPic24_DblClick()
     If Not picImgPic24.Picture Is Nothing Then
+        On Error Resume Next
         Clipboard.Clear
         Clipboard.SetData picImgPic24.Picture
-        MsgBox "Image copied"
+        If Err.Number Then
+            MsgBox "Clipboard error.", vbCritical
+        Else
+            MsgBox "Image copied"
+        End If
     End If
 End Sub
 
 Private Sub picImgPicture_DblClick()
     If Not picImgPicture.Picture Is Nothing Then
+        On Error Resume Next
         Clipboard.Clear
         Clipboard.SetData picImgPicture.Picture
-        MsgBox "Image copied"
+        If Err.Number Then
+            MsgBox "Clipboard error.", vbCritical
+        Else
+            MsgBox "Image copied"
+        End If
     End If
 End Sub
 
