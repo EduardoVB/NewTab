@@ -10,7 +10,7 @@
 2026-07-17 Changed how the TDI modes show the close button and the TDI mode form the icon.
 2026-07-17 Added CloseButton property that determines if the tabs will have a close button, along with companion properties CloseButtonColor, CloseButtonColorHighlight, TabCloseButton and TabCloseButtonEnabled (these last two are fine grain for each tab).
 2026-07-17 Fixed some bugs in the positions of caption and icon in certain combinations of CaptionAlignment, IconAlignment and TabOrientation.
-2025-10-20 Changed parameters that identify tabs previously limited to tab indexes to allow TabKeys and tab captions as identifiers. For example in TabVisible, TabEnabled and other Tab* properties.
+2025-10-20 Changed parameters that identify tabs previously limited to tab indexes to allow TabKeys and tab captions as identifiers. For example in TabVisible, TabEnabled and other Tab* properties. Including the Tab property. For example this code works: NewTab1.Tab = "Tab 2".
 2025-09-08 Handled clipboard error in pagNewTabThemes and pagNewTabIcons.
 2025-09-04 Fix in right tab of rounded tabs.
 2025-07-27 Fix in the themes property page.
