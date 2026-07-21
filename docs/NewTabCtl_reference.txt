@@ -119,6 +119,21 @@ ClientWidth property:
 	They return the value in Twips.
 
 
+CloseButton property:
+	Type: Boolean
+	Returns/sets a value that determines if a close button (a 'x') is shown by default on the tabs, allowing the user to close them. Can be overridden per tab with the TabCloseButton property.
+
+
+CloseButtonColor property:
+	Type: Long
+	Returns/sets the color used to draw the close button (the 'x') of the tabs.
+
+
+CloseButtonColorHighlight property:
+	Type: Long
+	Returns/sets the color used to draw the close button (the 'x') of a tab when the mouse pointer is over it.
+
+
 Container property:
 	Type: Object
 	Returns the control's container.
@@ -329,6 +344,19 @@ HighlightModeSelectedTab property:
 HighlightTabExtraHeight property:
 	Type: Single
 	Returns or sets a value that determines the extra height that a tab will have when it is highlighted. This value is in units of the container. It must be between 0 (zero) and twice the TabHeight property value.
+
+
+HorizontalTabHeightStyle property:
+	Type: NTHorizontalTabHeightStyleConstants
+	Returns or sets a value that determines how much of the strip each tab takes up, for the Horizontal TabOrientations (LeftHorizontal, RightHorizontal, LeftTopHorizontal, RightBottomHorizontal) only.
+	
+	ntTHFill: tabs stretch to fill all available strip space.
+	
+	ntTHTabCaptionHeight: each tab gets just the height its own caption (wrapped if needed) + icon needs.
+	
+	ntTHMaxCaptionHeight: all tabs of a column equal: the height of the tallest tab in that column.
+	
+	ntTHFixed: respects the TabHeight property (global).
 
 
 hWnd property:
@@ -566,16 +594,32 @@ TabCaption property:
 	Type: String
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Long
+	    In	Required	nTab	As	Variant
 	Returns or sets the caption of a tab identified by the Index parameter.
 	Captions can have accelerators by adding "&" before the letter that will act as the accelerator.
+
+
+TabCloseButton property:
+	Type: NTAutoYesNoConstants
+	
+	Additional parameter(s):
+	    In	Required	nTab	As	Variant
+	Returns/sets if the specified tab shows a close button (a 'x'). ntYNAuto (the default) makes it follow the general CloseButton property.
+
+
+TabCloseButtonEnabled property:
+	Type: Boolean
+	
+	Additional parameter(s):
+	    In	Required	nTab	As	Variant
+	Returns/sets if the close button (the 'x') of the specified tab is enabled. When False, the button is shown grayed out and clicking it has no effect.
 
 
 TabControls property:
 	Type: Collection (Read only)
 	
 	Additional parameter(s):
-	    In	Required	nTab	As	Long
+	    In	Required	nTab	As	Variant
 	    In/Out	Optional	GetChilds	As	Boolean
 	Returns a collection of the controls that are inside a tab. The tab must be identified by the nTab parameter.
 	
@@ -588,7 +632,7 @@ TabCustomColor property:
 	Type: Long
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Long
+	    In	Required	nTab	As	Variant
 	    In	Optional	ColorID	As	NTTabCustomColorIDConstants	Default value: ntCCBackColorTab (0)
 	Returns or sets a custom color for a tab. It may be a color when it is inactive or active.
 	
@@ -599,7 +643,7 @@ TabData property:
 	Type: Long
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Long
+	    In	Required	nTab	As	Variant
 	Used to store any data as a Long value, similar to ListBox's ItemData. If the tabs are reordered, it will keep this data for this tab.
 
 
@@ -607,7 +651,7 @@ TabEnabled property:
 	Type: Boolean
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Long
+	    In	Required	nTab	As	Variant
 	Returns or sets a value that determines whether the tab identified by the Index argument enabled.
 
 
@@ -615,7 +659,7 @@ TabFixedWidth property:
 	Type: Long
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Long
+	    In	Required	nTab	As	Variant
 	Returns/sets a fixed width for a tab. To set it for its automatic width (according to the TabWidthStyle setting), set it to 0 (zero).
 	
 	Note: you can use the GetTabWidth function (or GetTabHeight for vertical orientations) for getting the normal size of the tab. That must be done while TabFixedWidth is set to 0 (zero).
@@ -632,7 +676,7 @@ TabIconCharHex property:
 	Type: String
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Long
+	    In	Required	nTab	As	Variant
 	Returns or sets a string representing the hexadecimal value of the character that will be used as the icon in the tab identified by the Index parameter. If this property is set, anything in the picture properties is ignored.
 
 
@@ -640,7 +684,7 @@ TabIconFont property:
 	Type: Font
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Long
+	    In	Required	nTab	As	Variant
 	Returns or sets the Font that will be used to draw the icon of the tab identified by the Index parameter.
 	Each tab can have a different font for its icon.
 
@@ -649,7 +693,7 @@ TabIconLeftOffset property:
 	Type: Long
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Long
+	    In	Required	nTab	As	Variant
 	Returns or sets the value in pixels of the offset for the left position when drawing the icon of the tab identified by the Index parameter. It can be negative.
 
 
@@ -657,7 +701,7 @@ TabIconTopOffset property:
 	Type: Long
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Long
+	    In	Required	nTab	As	Variant
 	Returns or sets the value in pixels of the offset for the top position when drawing the icon of the tab identified by the Index parameter. It can be negative.
 
 
@@ -665,7 +709,7 @@ TabKey property:
 	Type: String
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Long
+	    In	Required	nTab	As	Variant
 	A key that can be used to set the current/active/selected tab with the Tab property. Keys are case insensitive.
 	Or alternatively used to hold custom String data similar to TabTag.
 
@@ -703,7 +747,7 @@ TabPic16 property:
 	Type: Picture
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Long
+	    In	Required	nTab	As	Variant
 	Returns or sets the bitmap to be displayed on the tab specified by the Index parameter, when the application is DPI aware.
 	TabPic16 is used for 96 DPI, TabPic20 for 120 DPI and TabPic24 for 144 DPI. Others DPI setting are handled automatically.
 	The application need to have a manifest file to declare it as DPI aware.
@@ -715,7 +759,7 @@ TabPic20 property:
 	Type: Picture
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Long
+	    In	Required	nTab	As	Variant
 	Returns or sets the bitmap to be displayed on the tab specified by the Index parameter, when the application is DPI aware.
 	TabPic16 is used for 96 DPI, TabPic20 for 120 DPI and TabPic24 for 144 DPI. Others DPI setting are handled automatically.
 	The application need to have a manifest file to declare it as DPI aware.
@@ -727,7 +771,7 @@ TabPic24 property:
 	Type: Picture
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Long
+	    In	Required	nTab	As	Variant
 	Returns or sets the bitmap to be displayed on the tab specified by the Index parameter, when the application is DPI aware.
 	TabPic16 is used for 96 DPI, TabPic20 for 120 DPI and TabPic24 for 144 DPI. Others DPI setting are handled automatically.
 	The application need to have a manifest file to declare it as DPI aware.
@@ -739,7 +783,7 @@ TabPicture property:
 	Type: Picture
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Long
+	    In	Required	nTab	As	Variant
 	Returns or sets the bitmap or icon to display on the tab specified by the Index argument.
 
 
@@ -769,7 +813,7 @@ TabTag property:
 	Type: String
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Long
+	    In	Required	nTab	As	Variant
 	Similar to a Tag property, but for each tab. You can store any string there. If the tabs are reordered, it will keep this data for this tab.
 
 
@@ -777,7 +821,7 @@ TabToolTipText property:
 	Type: String
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Long
+	    In	Required	nTab	As	Variant
 	Returns or sets the text that will be shown as tooltip text when the mouse pointer is over the tab identified by the Index parameter.
 	If the tab has not a TabToolTipText set, it will show the control ToolTipText, if there is any text set on that property.
 
@@ -791,7 +835,7 @@ TabVisible property:
 	Type: Boolean
 	
 	Additional parameter(s):
-	    In	Required	Index	As	Long
+	    In	Required	nTab	As	Variant
 	Returns or sets a value that determines whether the tab identified by the Index will be visible.
 
 
@@ -910,7 +954,7 @@ ControlMove method:
 	    In	Required	Top	As	Single
 	    In	Optional	Width	As	Variant
 	    In	Optional	Height	As	Variant
-	    In	Optional	IndexOfOtherTabToMoveTheControl	As	Long	Default value: -1
+	    In	Optional	TabToMoveTheControl	As	Variant
 
 	Replaces the ControlName.Move method. The difference is that it takes into account the Left offset of controls on inactive tabs.
 
@@ -918,7 +962,7 @@ ControlMove method:
 ControlSetTab method:
 	Parameter(s):
 	    In/Out	Required	nControl	As	Variant
-	    In	Required	nTab	As	Long
+	    In	Required	nTab	As	Variant
 
 	Sets or change the tab where a contained control is.
 
@@ -943,10 +987,17 @@ FindTab function:
 	Please read SelectTab for an explanation of the parameters.
 
 
+GetClientRgn function:
+	Return Type:	LongPtr
+	No parameters.
+
+	Returns a handle that is a region object containing the client area (intended to be used by Windows APIs).
+
+
 GetTabHeight function:
 	Return Type:	Single
 	Parameter(s):
-	    In	Required	Index	As	Long
+	    In	Required	nTab	As	Variant
 
 	Returns the height of a tab.
 
@@ -954,7 +1005,7 @@ GetTabHeight function:
 GetTabLeft function:
 	Return Type:	Single
 	Parameter(s):
-	    In	Required	Index	As	Long
+	    In	Required	nTab	As	Variant
 
 	Returns the left position of a tab.
 
@@ -962,7 +1013,7 @@ GetTabLeft function:
 GetTabOriginalIndex function:
 	Return Type:	Long
 	Parameter(s):
-	    In	Required	Index	As	Long
+	    In	Required	nTab	As	Variant
 
 	It returns the original index of the tab by supplying the current index. If CanReorderTabs is set to True, the tab index can change.
 
@@ -977,7 +1028,7 @@ GetTabsOrder function:
 GetTabTop function:
 	Return Type:	Single
 	Parameter(s):
-	    In	Required	Index	As	Long
+	    In	Required	nTab	As	Variant
 
 	Returns the top position of a tab.
 
@@ -985,7 +1036,7 @@ GetTabTop function:
 GetTabWidth function:
 	Return Type:	Single
 	Parameter(s):
-	    In	Required	Index	As	Long
+	    In	Required	nTab	As	Variant
 
 	Returns the width of a tab.
 
@@ -1071,7 +1122,7 @@ SetThemeData method:
 
 
 TDIGetFormHwndByTab function:
-	Return Type:	Long
+	Return Type:	LongPtr
 	Parameter(s):
 	    In	Required	Index	As	Long
 
@@ -1081,7 +1132,7 @@ TDIGetFormHwndByTab function:
 TDIGetTabByFormHwnd function:
 	Return Type:	Long
 	Parameter(s):
-	    In	Required	FormhWnd	As	Long
+	    In	Required	FormhWnd	As	LongPtr
 
 	When in TDI mode forms, it returns the tab index by supplying the hWnd of the form.
 
@@ -1155,6 +1206,27 @@ Click event:
 	Parameter(s):
 	    Info	PreviousTab	As	Integer
 	Occurs when the current tab (Tab) changes.
+
+
+CloseButtonClick event:
+	Parameter(s):
+	    Info	nTab	As	Long
+	    Returns value	Cancel	As	Boolean
+	Occurs when the user clicks the close button (the 'x') of a tab. If Cancel is not set to True, the tab is automatically hidden (TabVisible = False).
+	
+	CloseButton property
+
+
+CloseButtonMouseEnter event:
+	Parameter(s):
+	    Info	nTab	As	Long
+	Occurs when the mouse starts hovering the close button (the 'x') of a tab.
+
+
+CloseButtonMouseLeave event:
+	Parameter(s):
+	    Info	nTab	As	Long
+	Occurs when the mouse ends hovering the close button (the 'x') of a tab.
 
 
 DblClick event:
@@ -1359,7 +1431,7 @@ TDIFormsShowTabIcon event:
 	Parameter(s):
 	    Info	TabNumber	As	Long
 	    Info	FormCaption	As	String
-	    Info	FormhWnd	As	Long
+	    Info	FormhWnd	As	LongPtr
 	    Returns value	IconPicture	As	Object
 	    Returns value	IconLeftOffset	As	Long
 	    Returns value	IconTopOffset	As	Long
@@ -1369,7 +1441,7 @@ TDIFormsShowTabIcon event:
 	    Returns value	IconFont	As	Object
 	    Returns value	IconChar	As	Variant
 	    Returns value	IconColor	As	Long
-	    Returns value	IconColorHovered	As	Long
+	    Returns value	IconColorHighlighted	As	Long
 	    Returns value	IconColorSelected	As	Long
 	    Returns value	NoIcon	As	Boolean
 	In TDI mode forms, it allows full control  for the icon that is displayed on the tab, including the icon itself and the size and position. It is also possible to use an icon font for the icon.
@@ -1518,6 +1590,7 @@ NTFindTabMethodConstants ENUMERATION
 	ntFindPartialCaption = 4
 	ntFindPartialCaptionReverse = 5
 	ntFindKey = 6
+	ntFindContainedControl = 7
 
 NTFlatBarPositionConstants ENUMERATION
 
@@ -1546,6 +1619,13 @@ NTHighlightModeFlagsConstants ENUMERATION
 	ntHLExtraHeight = 256
 	ntHLFlatDrawBorder = 512
 	ntHLAllFlags = 1023
+
+NTHorizontalTabHeightStyleConstants ENUMERATION
+
+	ntTHFill = 0
+	ntTHTabCaptionHeight = 1
+	ntTHMaxCaptionHeight = 2
+	ntTHFixed = 3
 
 NTIconAlignmentConstants ENUMERATION
 

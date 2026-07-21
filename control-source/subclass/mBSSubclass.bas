@@ -70,21 +70,18 @@ Private Type IMAGE_DOS_HEADER
     e_lfanew As Long
 End Type
  
-Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function CallWindowProc Lib "user32.dll" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-Private Declare Function CallWindowProcW Lib "user32.dll" (ByVal lpPrevWndFunc As Long, ByVal hWnd As Long, ByVal Msg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
 Private Declare Function VirtualAlloc Lib "kernel32" (ByRef lpAddress As Long, ByVal dwSize As Long, ByVal flAllocType As Long, ByVal flProtect As Long) As Long
 Private Declare Function VirtualFree Lib "kernel32.dll" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
 Private Declare Function VirtualProtect Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal flNewProtect As Long, ByRef lpflOldProtect As Long) As Long
-Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As Long, ByVal lpProcName As String) As Long
-Private Declare Function GetClassName Lib "user32" Alias "GetClassNameA" (ByVal hWnd As Long, ByVal lpClassName As String, ByVal nMaxCount As Long) As Long
-Private Declare Function GetWindowText Lib "user32.dll" Alias "GetWindowTextA" (ByVal hWnd As Long, ByVal lpString As String, ByVal cch As Long) As Long
-Private Declare Function EnumThreadWindows Lib "user32" (ByVal dwThreadId As Long, ByVal lpfn As Long, ByVal lParam As Long) As Long
-Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function SetTimer Lib "user32" (ByVal hWnd As Long, ByVal nIDEvent As Long, ByVal uElapse As Long, ByVal lpTimerFunc As Long) As Long
-Private Declare Function KillTimer Lib "user32" (ByVal hWnd As Long, ByVal nIDEvent As Long) As Long
+Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As LongPtr, ByVal lpProcName As String) As Long
+Private Declare Function GetClassName Lib "user32" Alias "GetClassNameA" (ByVal hWnd As LongPtr, ByVal lpClassName As String, ByVal nMaxCount As Long) As Long
+Private Declare Function GetWindowText Lib "user32.dll" Alias "GetWindowTextA" (ByVal hWnd As LongPtr, ByVal lpString As String, ByVal cch As Long) As Long
+Private Declare Function EnumThreadWindows Lib "user32" (ByVal dwThreadId As Long, ByVal lpfn As LongPtr, ByVal lParam As LongPtr) As Long
+Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As LongPtr) As Long
+Private Declare Function SetTimer Lib "user32" (ByVal hWnd As LongPtr, ByVal nIDEvent As Long, ByVal uElapse As Long, ByVal lpTimerFunc As LongPtr) As Long
+Private Declare Function KillTimer Lib "user32" (ByVal hWnd As LongPtr, ByVal nIDEvent As Long) As Long
 Private Declare Function GetKeyState Lib "user32" (ByVal nVirtKey As Long) As Integer
-Private Declare Function GetWindow Lib "user32" (ByVal hWnd As Long, ByVal wCmd As Long) As Long
+Private Declare Function GetWindow Lib "user32" (ByVal hWnd As LongPtr, ByVal wCmd As Long) As Long
 
 'Private Const GW_HWNDFIRST As Long = 0
 Private Const GW_HWNDNEXT As Long = 2
@@ -138,20 +135,33 @@ End Enum
 ' allowing to preprocess, postprocess or consume any particular message.
 
 ' declares:
-Private Declare Function GetWindowLong Lib "user32.dll" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
-Private Declare Function IsWindow Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function GetProp Lib "user32" Alias "GetPropA" (ByVal hWnd As Long, ByVal lpString As String) As Long
-Private Declare Function SetProp Lib "user32" Alias "SetPropA" (ByVal hWnd As Long, ByVal lpString As String, ByVal hData As Long) As Long
-Private Declare Function RemoveProp Lib "user32" Alias "RemovePropA" (ByVal hWnd As Long, ByVal lpString As String) As Long
-Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, lpdwProcessId As Long) As Long
+' GWL_WNDPROC holds a function address (LRESULT/LONG_PTR): SetWindowLong truncates
+' to 32 bits even on 64-bit Windows, so the ...LongPtr variant has to be used. NOTE:
+' SetWindowLongPtrA/GetWindowLongPtrA only exist as real DLL symbols on 64-bit Windows;
+' on 32-bit those names don't exist (they are C-side macros pointing at the
+' SetWindowLongA/GetWindowLongA versions), so the Alias has to be conditioned on bitness.
+#If Win64 Then
+    Private Declare Function SetWindowLongPtr Lib "user32" Alias "SetWindowLongPtrA" (ByVal hWnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As LongPtr) As LongPtr
+    Private Declare Function GetWindowLongPtr Lib "user32" Alias "GetWindowLongPtrA" (ByVal hWnd As LongPtr, ByVal nIndex As Long) As LongPtr
+#Else
+    Private Declare Function SetWindowLongPtr Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As LongPtr) As LongPtr
+    Private Declare Function GetWindowLongPtr Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As LongPtr, ByVal nIndex As Long) As LongPtr
+#End If
+Private Declare Function CallWindowProc Lib "user32.dll" Alias "CallWindowProcA" (ByVal lpPrevWndFunc As LongPtr, ByVal hWnd As LongPtr, ByVal Msg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
+Private Declare Function CallWindowProcW Lib "user32.dll" (ByVal lpPrevWndFunc As LongPtr, ByVal hWnd As LongPtr, ByVal Msg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
+Private Declare Function IsWindow Lib "user32" (ByVal hWnd As LongPtr) As Long
+Private Declare Function GetProp Lib "user32" Alias "GetPropA" (ByVal hWnd As LongPtr, ByVal lpString As String) As LongPtr
+Private Declare Function SetProp Lib "user32" Alias "SetPropA" (ByVal hWnd As LongPtr, ByVal lpString As String, ByVal hData As LongPtr) As Long
+Private Declare Function RemoveProp Lib "user32" Alias "RemovePropA" (ByVal hWnd As LongPtr, ByVal lpString As String) As Long
+Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As LongPtr, lpdwProcessId As Long) As Long
 Private Declare Function GetCurrentProcessId Lib "kernel32" () As Long
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
-Private Declare Function GetDesktopWindow Lib "user32" () As Long
+Private Declare Function GetDesktopWindow Lib "user32" () As LongPtr
 
-Private Declare Function SetWindowSubclass Lib "comctl32" (ByVal hWnd As Long, ByVal pfnSubclass As Long, ByVal uIdSubclass As Long, ByVal dwRefData As Long) As Long
-Private Declare Function DefSubclassProc Lib "comctl32" (ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-Private Declare Function RemoveWindowSubclass Lib "comctl32" (ByVal hWnd As Long, ByVal pfnSubclass As Long, ByVal uIdSubclass As Long) As Long
-Private Declare Function GetModuleHandle Lib "kernel32" Alias "GetModuleHandleA" (ByVal lpModuleName As String) As Long
+Private Declare Function SetWindowSubclass Lib "comctl32" (ByVal hWnd As LongPtr, ByVal pfnSubclass As LongPtr, ByVal uIdSubclass As LongPtr, ByVal dwRefData As LongPtr) As Long
+Private Declare Function DefSubclassProc Lib "comctl32" (ByVal hWnd As LongPtr, ByVal uMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
+Private Declare Function RemoveWindowSubclass Lib "comctl32" (ByVal hWnd As LongPtr, ByVal pfnSubclass As LongPtr, ByVal uIdSubclass As LongPtr) As Long
+Private Declare Function GetModuleHandle Lib "kernel32" Alias "GetModuleHandleA" (ByVal lpModuleName As String) As LongPtr
 Private Declare Function EbModeVBA5 Lib "vba5" Alias "EbMode" () As Long
 Private Declare Function EbModeVBA6 Lib "vba6" Alias "EbMode" () As Long
 Private Declare Function EbIsResettingVBA5 Lib "vba5" Alias "EbIsResetting" () As Long
@@ -177,7 +187,7 @@ Private m_f As Long
 
 Private mPropsDatabaseChecked As Boolean
 Private mUseLocalPropsDB As Boolean
-Private mAddressOfWindowProc As Long
+Private mAddressOfWindowProc As LongPtr
 Public gSubclassWithSetWindowLong As Boolean
 
 #If IDE_PROTECTION_ENABLED Then
@@ -186,12 +196,12 @@ Private mCodeWindowsToWatch As Collection
 Private mObjSubclassed As Collection
 Private mObjSubclassed_CallCount As Collection
 Private mCodeWindowsSubclassedHwnds As Collection
-Private mAddressOf_CodeWindowWindowProc As Long
+Private mAddressOf_CodeWindowWindowProc As LongPtr
 Private mCompiling As Boolean
 Private mIDEIsResetting As Boolean
-Private mTimerFindCodeWindowsHandle As Long
+Private mTimerFindCodeWindowsHandle As LongPtr
 Private mAllSubclassesRemoved As Boolean
-Private mIDEMainHwnd As Long
+Private mIDEMainHwnd As LongPtr
 #End If
 
 Private Sub ErrRaise(e As Long)
@@ -216,7 +226,7 @@ Private Sub ErrRaise(e As Long)
     End If
 End Sub
 
-Private Property Get MessageCount(ByVal hWnd As Long) As Long
+Private Property Get MessageCount(ByVal hWnd As LongPtr) As Long
     Dim sName As String
     
     sName = "C" & hWnd
@@ -230,7 +240,7 @@ Private Property Get MessageCount(ByVal hWnd As Long) As Long
     End If
 End Property
 
-Private Property Let MessageCount(ByVal hWnd As Long, ByVal Count As Long)
+Private Property Let MessageCount(ByVal hWnd As LongPtr, ByVal Count As Long)
     Dim sName As String
     
     m_f = 1
@@ -242,14 +252,14 @@ Private Property Let MessageCount(ByVal hWnd As Long, ByVal Count As Long)
     'logMessage "Changed message count for " & Hex(hWnd) & " to " & count
 End Property
 
-Private Property Get OldWindowProc(ByVal hWnd As Long) As Long
+Private Property Get OldWindowProc(ByVal hWnd As LongPtr) As LongPtr
     Dim sName As String
     
     sName = hWnd
     OldWindowProc = ThisGetProp(hWnd, sName)
 End Property
 
-Private Property Let OldWindowProc(ByVal hWnd As Long, ByVal lPtr As Long)
+Private Property Let OldWindowProc(ByVal hWnd As LongPtr, ByVal lPtr As LongPtr)
     Dim sName As String
     
     m_f = 1
@@ -260,7 +270,7 @@ Private Property Let OldWindowProc(ByVal hWnd As Long, ByVal lPtr As Long)
     End If
 End Property
 
-Private Property Get MessageClassCount(ByVal hWnd As Long, ByVal iMsg As Long) As Long
+Private Property Get MessageClassCount(ByVal hWnd As LongPtr, ByVal iMsg As Long) As Long
     Dim sName As String
     
     sName = hWnd & "#" & iMsg & "C"
@@ -275,7 +285,7 @@ Private Property Get MessageClassCount(ByVal hWnd As Long, ByVal iMsg As Long) A
     
 End Property
 
-Private Property Let MessageClassCount(ByVal hWnd As Long, ByVal iMsg As Long, ByVal Count As Long)
+Private Property Let MessageClassCount(ByVal hWnd As LongPtr, ByVal iMsg As Long, ByVal Count As Long)
     Dim sName As String
     
     sName = hWnd & "#" & iMsg & "C"
@@ -286,13 +296,13 @@ Private Property Let MessageClassCount(ByVal hWnd As Long, ByVal iMsg As Long, B
     'logMessage "Changed message count for " & Hex(hWnd) & " Message " & iMsg & " to " & count
 End Property
 
-Private Property Get MessageClass(ByVal hWnd As Long, ByVal iMsg As Long, ByVal Index As Long) As Long
+Private Property Get MessageClass(ByVal hWnd As LongPtr, ByVal iMsg As Long, ByVal Index As Long) As LongPtr
     Dim sName As String
     sName = hWnd & "#" & iMsg & "#" & Index
     MessageClass = ThisGetProp(hWnd, sName)
 End Property
 
-Private Property Let MessageClass(ByVal hWnd As Long, ByVal iMsg As Long, ByVal Index As Long, ByVal classPtr As Long)
+Private Property Let MessageClass(ByVal hWnd As LongPtr, ByVal iMsg As Long, ByVal Index As Long, ByVal classPtr As LongPtr)
     Dim sName As String
     
     sName = hWnd & "#" & iMsg & "#" & Index
@@ -303,7 +313,7 @@ Private Property Let MessageClass(ByVal hWnd As Long, ByVal iMsg As Long, ByVal 
     'logMessage "Changed message class for " & Hex(hWnd) & " Message " & iMsg & " Index " & index & " to " & Hex(classPtr)
 End Property
 
-Sub AttachMessage(iwp As IBSSubclass, ByVal hWnd As Long, ByVal iMsg As Long)
+Sub AttachMessage(iwp As IBSSubclass, ByVal hWnd As LongPtr, ByVal iMsg As Long)
     Dim msgCount As Long
     Dim msgClassCount As Long
     Dim msgClass As Long
@@ -408,10 +418,10 @@ Sub AttachMessage(iwp As IBSSubclass, ByVal hWnd As Long, ByVal iMsg As Long)
         
         ' Subclass window by installing window procedure
         If gSubclassWithSetWindowLong Then
-            Dim iProcOld As Long
+            Dim iProcOld As LongPtr
 
             ' Subclass window by installing window procedure
-            iProcOld = SetWindowLong(hWnd, GWL_WNDPROC, AddressOf WindowProcSWL)
+            iProcOld = SetWindowLongPtr(hWnd, GWL_WNDPROC, AddressOf WindowProcSWL)
             If iProcOld = 0 Then
                ' remove class:
                MessageClass(hWnd, iMsg, MessageClassCount(hWnd, iMsg)) = 0
@@ -429,7 +439,7 @@ Sub AttachMessage(iwp As IBSSubclass, ByVal hWnd As Long, ByVal iMsg As Long)
                ' Has to be out of memory.
                
                ' Put the old window proc back again:
-               SetWindowLong hWnd, GWL_WNDPROC, iProcOld
+               SetWindowLongPtr hWnd, GWL_WNDPROC, iProcOld
                ' remove class:
                MessageClass(hWnd, iMsg, MessageClassCount(hWnd, iMsg)) = 0
                ' remove class count:
@@ -475,7 +485,7 @@ Sub AttachMessage(iwp As IBSSubclass, ByVal hWnd As Long, ByVal iMsg As Long)
 
                 iProcOld = OldWindowProc(hWnd)
                 If Not (iProcOld = 0) Then
-                   SetWindowLong hWnd, GWL_WNDPROC, iProcOld
+                   SetWindowLongPtr hWnd, GWL_WNDPROC, iProcOld
                    OldWindowProc(hWnd) = 0
                 End If
             Else
@@ -489,7 +499,7 @@ Sub AttachMessage(iwp As IBSSubclass, ByVal hWnd As Long, ByVal iMsg As Long)
     End If
 End Sub
 
-Sub DetachMessage(iwp As IBSSubclass, ByVal hWnd As Long, ByVal iMsg As Long)
+Sub DetachMessage(iwp As IBSSubclass, ByVal hWnd As LongPtr, ByVal iMsg As Long)
     Dim msgClassCount As Long
     Dim msgClass As Long
     Dim msgClassIndex As Long
@@ -597,11 +607,11 @@ Sub DetachMessage(iwp As IBSSubclass, ByVal hWnd As Long, ByVal iMsg As Long)
     If (msgCount = 1) Then
         ' remove the subclass:
         If gSubclassWithSetWindowLong Then
-            Dim iProcOld As Long
+            Dim iProcOld As LongPtr
             
             iProcOld = OldWindowProc(hWnd)
             If Not (iProcOld = 0) Then
-               SetWindowLong hWnd, GWL_WNDPROC, iProcOld
+               SetWindowLongPtr hWnd, GWL_WNDPROC, iProcOld
                OldWindowProc(hWnd) = 0
             End If
         Else
@@ -612,7 +622,7 @@ Sub DetachMessage(iwp As IBSSubclass, ByVal hWnd As Long, ByVal iMsg As Long)
 
 End Sub
 
-Private Function WindowProcSWS(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal uIdSubclass As Long, ByVal dwRefData As Long) As Long
+Private Function WindowProcSWS(ByVal hWnd As LongPtr, ByVal iMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr, ByVal uIdSubclass As LongPtr, ByVal dwRefData As LongPtr) As LongPtr
     
     Dim bCalled As Boolean
     Dim pSubClass As Long
@@ -731,7 +741,7 @@ Private Function WindowProcSWS(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wPa
         
         If Not iHandled Then
             WindowProcSWS = DefSubclassProc(hWnd, iMsg, wParam, ByVal lParam)
-            If GetWindowLong(hWnd, GWL_WNDPROC) = mAddressOfWindowProc Then     ' if we are at the top of the subclassing chain, else we'll wait for the WM_DESTROY, WM_NCDESTROY and WM_UAHDESTROYWINDOW messages
+            If GetWindowLongPtr(hWnd, GWL_WNDPROC) = mAddressOfWindowProc Then     ' if we are at the top of the subclassing chain, else we'll wait for the WM_DESTROY, WM_NCDESTROY and WM_UAHDESTROYWINDOW messages
                 pClearUp hWnd, uIdSubclass
             End If
         End If
@@ -740,12 +750,12 @@ Private Function WindowProcSWS(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wPa
         If (iMsg = WM_DESTROY) Or (iMsg = WM_NCDESTROY) Or (iMsg = WM_UAHDESTROYWINDOW) Then
             ' If WM_DESTROY isn't handled already, we should
             ' clear up any subclass
-            If GetWindowLong(hWnd, GWL_WNDPROC) = mAddressOfWindowProc Then ' if we are at the top of the subclassing chain
+            If GetWindowLongPtr(hWnd, GWL_WNDPROC) = mAddressOfWindowProc Then ' if we are at the top of the subclassing chain
                 WindowProcSWS = DefSubclassProc(hWnd, iMsg, wParam, ByVal lParam)
                 pClearUp hWnd, uIdSubclass
             Else ' we are not a the top subclassing chain
                 WindowProcSWS = DefSubclassProc(hWnd, iMsg, wParam, ByVal lParam)  ' let's see if the other subclass unsubclass itself
-                If GetWindowLong(hWnd, GWL_WNDPROC) = mAddressOfWindowProc Then ' it did
+                If GetWindowLongPtr(hWnd, GWL_WNDPROC) = mAddressOfWindowProc Then ' it did
                     pClearUp hWnd, uIdSubclass
                 Else
                     If (iMsg = WM_NCDESTROY) Or (iMsg = WM_UAHDESTROYWINDOW) Then ' in these cases we will unsubclass anyway, but for WM_DESTROY we will wait for the WM_NCDESTROY message
@@ -762,7 +772,7 @@ TheExit:
     Err.Clear
 End Function
 
-Private Function WindowProcSWL(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Function WindowProcSWL(ByVal hWnd As LongPtr, ByVal iMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
     
     Dim bCalled As Boolean
     Dim pSubClass As Long
@@ -881,7 +891,7 @@ Private Function WindowProcSWL(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wPa
         
         If Not iHandled Then
             WindowProcSWL = CallOldWindowProc(hWnd, iMsg, wParam, ByVal lParam)
-            If GetWindowLong(hWnd, GWL_WNDPROC) = mAddressOfWindowProc Then     ' if we are at the top of the subclassing chain, else we'll wait for the WM_DESTROY, WM_NCDESTROY and WM_UAHDESTROYWINDOW messages
+            If GetWindowLongPtr(hWnd, GWL_WNDPROC) = mAddressOfWindowProc Then     ' if we are at the top of the subclassing chain, else we'll wait for the WM_DESTROY, WM_NCDESTROY and WM_UAHDESTROYWINDOW messages
                 pClearUp hWnd
             End If
         End If
@@ -890,12 +900,12 @@ Private Function WindowProcSWL(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wPa
         If (iMsg = WM_DESTROY) Or (iMsg = WM_NCDESTROY) Or (iMsg = WM_UAHDESTROYWINDOW) Then
             ' If WM_DESTROY isn't handled already, we should
             ' clear up any subclass
-            If GetWindowLong(hWnd, GWL_WNDPROC) = mAddressOfWindowProc Then ' if we are at the top of the subclassing chain
+            If GetWindowLongPtr(hWnd, GWL_WNDPROC) = mAddressOfWindowProc Then ' if we are at the top of the subclassing chain
                 WindowProcSWL = CallOldWindowProc(hWnd, iMsg, wParam, ByVal lParam)
                 pClearUp hWnd
             Else ' we are not a the top subclassing chain
                 WindowProcSWL = CallOldWindowProc(hWnd, iMsg, wParam, ByVal lParam)  ' let's see if the other subclass unsubclass itself
-                If GetWindowLong(hWnd, GWL_WNDPROC) = mAddressOfWindowProc Then ' it did
+                If GetWindowLongPtr(hWnd, GWL_WNDPROC) = mAddressOfWindowProc Then ' it did
                     pClearUp hWnd
                 Else
                     If (iMsg = WM_NCDESTROY) Or (iMsg = WM_UAHDESTROYWINDOW) Then ' in these cases we will unsubclass anyway, but for WM_DESTROY we will wait for the WM_NCDESTROY message
@@ -912,9 +922,9 @@ TheExit:
     Err.Clear
 End Function
 
-Public Function CallOldWindowProc(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Public Function CallOldWindowProc(ByVal hWnd As LongPtr, ByVal iMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
     If gSubclassWithSetWindowLong Then
-        Dim iProcOld As Long
+        Dim iProcOld As LongPtr
         
         iProcOld = OldWindowProc(hWnd)
         If Not (iProcOld = 0) Then
@@ -925,7 +935,7 @@ Public Function CallOldWindowProc(ByVal hWnd As Long, ByVal iMsg As Long, ByVal 
     End If
 End Function
 
-Private Function IsWindowLocal(ByVal hWnd As Long) As Boolean
+Private Function IsWindowLocal(ByVal hWnd As LongPtr) As Boolean
     Dim idWnd As Long
     
     Call GetWindowThreadProcessId(hWnd, idWnd)
@@ -937,7 +947,7 @@ End Function
 'End Sub
 
 
-Private Sub pClearUp(ByVal hWnd As Long, Optional uIdSubclass As Long)
+Private Sub pClearUp(ByVal hWnd As LongPtr, Optional uIdSubclass As LongPtr)
     Dim msgCount As Long
     
     ' this is only called if you haven't explicitly cleared up
@@ -950,11 +960,11 @@ Private Sub pClearUp(ByVal hWnd As Long, Optional uIdSubclass As Long)
         ' Unsubclass
         
         If gSubclassWithSetWindowLong Then
-            Dim iProcOld As Long
+            Dim iProcOld As LongPtr
             
             iProcOld = OldWindowProc(hWnd)
             If Not (iProcOld = 0) Then
-               SetWindowLong hWnd, GWL_WNDPROC, iProcOld
+               SetWindowLongPtr hWnd, GWL_WNDPROC, iProcOld
                OldWindowProc(hWnd) = 0
             End If
         Else
@@ -965,7 +975,7 @@ Private Sub pClearUp(ByVal hWnd As Long, Optional uIdSubclass As Long)
     End If
 End Sub
 
-Private Function ThisGetProp(ByVal hWnd As Long, ByVal lpString As String) As Long
+Private Function ThisGetProp(ByVal hWnd As LongPtr, ByVal lpString As String) As LongPtr
 #If USE_ONLY_LOCAL_DB Then
     ThisGetProp = MyGetProp(hWnd, lpString)
 #Else
@@ -980,7 +990,7 @@ Private Function ThisGetProp(ByVal hWnd As Long, ByVal lpString As String) As Lo
 #End If
 End Function
 
-Private Function ThisSetProp(ByVal hWnd As Long, ByVal lpString As String, ByVal hData As Long) As Long
+Private Function ThisSetProp(ByVal hWnd As LongPtr, ByVal lpString As String, ByVal hData As LongPtr) As Long
 #If USE_ONLY_LOCAL_DB Then
     If hData = 0 Then
         ThisSetProp = MyRemoveProp(hWnd, lpString)
@@ -1023,7 +1033,7 @@ Private Function ThisSetProp(ByVal hWnd As Long, ByVal lpString As String, ByVal
 #End If
 End Function
 
-Private Function ThisRemoveProp(ByVal hWnd As Long, ByVal lpString As String) As Long
+Private Function ThisRemoveProp(ByVal hWnd As LongPtr, ByVal lpString As String) As LongPtr
 #If USE_ONLY_LOCAL_DB Then
     ThisRemoveProp = MyRemoveProp(hWnd, lpString)
 #Else
@@ -1061,7 +1071,7 @@ End Function
 
 Private Sub CheckPropsDatabase()
     Dim c As Long
-    Dim iHwnd As Long
+    Dim iHwnd As LongPtr
     Dim iRnd As Long
     
     iHwnd = GetDesktopWindow
@@ -1083,7 +1093,7 @@ Private Sub CheckPropsDatabase()
     mPropsDatabaseChecked = True
 End Sub
 
-Private Function GetAddresOfProc(nProcAddress As Long) As Long
+Private Function GetAddresOfProc(nProcAddress As LongPtr) As LongPtr
     GetAddresOfProc = nProcAddress
 End Function
 
@@ -1370,7 +1380,7 @@ End Function
 
 #If IDE_PROTECTION_ENABLED Then
 
-Private Function GetIDEMainHwnd() As Long
+Private Function GetIDEMainHwnd() As LongPtr
     If mIDEMainHwnd = 0 Then EnumThreadWindows App.ThreadID, AddressOf EnumThreadProc_GetIDEMainWindow, 0&
     GetIDEMainHwnd = mIDEMainHwnd
 End Function
@@ -1380,7 +1390,7 @@ Private Function MakeTrue(Value As Boolean) As Boolean
     Value = True
 End Function
 
-Private Function IsHwndOfCodeWindowWatched(nHwnd As Long) As Boolean
+Private Function IsHwndOfCodeWindowWatched(nHwnd As LongPtr) As Boolean
     Dim v As Variant
     Dim iCaption As String
     Dim iAppEXEName As String
@@ -1400,7 +1410,7 @@ Private Function IsHwndOfCodeWindowWatched(nHwnd As Long) As Boolean
     End If
 End Function
 
-Private Function GetWindowClassName(nHwnd As Long) As String
+Private Function GetWindowClassName(nHwnd As LongPtr) As String
     Dim iClassName As String
     Dim iSize As Long
     
@@ -1411,7 +1421,7 @@ Private Function GetWindowClassName(nHwnd As Long) As String
     GetWindowClassName = Left$(iClassName, iSize)
 End Function
 
-Private Function GetWindowCaption(nHwnd As Long) As String
+Private Function GetWindowCaption(nHwnd As LongPtr) As String
     Dim iWinCaption As String
     Dim iRet As Long
     
@@ -1747,7 +1757,7 @@ Private Sub TerminateIDEProtection()
 End Sub
 
 Private Function GetIATEntryAddress(ByVal nModule As String, ByVal nLibFncAddr As Long) As Long
-    Dim hmod As Long
+    Dim hmod As LongPtr
     Dim lpIAT As Long
     Dim IATLen As Long
     Dim IATPos As Long
@@ -1815,11 +1825,11 @@ Private Function CLongToULong(ByVal Value As Long) As Double
     End If
 End Function
 
-Private Function EnumCodeWindowsCallback(ByVal nHwnd As Long, ByVal Param As Long) As Long
+Private Function EnumCodeWindowsCallback(ByVal nHwnd As LongPtr, ByVal Param As Long) As Long
     Const cCodeWindowClassName = "VbaWindow"
     Dim iWindowClassName As String
-    Dim iHwndChild As Long
-    Dim iHwndChild2 As Long
+    Dim iHwndChild As LongPtr
+    Dim iHwndChild2 As LongPtr
     
     If IsWindowVisible(nHwnd) <> 0 Then
         iWindowClassName = GetWindowClassName(nHwnd)
@@ -1853,7 +1863,7 @@ Private Function EnumCodeWindowsCallback(ByVal nHwnd As Long, ByVal Param As Lon
     EnumCodeWindowsCallback = 1
 End Function
 
-Private Function IsCodeWindowSubclassed(nHwnd As Long) As Boolean
+Private Function IsCodeWindowSubclassed(nHwnd As LongPtr) As Boolean
     Dim n As Long
     
     On Error GoTo ErrH
@@ -1865,7 +1875,7 @@ ErrH:
     Err.Clear
 End Function
 
-Private Sub SubClassCodeWindow(ByVal nHwnd As Long)
+Private Sub SubClassCodeWindow(ByVal nHwnd As LongPtr)
     If Not mCodeWindowsSubclassedHwnds Is Nothing Then
         If mAddressOf_CodeWindowWindowProc = 0 Then
             mAddressOf_CodeWindowWindowProc = GetAddresOfProc(AddressOf CodeWindowWindowProc)
@@ -1875,7 +1885,7 @@ Private Sub SubClassCodeWindow(ByVal nHwnd As Long)
     End If
 End Sub
 
-Private Sub UnSubClassCodeWindow(ByVal nHwnd As Long)
+Private Sub UnSubClassCodeWindow(ByVal nHwnd As LongPtr)
     If mAddressOf_CodeWindowWindowProc <> 0 Then
         RemoveWindowSubclass nHwnd, mAddressOf_CodeWindowWindowProc, nHwnd
         If Not mCodeWindowsSubclassedHwnds Is Nothing Then
@@ -1884,7 +1894,7 @@ Private Sub UnSubClassCodeWindow(ByVal nHwnd As Long)
     End If
 End Sub
 
-Private Function CodeWindowWindowProc(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal uIdSubclass As Long, ByVal dwRefData As Long) As Long
+Private Function CodeWindowWindowProc(ByVal hWnd As LongPtr, ByVal iMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr, ByVal uIdSubclass As LongPtr, ByVal dwRefData As LongPtr) As LongPtr
     Const WM_KEYDOWN As Long = &H100
     Const WM_KEYUP As Long = &H101
     Dim iDo As Boolean
@@ -1918,7 +1928,7 @@ Private Function CodeWindowWindowProc(ByVal hWnd As Long, ByVal iMsg As Long, By
     CodeWindowWindowProc = DefSubclassProc(hWnd, iMsg, wParam, lParam)
 End Function
 
-Private Sub TimerFindCodeWindowsProc(ByVal hWnd As Long, ByVal nIDEvent As Long, ByVal uElapse As Long, ByVal lpTimerFunc As Long)
+Private Sub TimerFindCodeWindowsProc(ByVal hWnd As LongPtr, ByVal nIDEvent As Long, ByVal uElapse As Long, ByVal lpTimerFunc As LongPtr)
     mTimerFindCodeWindowsHandle = 0
     KillTimer 0, uElapse
     If Not mAllSubclassesRemoved Then
@@ -1934,7 +1944,7 @@ Private Sub DestroyTimerFindCodeWindows()
     End If
 End Sub
 
-Private Function EnumThreadProc_GetIDEMainWindow(ByVal lhWnd As Long, ByVal lParam As Long) As Long
+Private Function EnumThreadProc_GetIDEMainWindow(ByVal lhWnd As LongPtr, ByVal lParam As LongPtr) As LongPtr
     Dim iBuff As String * 255
     Dim iWinClass As String
     Dim iRet As Long
@@ -1987,10 +1997,10 @@ End Sub
 #End If
 
 
-Public Function UniTextBoxWindowProc(ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Public Function UniTextBoxWindowProc(ByVal hWnd As LongPtr, ByVal uMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
     
     Dim refObject As Object, unRefObj As Object
-    Dim lProc As Long, bUnicode As Boolean
+    Dim lProc As LongPtr, bUnicode As Boolean
     
     CopyMemory unRefObj, GetProp(hWnd, "cUniTextBox"), 4&
     Set refObject = unRefObj

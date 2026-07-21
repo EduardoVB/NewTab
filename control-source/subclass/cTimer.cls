@@ -13,7 +13,7 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 Private iInterval As Long
-Private ID As Long
+Private ID As LongPtr
 Private mTag As Variant
 
 Public Event ThatTime()
@@ -79,11 +79,11 @@ Attribute PulseTimer.VB_MemberFlags = "40"
     RaiseEvent ThatTime
 End Sub
 
-Friend Property Get TimerID() As Long
+Friend Property Get TimerID() As LongPtr
     TimerID = ID
 End Property
 
-Friend Property Let TimerID(idA As Long)
+Friend Property Let TimerID(idA As LongPtr)
     ID = idA
 End Property
 

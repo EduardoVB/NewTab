@@ -2,8 +2,8 @@ Attribute VB_Name = "mTimer"
 Option Explicit
 
 ' declares:
-Private Declare Function SetTimer Lib "user32" (ByVal hWnd As Long, ByVal nIDEvent As Long, ByVal uElapse As Long, ByVal lpTimerFunc As Long) As Long
-Private Declare Function KillTimer Lib "user32" (ByVal hWnd As Long, ByVal nIDEvent As Long) As Long
+Private Declare Function SetTimer Lib "user32" (ByVal hWnd As LongPtr, ByVal nIDEvent As LongPtr, ByVal uElapse As Long, ByVal lpTimerFunc As LongPtr) As LongPtr
+Private Declare Function KillTimer Lib "user32" (ByVal hWnd As LongPtr, ByVal nIDEvent As LongPtr) As Long
 
 Const cTimerMax = 100
 
@@ -66,8 +66,8 @@ Public Function TimerDestroy(Timer As cTimer) As Long
 End Function
 
 
-Sub TimerProc(ByVal hWnd As Long, ByVal uMsg As Long, _
-                     ByVal idEvent As Long, ByVal dwTime As Long)
+Sub TimerProc(ByVal hWnd As LongPtr, ByVal uMsg As Long, _
+                     ByVal idEvent As LongPtr, ByVal dwTime As Long)
     Dim i As Integer
     ' Find the Timer with this ID
     If m_cTimerCount = 0 Then

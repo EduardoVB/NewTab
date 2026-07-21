@@ -17,8 +17,9 @@ Begin VB.UserControl NewTab
       Height          =   612
       Index           =   0
       Left            =   3120
-      ScaleHeight     =   612
-      ScaleWidth      =   492
+      ScaleHeight     =   51
+      ScaleMode       =   3  'Pixel
+      ScaleWidth      =   41
       TabIndex        =   9
       Top             =   240
       Visible         =   0   'False
@@ -258,8 +259,8 @@ Private Type POINTAPI
 End Type
 
 Private Type WINDOWPOS
-   hWnd As Long
-   hWndInsertAfter As Long
+   hWnd As LongPtr
+   hWndInsertAfter As LongPtr
    X As Long
    Y As Long
    cx As Long
@@ -275,11 +276,11 @@ Private Type BITMAP
   bmWidthBytes As Long
   bmPlanes As Integer
   bmBitsPixel As Integer
-  bmBits As Long
+  bmBits As LongPtr
 End Type
 
 Private Type PAINTSTRUCT
-    hDC                     As Long
+    hDC                     As LongPtr
     fErase                  As Long
     rcPaint                 As RECT
     fRestore                As Long
@@ -288,10 +289,10 @@ Private Type PAINTSTRUCT
 End Type
 
 Private Type T_MSG
-    hWnd As Long
+    hWnd As LongPtr
     Message As Long
-    wParam As Long
-    lParam As Long
+    wParam As LongPtr
+    lParam As LongPtr
     time As Long
     pt As POINTAPI
 End Type
@@ -299,7 +300,7 @@ End Type
 Private Type tagHIGHCONTRAST
     cbSize As Long
     dwFlags As Long
-    lpszDefaultScheme As Long
+    lpszDefaultScheme As LongPtr
 End Type
 
 Private Type XFORM
@@ -311,71 +312,78 @@ Private Type XFORM
     eDy As Single
 End Type
 
-Private Type GUID
+Private Type PICTDESC
+    cbSizeOfStruct As Long
+    PicType As Long
+    hImage As LongPtr
+    XExt As Long
+    YExt As Long
+End Type
+ 
+Private Type CLSID
     Data1 As Long
     Data2 As Integer
     Data3 As Integer
-    Data4(7) As Byte
+    Data4(0 To 7) As Byte
 End Type
- 
-Private Type PicBmp
-    Size As Long
-    Type As Long
-    hBmp As Long
-    hPal As Long
-    Reserved As Long
-End Type
- 
-Private Declare Function IsIconic Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function OleCreatePictureIndirect Lib "olepro32.dll" (PicDesc As PicBmp, RefIID As GUID, ByVal fPictureOwnsHandle As Long, IPic As IPicture) As Long
-Private Declare Function ShowWindow Lib "user32" (ByVal hWnd As Long, ByVal nCmdShow As Long) As Long
-Private Declare Function GetWindowTextLength Lib "user32" Alias "GetWindowTextLengthW" (ByVal hWnd As Long) As Long
-Private Declare Function DefWindowProcW Lib "user32" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-Private Declare Function IsWindow Lib "user32" (ByVal hWnd As Long) As Long
+
+Private Declare Function GetKeyState Lib "user32" (ByVal nVirtKey As Long) As Integer
+Private Declare Function CreateRectRgn Lib "gdi32" (ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long) As LongPtr
+Private Declare Function CreateEllipticRgn Lib "gdi32" (ByVal X1 As Long, ByVal Y1 As Long, ByVal X2 As Long, ByVal Y2 As Long) As LongPtr
+Private Declare Function CreatePolygonRgn Lib "gdi32" (lpPoint As POINTAPI, ByVal nCount As Long, ByVal nPolyFillMode As Long) As LongPtr
+Private Declare Function CombineRgn Lib "gdi32" (ByVal hDestRgn As LongPtr, ByVal hSrcRgn1 As LongPtr, ByVal hSrcRgn2 As LongPtr, ByVal nCombineMode As Long) As Long
+Private Declare Function SetWindowRgn Lib "user32" (ByVal hWnd As LongPtr, ByVal hRgn As LongPtr, ByVal bRedraw As Boolean) As Long
+Private Declare Function OleCreatePictureIndirect Lib "olepro32" (ByRef pPictDesc As PICTDESC, ByRef riid As Any, ByVal fPictureOwnsHandle As Long, ByRef pIPicture As IPicture) As Long
+Private Declare Function IsIconic Lib "user32" (ByVal hWnd As LongPtr) As Long
+Private Declare Function ShowWindow Lib "user32" (ByVal hWnd As LongPtr, ByVal nCmdShow As Long) As Long
+Private Declare Function GetWindowTextLength Lib "user32" Alias "GetWindowTextLengthW" (ByVal hWnd As LongPtr) As Long
+Private Declare Function DefWindowProcW Lib "user32" (ByVal hWnd As LongPtr, ByVal wMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
+Private Declare Function IsWindow Lib "user32" (ByVal hWnd As LongPtr) As Long
 Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
-Private Declare Function SetGraphicsMode Lib "gdi32" (ByVal hDC As Long, ByVal iMode As Long) As Long
-Private Declare Function SetWorldTransform Lib "gdi32" (ByVal hDC As Long, lpXform As XFORM) As Long
-Private Declare Function GetWorldTransform Lib "gdi32" (ByVal hDC As Long, lpXform As XFORM) As Long
+Private Declare Function SetGraphicsMode Lib "gdi32" (ByVal hDC As LongPtr, ByVal iMode As Long) As Long
+Private Declare Function SetWorldTransform Lib "gdi32" (ByVal hDC As LongPtr, lpXform As XFORM) As Long
+Private Declare Function GetWorldTransform Lib "gdi32" (ByVal hDC As LongPtr, lpXform As XFORM) As Long
 
 Private Const GM_ADVANCED = 2
 
-Private Declare Function Polygon Lib "gdi32" (ByVal hDC As Long, lpPoint As POINTAPI, ByVal nCount As Long) As Long
+Private Declare Function Polygon Lib "gdi32" (ByVal hDC As LongPtr, lpPoint As POINTAPI, ByVal nCount As Long) As Long
 Private Declare Sub ClipCursor Lib "user32" (lpRect As Any)
-Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As Long, ByVal lpCursorName As Long) As Long
-Private Declare Function SetCursor Lib "user32" (ByVal hCursor As Long) As Long
-Private Declare Function DestroyCursor Lib "user32" (ByVal hCursor As Long) As Long
-Private Declare Function GetCursor Lib "user32" () As Long
-Private Declare Function SetParent Lib "user32" (ByVal hWndChild As Long, ByVal hWndNewParent As Long) As Long
-Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongW" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongW" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
-Private Declare Function SetLayeredWindowAttributes Lib "user32" (ByVal hWnd As Long, ByVal crKey As Long, ByVal bAlpha As Byte, ByVal dwFlags As Long) As Long
-Private Declare Function ClientToScreen Lib "user32" (ByVal hWnd As Long, lpPoint As POINTAPI) As Long
+Private Declare Function LoadCursor Lib "user32" Alias "LoadCursorA" (ByVal hInstance As LongPtr, ByVal lpCursorName As LongPtr) As LongPtr
+Private Declare Function SetCursor Lib "user32" (ByVal hCursor As LongPtr) As LongPtr
+Private Declare Function DestroyCursor Lib "user32" (ByVal hCursor As LongPtr) As Long
+Private Declare Function GetCursor Lib "user32" () As LongPtr
+Private Declare Function SetParent Lib "user32" (ByVal hWndChild As LongPtr, ByVal hWndNewParent As LongPtr) As LongPtr
+Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongW" (ByVal hWnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongW" (ByVal hWnd As LongPtr, ByVal nIndex As Long) As Long
+Private Declare Function SetLayeredWindowAttributes Lib "user32" (ByVal hWnd As LongPtr, ByVal crKey As Long, ByVal bAlpha As Byte, ByVal dwFlags As Long) As Long
+Private Declare Function ClientToScreen Lib "user32" (ByVal hWnd As LongPtr, lpPoint As POINTAPI) As Long
 Private Declare Function SystemParametersInfo Lib "user32" Alias "SystemParametersInfoA" (ByVal uAction As Long, ByVal uParam As Long, ByRef lpvParam As tagHIGHCONTRAST, ByVal fuWinIni As Long) As Long
-Private Declare Function MoveWindow Lib "user32" (ByVal hWnd As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hWnd As LongPtr, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
 
 Private Const SPI_GETHIGHCONTRAST As Long = 66
 Private Const HCF_HIGHCONTRASTON As Long = 1
 
-Private Declare Function SetLayout Lib "gdi32" (ByVal hDC As Long, ByVal dwLayout As Long) As Long
+Private Declare Function SetLayout Lib "gdi32" (ByVal hDC As LongPtr, ByVal dwLayout As Long) As Long
+Private Declare Function GetLayout Lib "gdi32" (ByVal hDC As LongPtr) As Long
 Private Const LAYOUT_RTL = &H1                               ' Right to left
 Private Const LAYOUT_BITMAPORIENTATIONPRESERVED = &H8
 
-Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
-Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long) As Long
+Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As LongPtr, ByVal nIndex As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hWnd As LongPtr) As LongPtr
+Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As LongPtr, ByVal hDC As LongPtr) As Long
 
 Private Const LOGPIXELSX As Long = 88
 Private Const LOGPIXELSY As Long = 90
 
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
-Private Declare Function GetForegroundWindow Lib "user32" () As Long
-Private Declare Function ValidateRect Lib "user32" (ByVal hWnd As Long, lpRect As RECT) As Long
-Private Declare Function GetClientRect Lib "user32" (ByVal hWnd As Long, lpRect As RECT) As Long
-Private Declare Function RevokeDragDrop Lib "ole32" (ByVal hWnd As Long) As Long
+Private Declare Function GetForegroundWindow Lib "user32" () As LongPtr
+Private Declare Function ValidateRect Lib "user32" (ByVal hWnd As LongPtr, lpRect As RECT) As Long
+Private Declare Function GetClientRect Lib "user32" (ByVal hWnd As LongPtr, lpRect As RECT) As Long
+Private Declare Function RevokeDragDrop Lib "ole32" (ByVal hWnd As LongPtr) As Long
 
-Private Declare Function GetParent Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Sub mouse_event Lib "user32" (ByVal dwFlags As Long, ByVal dX As Long, ByVal dY As Long, ByVal cButtons As Long, ByVal dwExtraInfo As Long)
-Private Declare Function GetMessageExtraInfo Lib "user32" () As Long
+Private Declare Function GetParent Lib "user32" (ByVal hWnd As LongPtr) As LongPtr
+Private Declare Sub mouse_event Lib "user32" (ByVal dwFlags As Long, ByVal dX As Long, ByVal dY As Long, ByVal cButtons As Long, ByVal dwExtraInfo As LongPtr)
+Private Declare Function GetMessageExtraInfo Lib "user32" () As LongPtr
 Private Const MOUSEEVENTF_LEFTDOWN = &H2 ' Left button down
 Private Const MOUSEEVENTF_LEFTUP = &H4 ' Left button up
 
@@ -385,28 +393,28 @@ Private Const VK_LBUTTON = &H1
 Private Const VK_RBUTTON = &H2
 Private Const SM_SWAPBUTTON = 23&
 
-Private Declare Function PeekMessage Lib "user32" Alias "PeekMessageA" (lpMsg As T_MSG, ByVal hWnd As Long, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
+Private Declare Function PeekMessage Lib "user32" Alias "PeekMessageA" (lpMsg As T_MSG, ByVal hWnd As LongPtr, ByVal wMsgFilterMin As Long, ByVal wMsgFilterMax As Long, ByVal wRemoveMsg As Long) As Long
 Private Const PM_REMOVE = &H1
 
-Private Declare Function GetUpdateRect Lib "user32" (ByVal hWnd As Long, lpRect As RECT, ByVal bErase As Long) As Long
-Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As Long, ByVal nWidth As Long, ByVal nHeight As Long) As Long
-Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, lpRect As RECT) As Long
-Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As Long) As Long
-Private Declare Function BeginPaint Lib "user32" (ByVal hWnd As Long, lpPaint As PAINTSTRUCT) As Long
-Private Declare Function EndPaint Lib "user32" (ByVal hWnd As Long, lpPaint As PAINTSTRUCT) As Long
-Private Declare Function ScreenToClient Lib "user32" (ByVal hWnd As Long, lpPoint As POINTAPI) As Long
-Private Declare Function FillRect Lib "user32" (ByVal hDC As Long, lpRect As RECT, ByVal hBrush As Long) As Long
-Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As Long
+Private Declare Function GetUpdateRect Lib "user32" (ByVal hWnd As LongPtr, lpRect As RECT, ByVal bErase As Long) As Long
+Private Declare Function CreateCompatibleBitmap Lib "gdi32" (ByVal hDC As LongPtr, ByVal nWidth As Long, ByVal nHeight As Long) As LongPtr
+Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As LongPtr, lpRect As RECT) As Long
+Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As LongPtr) As Long
+Private Declare Function BeginPaint Lib "user32" (ByVal hWnd As LongPtr, lpPaint As PAINTSTRUCT) As LongPtr
+Private Declare Function EndPaint Lib "user32" (ByVal hWnd As LongPtr, lpPaint As PAINTSTRUCT) As Long
+Private Declare Function ScreenToClient Lib "user32" (ByVal hWnd As LongPtr, lpPoint As POINTAPI) As Long
+Private Declare Function FillRect Lib "user32" (ByVal hDC As LongPtr, lpRect As RECT, ByVal hBrush As LongPtr) As Long
+Private Declare Function CreateSolidBrush Lib "gdi32" (ByVal crColor As Long) As LongPtr
 
-Private Declare Function SetFocusAPI Lib "user32" Alias "SetFocus" (ByVal hWnd As Long) As Long
+Private Declare Function SetFocusAPI Lib "user32" Alias "SetFocus" (ByVal hWnd As LongPtr) As LongPtr
 
-Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As Long, lprcUpdate As Any, ByVal hrgnUpdate As Long, ByVal fuRedraw As Long) As Long
+Private Declare Function RedrawWindow Lib "user32" (ByVal hWnd As LongPtr, lprcUpdate As Any, ByVal hrgnUpdate As LongPtr, ByVal fuRedraw As Long) As Long
 Private Const RDW_ALLCHILDREN = &H80
 Private Const RDW_INTERNALPAINT = &H2
 Private Const RDW_INVALIDATE = &H1
 Private Const RDW_UPDATENOW = &H100
 
-Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
+Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As LongPtr) As Long
 
 Private Const WM_SYSCOLORCHANGE As Long = &H15
 Private Const WM_THEMECHANGED As Long = &H31A
@@ -432,27 +440,30 @@ Private Const WM_ACTIVATEAPP As Long = &H1C&
 Private Const WM_STYLECHANGING = &H7C&
 Private Const WM_DESTROY As Long = &H2&
 Private Const WM_SHOWWINDOW As Long = &H18&
+Private Const WM_KEYDOWN As Long = &H100&
+Private Const WM_CHAR As Long = &H102&
+Private Const WM_KEYUP As Long = &H101&
 
 'Private Const MA_NOACTIVATEANDEAT As Long = &H4
 Private Const WM_MOUSELEAVE As Long = &H2A3
 
-Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByRef lParam As Any) As Long
-Private Declare Function PostMessage Lib "user32" Alias "PostMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-Private Declare Function GetAncestor Lib "user32.dll" (ByVal hWnd As Long, ByVal gaFlags As Long) As Long
+Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" (ByVal hWnd As LongPtr, ByVal wMsg As Long, ByVal wParam As LongPtr, ByRef lParam As Any) As LongPtr
+Private Declare Function PostMessage Lib "user32" Alias "PostMessageA" (ByVal hWnd As LongPtr, ByVal wMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As Long
+Private Declare Function GetAncestor Lib "user32.dll" (ByVal hWnd As LongPtr, ByVal gaFlags As Long) As LongPtr
 Private Const GA_ROOT = 2
 
-Private Declare Function DrawTextW Lib "user32" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
-Private Declare Function CreateCompatibleDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
-Private Declare Function DeleteDC Lib "gdi32.dll" (ByVal hDC As Long) As Long
-Private Declare Function SelectObject Lib "gdi32.dll" (ByVal hDC As Long, ByVal hObject As Long) As Long
-Private Declare Function GetObjectA Lib "gdi32.dll" (ByVal hObject As Long, ByVal nCount As Long, lpObject As Any) As Long
-Private Declare Function TransparentBlt Lib "msimg32.dll" (ByVal hdcDest As Long, ByVal nXOriginDest As Long, ByVal nYOriginDest As Long, ByVal nWidthDest As Long, ByVal nHeightDest As Long, ByVal hdcSrc As Long, ByVal nXOriginSrc As Long, ByVal nYOriginSrc As Long, ByVal nWidthSrc As Long, ByVal nHeightSrc As Long, ByVal crTransparent As Long) As Long
-Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As Long, lpRect As RECT) As Long
-Private Declare Function TranslateColor Lib "olepro32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As Long, Col As Long) As Long
+Private Declare Function DrawTextW Lib "user32" (ByVal hDC As LongPtr, ByVal lpStr As LongPtr, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
+Private Declare Function CreateCompatibleDC Lib "gdi32.dll" (ByVal hDC As LongPtr) As LongPtr
+Private Declare Function DeleteDC Lib "gdi32.dll" (ByVal hDC As LongPtr) As Long
+Private Declare Function SelectObject Lib "gdi32.dll" (ByVal hDC As LongPtr, ByVal hObject As LongPtr) As LongPtr
+Private Declare Function GetObjectA Lib "gdi32.dll" (ByVal hObject As LongPtr, ByVal nCount As Long, lpObject As Any) As Long
+Private Declare Function TransparentBlt Lib "msimg32.dll" (ByVal hdcDest As LongPtr, ByVal nXOriginDest As Long, ByVal nYOriginDest As Long, ByVal nWidthDest As Long, ByVal nHeightDest As Long, ByVal hdcSrc As LongPtr, ByVal nXOriginSrc As Long, ByVal nYOriginSrc As Long, ByVal nWidthSrc As Long, ByVal nHeightSrc As Long, ByVal crTransparent As Long) As Long
+Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As LongPtr, lpRect As RECT) As Long
+Private Declare Function TranslateColor Lib "olepro32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As LongPtr, Col As Long) As Long
 Private Declare Sub ColorRGBToHLS Lib "shlwapi" (ByVal clrRGB As Long, ByRef pwHue As Integer, ByRef pwLuminance As Integer, ByRef pwSaturation As Integer)
 Private Declare Function ColorHLSToRGB Lib "shlwapi" (ByVal wHue As Integer, ByVal wLuminance As Integer, ByVal wSaturation As Integer) As Long
 Private Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
-Private Declare Function WindowFromPoint Lib "user32" (ByVal xPoint As Long, ByVal yPoint As Long) As Long
+Private Declare Function WindowFromPoint Lib "user32" (ByVal xPoint As Long, ByVal yPoint As Long) As LongPtr
 
 'Draw Text Constants
 Private Const DT_CALCRECT = &H400&
@@ -466,9 +477,9 @@ Private Const DT_MODIFYSTRING = &H10000
 Private Const DT_WORDBREAK = &H10&
 Private Const DT_RTLREADING As Long = &H20000
 
-Private Declare Function OpenThemeData Lib "uxtheme" (ByVal hWnd As Long, ByVal pszClassList As Long) As Long
-Private Declare Function CloseThemeData Lib "uxtheme" (ByVal hTheme As Long) As Long
-Private Declare Function DrawThemeBackground Lib "uxtheme" (ByVal hTheme As Long, ByVal lHDC As Long, ByVal iPartId As Long, ByVal iStateId As Long, pRect As RECT, pClipRect As RECT) As Long
+Private Declare Function OpenThemeData Lib "uxtheme" (ByVal hWnd As LongPtr, ByVal pszClassList As LongPtr) As LongPtr
+Private Declare Function CloseThemeData Lib "uxtheme" (ByVal hTheme As LongPtr) As Long
+Private Declare Function DrawThemeBackground Lib "uxtheme" (ByVal hTheme As LongPtr, ByVal lHDC As LongPtr, ByVal iPartId As Long, ByVal iStateId As Long, pRect As RECT, pClipRect As RECT) As Long
 
 Private Const TABP_TABITEM = 1
 Private Const TABP_TABITEMLEFTEDGE = 2
@@ -487,10 +498,10 @@ Private Const TIS_SELECTED = 3
 Private Const TIS_DISABLED = 4
 Private Const TIS_FOCUSED = 5
 
-Private Declare Function GetPixel Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long) As Long
-Private Declare Function SetPixelV Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal crColor As Long) As Long
-Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal XSrc As Long, ByVal YSrc As Long, ByVal dwRop As Long) As Long
-Private Declare Function PlgBlt Lib "gdi32" (ByVal hdcDest As Long, lpPoint As POINTAPI, ByVal hdcSrc As Long, ByVal nXSrc As Long, ByVal nYSrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hbmMask As Long, ByVal xMask As Long, ByVal yMask As Long) As Long
+Private Declare Function GetPixel Lib "gdi32" (ByVal hDC As LongPtr, ByVal X As Long, ByVal Y As Long) As Long
+Private Declare Function SetPixelV Lib "gdi32" (ByVal hDC As LongPtr, ByVal X As Long, ByVal Y As Long, ByVal crColor As Long) As Long
+Private Declare Function BitBlt Lib "gdi32" (ByVal hDestDC As LongPtr, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As LongPtr, ByVal XSrc As Long, ByVal YSrc As Long, ByVal dwRop As Long) As Long
+Private Declare Function PlgBlt Lib "gdi32" (ByVal hdcDest As LongPtr, lpPoint As POINTAPI, ByVal hdcSrc As LongPtr, ByVal nXSrc As Long, ByVal nYSrc As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hbmMask As LongPtr, ByVal xMask As Long, ByVal yMask As Long) As Long
 
 Private Const HALFTONE = 4
 Private Type COLORADJUSTMENT
@@ -508,20 +519,21 @@ Private Type COLORADJUSTMENT
         caRedGreenTint As Integer
 End Type
 
-Private Declare Function GetColorAdjustment Lib "gdi32" (ByVal hDC As Long, lpca As COLORADJUSTMENT) As Long
-Private Declare Function SetColorAdjustment Lib "gdi32" (ByVal hDC As Long, lpca As COLORADJUSTMENT) As Long
-Private Declare Function StretchBlt Lib "gdi32" (ByVal hDC As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As Long, ByVal XSrc As Long, ByVal YSrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal dwRop As Long) As Long
-Private Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDC As Long, ByVal nStretchMode As Long) As Long
+Private Declare Function GetColorAdjustment Lib "gdi32" (ByVal hDC As LongPtr, lpca As COLORADJUSTMENT) As Long
+Private Declare Function SetColorAdjustment Lib "gdi32" (ByVal hDC As LongPtr, lpca As COLORADJUSTMENT) As Long
+Private Declare Function StretchBlt Lib "gdi32" (ByVal hDC As LongPtr, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hSrcDC As LongPtr, ByVal XSrc As Long, ByVal YSrc As Long, ByVal nSrcWidth As Long, ByVal nSrcHeight As Long, ByVal dwRop As Long) As Long
+Private Declare Function SetStretchBltMode Lib "gdi32" (ByVal hDC As LongPtr, ByVal nStretchMode As Long) As Long
 
 Private Const IDC_HAND = 32649&
 
-Private Declare Function FindWindowEx Lib "user32" Alias "FindWindowExA" (ByVal hWndParent As Long, ByVal hwndChildAfter As Long, ByVal lpszClass As String, ByVal lpszCaption As String) As Long
-Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, lpdwProcessId As Long) As Long
+Private Declare Function FindWindowEx Lib "user32" Alias "FindWindowExA" (ByVal hWndParent As LongPtr, ByVal hwndChildAfter As LongPtr, ByVal lpszClass As String, ByVal lpszCaption As String) As LongPtr
+Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As LongPtr, lpdwProcessId As Long) As Long
 Private Declare Function GetCurrentProcessId Lib "kernel32" () As Long
 
 
 Private Const cAuxTransparentColor As Long = &HFF01FF ' Not the MaskColor, but another transparent color for internal operations
 Private Const cTabIconDistanceToCaption As Long = 7
+Private Const cCloseButtonMargin As Long = 6 ' margin (in pixels, before DPI scaling) around the close button 'x' and between it and the caption/edge of the tab
 Private Const cIconClickExtend As Long = 5 ' extend the click area a bit for catching the click when the user does not click exactly on the icon area but very near
 
 Private Enum NTMouseButtonsConstants
@@ -617,6 +629,17 @@ Public Enum NTTabWidthStyleConstants
     ntTWAuto = 3
     ntTWStretchToFill = 4
     ntTWTabCaptionWidthFillRows = 5
+End Enum
+
+' Only applies to the "Horizontal" TabOrientations (LeftHorizontal, RightHorizontal,
+' LeftTopHorizontal, RightBottomHorizontal), where captions are drawn horizontally even
+' though the tabs themselves are stacked along a vertical strip. Controls how much of
+' the strip each tab takes up.
+Public Enum NTHorizontalTabHeightStyleConstants
+    ntTHFill = 0              ' current behavior, now explicit and intentional: tabs stretch to fill all available strip space
+    ntTHTabCaptionHeight = 1  ' each tab gets just the height its own caption (wrapped if needed) + icon needs
+    ntTHMaxCaptionHeight = 2  ' all tabs of a column equal: the height of the tallest tab in that column
+    ntTHFixed = 3             ' respects the TabHeight property (global)
 End Enum
 
 Public Enum NTTabAppearanceConstants
@@ -718,6 +741,7 @@ Public Enum NTFindTabMethodConstants
     ntFindPartialCaption = 4
     ntFindPartialCaptionReverse = 5
     ntFindKey = 6
+    ntFindContainedControl = 7
 End Enum
 
 Public Enum NTTabCustomColorIDConstants
@@ -814,6 +838,12 @@ Event IconMouseEnter(ByVal nTab As Long)
 Attribute IconMouseEnter.VB_Description = "Occurs when the mouse enters hovering over a tab icon (not picture)."
 Event IconMouseLeave(ByVal nTab As Long)
 Attribute IconMouseLeave.VB_Description = "Occurs when the mouse goes out after hovering over a tab icon (not picture)."
+Event CloseButtonClick(ByVal nTab As Long, ByRef Cancel As Boolean)
+Attribute CloseButtonClick.VB_Description = "Occurs when the user clicks the close button (the 'x') of a tab. If Cancel is not set to True, the tab is automatically hidden (TabVisible = False)."
+Event CloseButtonMouseEnter(ByVal nTab As Long)
+Attribute CloseButtonMouseEnter.VB_Description = "Occurs when the mouse starts hovering the close button (the 'x') of a tab."
+Event CloseButtonMouseLeave(ByVal nTab As Long)
+Attribute CloseButtonMouseLeave.VB_Description = "Occurs when the mouse ends hovering the close button (the 'x') of a tab."
 Event TDIBeforeNewTab(ByVal TabType As NTTDINewTabTypeConstants, ByVal TabNumber As Long, ByRef TabCaption As String, ByRef LoadControls As Boolean, ByRef ShowTabCloseButton As Boolean, ByRef Cancel As Boolean)
 Event TDINewTabAdded(ByVal TabNumber As Long)
 Attribute TDINewTabAdded.VB_Description = "When in TDI mode, it occurs after a new tab was opened."
@@ -821,7 +851,7 @@ Event TDIBeforeClosingTab(ByVal TabNumber As Long, ByVal IsLastTab As Boolean, B
 Attribute TDIBeforeClosingTab.VB_Description = "When in TDI mode, it occurs before closing a tab."
 Event TDITabClosed(ByVal TabNumber As Long, ByVal IsLastTab As Boolean)
 Attribute TDITabClosed.VB_Description = "When in TDI mode, it occurs after a tab was closed."
-Event TDIFormsShowTabIcon(ByVal TabNumber As Long, ByVal FormCaption As String, ByVal FormhWnd As Long, ByRef IconPicture As Object, ByRef IconLeftOffset As Long, ByRef IconTopOffset As Long, ByRef IconWidth As Long, ByRef IconHeight As Long, UseIconFont As Boolean, ByRef IconFont As Object, IconChar As Variant, IconColor As Long, IconColorHovered As Long, IconColorSelected As Long, NoIcon As Boolean)
+Event TDIFormsShowTabIcon(ByVal TabNumber As Long, ByVal FormCaption As String, ByVal FormhWnd As LongPtr, ByRef IconPicture As Object, ByRef IconLeftOffset As Long, ByRef IconTopOffset As Long, ByRef IconWidth As Long, ByRef IconHeight As Long, UseIconFont As Boolean, ByRef IconFont As Object, IconChar As Variant, IconColor As Long, IconColorHighlighted As Long, IconColorSelected As Long, NoIcon As Boolean)
 Attribute TDIFormsShowTabIcon.VB_Description = "In TDI mode forms, it allows full control  for the icon that is displayed on the tab, including the icon itself and the size and position. It is also possible to use an icon font for the icon."
 
 Private Type T_TabData
@@ -845,6 +875,7 @@ Private Type T_TabData
     Selected As Boolean
     LeftTab As Boolean
     RightTab As Boolean
+    RightTabEnding As Boolean
     TopTab As Boolean
     IconAndCaptionWidth As Long
     Row As Long
@@ -865,25 +896,21 @@ Private Type T_TabData
     FixedWidth As Long
     CustomColors As New cTabColors
     Key As String
+    ' Close button (point 1, ToDo NewTab 2)
+    CloseButton As NTAutoYesNoConstants ' ntYNAuto: follow the general CloseButton property
+    CloseButtonEnabled As Boolean
+    CloseButtonRect As RECT ' run time data, in the same pixel space as TabRect/IconRect
+    CloseButtonHovered As Boolean ' run time data
+    CloseButtonWidth As Long ' run time data, reserved width (DPI scaled), 0 if not shown
+    TDICloseButtonShown As Boolean ' internal only (point 2, ToDo NewTab 2): whether this TDI tab was configured, at creation time via TDIBeforeNewTab, to have a close button. CloseButton/TabCloseButton/CloseButtonEnabled are ignored while in TDI mode.
 End Type
 
-Private Type TDIFormIconCustomData
-    Icon As StdPicture
-    Left As Long
-    Top As Long
-    Width As Long
-    Height As Long
-    hWnd As Long
-    TabPosString As String
-    UseIconFont As Boolean
-    IconFont As StdFont
-    IconCharStr As String
-    IconColor As Long
-    IconColorMouseHover As Long
-    IconColorSelected As Long
-    LeftOffset As Long
-    TopOffset As Long
-    Redraw As Boolean
+Private Type T_ClientSpaceData
+    RECT As RECT
+    LeftTopRoundness As Long
+    RightTopRoundness As Long
+    LeftBottomRoundness As Long
+    RightBottomRoundness As Long
 End Type
 
 Private Const cRowPerspectiveSpace As Long = 150&  ' in Twips
@@ -895,7 +922,7 @@ Private WithEvents mFont As StdFont
 Attribute mFont.VB_VarHelpID = -1
 Private mEnabled As Boolean
 Private mForeColor As Long
-Private mUserControlHwnd As Long ' read only
+Private mUserControlHwnd As LongPtr ' read only
 Private mTab As Long
 Private mTabsPerRow As Long
 Private mTabs As Long
@@ -911,6 +938,16 @@ Private mMouseIcon As StdPicture
 Private mOLEDropMode As NTOLEDropConstants
 Private mTabData() As T_TabData
 Private mRightToLeft As Boolean
+
+' Close button (point 1, ToDo NewTab 2)
+Private mCloseButton As Boolean
+Private mCloseButtonColor As OLE_COLOR
+Private mCloseButtonColorHighlight As OLE_COLOR
+Private mCloseButtonFont As StdFont ' shared font used to draw the 'x', set up once by SetupCloseButtonFont
+Private mCloseButtonCharCode As Long ' char code (in mCloseButtonFont) used to draw the 'x'
+Private mCloseButtonFontIsSetUp As Boolean
+Private mMouseIsOverCloseButton As Boolean
+Private mMouseIsOverCloseButton_Tab As Long ' -1 when the mouse is not over any close button
 
 ' Added
 Private mBackColorTabs As Long
@@ -939,11 +976,14 @@ Private mHighlightTabExtraHeight As Single ' internally  in Himetric
 Private mHighlightEffect As Boolean
 Private mVisualStyles As Boolean
 Private mShowDisabledState As Boolean
-Private mClientRect As RECT ' internally in Pixels, red only
+Private mBodyRect As RECT ' in Pixels
+Private mClientSpaceData As T_ClientSpaceData ' internally in Pixels, red only
+Private mClientSpaceDataPrev_Binary() As Byte
 Private mChangeControlsBackColor As Boolean
 Private mChangeControlsForeColor As Boolean
 Private mTabMinWidth As Single ' internally in Himetric
 Private mTabWidthStyle As NTTabWidthStyleConstants
+Private mHorizontalTabHeightStyle As NTHorizontalTabHeightStyleConstants
 Private mShowRowsInPerspective As NTAutoYesNoConstants
 Private mTabSeparation As Long
 Private mTabAppearance As NTTabAppearanceConstants
@@ -983,9 +1023,9 @@ Private mCaptionAlignment As NTAlignmentConstants
 Private mIsTDIFormsSampleInPropertyPage As Boolean
 
 ' Variables
-Private mClientStart As Long ' in Pixels
-Private mClientHeight As Long ' in Pixels
-Private mClientWidth As Long ' in Pixels
+Private mBodyStart As Long ' in Pixels
+Private mBodyHeight As Long ' in Pixels
+Private mBodyWidth As Long ' in Pixels
 Private mScaleWidth As Long
 Private mScaleHeight As Long
 Private mHasFocus As Boolean
@@ -1001,9 +1041,9 @@ Private mButtonFace_L As Integer
 Private mButtonFace_S As Integer
 Private mBodyThemedReady As Boolean
 Private mInactiveBodyThemedReady As Boolean
-Private mClientWidth_Prev As Long
-Private mClientHeight_Prev As Long
-Private mTheme As Long
+Private mBodyWidth_Prev As Long
+Private mBodyHeight_Prev As Long
+Private mTheme As LongPtr
 Private mControlIsThemed As Boolean
 Private mTabSeparation2 As Long
 Private mThemeExtraDataAlreadySet As Boolean
@@ -1021,7 +1061,7 @@ Private mBlendDisablePicWithBackColorTabs_NotThemed As Boolean
 Private mBlendDisablePicWithBackColorTabs_Themed As Boolean
 Private mSubclassControlsPaintingPending As Boolean
 Private mRepaintSubclassedControls As Boolean
-Private mFormHwnd As Long
+Private mFormHwnd As LongPtr
 Private mBtnDown As Boolean
 Private mTabAppearance2 As NTTabAppearanceConstants
 Private mAppearanceIsPP As Boolean
@@ -1038,13 +1078,14 @@ Private mLastContainedControlsCount As Long
 Private mLastContainedControlsPositionsStr As String
 Private mBodyReset As Boolean
 Private mSubclassed As Boolean
-Private mClientStart_Prev As Long
+Private mBodyStart_Prev As Long
 Private mTabOrientation_Prev As NTTabOrientationConstants
 Private WithEvents mForm As Form
 Attribute mForm.VB_VarHelpID = -1
+Private WithEvents mMDIForm As MDIForm
+Attribute mMDIForm.VB_VarHelpID = -1
 Private mFirstDraw As Boolean
 Private mUserControlShown As Boolean
-Private mClientRect_Prev As RECT
 Private mEnsuringDrawn As Boolean
 Private mDPIX As Long
 Private mDPIY As Long
@@ -1087,7 +1128,6 @@ Private mTDILastTabNumber As Long
 Private mTDIControlNames() As String
 Private mTDIControlNames_Count As Long
 Private mInIDE As Boolean
-Private mTDIIconColorMouseHover As Long
 Private mTDIChangingTabCount As Boolean
 Private mSettingTDIMode As Boolean
 Private mTDIAddingNewTab As Boolean
@@ -1102,6 +1142,7 @@ Private mFlatRoundnessBottomDPIScaled As Long
 Private mFlatRoundnessTabsDPIScaled As Long
 Private mTabSeparationDPIScaled As Long
 Private mTabIconDistanceToCaptionDPIScaled As Long
+Private mCloseButtonMarginDPIScaled As Long
 Private mIconClickExtendDPIScaled As Long
 Private mMovingATab As Boolean
 Private mPreviousTabBeforeDragging As Long
@@ -1111,10 +1152,10 @@ Private mShowsRowsPerspective2 As Boolean
 Private mResizeEventPending As Boolean
 Private mTDIAddingNewTabForForm As Boolean
 Private mTDIModeFormsUnhooked As Boolean
-Private mTDIModeFormsFormData_FormHwnd() As Long
+Private mTDIModeFormsFormData_FormHwnd() As LongPtr
 Private mTDIModeFormsFormData_OldParentHwnd() As Long
 Private mTDIModeFormsFormData_FormIcon() As StdPicture
-Private mTDIFormIconCustomData() As TDIFormIconCustomData
+Private mTDIFormIconLastHwnd() As Long ' per tab (indexed like mTDIModeFormsFormData_FormIcon): hWnd used the last time this tab's Icon was synced from TDIFormsShowTabIcon. Reset to 0 to force a re-sync.
 Private mTDIFormWithoutCloseButton() As Boolean
 Private mShowingModalForm As Boolean
 Private mAppDeactivated As Boolean
@@ -1169,10 +1210,12 @@ Private mTabTransition_Step As Long
 Private mFlatRoundnessTop2 As Long
 Private mFlatRoundnessTabs2 As Long
 Private mRightMostTabsRightPos() As Long
-Private mLeftMostTabsRightPos() As Long
+Private mLeftMostTabsLeftPos() As Long
+Private mRightMostTabsRightPos2() As Long
+Private mLeftMostTabsLeftPos2() As Long
 Private mTabWidthStyle2 As NTTabWidthStyleConstants
 Private mCurrentMousePointerIsHand As Boolean
-Private mHandIconHandle As Long
+Private mHandIconHandle As LongPtr
 Private mDefaultIconFont As StdFont
 Private mNoTabVisible As Boolean
 Private mReSelTab As Boolean
@@ -1183,6 +1226,10 @@ Private mControlsForeColor_PrevColor As Long
 Private mControlsBackColor_PrevColor As Long
 Private mSettingBackColorSelectedTabFromBackColorTabs As Boolean
 Private mTabsAlignedAtTheEnd As Boolean
+Private mOrientationIsBottom As Boolean
+Private mClientRegion As LongPtr
+Private mClientRegionsServed() As Long
+Private mFromFromLoad As Boolean
 
 ' Colors
 Private m3DDKShadow As Long
@@ -1227,12 +1274,13 @@ Private mThemedBodyReferenceTopBackColor As Long
 Private mTABITEM_TopLeftCornerTransparencyMask(5) As Long
 Private mTABITEM_TopRightCornerTransparencyMask(5) As Long
 Private mTABITEMRIGHTEDGE_RightSideTransparencyMask(5) As Long
-Private mThemedBodyBottomShadowPixels As Long
-Private mThemedBodyRightShadowPixels As Long
+Private mThemedBodyLeftBorderPixels As Long
+Private mThemedBodyTopBorderPixels As Long
+Private mThemedBodyRightBorderPixels As Long
+Private mThemedBodyBottomBorderPixels As Long
 Private mThemedBodyBackColor_R As Long
 Private mThemedBodyBackColor_G As Long
 Private mThemedBodyBackColor_B As Long
-
 
 ' Properties
 
@@ -1296,40 +1344,53 @@ Public Property Set IconFont(ByVal nValue As StdFont)
 End Property
 
 
-Public Property Get TabIconFont(ByVal Index As Long) As StdFont
+Public Property Get TabIconFont(ByVal nTab As Variant) As StdFont
 Attribute TabIconFont.VB_Description = "Returns/sets the Font that will be used to draw the icon in the tab pointed by the Index parameter."
 Attribute TabIconFont.VB_ProcData.VB_Invoke_Property = ";Font"
-    If (Index < 0) Or (Index >= mTabs) Then
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    If mTabData(Index).IconFont Is Nothing Then
-        Set mTabData(Index).IconFont = CloneFont(mDefaultIconFont)
-        mTabIconFontsEventsHandler.AddFont mTabData(Index).IconFont, CLng(Index)
+    If mTabData(iIndex).IconFont Is Nothing Then
+        Set mTabData(iIndex).IconFont = CloneFont(mDefaultIconFont)
+        mTabIconFontsEventsHandler.AddFont mTabData(iIndex).IconFont, CLng(iIndex)
     End If
-    Set TabIconFont = mTabData(Index).IconFont
+    Set TabIconFont = mTabData(iIndex).IconFont
 End Property
 
-Public Property Let TabIconFont(ByVal Index As Long, ByVal nValue As StdFont)
-    Set TabIconFont(Index) = nValue
-End Property
-
-Public Property Set TabIconFont(ByVal Index As Long, ByVal nValue As StdFont)
-    If (Index < 0) Or (Index >= mTabs) Then
+Public Property Let TabIconFont(ByVal nTab As Variant, ByVal nValue As StdFont)
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    If Not nValue Is mTabData(Index).IconFont Then
-        If Not mTabData(Index).IconFont Is Nothing Then mTabIconFontsEventsHandler.RemoveFont mTabData(Index).IconFont, CLng(Index)
+    Set TabIconFont(iIndex) = nValue
+End Property
+
+Public Property Set TabIconFont(ByVal nTab As Variant, ByVal nValue As StdFont)
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
+        RaiseError 381, TypeName(Me) ' invalid property array index
+        Exit Property
+    End If
+    If Not nValue Is mTabData(iIndex).IconFont Then
+        If Not mTabData(iIndex).IconFont Is Nothing Then mTabIconFontsEventsHandler.RemoveFont mTabData(iIndex).IconFont, CLng(iIndex)
         'If FontsAreEqual(nValue, mDefaultIconFont) Then Set nValue = Nothing
-        Set mTabData(Index).IconFont = nValue
-        If Not mTabData(Index).IconFont Is Nothing Then
-            mTabIconFontsEventsHandler.AddFont mTabData(Index).IconFont, CLng(Index)
-            mTabData(Index).IconFontName = nValue.Name
+        Set mTabData(iIndex).IconFont = nValue
+        If Not mTabData(iIndex).IconFont Is Nothing Then
+            mTabIconFontsEventsHandler.AddFont mTabData(iIndex).IconFont, CLng(iIndex)
+            mTabData(iIndex).IconFontName = nValue.Name
         Else
-            mTabData(Index).IconFontName = ""
+            mTabData(iIndex).IconFontName = ""
         End If
-        mTabData(Index).DoNotUseIconFont = False
+        mTabData(iIndex).DoNotUseIconFont = False
         SetPropertyChanged "IconFont"
         mSetAutoTabHeightPending = True
         DrawDelayed
@@ -1643,6 +1704,7 @@ Public Property Let Tabs(ByVal nValue As Long)
         SetPropertyChanged "Tabs"
         mMouseIsOverIcon = False
         mMouseIsOverIcon_Tab = -1
+        mMouseIsOverCloseButton_Tab = -1
         If mTabUnderMouse > -1 Then
             tmrTabMouseLeave.Enabled = False
             RaiseEvent_TabMouseLeave (mTabUnderMouse)
@@ -1701,6 +1763,8 @@ Public Property Let Tabs(ByVal nValue As Long)
                 mTabData(c).Enabled = True
                 mTabData(c).Visible = True
                 mTabData(c).Caption = "Tab " & CStr(c)
+                mTabData(c).CloseButton = ntYNAuto
+                mTabData(c).CloseButtonEnabled = True
             Next
         End If
         mTabs = nValue
@@ -1828,24 +1892,22 @@ Attribute TabOrientation.VB_ProcData.VB_Invoke_Property = ";Appearance"
 End Property
 
 Public Property Let TabOrientation(ByVal nValue As NTTabOrientationConstants)
+    Dim iBool As Boolean
+    
     If nValue < 0 Or nValue > 11 Then
         RaiseError 380, TypeName(Me) ' invalid property value
         Exit Property
     End If
-    If mTDIMode <> ntTDIModeNone Then
-        If (nValue <> ssTabOrientationTop) And (nValue <> ntTabOrientationTopRight) And (nValue <> ssTabOrientationBottom) And (nValue <> ntTabOrientationBottomRight) Then
-            RaiseError 1383, TypeName(Me), "In TDI mode only TabOrientation top and bottom are available."
-            Exit Property
-        End If
-    End If
-    If mRightToLeft Then
-        If (nValue <> ssTabOrientationTop) And (nValue <> ntTabOrientationTopRight) Then
-            RaiseError 1384, TypeName(Me), "RightToLeft is only available for Top orientation."
-            Exit Property
-        End If
-    End If
     If nValue <> mTabOrientation Then
+        iBool = (nValue = ssTabOrientationBottom) Or (nValue = ntTabOrientationBottomRight)
+        If mOrientationIsBottom <> iBool Then
+            mOrientationIsBottom = iBool
+            PropertyChanged "FlatRoundnessBottom"
+            PropertyChanged "FlatRoundnessTop"
+        End If
         mTabOrientation = nValue
+        
+        mSetAutoTabHeightPending = True
         SetPropertyChanged "TabOrientation"
         ResetCachedThemeImages
         DrawDelayed
@@ -2153,6 +2215,25 @@ Public Property Let TabWidthStyle(ByVal nValue As NTTabWidthStyleConstants)
 End Property
 
 
+Public Property Get HorizontalTabHeightStyle() As NTHorizontalTabHeightStyleConstants
+Attribute HorizontalTabHeightStyle.VB_Description = "Returns or sets a value that determines how much of the strip each tab takes up, for the Horizontal TabOrientations (LeftHorizontal, RightHorizontal, LeftTopHorizontal, RightBottomHorizontal) only."
+Attribute HorizontalTabHeightStyle.VB_ProcData.VB_Invoke_Property = ";Tabs"
+    HorizontalTabHeightStyle = mHorizontalTabHeightStyle
+End Property
+
+Public Property Let HorizontalTabHeightStyle(ByVal nValue As NTHorizontalTabHeightStyleConstants)
+    If nValue < ntTHFill Or nValue > ntTHFixed Then
+        RaiseError 380, TypeName(Me) ' invalid property value
+        Exit Property
+    End If
+    If mHorizontalTabHeightStyle <> nValue Then
+        mHorizontalTabHeightStyle = nValue
+        SetPropertyChanged "HorizontalTabHeightStyle"
+        DrawDelayed
+    End If
+End Property
+
+
 Public Property Get TabAppearance() As NTTabAppearanceConstants
 Attribute TabAppearance.VB_Description = "Returns/sets a value that determines the appearance of the tabs."
 Attribute TabAppearance.VB_ProcData.VB_Invoke_Property = ";Appearance"
@@ -2256,35 +2337,44 @@ End Property
 
 
 ' Returns the picture displayed on the specified tab.
-Public Property Get TabPicture(ByVal Index As Long) As Picture
+Public Property Get TabPicture(ByVal nTab As Variant) As Picture
 Attribute TabPicture.VB_Description = "Returns/sets the picture to be displayed on the specified tab."
 Attribute TabPicture.VB_ProcData.VB_Invoke_Property = ";Icon"
-    If (Index < 0) Or (Index >= mTabs) Then
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    Set TabPicture = mTabData(Index).Picture
+    Set TabPicture = mTabData(iIndex).Picture
 End Property
 
-Public Property Let TabPicture(ByVal Index As Long, ByVal nValue As Picture)
+Public Property Let TabPicture(ByVal nTab As Variant, ByVal nValue As Picture)
+    Dim iIndex As Long
+    
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
-    If (Index < 0) Or (Index >= mTabs) Then
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    Set TabPicture(Index) = nValue
+    Set TabPicture(iIndex) = nValue
 End Property
 
-Public Property Set TabPicture(ByVal Index As Long, ByVal nValue As Picture)
+Public Property Set TabPicture(ByVal nTab As Variant, ByVal nValue As Picture)
+    Dim iIndex As Long
+    
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
-    If (Index < 0) Or (Index >= mTabs) Then
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    If Not nValue Is mTabData(Index).Picture Then
-        Set mTabData(Index).Picture = nValue
-        mTabData(Index).PicToUseSet = False
-        mTabData(Index).PicDisabledSet = False
+    If Not nValue Is mTabData(iIndex).Picture Then
+        Set mTabData(iIndex).Picture = nValue
+        mTabData(iIndex).PicToUseSet = False
+        mTabData(iIndex).PicDisabledSet = False
         SetPropertyChanged "TabPicture"
         mSetAutoTabHeightPending = True
         DrawDelayed
@@ -2292,35 +2382,44 @@ Public Property Set TabPicture(ByVal Index As Long, ByVal nValue As Picture)
 End Property
 
 
-Public Property Get TabPic16(ByVal Index As Long) As Picture
+Public Property Get TabPic16(ByVal nTab As Variant) As Picture
 Attribute TabPic16.VB_Description = "Specifies a bitmap to display on the specified tab at 96 DPI, when the application is DPI aware."
 Attribute TabPic16.VB_ProcData.VB_Invoke_Property = ";Icon"
-    If (Index < 0) Or (Index >= mTabs) Then
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    Set TabPic16 = mTabData(Index).Pic16
+    Set TabPic16 = mTabData(iIndex).Pic16
 End Property
 
-Public Property Let TabPic16(ByVal Index As Long, ByVal nValue As Picture)
+Public Property Let TabPic16(ByVal nTab As Variant, ByVal nValue As Picture)
+    Dim iIndex As Long
+    
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
-    If (Index < 0) Or (Index >= mTabs) Then
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    Set TabPic16(Index) = nValue
+    Set TabPic16(iIndex) = nValue
 End Property
 
-Public Property Set TabPic16(ByVal Index As Long, ByVal nValue As Picture)
+Public Property Set TabPic16(ByVal nTab As Variant, ByVal nValue As Picture)
+    Dim iIndex As Long
+    
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
-    If (Index < 0) Or (Index >= mTabs) Then
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    If Not nValue Is mTabData(Index).Pic16 Then
-        Set mTabData(Index).Pic16 = nValue
-        mTabData(Index).PicToUseSet = False
-        mTabData(Index).PicDisabledSet = False
+    If Not nValue Is mTabData(iIndex).Pic16 Then
+        Set mTabData(iIndex).Pic16 = nValue
+        mTabData(iIndex).PicToUseSet = False
+        mTabData(iIndex).PicDisabledSet = False
         SetPropertyChanged "TabPic16"
         mSetAutoTabHeightPending = True
         DrawDelayed
@@ -2328,35 +2427,44 @@ Public Property Set TabPic16(ByVal Index As Long, ByVal nValue As Picture)
 End Property
 
 
-Public Property Get TabPic20(ByVal Index As Long) As Picture
+Public Property Get TabPic20(ByVal nTab As Variant) As Picture
 Attribute TabPic20.VB_Description = "Specifies a bitmap to display on the specified tab at 120 DPI, when the application is DPI aware."
 Attribute TabPic20.VB_ProcData.VB_Invoke_Property = ";Icon"
-    If (Index < 0) Or (Index >= mTabs) Then
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    Set TabPic20 = mTabData(Index).Pic20
+    Set TabPic20 = mTabData(iIndex).Pic20
 End Property
 
-Public Property Let TabPic20(ByVal Index As Long, ByVal nValue As Picture)
+Public Property Let TabPic20(ByVal nTab As Variant, ByVal nValue As Picture)
+    Dim iIndex As Long
+    
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
-    If (Index < 0) Or (Index >= mTabs) Then
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    Set TabPic20(Index) = nValue
+    Set TabPic20(iIndex) = nValue
 End Property
 
-Public Property Set TabPic20(ByVal Index As Long, ByVal nValue As Picture)
+Public Property Set TabPic20(ByVal nTab As Variant, ByVal nValue As Picture)
+    Dim iIndex As Long
+    
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
-    If (Index < 0) Or (Index >= mTabs) Then
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    If Not nValue Is mTabData(Index).Pic20 Then
-        Set mTabData(Index).Pic20 = nValue
-        mTabData(Index).PicToUseSet = False
-        mTabData(Index).PicDisabledSet = False
+    If Not nValue Is mTabData(iIndex).Pic20 Then
+        Set mTabData(iIndex).Pic20 = nValue
+        mTabData(iIndex).PicToUseSet = False
+        mTabData(iIndex).PicDisabledSet = False
         SetPropertyChanged "TabPic20"
         mSetAutoTabHeightPending = True
         DrawDelayed
@@ -2364,35 +2472,44 @@ Public Property Set TabPic20(ByVal Index As Long, ByVal nValue As Picture)
 End Property
 
 
-Public Property Get TabPic24(ByVal Index As Long) As Picture
+Public Property Get TabPic24(ByVal nTab As Variant) As Picture
 Attribute TabPic24.VB_Description = "Specifies a bitmap to display on the specified tab at 144 DPI, when the application is DPI aware."
 Attribute TabPic24.VB_ProcData.VB_Invoke_Property = ";Icon"
-    If (Index < 0) Or (Index >= mTabs) Then
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    Set TabPic24 = mTabData(Index).Pic24
+    Set TabPic24 = mTabData(iIndex).Pic24
 End Property
 
-Public Property Let TabPic24(ByVal Index As Long, ByVal nValue As Picture)
+Public Property Let TabPic24(ByVal nTab As Variant, ByVal nValue As Picture)
+    Dim iIndex As Long
+    
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
-    If (Index < 0) Or (Index >= mTabs) Then
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    Set TabPic24(Index) = nValue
+    Set TabPic24(iIndex) = nValue
 End Property
 
-Public Property Set TabPic24(ByVal Index As Long, ByVal nValue As Picture)
+Public Property Set TabPic24(ByVal nTab As Variant, ByVal nValue As Picture)
+    Dim iIndex As Long
+    
     If Not nValue Is Nothing Then If nValue.Handle = 0 Then Set nValue = Nothing
-    If (Index < 0) Or (Index >= mTabs) Then
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    If Not nValue Is mTabData(Index).Pic24 Then
-        Set mTabData(Index).Pic24 = nValue
-        mTabData(Index).PicToUseSet = False
-        mTabData(Index).PicDisabledSet = False
+    If Not nValue Is mTabData(iIndex).Pic24 Then
+        Set mTabData(iIndex).Pic24 = nValue
+        mTabData(iIndex).PicToUseSet = False
+        mTabData(iIndex).PicDisabledSet = False
         SetPropertyChanged "TabPic24"
         mSetAutoTabHeightPending = True
         DrawDelayed
@@ -2400,15 +2517,18 @@ Public Property Set TabPic24(ByVal Index As Long, ByVal nValue As Picture)
 End Property
 
 
-Public Property Get TabIconCharHex(ByVal Index As Long) As String
+Public Property Get TabIconCharHex(ByVal nTab As Variant) As String
 Attribute TabIconCharHex.VB_Description = "Returns/sets a string representing the hexadecimal value of the character that will be used as the icon for the tab pointed by the Index parameter."
 Attribute TabIconCharHex.VB_ProcData.VB_Invoke_Property = ";Icon"
-    If (Index < 0) Or (Index >= mTabs) Then
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    If mTabData(Index).IconChar <> 0 Then
-        TabIconCharHex = "&H" & Hex$(mTabData(Index).IconChar)
+    If mTabData(iIndex).IconChar <> 0 Then
+        TabIconCharHex = "&H" & Hex$(mTabData(iIndex).IconChar)
     Else
         If Not mAmbientUserMode Then
             TabIconCharHex = "&H[Font Hex code here]"
@@ -2416,8 +2536,11 @@ Attribute TabIconCharHex.VB_ProcData.VB_Invoke_Property = ";Icon"
     End If
 End Property
 
-Public Property Let TabIconCharHex(ByVal Index As Long, ByVal nValue As String)
-    If (Index < 0) Or (Index >= mTabs) Then
+Public Property Let TabIconCharHex(ByVal nTab As Variant, ByVal nValue As String)
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
@@ -2430,59 +2553,71 @@ Public Property Let TabIconCharHex(ByVal Index As Long, ByVal nValue As String)
         nValue = nValue & "&"
     End If
     
-    If Val(nValue) <> mTabData(Index).IconChar Then
-        mTabData(Index).IconChar = Val(nValue)
+    If Val(nValue) <> mTabData(iIndex).IconChar Then
+        mTabData(iIndex).IconChar = Val(nValue)
         mSetAutoTabHeightPending = True
     End If
-    mTabData(Index).DoNotUseIconFont = False
+    mTabData(iIndex).DoNotUseIconFont = False
     DrawDelayed
 End Property
 
 
-Public Property Get TabIconLeftOffset(ByVal Index As Long) As Long
+Public Property Get TabIconLeftOffset(ByVal nTab As Variant) As Long
 Attribute TabIconLeftOffset.VB_Description = "Returns/sets the value in pixels of the offset for the left position when drawing the icon of the tab pointed by the Index parameter. It can be negative."
 Attribute TabIconLeftOffset.VB_ProcData.VB_Invoke_Property = ";Font"
-    If (Index < 0) Or (Index >= mTabs) Then
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    TabIconLeftOffset = mTabData(Index).IconLeftOffset
+    TabIconLeftOffset = mTabData(iIndex).IconLeftOffset
 End Property
 
-Public Property Let TabIconLeftOffset(ByVal Index As Long, ByVal nValue As Long)
-    If (Index < 0) Or (Index >= mTabs) Then
+Public Property Let TabIconLeftOffset(ByVal nTab As Variant, ByVal nValue As Long)
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     SetPropertyChanged "TabIconLeftOffset"
     SetPropertyChanged "IconLeftOffset"
-    If Val(nValue) <> mTabData(Index).IconLeftOffset Then
-        mTabData(Index).IconLeftOffset = Val(nValue)
+    If Val(nValue) <> mTabData(iIndex).IconLeftOffset Then
+        mTabData(iIndex).IconLeftOffset = Val(nValue)
         mSetAutoTabHeightPending = True
     End If
     DrawDelayed
 End Property
 
 
-Public Property Get TabIconTopOffset(ByVal Index As Long) As Long
+Public Property Get TabIconTopOffset(ByVal nTab As Variant) As Long
 Attribute TabIconTopOffset.VB_Description = "Returns/sets the value in pixels of the offset for the top position when drawing the icon of the tab pointed by the Index parameter. It can be negative."
 Attribute TabIconTopOffset.VB_ProcData.VB_Invoke_Property = ";Font"
-    If (Index < 0) Or (Index >= mTabs) Then
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    TabIconTopOffset = mTabData(Index).IconTopOffset
+    TabIconTopOffset = mTabData(iIndex).IconTopOffset
 End Property
 
-Public Property Let TabIconTopOffset(ByVal Index As Long, ByVal nValue As Long)
-    If (Index < 0) Or (Index >= mTabs) Then
+Public Property Let TabIconTopOffset(ByVal nTab As Variant, ByVal nValue As Long)
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
     SetPropertyChanged "TabIconTopOffset"
     SetPropertyChanged "IconTopOffset"
-    If Val(nValue) <> mTabData(Index).IconTopOffset Then
-        mTabData(Index).IconTopOffset = Val(nValue)
+    If Val(nValue) <> mTabData(iIndex).IconTopOffset Then
+        mTabData(iIndex).IconTopOffset = Val(nValue)
         mSetAutoTabHeightPending = True
     End If
     DrawDelayed
@@ -2490,30 +2625,35 @@ End Property
 
 
 ' Determines if the specified tab is visible.
-Public Property Get TabVisible(ByVal Index As Long) As Boolean
+Public Property Get TabVisible(ByVal nTab As Variant) As Boolean
 Attribute TabVisible.VB_Description = "Determines if the specified tab is visible."
-    If (Index < 0) Or (Index >= mTabs) Then
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    TabVisible = mTabData(Index).Visible
+    TabVisible = mTabData(iIndex).Visible
 End Property
 
-Public Property Let TabVisible(ByVal Index As Long, ByVal nValue As Boolean)
+Public Property Let TabVisible(ByVal nTab As Variant, ByVal nValue As Boolean)
     Dim c As Long
     Dim iSetSelectedTab As Boolean
+    Dim iIndex As Long
     
-    If (Index < 0) Or (Index >= mTabs) Then
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    If nValue <> mTabData(Index).Visible Then
+    If nValue <> mTabData(iIndex).Visible Then
         If mNoTabVisible Then
             If nValue Then
                 iSetSelectedTab = True
             End If
         End If
-        If mTab = Index Then
+        If mTab = iIndex Then
             c = mTab - 1
             Do Until c < 0
                 If mTabData(c).Visible And mTabData(c).Enabled Then
@@ -2551,26 +2691,26 @@ Public Property Let TabVisible(ByVal Index As Long, ByVal nValue As Boolean)
             If (c > -1) And (c < mTabs) Then
                 TabSel = c
                 If mTab = c Then ' the change could had been canceled through the BeforeClick event, in that case TabSel woudn't change
-                    mTabData(Index).Visible = nValue
-                    mTabData(Index).Selected = False
+                    mTabData(iIndex).Visible = nValue
+                    mTabData(iIndex).Selected = False
                 End If
             Else
         '        mTab = -1
                 mNoTabVisible = True
-                mTabData(Index).Visible = nValue
-                mTabData(Index).Selected = False
+                mTabData(iIndex).Visible = nValue
+                mTabData(iIndex).Selected = False
                 HideAllContainedControls
             End If
             If iSetSelectedTab Then
                 mReSelTab = True
-                TabSel = Index
+                TabSel = iIndex
                 mReSelTab = False
             End If
         Else
-            mTabData(Index).Visible = nValue
+            mTabData(iIndex).Visible = nValue
             If (mTab < 0) Or (mTab > (mTabs - 1)) Then
-                TabSel = Index
-                mTabData(Index).Selected = True
+                TabSel = iIndex
+                mTabData(iIndex).Selected = True
             End If
         End If
         mAccessKeysSet = False
@@ -2582,23 +2722,29 @@ End Property
 
 
 ' Determines if the specified tab is enabled.
-Public Property Get TabEnabled(ByVal Index As Long) As Boolean
+Public Property Get TabEnabled(ByVal nTab As Variant) As Boolean
 Attribute TabEnabled.VB_Description = "Determines if the specified tab is enabled."
 Attribute TabEnabled.VB_ProcData.VB_Invoke_Property = ";Appearance"
-    If (Index < 0) Or (Index >= mTabs) Then
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    TabEnabled = mTabData(Index).Enabled
+    TabEnabled = mTabData(iIndex).Enabled
 End Property
 
-Public Property Let TabEnabled(ByVal Index As Long, ByVal nValue As Boolean)
-    If (Index < 0) Or (Index >= mTabs) Then
+Public Property Let TabEnabled(ByVal nTab As Variant, ByVal nValue As Boolean)
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    If nValue <> mTabData(Index).Enabled Then
-        mTabData(Index).Enabled = nValue
+    If nValue <> mTabData(iIndex).Enabled Then
+        mTabData(iIndex).Enabled = nValue
         SetPropertyChanged "TabEnabled"
         mAccessKeysSet = False
         DrawDelayed
@@ -2607,23 +2753,29 @@ End Property
 
 
 ' Returns the text displayed on the specified tab.
-Public Property Get TabCaption(ByVal Index As Long) As String
+Public Property Get TabCaption(ByVal nTab As Variant) As String
 Attribute TabCaption.VB_Description = "Returns/sets  the text displayed on the specified tab."
 Attribute TabCaption.VB_ProcData.VB_Invoke_Property = ";Appearance"
-    If (Index < 0) Or (Index >= mTabs) Then
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    TabCaption = mTabData(Index).Caption
+    TabCaption = mTabData(iIndex).Caption
 End Property
 
-Public Property Let TabCaption(ByVal Index As Long, ByVal nValue As String)
-    If (Index < 0) Or (Index >= mTabs) Then
+Public Property Let TabCaption(ByVal nTab As Variant, ByVal nValue As String)
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    If nValue <> mTabData(Index).Caption Then
-        mTabData(Index).Caption = nValue
+    If nValue <> mTabData(iIndex).Caption Then
+        mTabData(iIndex).Caption = nValue
         SetPropertyChanged "TabCaption"
         mAccessKeysSet = False
         DrawDelayed
@@ -2631,26 +2783,32 @@ Public Property Let TabCaption(ByVal Index As Long, ByVal nValue As String)
 End Property
 
 
-Public Property Get TabToolTipText(ByVal Index As Long) As String
+Public Property Get TabToolTipText(ByVal nTab As Variant) As String
 Attribute TabToolTipText.VB_Description = "Returns/sets the text that will be shown as tooltip text when the mouse pointer is over the specified tab."
 Attribute TabToolTipText.VB_ProcData.VB_Invoke_Property = ";Misc"
-    If (Index < 0) Or (Index >= mTabs) Then
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    TabToolTipText = mTabData(Index).ToolTipText
+    TabToolTipText = mTabData(iIndex).ToolTipText
 End Property
 
-Public Property Let TabToolTipText(ByVal Index As Long, ByVal nValue As String)
-    If (Index < 0) Or (Index >= mTabs) Then
+Public Property Let TabToolTipText(ByVal nTab As Variant, ByVal nValue As String)
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    If nValue <> mTabData(Index).ToolTipText Then
-        mTabData(Index).ToolTipText = nValue
+    If nValue <> mTabData(iIndex).ToolTipText Then
+        mTabData(iIndex).ToolTipText = nValue
         CheckIfThereAreTabsToolTipTexts
-        If Index = mTabUnderMouse Then
-            If mTabData(Index).ToolTipText <> "" Then
+        If iIndex = mTabUnderMouse Then
+            If mTabData(iIndex).ToolTipText <> "" Then
                 ShowTabTTT mTabUnderMouse
             Else
                 tmrShowTabTTT.Enabled = False
@@ -2658,6 +2816,68 @@ Public Property Let TabToolTipText(ByVal Index As Long, ByVal nValue As String)
             End If
         End If
         SetPropertyChanged "TabToolTipText"
+    End If
+End Property
+
+
+Public Property Get TabCloseButton(ByVal nTab As Variant) As NTAutoYesNoConstants
+Attribute TabCloseButton.VB_Description = "Returns/sets if the specified tab shows a close button (a 'x'). ntYNAuto (the default) makes it follow the general CloseButton property."
+Attribute TabCloseButton.VB_ProcData.VB_Invoke_Property = ";Tabs"
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
+        RaiseError 381, TypeName(Me) ' invalid property array index
+        Exit Property
+    End If
+    TabCloseButton = mTabData(iIndex).CloseButton
+End Property
+
+Public Property Let TabCloseButton(ByVal nTab As Variant, ByVal nValue As NTAutoYesNoConstants)
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
+        RaiseError 381, TypeName(Me) ' invalid property array index
+        Exit Property
+    End If
+    If (nValue <> ntNo) And (nValue <> ntYes) And (nValue <> ntYNAuto) Then
+        RaiseError 380, TypeName(Me) ' invalid property value
+        Exit Property
+    End If
+    If nValue <> mTabData(iIndex).CloseButton Then
+        mTabData(iIndex).CloseButton = nValue
+        SetPropertyChanged "TabCloseButton"
+        DrawDelayed
+    End If
+End Property
+
+
+Public Property Get TabCloseButtonEnabled(ByVal nTab As Variant) As Boolean
+Attribute TabCloseButtonEnabled.VB_Description = "Returns/sets if the close button (the 'x') of the specified tab is enabled. When False, the button is shown grayed out and clicking it has no effect."
+Attribute TabCloseButtonEnabled.VB_ProcData.VB_Invoke_Property = ";Tabs"
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
+        RaiseError 381, TypeName(Me) ' invalid property array index
+        Exit Property
+    End If
+    TabCloseButtonEnabled = mTabData(iIndex).CloseButtonEnabled
+End Property
+
+Public Property Let TabCloseButtonEnabled(ByVal nTab As Variant, ByVal nValue As Boolean)
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
+        RaiseError 381, TypeName(Me) ' invalid property array index
+        Exit Property
+    End If
+    If nValue <> mTabData(iIndex).CloseButtonEnabled Then
+        mTabData(iIndex).CloseButtonEnabled = nValue
+        SetPropertyChanged "TabCloseButtonEnabled"
+        DrawDelayed
     End If
 End Property
 
@@ -2972,6 +3192,7 @@ End Property
 Public Property Get FlatBorderColor() As OLE_COLOR
 Attribute FlatBorderColor.VB_Description = "Returns/sets the color of the border in flat style."
 Attribute FlatBorderColor.VB_ProcData.VB_Invoke_Property = ";Colors"
+Attribute FlatBorderColor.VB_UserMemId = -503
     FlatBorderColor = mFlatBorderColor
 End Property
 
@@ -3116,9 +3337,6 @@ Public Property Let IconColorMouseHover(ByVal nValue As OLE_COLOR)
             mHandleHighContrastTheme_OrigIconColorMouseHover = nValue
         Else
             mIconColorMouseHover = nValue
-            If mTDIMode <> ntTDIModeNone Then
-                mTDIIconColorMouseHover = mIconColorMouseHover
-            End If
             SetPropertyChanged "IconColorMouseHover"
             DrawDelayed
         End If
@@ -3251,10 +3469,22 @@ End Property
 Public Property Get FlatRoundnessTop() As Long
 Attribute FlatRoundnessTop.VB_Description = "Returns/sets the size in pixels of the roundness of the top corners."
 Attribute FlatRoundnessTop.VB_ProcData.VB_Invoke_Property = ";Appearance"
-    FlatRoundnessTop = mFlatRoundnessTop
+    If mOrientationIsBottom Then
+        FlatRoundnessTop = mFlatRoundnessBottom
+    Else
+        FlatRoundnessTop = mFlatRoundnessTop
+    End If
 End Property
 
 Public Property Let FlatRoundnessTop(ByVal nValue As Long)
+    If mOrientationIsBottom Then
+        FlatRoundnessBottomAux = nValue
+    Else
+        FlatRoundnessTopAux = nValue
+    End If
+End Property
+
+Private Property Let FlatRoundnessTopAux(ByVal nValue As Long)
     If nValue <> mFlatRoundnessTop Then
         If (nValue < 0) Or (nValue > 100) Then
             RaiseError 380, TypeName(Me) ' invalid property value
@@ -3267,14 +3497,25 @@ Public Property Let FlatRoundnessTop(ByVal nValue As Long)
     End If
 End Property
 
-
 Public Property Get FlatRoundnessBottom() As Long
 Attribute FlatRoundnessBottom.VB_Description = "Returns/sets the size in pixels of the roundness of the bottom corners."
 Attribute FlatRoundnessBottom.VB_ProcData.VB_Invoke_Property = ";Appearance"
-    FlatRoundnessBottom = mFlatRoundnessBottom
+    If mOrientationIsBottom Then
+        FlatRoundnessBottom = mFlatRoundnessTop
+    Else
+        FlatRoundnessBottom = mFlatRoundnessBottom
+    End If
 End Property
 
 Public Property Let FlatRoundnessBottom(ByVal nValue As Long)
+    If mOrientationIsBottom Then
+        FlatRoundnessTopAux = nValue
+    Else
+        FlatRoundnessBottomAux = nValue
+    End If
+End Property
+
+Private Property Let FlatRoundnessBottomAux(ByVal nValue As Long)
     If nValue <> mFlatRoundnessBottom Then
         If (nValue < 0) Or (nValue > 100) Then
             RaiseError 380, TypeName(Me) ' invalid property value
@@ -3474,6 +3715,52 @@ Public Property Let ShowRowsInPerspective(ByVal nValue As NTAutoYesNoConstants)
 End Property
 
 
+Public Property Get CloseButton() As Boolean
+Attribute CloseButton.VB_Description = "Returns/sets a value that determines if a close button (a 'x') is shown by default on the tabs, allowing the user to close them. Can be overridden per tab with the TabCloseButton property."
+Attribute CloseButton.VB_ProcData.VB_Invoke_Property = ";Tabs"
+    CloseButton = mCloseButton
+End Property
+
+Public Property Let CloseButton(ByVal nValue As Boolean)
+    If nValue <> mCloseButton Then
+        mCloseButton = nValue
+        SetPropertyChanged "CloseButton"
+        mAccessKeysSet = False
+        DrawDelayed
+    End If
+End Property
+
+
+Public Property Get CloseButtonColor() As OLE_COLOR
+Attribute CloseButtonColor.VB_Description = "Returns/sets the color used to draw the close button (the 'x') of the tabs."
+Attribute CloseButtonColor.VB_ProcData.VB_Invoke_Property = ";Colors"
+    CloseButtonColor = mCloseButtonColor
+End Property
+
+Public Property Let CloseButtonColor(ByVal nValue As OLE_COLOR)
+    If nValue <> mCloseButtonColor Then
+        mCloseButtonColor = nValue
+        SetPropertyChanged "CloseButtonColor"
+        DrawDelayed
+    End If
+End Property
+
+
+Public Property Get CloseButtonColorHighlight() As OLE_COLOR
+Attribute CloseButtonColorHighlight.VB_Description = "Returns/sets the color used to draw the close button (the 'x') of a tab when the mouse pointer is over it."
+Attribute CloseButtonColorHighlight.VB_ProcData.VB_Invoke_Property = ";Colors"
+    CloseButtonColorHighlight = mCloseButtonColorHighlight
+End Property
+
+Public Property Let CloseButtonColorHighlight(ByVal nValue As OLE_COLOR)
+    If nValue <> mCloseButtonColorHighlight Then
+        mCloseButtonColorHighlight = nValue
+        SetPropertyChanged "CloseButtonColorHighlight"
+        DrawDelayed
+    End If
+End Property
+
+
 Public Property Get TabSeparation() As Long
 Attribute TabSeparation.VB_Description = "Returns/sets the number of pixels of separation between tabs."
 Attribute TabSeparation.VB_ProcData.VB_Invoke_Property = ";Appearance"
@@ -3589,17 +3876,11 @@ End Property
 Public Property Get RightToLeft() As Boolean
 Attribute RightToLeft.VB_Description = "Returns/Sets the text display direction and control visual appearance on a bidirectional system."
 Attribute RightToLeft.VB_ProcData.VB_Invoke_Property = ";Behavior"
+Attribute RightToLeft.VB_UserMemId = -611
     RightToLeft = mRightToLeft
 End Property
 
 Public Property Let RightToLeft(ByVal nValue As Boolean)
-    If nValue Then
-        If (nValue <> ssTabOrientationTop) And (nValue <> ntTabOrientationTopRight) Then
-            RaiseError 1384, TypeName(Me), "RightToLeft is only available for Top orientation."
-            Exit Property
-        End If
-    End If
-    
     If nValue <> mRightToLeft Then
         mRightToLeft = nValue
         If mRightToLeft Then
@@ -3619,6 +3900,7 @@ End Property
 Public Property Get BackStyle() As NTBackStyleConstants
 Attribute BackStyle.VB_Description = "Returns/sets the background style, opaque or transparent."
 Attribute BackStyle.VB_ProcData.VB_Invoke_Property = ";Appearance"
+Attribute BackStyle.VB_UserMemId = -502
     BackStyle = mBackStyle
 End Property
 
@@ -3652,9 +3934,9 @@ Public Property Let AutoTabHeight(ByVal nValue As Boolean)
 End Property
 
 
-Private Function IBSSubclass_MsgResponse(ByVal hWnd As Long, ByVal iMsg As Long) As Long
+Private Function IBSSubclass_MsgResponse(ByVal hWnd As LongPtr, ByVal iMsg As Long) As Long
     Select Case iMsg
-        Case WM_PAINT, WM_PRINTCLIENT, WM_MOUSELEAVE
+        Case WM_PAINT, WM_PRINTCLIENT, WM_MOUSELEAVE, WM_KEYDOWN, WM_CHAR, WM_KEYUP
             IBSSubclass_MsgResponse = emrConsume
         Case WM_LBUTTONDOWN, WM_LBUTTONUP, WM_MOUSEACTIVATE, WM_SETFOCUS, WM_LBUTTONDBLCLK, WM_MOVE, WM_WINDOWPOSCHANGING, WM_SETCURSOR, WM_MOUSEMOVE, WM_ACTIVATE, WM_STYLECHANGING
             IBSSubclass_MsgResponse = emrPreprocess
@@ -3682,11 +3964,11 @@ Private Sub IBSSubclass_UnsubclassIt()
     End If
 End Sub
 
-Private Function IBSSubclass_WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, wParam As Long, lParam As Long, bConsume As Boolean) As Long
+Private Function IBSSubclass_WindowProc(ByVal hWnd As LongPtr, ByVal iMsg As Long, wParam As LongPtr, lParam As LongPtr, bConsume As Boolean) As LongPtr
     Dim iTab As Long
     Const WA_INACTIVE As Long = 0
     Const WA_ACTIVE As Long = 1
-    Dim iHwnd As Long
+    Dim iHwnd As LongPtr
     
     Select Case iMsg
         Case WM_WINDOWPOSCHANGING ' invisible controls, to prevent being moved to the visible space if they are moved by code. Unfortunately the same can't be done to Labels and other windowless controls. But at least the protection acts on windowed controls.
@@ -3785,12 +4067,12 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, 
             Dim iDestDC As Long
             Dim iWidth As Long
             Dim iHeight As Long
-            Dim iTempDC As Long
-            Dim iTempBmp As Long
+            Dim iTempDC As LongPtr
+            Dim iTempBmp As LongPtr
             Dim iPs As PAINTSTRUCT
             Dim iBKColor As Long
             Dim iPt As POINTAPI
-            Dim iBrush As Long
+            Dim iBrush As LongPtr
             Dim iTop As Long
             Dim iLeft As Long
             Dim iColor As Long
@@ -3834,27 +4116,27 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, 
                 TranslateColor iColor, 0&, iBKColor
                 
                 ' set the part of the update rect of the control that must be painted with the backgroung bitmap because is inside the tab body
-                If iPt.Y < mClientRect.Top Then
-                    iHeight = iHeight - (mClientRect.Top - 1 - iPt.Y)
-                    iTop = (mClientRect.Top - 1 - iPt.Y)
-                    iPt.Y = mClientRect.Top - 1
-                    If (mClientRect.Top + iHeight - 2) > mClientRect.Bottom Then
-                        iHeight = mClientRect.Bottom - mClientRect.Top + 2
+                If iPt.Y < mBodyRect.Top Then
+                    iHeight = iHeight - (mBodyRect.Top - 1 - iPt.Y)
+                    iTop = (mBodyRect.Top - 1 - iPt.Y)
+                    iPt.Y = mBodyRect.Top - 1
+                    If (mBodyRect.Top + iHeight - 2) > mBodyRect.Bottom Then
+                        iHeight = mBodyRect.Bottom - mBodyRect.Top + 2
                     End If
-                ElseIf iPt.Y + iHeight > mClientRect.Bottom Then
-                    iHeight = mClientRect.Bottom - iPt.Y
+                ElseIf iPt.Y + iHeight > mBodyRect.Bottom Then
+                    iHeight = mBodyRect.Bottom - iPt.Y
                     iTop = 0
                 End If
                 
-                If iPt.X < mClientRect.Left Then
-                    iWidth = iWidth - (mClientRect.Left - iPt.X)
-                    iLeft = (mClientRect.Left - 1 - iPt.X)
-                    iPt.X = mClientRect.Left - 1
-                    If (mClientRect.Left + iWidth - 2) > mClientRect.Right Then
-                        iWidth = mClientRect.Right - mClientRect.Left + 2
+                If iPt.X < mBodyRect.Left Then
+                    iWidth = iWidth - (mBodyRect.Left - iPt.X)
+                    iLeft = (mBodyRect.Left - 1 - iPt.X)
+                    iPt.X = mBodyRect.Left - 1
+                    If (mBodyRect.Left + iWidth - 2) > mBodyRect.Right Then
+                        iWidth = mBodyRect.Right - mBodyRect.Left + 2
                     End If
-                ElseIf iPt.X + iWidth > mClientRect.Right Then
-                    iWidth = mClientRect.Right - iPt.X
+                ElseIf iPt.X + iWidth > mBodyRect.Right Then
+                    iWidth = mBodyRect.Right - iPt.X
                     iLeft = 0
                 End If
                 
@@ -3957,6 +4239,13 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, 
             End If
         Case WM_SHOWWINDOW
             PostDrawMessage
+        Case WM_KEYDOWN
+            ' there is a VB6 bug: if the UserControl has ControlContainer = True, it produces a double KeyDown event to the parent form. The consumption of the WM_KEYDOWN message is to avoid that, and the following line is for not leaving the UserControl without the event. The same for WM_CHAR and WM_KEYUP
+            UserControl_KeyDown wParam And &HFF&, GetShiftState
+        Case WM_CHAR
+            UserControl_KeyPress wParam And &HFF&
+        Case WM_KEYUP
+            UserControl_KeyUp wParam And &HFF&, GetShiftState
         Case WM_DESTROY
             iHwnd = 0
             On Error Resume Next
@@ -3971,7 +4260,7 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, 
     End Select
 End Function
 
-Private Function WindowIsTDIChild(ByVal nHwnd As Long) As Boolean
+Private Function WindowIsTDIChild(ByVal nHwnd As LongPtr) As Boolean
     Dim c As Long
     
     For c = 1 To mTabs - 1
@@ -4007,7 +4296,15 @@ Private Sub mFont_FontChanged(ByVal PropertyName As String)
 End Sub
 
 Private Sub mForm_Load()
+    mFromFromLoad = True
     UserControl_Show
+    mFromFromLoad = False
+End Sub
+
+Private Sub mMDIForm_Load()
+    mFromFromLoad = True
+    UserControl_Show
+    mFromFromLoad = False
 End Sub
 
 Private Sub mTabIconFontsEventsHandler_FontChanged(ByVal PropertyName As String)
@@ -4145,7 +4442,7 @@ Private Sub tmrRestoreDropMode_Timer()
 End Sub
 
 Private Sub tmrShowTabTTT_Timer()
-    Static sFormHwnd As Long
+    Static sFormHwnd As LongPtr
     
     tmrShowTabTTT.Enabled = False
     If tmrShowTabTTT.Tag <> mTabUnderMouse Then Exit Sub 'a protection, just in case
@@ -4239,7 +4536,7 @@ End Sub
 
 Private Sub tmrTabMouseLeave_Timer()
     Dim iPt As POINTAPI
-    Dim iHwnd As Long
+    Dim iHwnd As LongPtr
     
     'If mTabUnderMouse = -1 Then Exit Sub
     GetCursorPos iPt
@@ -4252,9 +4549,10 @@ Private Sub tmrTabMouseLeave_Timer()
 End Sub
 
 Private Sub tmrTDIIconColor_Timer()
+    ' Obsolete (point 2, ToDo NewTab 2): was used to restore the icon hover color after
+    ' temporarily hijacking it to draw the TDI close-X in red. The close button now has its
+    ' own independent CloseButtonColorHighlight, so this is never enabled anymore.
     tmrTDIIconColor.Enabled = False
-    mIconColorMouseHover = mTDIIconColorMouseHover
-    mIconColorMouseHoverSelectedTab = mTDIIconColorMouseHover
 End Sub
 
 Private Sub UserControl_AccessKeyPress(KeyAscii As Integer)
@@ -4335,7 +4633,7 @@ Private Sub UserControl_Hide()
     Const SC_CLOSE As Long = &HF060&
     Const SW_HIDE As Long = 0
     Const WM_CLOSE As Long = &H10&
-    Dim iHwnd As Long
+    Dim iHwnd As LongPtr
     Dim iLng As Long
     
     mBodyReset = True
@@ -4383,10 +4681,14 @@ Private Sub UserControl_Initialize()
     mTabOrientation_Prev = -1
     SetDPI
     mMouseIsOverIcon_Tab = -1
+    mMouseIsOverCloseButton_Tab = -1
     mTabIconDistanceToCaptionDPIScaled = cTabIconDistanceToCaption * mDPIScale
+    mCloseButtonMarginDPIScaled = cCloseButtonMargin * mDPIScale
     mIconClickExtendDPIScaled = cIconClickExtend * mDPIScale
     mControlsForeColor_PrevColor = -1
     mControlsBackColor_PrevColor = -1
+    ReDim mClientSpaceDataPrev_Binary(LenB(mClientSpaceData))
+    ReDim mClientRegionsServed(0)
 End Sub
 
 Private Sub UserControl_InitProperties()
@@ -4401,7 +4703,11 @@ Private Sub UserControl_InitProperties()
     End If
     If mAmbientUserMode Then
         If TypeOf UserControl.Parent Is Form Then
-           Set mForm = UserControl.Parent
+            If TypeOf UserControl.Parent Is MDIForm Then
+                Set mMDIForm = UserControl.Parent
+            Else
+                Set mForm = UserControl.Parent
+            End If
         End If
     End If
     On Error GoTo 0
@@ -4433,8 +4739,13 @@ Private Sub UserControl_InitProperties()
         mTabData(c).Visible = True
         mTabData(c).Caption = "Tab " & CStr(c)
         mTabData(c).OriginalIndex = c
+        mTabData(c).CloseButton = ntYNAuto
+        mTabData(c).CloseButtonEnabled = True
     Next c
     mTabData(mTab).Selected = True
+    mCloseButton = False
+    mCloseButtonColor = Ambient.ForeColor
+    mCloseButtonColorHighlight = vbRed
     mUseMaskColor = cPropDef_UseMaskColor
     mTabHeight = mDefaultTabHeight
     mIconAlignment = cPropDef_IconAlignment
@@ -4485,6 +4796,9 @@ Private Sub SubclassUserControl()
         AttachMessage Me, mUserControlHwnd, WM_DRAW
         AttachMessage Me, mUserControlHwnd, WM_INIT
         AttachMessage Me, mUserControlHwnd, WM_SETCURSOR
+        AttachMessage Me, mUserControlHwnd, WM_KEYDOWN
+        AttachMessage Me, mUserControlHwnd, WM_CHAR
+        AttachMessage Me, mUserControlHwnd, WM_KEYUP
         PostMessage mUserControlHwnd, WM_INIT, 0&, 0&
         mCanPostDrawMessage = True
     Else
@@ -4550,6 +4864,7 @@ Friend Sub SetDefaultPropertyValuesForThemedProperties(Optional nSetControlsColo
     mShowDisabledState = cPropDef_ShowDisabledState: PropertyChanged "ShowDisabledState"
     mHighlightEffect = cPropDef_HighlightEffect: PropertyChanged "HighlightEffect"
     mTabWidthStyle = cPropDef_TabWidthStyle: PropertyChanged "TabWidthStyle"
+    mHorizontalTabHeightStyle = cPropDef_HorizontalTabHeightStyle: PropertyChanged "HorizontalTabHeightStyle"
     mShowRowsInPerspective = cPropDef_ShowRowsInPerspective: PropertyChanged "ShowRowsInPerspective"
     mTabSeparation = cPropDef_TabSeparation: PropertyChanged "TabSeparation"
     mTabSeparationDPIScaled = mTabSeparation * mDPIScale
@@ -4900,7 +5215,7 @@ Private Sub SetFocusToNextControlInSameContainer(nForward As Boolean)
     Dim iTabIndexes() As Long
     Dim iCtl As Object
     Dim iTi As Long
-    Dim iHwnd As Long
+    Dim iHwnd As LongPtr
     Dim iEnabled As Boolean
     Dim iVisible As Boolean
     Dim iCount As Long
@@ -5032,6 +5347,8 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Sing
     Dim iYp As Single
     Dim iTabIconClicked As Boolean
     Dim iForwardClickToTab As Boolean
+    Dim iTabCloseButtonClicked As Boolean
+    Dim iCancelClose As Boolean
     
     iX = X * mXCorrection
     iY = Y * mYCorrection
@@ -5042,22 +5359,39 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Sing
         If mTabUnderMouse > -1 Then
             iXp = pScaleX(iX, vbTwips, vbPixels)
             iYp = pScaleX(iY, vbTwips, vbPixels)
-            If (iXp + mIconClickExtendDPIScaled) >= mTabData(mTabUnderMouse).IconRect.Left Then
-                If (iXp - mIconClickExtendDPIScaled) <= mTabData(mTabUnderMouse).IconRect.Right Then
-                    If (iYp + mIconClickExtendDPIScaled) >= mTabData(mTabUnderMouse).IconRect.Top Then
-                        If (iYp - mIconClickExtendDPIScaled) <= mTabData(mTabUnderMouse).IconRect.Bottom Then
-                            If (mTDIMode <> ntTDIModeNone) And Not ((mTDIMode = ntTDIModeForms) And (mTabUnderMouse = FindTab(0, ntFindOriginalIndex))) Then
-                                HandleTabTDIEvents
-                            Else
-                                iForwardClickToTab = True
-                                RaiseEvent IconClick(mTabUnderMouse, iForwardClickToTab)
+            If TabCloseButtonEffective(mTabUnderMouse) Then
+                If (iXp + mIconClickExtendDPIScaled) >= mTabData(mTabUnderMouse).CloseButtonRect.Left Then
+                    If (iXp - mIconClickExtendDPIScaled) <= mTabData(mTabUnderMouse).CloseButtonRect.Right Then
+                        If (iYp + mIconClickExtendDPIScaled) >= mTabData(mTabUnderMouse).CloseButtonRect.Top Then
+                            If (iYp - mIconClickExtendDPIScaled) <= mTabData(mTabUnderMouse).CloseButtonRect.Bottom Then
+                                iTabCloseButtonClicked = True
+                                If mTDIMode <> ntTDIModeNone Then
+                                    HandleTabTDIEvents
+                                ElseIf mTabData(mTabUnderMouse).CloseButtonEnabled Then
+                                    RaiseEvent CloseButtonClick(mTabUnderMouse, iCancelClose)
+                                    If Not iCancelClose Then
+                                        TabVisible(mTabUnderMouse) = False
+                                    End If
+                                End If
                             End If
-                            iTabIconClicked = True
                         End If
                     End If
                 End If
             End If
-            If (Not iTabIconClicked) Or iForwardClickToTab Then
+            If Not iTabCloseButtonClicked Then
+                If (iXp + mIconClickExtendDPIScaled) >= mTabData(mTabUnderMouse).IconRect.Left Then
+                    If (iXp - mIconClickExtendDPIScaled) <= mTabData(mTabUnderMouse).IconRect.Right Then
+                        If (iYp + mIconClickExtendDPIScaled) >= mTabData(mTabUnderMouse).IconRect.Top Then
+                            If (iYp - mIconClickExtendDPIScaled) <= mTabData(mTabUnderMouse).IconRect.Bottom Then
+                                iForwardClickToTab = True
+                                RaiseEvent IconClick(mTabUnderMouse, iForwardClickToTab)
+                                iTabIconClicked = True
+                            End If
+                        End If
+                    End If
+                End If
+            End If
+            If (Not iTabCloseButtonClicked) And ((Not iTabIconClicked) Or iForwardClickToTab) Then
                 If mTabData(mTabUnderMouse).Enabled Then
                     If mTab <> mTabUnderMouse Then
                         mHasFocus = True
@@ -5075,6 +5409,13 @@ Private Sub UserControl_MouseDown(Button As Integer, Shift As Integer, X As Sing
                 tmrCheckTabDrag.Enabled = True
                 mMouseX = ScaleX(iX, vbTwips, vbPixels)
                 mMouseY = ScaleY(iY, vbTwips, vbPixels)
+            Else
+                ' Not arming a potential drag this time (e.g. too few visible tabs). Clear any
+                ' leftover mMouseX/mMouseY from a previous mousedown, so a later MouseMove can't
+                ' misread that stale, non-zero position as an in-progress drag of the active tab
+                ' (this was causing a spurious MoveTab right after closing a TDI Forms tab).
+                mMouseX = 0
+                mMouseY = 0
             End If
         End If
     ElseIf (Button = vbMiddleButton) And (mTDIMode <> ntTDIModeNone) Then
@@ -5098,17 +5439,14 @@ Private Sub HandleTabTDIEvents()
     Const SC_CLOSE As Long = &HF060&
     Const SW_HIDE As Long = 0
     Const WM_CLOSE As Long = &H10&
-    Dim iHwnd As Long
+    Dim iHwnd As LongPtr
     Dim iTabUnderMouse As Long
     Dim iShowTabCloseButton As Boolean
     Dim iDo As Boolean
     Dim iTabVisible As Boolean
     
     If mTabUnderMouse > -1 Then
-        iDo = (mTabData(mTabUnderMouse).IconChar <> 0)
-        If iDo And (mTDIMode = ntTDIModeForms) Then
-            iDo = Not mTDIFormWithoutCloseButton(mTabData(mTabUnderMouse).Data)
-        End If
+        iDo = TabCloseButtonEffective(mTabUnderMouse)
         If iDo Then
             iDo = Not ((mTDIMode = ntTDIModeForms) And (mTabUnderMouse = FindTab(0, ntFindOriginalIndex)))
         End If
@@ -5348,6 +5686,59 @@ Private Sub UserControl_MouseMove(Button As Integer, Shift As Integer, X As Sing
             RaiseEvent IconMouseLeave(iMouseOverIcon_Tab_Prev)
         End If
     End If
+    
+    ' Close button hover (point 1, ToDo NewTab 2), same enter/leave debounce pattern used above for the Icon
+    If Not mMouseIsOverCloseButton Then
+        If mTabUnderMouse > -1 Then
+            If TabCloseButtonEffective(mTabUnderMouse) Then
+                iXp = pScaleX(iX, vbTwips, vbPixels)
+                iYp = pScaleX(iY, vbTwips, vbPixels)
+                If (iXp + mIconClickExtendDPIScaled) >= mTabData(mTabUnderMouse).CloseButtonRect.Left Then
+                    If (iXp - mIconClickExtendDPIScaled) <= mTabData(mTabUnderMouse).CloseButtonRect.Right Then
+                        If (iYp + mIconClickExtendDPIScaled) >= mTabData(mTabUnderMouse).CloseButtonRect.Top Then
+                            If (iYp - mIconClickExtendDPIScaled) <= mTabData(mTabUnderMouse).CloseButtonRect.Bottom Then
+                                mMouseIsOverCloseButton = True
+                                mMouseIsOverCloseButton_Tab = mTabUnderMouse
+                                mTabData(mTabUnderMouse).CloseButtonHovered = True
+                                RaiseEvent CloseButtonMouseEnter(mTabUnderMouse)
+                                DrawDelayed
+                            End If
+                        End If
+                    End If
+                End If
+            End If
+        End If
+    Else
+        Dim iMouseOverCloseButton_Tab_Prev As Long
+        
+        mMouseIsOverCloseButton = False
+        iMouseOverCloseButton_Tab_Prev = mMouseIsOverCloseButton_Tab
+        mMouseIsOverCloseButton_Tab = -1
+        If iMouseOverCloseButton_Tab_Prev > -1 Then
+            If iMouseOverCloseButton_Tab_Prev < mTabs Then mTabData(iMouseOverCloseButton_Tab_Prev).CloseButtonHovered = False
+        End If
+        If mTabUnderMouse > -1 Then
+            If TabCloseButtonEffective(mTabUnderMouse) Then
+                iXp = pScaleX(iX, vbTwips, vbPixels)
+                iYp = pScaleX(iY, vbTwips, vbPixels)
+                If (iXp + mIconClickExtendDPIScaled) >= mTabData(mTabUnderMouse).CloseButtonRect.Left Then
+                    If (iXp - mIconClickExtendDPIScaled) <= mTabData(mTabUnderMouse).CloseButtonRect.Right Then
+                        If (iYp + mIconClickExtendDPIScaled) >= mTabData(mTabUnderMouse).CloseButtonRect.Top Then
+                            If (iYp - mIconClickExtendDPIScaled) <= mTabData(mTabUnderMouse).CloseButtonRect.Bottom Then
+                                mMouseIsOverCloseButton = True
+                                mMouseIsOverCloseButton_Tab = mTabUnderMouse
+                                mTabData(mTabUnderMouse).CloseButtonHovered = True
+                            End If
+                        End If
+                    End If
+                End If
+            End If
+        End If
+        If Not mMouseIsOverCloseButton Then
+            RaiseEvent CloseButtonMouseLeave(iMouseOverCloseButton_Tab_Prev)
+            DrawDelayed
+        End If
+    End If
 End Sub
 
 Private Function GetTabAtXY(X As Single, Y As Single) As Long
@@ -5459,6 +5850,24 @@ Private Sub UserControl_MouseUp(Button As Integer, Shift As Integer, X As Single
     If CanReorderTabsEffective Then
         If DraggingATab Then
             If mRows = 1 Then
+                ' Final evaluation at the release point: during MouseMove the position is
+                ' only re-evaluated after traveling 40% of the tab's size, so without this
+                ' the tab could end up one position short of where it was visually dropped
+                i = GetTabAtDropPoint
+                If i > -1 Then
+                    If mTDIMode = ntTDIModeControls Then
+                        If i = mTabs - 1 Then
+                            i = i - 1
+                        End If
+                    ElseIf mTDIMode = ntTDIModeForms Then
+                        If i = 0 Then i = 1
+                    End If
+                    If (mTab > -1) And (i > -1) Then
+                        If mTab <> i Then
+                            MoveTab mTab, i
+                        End If
+                    End If
+                End If
                 DraggingATab = False
                 Draw
             Else
@@ -5491,28 +5900,67 @@ Private Function GetTabAtDropPoint() As Long
     Dim c As Long
     Dim X As Single
     Dim Y  As Single
+    Dim iDeltaX As Single
+    Dim iDeltaY As Single
+    Dim iCenter As Single
+    Dim iCandidate As Long
     
-    X = mMouseX2 - mMouseX + mTabData(mTab).TabRect.Left + (mTabData(mTab).TabRect.Right - mTabData(mTab).TabRect.Left) / 2
-    Y = mMouseY2 - mMouseY + mTabData(mTab).TabRect.Top + (mTabData(mTab).TabRect.Bottom - mTabData(mTab).TabRect.Top) / 2
+    ' Map the mouse deltas to the TabRect coordinate space, using the same axis
+    ' mapping that Draw uses when offsetting the dragged tab's TabRect
+    If (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
+        iDeltaX = mMouseX2 - mMouseX
+        iDeltaY = mMouseY - mMouseY2
+    ElseIf (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop) Or (mTabOrientation = ntTabOrientationLeftHorizontal) Or (mTabOrientation = ntTabOrientationLeftTopHorizontal) Then
+        iDeltaX = mMouseY - mMouseY2
+        iDeltaY = mMouseX2 - mMouseX
+    ElseIf (mTabOrientation = ssTabOrientationRight) Or (mTabOrientation = ntTabOrientationRightBottom) Or (mTabOrientation = ntTabOrientationRightHorizontal) Or (mTabOrientation = ntTabOrientationRightBottomHorizontal) Then
+        iDeltaX = mMouseY2 - mMouseY
+        iDeltaY = mMouseX - mMouseX2
+    Else
+        iDeltaX = mMouseX2 - mMouseX
+        iDeltaY = mMouseY2 - mMouseY
+    End If
     
+    X = iDeltaX + mTabData(mTab).TabRect.Left + (mTabData(mTab).TabRect.Right - mTabData(mTab).TabRect.Left) / 2
+    Y = iDeltaY + mTabData(mTab).TabRect.Top + (mTabData(mTab).TabRect.Bottom - mTabData(mTab).TabRect.Top) / 2
+    
+    ' iCandidate = last visible tab of the row whose center is at or before the drop
+    ' point, or the virtual position just before the row's first tab. In other words,
+    ' the drop point lies in the visual gap that follows iCandidate's center.
+    ' -2 = row not found
+    iCandidate = -2
     For c = 0 To mTabs - 1
         If mTabData(c).Visible Then
-            If mTabData(c).TabRect.Top <= Y Then
-                If mTabData(c).TabRect.Bottom >= Y Then
-                    If IIf(mTabData(c).LeftTab, True, (mTabData(c).TabRect.Left + (mTabData(c).TabRect.Right - mTabData(c).TabRect.Left) / 2) <= X) Then
-                        If IIf(mTabData(c).RightTab, True, (mTabData(c).TabRect.Right + (mTabData(c).TabRect.Right - mTabData(c).TabRect.Left) / 2) >= X) Then
-                            GetTabAtDropPoint = c
-                            If mTabData(c).LeftTab And (mMouseX2 - mMouseX < mTabData(c).TabRect.Left) Then
-                                GetTabAtDropPoint = GetTabAtDropPoint - 1
-                            End If
-                            Exit Function
-                        End If
+            If (mTabData(c).TabRect.Top <= Y) And (mTabData(c).TabRect.Bottom >= Y) Then
+                iCenter = mTabData(c).TabRect.Left + (mTabData(c).TabRect.Right - mTabData(c).TabRect.Left) / 2
+                If X >= iCenter Then
+                    iCandidate = c
+                    If mTabData(c).RightTab Then Exit For
+                Else
+                    If iCandidate = -2 Then
+                        ' Before the center of the first visible tab of the row
+                        If mTabData(c).LeftTab Then iCandidate = c - 1
                     End If
+                    Exit For
                 End If
             End If
         End If
     Next
-    GetTabAtDropPoint = -1
+    
+    If iCandidate = -2 Then
+        GetTabAtDropPoint = -1
+    Else
+        ' The final index for that same visual gap depends on the direction the
+        ' dragged tab comes from, because MoveTab's NewIndex is the final index:
+        ' coming from the left the dragged tab lands at iCandidate (the in-between
+        ' tabs shift left), coming from the right it lands right after iCandidate
+        ' (the in-between tabs shift right)
+        If mTab > iCandidate Then
+            GetTabAtDropPoint = iCandidate + 1
+        Else
+            GetTabAtDropPoint = iCandidate
+        End If
+    End If
 End Function
 
 Private Sub UserControl_OLECompleteDrag(Effect As Long)
@@ -5583,7 +6031,11 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     End If
     If mAmbientUserMode Then
         If TypeOf UserControl.Parent Is Form Then
-            Set mForm = UserControl.Parent
+            If TypeOf UserControl.Parent Is MDIForm Then
+                Set mMDIForm = UserControl.Parent
+            Else
+                Set mForm = UserControl.Parent
+            End If
         End If
     End If
     On Error GoTo 0
@@ -5631,7 +6083,11 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     If mHighlightTabExtraHeight < 0 Then mHighlightTabExtraHeight = 0
     mHighlightEffect = PropBag.ReadProperty("HighlightEffect", cPropDef_HighlightEffect)
     mShowRowsInPerspective = PropBag.ReadProperty("ShowRowsInPerspective", cPropDef_ShowRowsInPerspective)
+    mCloseButton = PropBag.ReadProperty("CloseButton", False)
+    mCloseButtonColor = PropBag.ReadProperty("CloseButtonColor", mForeColor)
+    mCloseButtonColorHighlight = PropBag.ReadProperty("CloseButtonColorHighlight", vbRed)
     mTabWidthStyle = PropBag.ReadProperty("TabWidthStyle", cPropDef_TabWidthStyle)
+    mHorizontalTabHeightStyle = PropBag.ReadProperty("HorizontalTabHeightStyle", cPropDef_HorizontalTabHeightStyle)
     mBackColorTabs = PropBag.ReadProperty("BackColorTabs", Ambient.BackColor)
     If mBackColorTabs = Ambient.BackColor Then mBackColorTabsIsFromAmbient = True
     mBackColorSelectedTab = PropBag.ReadProperty("BackColorTabSel", -1)
@@ -5757,7 +6213,6 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
     mCanReorderTabs = PropBag.ReadProperty("CanReorderTabs", cPropDef_CanReorderTabs)
     mTDIMode = PropBag.ReadProperty("TDIMode", cPropDef_TDIMode)
     If mTDIMode = -1 Then mTDIMode = ntTDIModeControls
-    If (mTDIMode <> ntTDIModeNone) Then mTDIIconColorMouseHover = mIconColorMouseHover
     mFlatBodySeparationLineHeight = PropBag.ReadProperty("FlatBodySeparationLineHeight", cPropDef_FlatBodySeparationLineHeight)
     mFlatBodySeparationLineHeightDPIScaled = mFlatBodySeparationLineHeight * mDPIScale
     mUserControlSizeCorrectionsCounter_ScaleWidthNotToResize = PropBag.ReadProperty("UserControlSizeCorrectionsCounter_ScaleWidthNotToResize", 0)
@@ -5831,6 +6286,8 @@ Private Sub UserControl_ReadProperties(PropBag As PropertyBag)
             End If
         Next
         mTabData(c).Enabled = PropBag.ReadProperty("TabEnabled(" & CStr(c) & ")", True)
+        mTabData(c).CloseButton = PropBag.ReadProperty("TabCloseButton(" & CStr(c) & ")", ntYNAuto)
+        mTabData(c).CloseButtonEnabled = PropBag.ReadProperty("TabCloseButtonEnabled(" & CStr(c) & ")", True)
         mTabData(c).Visible = PropBag.ReadProperty("TabVisible(" & CStr(c) & ")", True)
         If mTabData(c).Visible Then mNoTabVisible = False
         Set mTabData(c).IconFont = PropBag.ReadProperty("IconFont(" & CStr(c) & ")", Nothing)
@@ -5960,7 +6417,7 @@ Private Sub UserControl_Show()
         End If
         
         Dim iAuxLeft As Long
-        Dim iHwnd As Long
+        Dim iHwnd As LongPtr
         Dim c As Long
         Dim iCtlName As String
         Dim iCtl As Object
@@ -6028,7 +6485,7 @@ Private Sub UserControl_Show()
             StoreControlsTabStop True
             mTabStopsInitialized = True
         End If
-        If mForm Is Nothing Then SubclassControlsPainting
+        If mForm Is Nothing And mMDIForm Is Nothing Then SubclassControlsPainting
     Else
         HideAllContainedControls
         MakeContainedControlsInSelTabVisible
@@ -6040,7 +6497,7 @@ Private Sub UserControl_Show()
         Draw
         mFirstDraw = True
     End If
-    RaiseEvent TabChange
+    If Not mFromFromLoad Then RaiseEvent TabChange
 End Sub
 
 Private Sub DoPendingLeftOffset()
@@ -6074,11 +6531,13 @@ Private Sub DoPendingLeftOffset()
 
 End Sub
 
-Private Function ControlIsInTab(nCtlName As String, ByVal nTab As Long) As Boolean
+Private Function ControlIsInTab(nCtlName As String, ByVal nTab As Variant) As Boolean
     Dim c As Long
+    Dim iIndex As Long
     
-    For c = 1 To mTabData(nTab).Controls.Count
-        If mTabData(nTab).Controls(c) = nCtlName Then
+    iIndex = GetTabIndex(nTab)
+    For c = 1 To mTabData(iIndex).Controls.Count
+        If mTabData(iIndex).Controls(c) = nCtlName Then
             ControlIsInTab = True
             Exit Function
         End If
@@ -6102,6 +6561,8 @@ Private Sub UserControl_Terminate()
 End Sub
 
 Private Sub DoTerminate()
+    Dim c As Long
+    
     If mUserControlTerminated Then Exit Sub
     mUserControlTerminated = True
     
@@ -6124,6 +6585,8 @@ Private Sub DoTerminate()
     Set mParentControlsTabStop = Nothing
     Set mParentControlsUseMnemonic = Nothing
     Set mContainedControlsThatAreContainers = Nothing
+    Set mForm = Nothing
+    Set mMDIForm = Nothing
     
     Unsubclass
     
@@ -6135,11 +6598,18 @@ Private Sub DoTerminate()
         DestroyCursor mHandIconHandle
         mHandIconHandle = 0
     End If
+    If mClientRegion <> 0 Then
+        DeleteObject mClientRegion
+        mClientRegion = 0
+    End If
+    For c = 1 To UBound(mClientRegionsServed)
+        DeleteObject mClientRegionsServed(c)
+    Next
 End Sub
 
 Private Sub Unsubclass()
     Dim c As Long
-    Dim iHwnd As Long
+    Dim iHwnd As LongPtr
     
     If mSubclassed Then
         If (mFormHwnd <> 0) And mAmbientUserMode Then
@@ -6162,6 +6632,9 @@ Private Sub Unsubclass()
                 DetachMessage Me, mUserControlHwnd, WM_DRAW
                 DetachMessage Me, mUserControlHwnd, WM_INIT
                 DetachMessage Me, mUserControlHwnd, WM_SETCURSOR
+                DetachMessage Me, mUserControlHwnd, WM_KEYDOWN
+                DetachMessage Me, mUserControlHwnd, WM_CHAR
+                DetachMessage Me, mUserControlHwnd, WM_KEYUP
                 On Error GoTo 0
                 mCanPostDrawMessage = False
             Else
@@ -6304,7 +6777,11 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     PropBag.WriteProperty "ChangeControlsBackColor", mChangeControlsBackColor, cPropDef_ChangeControlsBackColor
     PropBag.WriteProperty "ChangeControlsForeColor", mChangeControlsForeColor, cPropDef_ChangeControlsForeColor
     PropBag.WriteProperty "TabWidthStyle", mTabWidthStyle, cPropDef_TabWidthStyle
+    PropBag.WriteProperty "HorizontalTabHeightStyle", mHorizontalTabHeightStyle, cPropDef_HorizontalTabHeightStyle
     PropBag.WriteProperty "ShowRowsInPerspective", mShowRowsInPerspective, cPropDef_ShowRowsInPerspective
+    PropBag.WriteProperty "CloseButton", mCloseButton, False
+    PropBag.WriteProperty "CloseButtonColor", mCloseButtonColor, mForeColor
+    PropBag.WriteProperty "CloseButtonColorHighlight", mCloseButtonColorHighlight, vbRed
     PropBag.WriteProperty "TabSeparation", mTabSeparation, cPropDef_TabSeparation
     PropBag.WriteProperty "TabAppearance", mTabAppearance, cPropDef_TabAppearance
     PropBag.WriteProperty "IconAlignment", mIconAlignment, cPropDef_IconAlignment
@@ -6325,7 +6802,7 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
     PropBag.WriteProperty "TabMousePointerHand", mTabMousePointerHand, cPropDef_TabMousePointerHand
     PropBag.WriteProperty "IconColor", mIconColor, mForeColor
     PropBag.WriteProperty "IconColorSelectedTab", mIconColorSelectedTab, mIconColor
-    PropBag.WriteProperty "IconColorMouseHover", IIf(mTDIMode <> ntTDIModeNone, mTDIIconColorMouseHover, mIconColorMouseHover), mIconColor
+    PropBag.WriteProperty "IconColorMouseHover", mIconColorMouseHover, mIconColor
     PropBag.WriteProperty "IconColorMouseHoverSelectedTab", mIconColorMouseHoverSelectedTab, mIconColor
     PropBag.WriteProperty "IconColorTabHighlighted", mIconColorTabHighlighted, mIconColor
     PropBag.WriteProperty "HighlightMode", mHighlightMode, cPropDef_HighlightMode
@@ -6353,6 +6830,8 @@ Private Sub UserControl_WriteProperties(PropBag As PropertyBag)
         PropBag.WriteProperty "TabCaption(" & CStr(c) & ")", mTabData(c).Caption, "Tab " & CStr(c)
         PropBag.WriteProperty "TabToolTipText(" & CStr(c) & ")", mTabData(c).ToolTipText, ""
         PropBag.WriteProperty "TabEnabled(" & CStr(c) & ")", mTabData(c).Enabled, True
+        PropBag.WriteProperty "TabCloseButton(" & CStr(c) & ")", mTabData(c).CloseButton, ntYNAuto
+        PropBag.WriteProperty "TabCloseButtonEnabled(" & CStr(c) & ")", mTabData(c).CloseButtonEnabled, True
         PropBag.WriteProperty "TabVisible(" & CStr(c) & ")", mTabData(c).Visible, True
         PropBag.WriteProperty "Tab(" & c & ").ControlCount", mTabData(c).Controls.Count, 0
         For c2 = 1 To mTabData(c).Controls.Count
@@ -6444,9 +6923,19 @@ Private Sub Draw()
     Dim iNumberOfColumnsForHorizontalCaptions As Long
     Dim iTabsPerColumn As Long
     Dim iTabHeightForHorizontalCaptions As Long
+    Dim iColMaxHC As Long
+    Dim iColCountHC As Long
+    Dim iColSumHC As Long
+    Dim iAccumHC As Long
+    Dim iShareHC As Long
+    Dim iPrevVisibleTabHC As Long
+    Dim iLogicalRowHC As Long
+    Dim iTabLeftHC As Long
     Dim iColumnTabCount As Long
     Dim iTabExtraHeightIsNeeded As Boolean
     Dim iRightBorder As Long
+    Dim c As Long
+    Dim p As StdPicture
     
     If mUserControlTerminated Or mTDIAddingNewTabForForm Then Exit Sub
     
@@ -6521,6 +7010,7 @@ Private Sub Draw()
     If mTabAppearance2 <> iLng Then ResetCachedThemeImages
     
     iTabHeight = pScaleY(mTabHeight, vbHimetric, vbPixels)
+    
     mFlatRoundnessTop2 = mFlatRoundnessTopDPIScaled
     If mFlatRoundnessTop2 > iTabHeight Then
         mFlatRoundnessTop2 = iTabHeight
@@ -6638,6 +7128,8 @@ Private Sub Draw()
         iScaleHeight = mScaleWidth
     End If
     
+    mOrientationIsBottom = (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight)
+
     iScaleWidthForTabs = iScaleWidth - ScaleX(mTabsEndFreeSpace, vbTwips, vbPixels)
     If iScaleWidthForTabs < 1 Then iScaleWidthForTabs = 1
     ' measure tab captions and pic width
@@ -6669,6 +7161,22 @@ Private Sub Draw()
         End If
     Next t
     
+    ' TDI Forms: TDISyncFormTabIcon (called from MeasureTabIconAndCaption above) may have just
+    ' loaded a new form icon and set mSetAutoTabHeightPending. That flag was already consumed at
+    ' the top of this Draw, so without this block the new tab height would only be applied on the
+    ' NEXT draw, and this pass would still paint with the heights measured before the icon existed.
+    ' Recompute the height now and refresh the locals derived from it. No re-measuring is needed:
+    ' the measured widths don't depend on the tab height (image icon widths are fixed, and font
+    ' icons already got their size decided during the sync).
+    If mSetAutoTabHeightPending And mAutoTabHeight Then
+        SetAutoTabHeight
+        iTabHeight = pScaleY(mTabHeight, vbHimetric, vbPixels)
+        mFlatRoundnessTop2 = mFlatRoundnessTopDPIScaled
+        If mFlatRoundnessTop2 > iTabHeight Then mFlatRoundnessTop2 = iTabHeight
+        mFlatRoundnessTabs2 = mFlatRoundnessTabsDPIScaled
+        If mFlatRoundnessTabs2 > iTabHeight Then mFlatRoundnessTabs2 = iTabHeight
+    End If
+    
     If (mVisibleTabs = 0) Or (mTab = -1) Then
         Set UserControl.Picture = Nothing
         mBodyReset = True
@@ -6679,6 +7187,89 @@ Private Sub Draw()
     iLastVisibleTab = 0
     If mTabsAreRotatedButCaptionsAreHorizontal Then
         iAvailableSpaceForTabs = (iScaleWidthForTabs - IIf(mAppearanceIsPP, 4, 0))
+        If (mHorizontalTabHeightStyle = ntTHTabCaptionHeight) Or (mHorizontalTabHeightStyle = ntTHMaxCaptionHeight) Then
+            ' Measure every visible tab's needed height BEFORE deciding how many fit per
+            ' column. The wrap point depends on the column width, which isn't known yet, so
+            ' each tab is measured at its own clamped width: wrapping only happens when
+            ' TabMaxWidth clamps, and in that case the clamped width IS the column width.
+            For t = 0 To mTabs - 1
+                If mTabData(t).Visible Then
+                    If mAppearanceIsFlat Then
+                        iLng = mTabData(t).IconAndCaptionWidth + IIf(mFlatBarGripHeightDPIScaled > 0, mFlatBarGripHeightDPIScaled, 0) + mFlatBarHeightDPIScaled
+                    Else
+                        iLng = mTabData(t).IconAndCaptionWidth
+                    End If
+                    iLng = iLng + 10
+                    If iTabMaxWidth > 0 Then
+                        If iLng > iTabMaxWidth Then iLng = iTabMaxWidth
+                    End If
+                    If iTabMinWidth > 0 Then
+                        If iLng < iTabMinWidth Then iLng = iTabMinWidth
+                    End If
+                    mTabData(t).Width = MeasureTabHeightForHorizontalCaptions(t, iLng)
+                End If
+            Next
+            ' Pack incrementally, one tab at a time: a column closes (and is then "full")
+            ' only when the next tab no longer fits in the available space. For
+            ' MaxCaptionHeight each added tab can raise the whole column's uniform height,
+            ' so the fit test uses count * (new tallest) rather than the plain sum.
+            Do
+                iRow = 0
+                iPosH = 0
+                ctv = 0
+                iAccumHC = 0
+                iColMaxHC = 0
+                iPrevVisibleTabHC = -1
+                For t = 0 To mTabs - 1
+                    If mTabData(t).Visible Then
+                        ctv = ctv + 1
+                        iLastVisibleTab = t
+                        mTabData(t).LeftTab = False
+                        mTabData(t).RightTab = False
+                        mTabData(t).RightTabEnding = False
+                        If iPosH > 0 Then
+                            If mHorizontalTabHeightStyle = ntTHMaxCaptionHeight Then
+                                iLng = iColMaxHC
+                                If mTabData(t).Width > iLng Then iLng = mTabData(t).Width
+                                iLng = (iPosH + 1) * iLng + iPosH * mTabSeparation2
+                            Else
+                                iLng = iAccumHC + mTabSeparation2 + mTabData(t).Width
+                            End If
+                            If iLng > (iAvailableSpaceForTabs - 2) Then
+                                mTabData(iPrevVisibleTabHC).RightTab = True
+                                iRow = iRow + 1
+                                iPosH = 0
+                            End If
+                        End If
+                        If iPosH = 0 Then
+                            mTabData(t).LeftTab = True
+                            iAccumHC = mTabData(t).Width
+                            iColMaxHC = mTabData(t).Width
+                        Else
+                            iAccumHC = iAccumHC + mTabSeparation2 + mTabData(t).Width
+                            If mTabData(t).Width > iColMaxHC Then iColMaxHC = mTabData(t).Width
+                        End If
+                        iPosH = iPosH + 1
+                        mTabData(t).PosH = iPosH
+                        mTabData(t).Row = iRow
+                        If ctv = mVisibleTabs Then
+                            mTabData(t).RightTab = True
+                        End If
+                        iPrevVisibleTabHC = t
+                    Else
+                        mTabData(t).Row = -1
+                    End If
+                Next
+                iNumberOfColumnsForHorizontalCaptions = iRow + 1
+                iAvailableSpaceForTabsPrev = iAvailableSpaceForTabs
+                iAvailableSpaceForTabs = (iScaleWidthForTabs - IIf(mAppearanceIsPP, 4, 0)) - iRowPerspectiveSpace * (iNumberOfColumnsForHorizontalCaptions - 1)
+                If iAvailableSpaceForTabs >= iAvailableSpaceForTabsPrev Then
+                    iAvailableSpaceForTabs = iAvailableSpaceForTabsPrev
+                    Exit Do
+                End If
+            Loop
+            mRows = iNumberOfColumnsForHorizontalCaptions
+        Else
         Do
             iMaxTabsPerColumn = Int((iAvailableSpaceForTabs + mTabSeparation2) / (iTabHeight + mTabSeparation2))
             If iMaxTabsPerColumn = 0 Then
@@ -6707,6 +7298,7 @@ Private Sub Draw()
                 iLastVisibleTab = t
                 mTabData(t).LeftTab = False
                 mTabData(t).RightTab = False
+                mTabData(t).RightTabEnding = False
                 iPosH = iPosH + 1
                 If iPosH > iTabsPerColumn Then
                     iPosH = 1
@@ -6725,6 +7317,7 @@ Private Sub Draw()
                 mTabData(t).Row = -1
             End If
         Next
+        End If
     ElseIf (mTabWidthStyle2 <> ntTWTabStripEmulation) And (mTabWidthStyle2 <> ntTWStretchToFill) Then
         If (mTabWidthStyle2 = ntTWTabCaptionWidthFillRows) Then
             iTotalTabWidth = 0
@@ -6749,6 +7342,7 @@ Private Sub Draw()
                         iLastVisibleTab = t
                         mTabData(t).LeftTab = False
                         mTabData(t).RightTab = False
+                        mTabData(t).RightTabEnding = False
                         iPosH = iPosH + 1
                         If Not iPosH = 1 Then ' if not the first tab already exceeds the available width
                             If (iAccumulatedTabWith + iAccumulatedAdditionalFixedTabSpace + mTabData(t).IconAndCaptionWidth + 10) > iAvailableSpaceForTabs Then
@@ -7063,8 +7657,10 @@ Private Sub Draw()
 
     ' Rows positions
     For t = 0 To mTabs - 1
-        mTabData(t).RowPos = (mRows - mTabData(t).Row - 1) + mTabData(mTab).Row
-        If mTabData(t).RowPos > (mRows - 1) Then mTabData(t).RowPos = mTabData(t).RowPos - mRows
+        If mTabData(mTab).Visible Then
+            mTabData(t).RowPos = (mRows - mTabData(t).Row - 1) + mTabData(mTab).Row
+            If mTabData(t).RowPos > (mRows - 1) Then mTabData(t).RowPos = mTabData(t).RowPos - mRows
+        End If
     Next t
     
     If mTabsAreRotatedButCaptionsAreHorizontal Then
@@ -7078,8 +7674,14 @@ Private Sub Draw()
                 iColumnLeftForHorizontalCaptions(iRow) = iColumnLeftForHorizontalCaptions(iRow - 1) + iColumnWidthForHorizontalCaptions(iRow - 1)
             End If
             iColumnTabCount = 0
+            iLogicalRowHC = -1
             For t = 0 To mTabs - 1
-                If mTabData(t).RowPos = iRow Then
+                ' iRow here is the DISPLAY column (RowPos), because iColumnLeft/iColumnWidth
+                ' are consumed by the positioning code indexed by RowPos. The Visible guard
+                ' is what excludes hidden tabs (their RowPos is computed from Row = -1 and
+                ' can spuriously land on a valid column, miscounting it)
+                If mTabData(t).Visible And (mTabData(t).RowPos = iRow) Then
+                    iLogicalRowHC = mTabData(t).Row
                     iColumnTabCount = iColumnTabCount + 1
                     If mAppearanceIsFlat Then
                         iLng = mTabData(t).IconAndCaptionWidth + IIf(mFlatBarGripHeightDPIScaled > 0, mFlatBarGripHeightDPIScaled, 0) + mFlatBarHeightDPIScaled
@@ -7104,78 +7706,136 @@ Private Sub Draw()
                     iColumnWidthForHorizontalCaptions(iRow) = iTabMinWidth
                 End If
             End If
-            iTabHeightForHorizontalCaptions = (iAvailableSpaceForTabs - (iColumnTabCount - 1) * mTabSeparation2) / iColumnTabCount - 0.5
-        
-            For t = 0 To mTabs - 1
-                If mTabData(t).Row = iRow Then
-                    mTabData(t).Width = iTabHeightForHorizontalCaptions
+            If mHorizontalTabHeightStyle = ntTHFixed Then
+                ' Respects TabHeight as-is: each tab gets exactly that extent, no stretching
+                iTabHeightForHorizontalCaptions = iTabHeight
+                For t = 0 To mTabs - 1
+                    If mTabData(t).Visible And (mTabData(t).RowPos = iRow) Then
+                        mTabData(t).Width = iTabHeightForHorizontalCaptions
+                    End If
+                Next
+            ElseIf (mHorizontalTabHeightStyle = ntTHTabCaptionHeight) Or (mHorizontalTabHeightStyle = ntTHMaxCaptionHeight) Then
+                ' Heights were already measured and packed into columns before this point.
+                ' Here only the column-level adjustments are applied: a FULL column (every
+                ' column except the last one, because a column only closes when a tab no
+                ' longer fits in it) stretches its tabs to absorb the leftover space; the
+                ' last column keeps the measured sizes and any free space stays free. For
+                ' MaxCaptionHeight all tabs of a column share the tallest tab's height.
+                iColCountHC = 0
+                iColSumHC = 0
+                iColMaxHC = 0
+                For t = 0 To mTabs - 1
+                    If mTabData(t).Visible Then
+                        If mTabData(t).RowPos = iRow Then
+                            iColCountHC = iColCountHC + 1
+                            iColSumHC = iColSumHC + mTabData(t).Width
+                            If mTabData(t).Width > iColMaxHC Then iColMaxHC = mTabData(t).Width
+                        End If
+                    End If
+                Next
+                If iColCountHC > 0 Then
+                    ' Whether the column is FULL depends on its LOGICAL position (only the
+                    ' last packed column, Row = mRows - 1, never overflowed), not on where
+                    ' it's displayed (RowPos rotates with the selected tab)
+                    If mHorizontalTabHeightStyle = ntTHMaxCaptionHeight Then
+                        If iLogicalRowHC < (mRows - 1) Then
+                            ' Full column: evening out and stretching in one shot
+                            iTabHeightForHorizontalCaptions = (iAvailableSpaceForTabs - 2 - (iColCountHC - 1) * mTabSeparation2) / iColCountHC
+                        Else
+                            iTabHeightForHorizontalCaptions = iColMaxHC
+                        End If
+                        For t = 0 To mTabs - 1
+                            If mTabData(t).Visible And (mTabData(t).RowPos = iRow) Then
+                                mTabData(t).Width = iTabHeightForHorizontalCaptions
+                            End If
+                        Next
+                    Else
+                        If iLogicalRowHC < (mRows - 1) Then
+                            ' Full column: split the leftover evenly among its tabs
+                            iShareHC = ((iAvailableSpaceForTabs - 2 - (iColCountHC - 1) * mTabSeparation2) - iColSumHC) \ iColCountHC
+                            For t = 0 To mTabs - 1
+                                If mTabData(t).Visible Then
+                                    If mTabData(t).RowPos = iRow Then
+                                        mTabData(t).Width = mTabData(t).Width + iShareHC
+                                    End If
+                                End If
+                            Next
+                        End If
+                    End If
                 End If
-            Next
+            Else ' ntTHFill (default, unchanged from before): stretch to fill all available space
+                iTabHeightForHorizontalCaptions = (iAvailableSpaceForTabs - (iColumnTabCount - 1) * mTabSeparation2) / iColumnTabCount - 0.5
+                For t = 0 To mTabs - 1
+                    If mTabData(t).Visible And (mTabData(t).RowPos = iRow) Then
+                        mTabData(t).Width = iTabHeightForHorizontalCaptions
+                    End If
+                Next
+            End If
         Next
     End If
     
     ' Body position
     If mTabsAreRotatedButCaptionsAreHorizontal Then
-        mClientStart = 2
+        mBodyStart = 2
         For iRow = 0 To mRows - 1
-            mClientStart = mClientStart + iColumnWidthForHorizontalCaptions(iRow)
+            mBodyStart = mBodyStart + iColumnWidthForHorizontalCaptions(iRow)
         Next
         If iTabExtraHeightIsNeeded Then
-            mClientStart = mClientStart + iTabExtraHeight
+            mBodyStart = mBodyStart + iTabExtraHeight
         End If
     ElseIf iTabExtraHeightIsNeeded Then
-        mClientStart = mRows * iTabHeight + iTabExtraHeight + 2
+        mBodyStart = mRows * iTabHeight + iTabExtraHeight '+ 2
     Else
-        mClientStart = mRows * iTabHeight + 2
+        mBodyStart = mRows * iTabHeight + 2
     End If
     If mHighlightFlatBarWithGrip Or mHighlightFlatBarWithGripSelectedTab Then
-        If (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
+        If mOrientationIsBottom Then
             If (mFlatBarPosition = ntBarPositionBottom) And (mFlatBarGripHeightDPIScaled > 0) Then
-                mClientStart = mClientStart + mFlatBarGripHeightDPIScaled
+                mBodyStart = mBodyStart + mFlatBarGripHeightDPIScaled
             End If
         Else
             If (mFlatBarPosition = ntBarPositionTop) And (mFlatBarGripHeightDPIScaled > 0) Then
-                mClientStart = mClientStart + mFlatBarGripHeightDPIScaled
+                mBodyStart = mBodyStart + mFlatBarGripHeightDPIScaled
             End If
         End If
     End If
-    mClientHeight = iScaleHeight - mClientStart + 2 '+ 1
+    mBodyHeight = iScaleHeight - mBodyStart + 2 '+ 1
     
     If mRows > 1 Then
         iAllRowsPerspectiveSpace = iRowPerspectiveSpace * (mRows - 1)
     End If
-    mClientWidth = iScaleWidth - iAllRowsPerspectiveSpace '- 1
+    mBodyWidth = iScaleWidth - iAllRowsPerspectiveSpace '- 1
     If mControlIsThemed Then
-        mClientWidth = mClientWidth + mThemedBodyRightShadowPixels - 2
+        mBodyWidth = mBodyWidth + mThemedBodyRightBorderPixels - 2
     End If
     
     Select Case mTabOrientation
         Case ssTabOrientationTop, ntTabOrientationTopRight
-            mClientRect.Top = mClientStart
-            mClientRect.Left = 2
-            mClientRect.Bottom = mScaleHeight - 4
-            mClientRect.Right = mClientWidth - 4
+            mBodyRect.Top = mBodyStart
+            mBodyRect.Left = 2
+            mBodyRect.Bottom = mScaleHeight - 4
+            mBodyRect.Right = mBodyWidth - 4
         Case ssTabOrientationBottom, ntTabOrientationBottomRight
-            mClientRect.Top = 0 '2
-            mClientRect.Left = 2
-            mClientRect.Bottom = mClientHeight - 6 '4
-            mClientRect.Right = mClientWidth - 4
+            mBodyRect.Top = 0 '2
+            mBodyRect.Left = 2
+            mBodyRect.Bottom = mBodyHeight - 6 '4
+            mBodyRect.Right = mBodyWidth - 4
         Case ssTabOrientationLeft, ntTabOrientationLeftTop, ntTabOrientationLeftHorizontal, ntTabOrientationLeftTopHorizontal
-            mClientRect.Top = mScaleHeight - mClientWidth '+ 2
-            mClientRect.Left = mClientStart + 2
-            mClientRect.Bottom = mScaleHeight - 4
-            mClientRect.Right = mScaleWidth - 4
+            mBodyRect.Top = mScaleHeight - mBodyWidth '+ 2
+            mBodyRect.Left = mBodyStart + 2
+            mBodyRect.Bottom = mScaleHeight - 4
+            mBodyRect.Right = mScaleWidth - 4
         Case Else ' ssTabOrientationRight, ntTabOrientationRightBottom, ntTabOrientationRightHorizontal, ntTabOrientationRightBottomHorizontal
-            mClientRect.Top = 0 '2
-            mClientRect.Left = 2
-            mClientRect.Bottom = mClientWidth - 4
-            mClientRect.Right = mClientHeight - 6 '4
+            mBodyRect.Top = 0 '2
+            mBodyRect.Left = 2
+            mBodyRect.Bottom = mBodyWidth - 4
+            mBodyRect.Right = mBodyHeight - 6 '4
     End Select
     If mAppearanceIsFlat Then
-        mClientRect.Left = mClientRect.Left - 1
-        mClientRect.Top = mClientRect.Top + 1
-        mClientRect.Right = mClientRect.Right + 3
-        mClientRect.Bottom = mClientRect.Bottom + 3
+        mBodyRect.Left = mBodyRect.Left - 1
+        mBodyRect.Top = mBodyRect.Top + 1
+        mBodyRect.Right = mBodyRect.Right + 2
+        mBodyRect.Bottom = mBodyRect.Bottom + 2
     End If
     
     If (mTabWidthStyle2 = ntTWTabCaptionWidth) Or (mTabWidthStyle2 = ntTWTabCaptionWidthFillRows) Then
@@ -7186,7 +7846,7 @@ Private Sub Draw()
             For t = 0 To mTabs - 1
                 If mTabData(t).Row = iRow Then
                     iAccumulatedTabWith = iAccumulatedTabWith + mTabData(t).IconAndCaptionWidth
-                    iAccumulatedAdditionalFixedTabSpace = iAccumulatedAdditionalFixedTabSpace + 12
+                    iAccumulatedAdditionalFixedTabSpace = iAccumulatedAdditionalFixedTabSpace + 10
                     If Not mTabData(t).RightTab Then
                         iAccumulatedAdditionalFixedTabSpace = iAccumulatedAdditionalFixedTabSpace + mTabSeparation2
                     End If
@@ -7210,8 +7870,8 @@ Private Sub Draw()
     If (mUserControlSizeCorrectionsCounter < 3) And (Not mAmbientUserMode) Then
         If (mUserControlSizeCorrectionsCounter_ScaleWidthNotToResize <> mScaleWidth) Or (mUserControlSizeCorrectionsCounter_ScaleHeightNotToResize <> mScaleHeight) Then
             If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ntTabOrientationTopRight) Or (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
-                If mClientHeight < 3 Then
-                    UserControl.Height = UserControl.Height + pScaleY(3 - mClientHeight, vbPixels, vbTwips)
+                If mBodyHeight < 3 Then
+                    UserControl.Height = UserControl.Height + pScaleY(3 - mBodyHeight, vbPixels, vbTwips)
                     mUserControlSizeCorrectionsCounter = mUserControlSizeCorrectionsCounter + 1
                     GoTo TheExit:
                 End If
@@ -7223,8 +7883,8 @@ Private Sub Draw()
                     End If
                 End If
             Else
-                If mClientHeight < 3 Then
-                    iLng = UserControl.Width + pScaleX(3 - mClientHeight, vbPixels, vbTwips)
+                If mBodyHeight < 3 Then
+                    iLng = UserControl.Width + pScaleX(3 - mBodyHeight, vbPixels, vbTwips)
                     UserControl.Width = iLng
                     mUserControlSizeCorrectionsCounter = mUserControlSizeCorrectionsCounter + 1
                     GoTo TheExit:
@@ -7265,9 +7925,9 @@ Private Sub Draw()
             mUserControlSizeCorrectionsCounter_ScaleHeightNotToResize = mScaleHeight
         End If
         If mAppearanceIsPP Then
-            iTabWidth = (iScaleWidthForTabs - 5 - iAllRowsPerspectiveSpace - 1 - IIf(mControlIsThemed, 2 - mThemedBodyRightShadowPixels, 0) - mTabSeparation2 * (mTabsPerRow - 1)) / mTabsPerRow
+            iTabWidth = (iScaleWidthForTabs - 5 - iAllRowsPerspectiveSpace - 1 - IIf(mControlIsThemed, 2 - mThemedBodyRightBorderPixels, 0) - mTabSeparation2 * (mTabsPerRow - 1)) / mTabsPerRow
         Else
-            iTabWidth = (iScaleWidthForTabs - 1 - iAllRowsPerspectiveSpace - 1 - IIf(mControlIsThemed, 2 - mThemedBodyRightShadowPixels, 0) - mTabSeparation2 * (mTabsPerRow - 1)) / mTabsPerRow
+            iTabWidth = (iScaleWidthForTabs - 1 - iAllRowsPerspectiveSpace - 1 - IIf(mControlIsThemed, 2 - mThemedBodyRightBorderPixels, 0) - mTabSeparation2 * (mTabsPerRow - 1)) / mTabsPerRow
         End If
         If iTabWidth > iTabMaxWidth Then
             iTabWidth = iTabMaxWidth
@@ -7278,20 +7938,20 @@ Private Sub Draw()
     
     mUserControlSizeCorrectionsCounter = 0
     
-    If (mClientWidth_Prev <> mClientWidth) And (mClientWidth_Prev <> 0) Or (mClientHeight_Prev <> mClientHeight) And (mClientHeight_Prev <> 0) Then
+    If (mBodyWidth_Prev <> mBodyWidth) And (mBodyWidth_Prev <> 0) Or (mBodyHeight_Prev <> mBodyHeight) And (mBodyHeight_Prev <> 0) Then
         ResetCachedThemeImages
     End If
-    mClientWidth_Prev = mClientWidth
-    mClientHeight_Prev = mClientHeight
+    mBodyWidth_Prev = mBodyWidth
+    mBodyHeight_Prev = mBodyHeight
     
     If (mTabWidthStyle2 <> ntTWTabStripEmulation) And (mTabWidthStyle2 <> ntTWStretchToFill) Then
         iTabStretchRatio = 1
     End If
     
     ReDim mRightMostTabsRightPos(mRows - 1)
-    ReDim mLeftMostTabsRightPos(mRows - 1)
+    ReDim mLeftMostTabsLeftPos(mRows - 1)
     For iRow = 0 To mRows - 1
-        mLeftMostTabsRightPos(iRow) = iScaleWidth
+        mLeftMostTabsLeftPos(iRow) = iScaleWidth
     Next
     
     ' set the tab rects
@@ -7311,7 +7971,7 @@ Private Sub Draw()
                                 If iTabExtraHeightIsNeeded Then .Top = .Top + iTabExtraHeight
                                 .Bottom = .Top + iColumnWidthForHorizontalCaptions(iRow) + IIf(mHighlightAddExtraHeightSelectedTab, iTabExtraHeight, 0)
                                 If mHighlightFlatBarWithGrip Or mHighlightFlatBarWithGripSelectedTab Then
-                                    If (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
+                                    If mOrientationIsBottom Then
                                         If (mFlatBarPosition = ntBarPositionBottom) And (mFlatBarGripHeightDPIScaled > 0) Then
                                             .Top = .Top + mFlatBarGripHeightDPIScaled
                                             .Bottom = .Bottom + mFlatBarGripHeightDPIScaled
@@ -7341,10 +8001,26 @@ Private Sub Draw()
                                 End If
                             End If
                             
-                            .Left = (iTabData.PosH - 1) * IIf(mControlIsThemed, iTabData.Width, Round(iTabData.Width)) + iRowPerspectiveSpace * (mRows - mTabData(t).RowPos - 1) + 1 + (iTabData.PosH - 1) * mTabSeparation2 + 1
-                            .Right = .Left + iTabData.Width - 1 '- mTabSeparation2 ' no volver a sacar el -1!!
+                            If (mHorizontalTabHeightStyle = ntTHTabCaptionHeight) Or (mHorizontalTabHeightStyle = ntTHMaxCaptionHeight) Then
+                                ' Per-tab heights: positions must accumulate, because the formula
+                                ' below assumes every tab of the column has the same Width (it
+                                ' multiplies by PosH), which no longer holds for these styles
+                                If iTabData.PosH = 1 Then
+                                    .Left = iRowPerspectiveSpace * (mRows - mTabData(t).RowPos - 1) + 2
+                                Else
+                                    .Left = iTabLeftHC + mTabSeparation2 + 1
+                                End If
+                                .Right = .Left + iTabData.Width - 1
+                                iTabLeftHC = .Right
+                            Else
+                                .Left = (iTabData.PosH - 1) * IIf(mControlIsThemed, iTabData.Width, Round(iTabData.Width)) + iRowPerspectiveSpace * (mRows - mTabData(t).RowPos - 1) + 1 + (iTabData.PosH - 1) * mTabSeparation2 + 1
+                                .Right = .Left + iTabData.Width - 1 '- mTabSeparation2 ' do not remove the -1 again!!
+                            End If
                             
-                            If iTabData.RightTab Then
+                            If iTabData.RightTab And (((mHorizontalTabHeightStyle <> ntTHTabCaptionHeight) And (mHorizontalTabHeightStyle <> ntTHMaxCaptionHeight)) Or (iTabData.Row < mRows - 1)) Then
+                                ' (for the per-tab height styles, only FULL columns - which were
+                                ' stretched to the end - get this final snap; the last column must
+                                ' keep its free space free)
                                 iLng = iScaleWidthForTabs - iRowPerspectiveSpace * mTabData(t).RowPos - 1
                                 If mAppearanceIsPP Then
                                     iLng = iLng - 2
@@ -7360,7 +8036,7 @@ Private Sub Draw()
                                     End If
                                 End If
                                 If Abs(.Right - iLng) < (6 + iColumnTabCount / 2) Then
-                                    .Right = iLng - IIf(mControlIsThemed, mThemedBodyRightShadowPixels - 2, 0)
+                                    .Right = iLng - IIf(mControlIsThemed, mThemedBodyRightBorderPixels - 2, 0)
                                 End If
                             End If
                             If iTabData.FixedWidth <> 0 Then
@@ -7388,7 +8064,7 @@ Private Sub Draw()
                                 If iTabExtraHeightIsNeeded Then .Top = .Top + iTabExtraHeight
                                 .Bottom = .Top + iTabHeight + IIf(mHighlightAddExtraHeightSelectedTab, iTabExtraHeight, 0)
                                 If mHighlightFlatBarWithGrip Or mHighlightFlatBarWithGripSelectedTab Then
-                                    If (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
+                                    If mOrientationIsBottom Then
                                         If (mFlatBarPosition = ntBarPositionBottom) And (mFlatBarGripHeightDPIScaled > 0) Then
                                             .Top = .Top + mFlatBarGripHeightDPIScaled
                                             .Bottom = .Bottom + mFlatBarGripHeightDPIScaled
@@ -7410,7 +8086,7 @@ Private Sub Draw()
                                     If iTabExtraHeightIsNeeded Then .Top = .Top + iTabExtraHeight
                                     .Bottom = .Top + iTabHeight
                                 End If
-                                If (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
+                                If mOrientationIsBottom Then
                                     If mHighlightFlatBarWithGrip Or mHighlightFlatBarWithGripSelectedTab Then
                                         If (mFlatBarPosition = ntBarPositionBottom) And (mFlatBarGripHeightDPIScaled > 0) Then
                                             .Top = .Top + mFlatBarGripHeightDPIScaled
@@ -7428,7 +8104,7 @@ Private Sub Draw()
                             End If
                             If (mTabWidthStyle2 = ntTWFixed) Then
                                 .Left = (iTabData.PosH - 1) * IIf(mControlIsThemed, iTabWidth, Round(iTabWidth)) + iRowPerspectiveSpace * (mRows - mTabData(t).RowPos - 1) + 1 + (iTabData.PosH - 1) * mTabSeparation2 + 1
-                                .Right = .Left + iTabWidth - 1 '- mTabSeparation2 ' no volver a sacar el -1!!
+                                .Right = .Left + iTabWidth - 1 '- mTabSeparation2 ' do not remove the -1 again!!
                             Else
                                 If iTabData.LeftTab Then
                                     iTabLeft = IIf(((mTabWidthStyle2 = ntTWStretchToFill) Or (mTabWidthStyle2 = ntTWTabCaptionWidthFillRows)) And (Not (mAppearanceIsFlat Or (mStyle = ntStyleWindows))), 0, 1) + iRowPerspectiveSpace * (mRows - mTabData(t).RowPos - 1) + 1
@@ -7458,8 +8134,11 @@ Private Sub Draw()
                                         iLng = iLng + 1
                                     End If
                                 End If
-                                If Abs(.Right - iLng) < 6 Then
-                                    .Right = iLng - IIf(mControlIsThemed, mThemedBodyRightShadowPixels - 2, 0)
+                                ' The rounding residue of the stretched widths accumulates along the row,
+                                ' so the tolerance must grow with the number of tabs in the row (PosH of the
+                                ' RightTab tab), same criterion used for the rotated-captions columns
+                                If Abs(.Right - iLng) < (6 + iTabData.PosH / 2) Then
+                                    .Right = iLng - IIf(mControlIsThemed, mThemedBodyRightBorderPixels - 2, 0)
                                 End If
                             End If
                             If iTabData.FixedWidth <> 0 Then
@@ -7474,6 +8153,27 @@ Private Sub Draw()
         Next iRow
     End If
     
+    If mTabsAlignedAtTheEnd Then
+        For t = 0 To mTabs - 1
+            If mTabData(t).Visible Then
+                If mTabData(t).TabRect.Right > mRightMostTabsRightPos(mTabData(t).RowPos) Then
+                    mRightMostTabsRightPos(mTabData(t).RowPos) = mTabData(t).TabRect.Right
+                End If
+            End If
+        Next
+        For t = 0 To mTabs - 1
+            If mTabData(t).Visible Then
+                If (iStyle2 = ntStyleWindows) Or mAppearanceIsPP Then
+                    iRightBorder = 3
+                Else
+                    iRightBorder = 1
+                End If
+                iLng = mBodyWidth - mRightMostTabsRightPos(mTabData(t).RowPos) - iRightBorder + iRowPerspectiveSpace * (mRows - mTabData(t).RowPos - 1)
+                mTabData(t).TabRect.Left = mTabData(t).TabRect.Left + iLng
+                mTabData(t).TabRect.Right = mTabData(t).TabRect.Right + iLng
+            End If
+        Next
+    End If
     For t = 0 To mTabs - 1
         If mTabData(t).Visible Then
             If mTabData(t).PosH > 1 Then
@@ -7484,7 +8184,7 @@ Private Sub Draw()
                         If iLng < 0 Then Exit Do
                     Loop
                     If iLng >= 0 Then
-                        mTabData(t).TabRect.Left = mTabData(iLng).TabRect.Right + 1
+                        mTabData(t).TabRect.Left = mTabData(iLng).TabRect.Right + mTabSeparation2 + 1
                     End If
                 End If
             End If
@@ -7492,6 +8192,13 @@ Private Sub Draw()
                 If mTabData(t).RowPos > -1 Then
                     If mTabData(t).TabRect.Right > mRightMostTabsRightPos(mTabData(t).RowPos) Then
                         mRightMostTabsRightPos(mTabData(t).RowPos) = mTabData(t).TabRect.Right
+                    End If
+                End If
+            End If
+            If mTabData(t).LeftTab Then
+                If mTabData(t).RowPos > -1 Then
+                    If mTabData(t).TabRect.Left < mLeftMostTabsLeftPos(mTabData(t).RowPos) Then
+                        mLeftMostTabsLeftPos(mTabData(t).RowPos) = mTabData(t).TabRect.Left
                     End If
                 End If
             End If
@@ -7533,7 +8240,13 @@ Private Sub Draw()
         Next t
     Next iRow
     
-    'If (mTabOrientation = ntTabOrientationTopRight) Or (mTabOrientation = ntTabOrientationBottomRight) Then
+    ReDim mRightMostTabsRightPos2(UBound(mRightMostTabsRightPos))
+    ReDim mLeftMostTabsLeftPos2(UBound(mLeftMostTabsLeftPos))
+    For c = 0 To UBound(mRightMostTabsRightPos)
+        mRightMostTabsRightPos2(c) = mRightMostTabsRightPos(c)
+        mLeftMostTabsLeftPos2(c) = mLeftMostTabsLeftPos(c)
+    Next
+    
     If mTabsAlignedAtTheEnd Then
         For t = 0 To mTabs - 1
             If mTabData(t).Visible Then
@@ -7542,14 +8255,19 @@ Private Sub Draw()
                 Else
                     iRightBorder = 1
                 End If
-                iLng = iScaleWidth - mRightMostTabsRightPos(mTabData(t).RowPos) - iRightBorder
+                iLng = mBodyWidth - mRightMostTabsRightPos(mTabData(t).RowPos) - iRightBorder + iRowPerspectiveSpace * (mRows - mTabData(t).RowPos - 1)
                 mTabData(t).TabRect.Left = mTabData(t).TabRect.Left + iLng
                 mTabData(t).TabRect.Right = mTabData(t).TabRect.Right + iLng
-                
+                If mTabData(t).TabRect.Right > mRightMostTabsRightPos(mTabData(t).RowPos) Then
+                    mRightMostTabsRightPos2(mTabData(t).RowPos) = mTabData(t).TabRect.Right
+                End If
                 If mTabData(t).LeftTab Then
                     If mTabData(t).RowPos > -1 Then
-                        If mTabData(t).TabRect.Left < mLeftMostTabsRightPos(mTabData(t).RowPos) Then
-                            mLeftMostTabsRightPos(mTabData(t).RowPos) = mTabData(t).TabRect.Left
+                        If mTabData(t).TabRect.Left < mLeftMostTabsLeftPos(mTabData(t).RowPos) Then
+                            mLeftMostTabsLeftPos(mTabData(t).RowPos) = mTabData(t).TabRect.Left
+                            If mTabData(t).TabRect.Left > mLeftMostTabsLeftPos(mTabData(t).RowPos) Then
+                                mLeftMostTabsLeftPos2(mTabData(t).RowPos) = mTabData(t).TabRect.Left
+                            End If
                         End If
                     End If
                 End If
@@ -7583,31 +8301,33 @@ Private Sub Draw()
     ' shadow is at the bottom and all need to be shifted
     If ((mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop) Or (mTabOrientation = ntTabOrientationLeftHorizontal) Or (mTabOrientation = ntTabOrientationLeftTopHorizontal)) And mControlIsThemed Then
         For t = 0 To mTabs - 1
-            mTabData(t).TabRect.Left = mTabData(t).TabRect.Left + mThemedBodyRightShadowPixels
-            mTabData(t).TabRect.Right = mTabData(t).TabRect.Right + mThemedBodyRightShadowPixels
+            mTabData(t).TabRect.Left = mTabData(t).TabRect.Left + mThemedBodyRightBorderPixels
+            mTabData(t).TabRect.Right = mTabData(t).TabRect.Right + mThemedBodyRightBorderPixels
         Next t
     End If
     
     ' draw inactive tabs
     For iRow = 0 To mRows - 1
         For t = 0 To mTabs - 1
+            If mTabData(t).RightTab Then
+                If Abs(mTabData(t).TabRect.Right - mBodyWidth) < 4 Then
+                    mTabData(t).RightTabEnding = True
+                End If
+            End If
             If mTabData(t).Visible Then
                 If mTabData(t).RowPos = iRow Then
                     If t <> mTab Then
                         If mTabData(t).RightTab And Not (mTabData(t).RowPos = mRows - 1) Then
-                            iLng = 4
-                            If mAppearanceIsPP Then
-                                iLng = iLng + 2 + IIf(mControlIsThemed, mThemedBodyRightShadowPixels - 2, 0)
-                            End If
-                            If ((mTabWidthStyle2 <> ntTWTabStripEmulation) And (mTabWidthStyle2 <> ntTWStretchToFill)) Or mShowsRowsPerspective2 Then
-                                DrawInactiveBodyPart iRowPerspectiveSpace * (mRows - mTabData(t).RowPos - 1) + 3, mTabData(t).TabRect.Bottom + 5, mClientWidth - iLng, CLng(mClientHeight), iLng, mTabData(t).RowPos, t
-                            End If
+                            DrawInactiveBodyPart iRowPerspectiveSpace * (mRows - mTabData(t).RowPos - 1), mTabData(t).TabRect.Bottom + 5, mBodyWidth - 1, CLng(mBodyHeight), mTabData(t).RowPos, t
                         End If
                         If mAppearanceIsPP Then
                             mTabData(t).TabRect.Top = mTabData(t).TabRect.Top + 2
                         End If
                         DrawTab t
-                        DrawTabPicureAndCaption t
+                        If Not mOrientationIsBottom And Not mTabsAreRotatedButCaptionsAreHorizontal Then
+                            DrawTabPicureAndCaption t
+                            DrawTabCloseButton t
+                        End If
                     End If
                 End If
             End If
@@ -7624,28 +8344,14 @@ Private Sub Draw()
     ElseIf (mTabAppearance2 = ntTATabbedDialog) Or (mTabAppearance2 = ntTATabbedDialogRounded) Then
         mTabData(mTab).TabRect.Left = mTabData(mTab).TabRect.Left - 1
     End If
-    DrawTab CLng(mTab)
-    DrawTabPicureAndCaption CLng(mTab)
     
-    If mRows > 0 Then
-        If mHighlightFlatBar And (mFlatBarPosition = ntBarPositionBottom) And (mFlatBarHeightDPIScaled > 0) Then
-            For t = 0 To mTabs - 1
-                If mTabData(t).Visible Then
-                    If t <> mTab Then
-                        If mTabData(t).RowPos < (mRows - 1) Then
-                            If mTabData(t).Hovered Then
-                                DrawTab t
-                                DrawTabPicureAndCaption t
-                                Exit For
-                            End If
-                        End If
-                    End If
-                End If
-            Next t
-        End If
+    DrawTab CLng(mTab)
+    If Not mOrientationIsBottom And Not mTabsAreRotatedButCaptionsAreHorizontal Then
+        DrawTabPicureAndCaption CLng(mTab)
+        DrawTabCloseButton CLng(mTab)
     End If
     
-    If (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
+    If mOrientationIsBottom Then
         ' grip over the body
         If mHighlightFlatBar And (mFlatBarGripHeightDPIScaled > 0) Then
             For t = 0 To mTabs - 1
@@ -7690,33 +8396,94 @@ Private Sub Draw()
             'BitBlt UserControl.hDC, 0, 0, iScaleWidth, iScaleHeight, picDraw.hDC, 0, 0, vbSrcCopy
             Set UserControl.Picture = picDraw.Image
         Case ssTabOrientationBottom, ntTabOrientationBottomRight
-            UserControl.PaintPicture picDraw.Image, 0, iScaleHeight - 1, iScaleWidth, -iScaleHeight
-            Set UserControl.Picture = UserControl.Image
-            UserControl.Cls
+            Set p = picDraw.Image
+            picDraw.Cls
+            Set p = RotatePic(p, ntFlipVertical)
+            If mRightToLeft Then
+                ' the captured image content is already physically mirrored (it was rendered through the
+                ' RTL-layout DC), and pasting it back through that same DC mirrors it once more, which would
+                ' undo the mirroring and leave the tab shapes misaligned with the captions drawn afterwards.
+                ' So pre-unmirror it in memory (RotatePic works on plain memory DCs, unaffected by the DC
+                ' layout) and let the paste mirror it back into place.
+                Set p = RotatePic(p, ntFlipHorizontal)
+            End If
+            picDraw.PaintPicture p, 0, 0
         Case ssTabOrientationLeft, ntTabOrientationLeftTop, ntTabOrientationLeftHorizontal, ntTabOrientationLeftTopHorizontal
-            RotatePic picDraw, picRotate, nt90DegreesCounterClockWise
-            'BitBlt UserControl.hDC, 0, 0, mScaleWidth, mScaleHeight, picRotate.hDC, 0, 0, vbSrcCopy
-            Set UserControl.Picture = picRotate.Image
+            Set p = picDraw.Image
+            picDraw.Cls
+            If mRightToLeft Then
+                ' the as-Top image was rendered mirrored (RTL layout), so rotating it the opposite way
+                ' lands the tab strip on the opposite side -the standard mirrored-UI behavior- while
+                ' keeping the tabs' order along the strip and the captions readable
+                Set p = RotatePic(p, nt90DegreesClockWise)
+            Else
+                Set p = RotatePic(p, nt90DegreesCounterClockWise)
+            End If
+            If mTabsAreRotatedButCaptionsAreHorizontal Then
+                iLng = picDraw.Height
+                picDraw.Height = picDraw.Width
+                picDraw.Width = iLng
+                If mRightToLeft Then
+                    ' same double-mirroring situation as in the Bottom orientations above: the rotated
+                    ' image is already the physically mirrored final image, and pasting it back through
+                    ' the RTL-layout DC would mirror it once more, misaligning the tab shapes with the
+                    ' horizontal captions drawn afterwards. So pre-unmirror it in memory - flipping
+                    ' around the vertical axis of the already-rotated (final) frame - and let the
+                    ' paste mirror it back into place.
+                    Set p = RotatePic(p, ntFlipHorizontal)
+                End If
+                picDraw.PaintPicture p, 0, 0
+            Else
+                Set UserControl.Picture = p
+            End If
         Case Else ' ssTabOrientationRight, ntTabOrientationRightBottom, ntTabOrientationRightHorizontal, ntTabOrientationRightBottomHorizontal
-            RotatePic picDraw, picRotate, nt90DegreesClockWise
-            'BitBlt UserControl.hDC, 0, 0, mScaleWidth, mScaleHeight, picRotate.hDC, 0, 0, vbSrcCopy
-            Set UserControl.Picture = picRotate.Image
+            Set p = picDraw.Image
+            picDraw.Cls
+            If mRightToLeft Then
+                ' see the note in the Left case above: under RTL the rotation direction is swapped
+                Set p = RotatePic(p, nt90DegreesCounterClockWise)
+            Else
+                Set p = RotatePic(p, nt90DegreesClockWise)
+            End If
+            If mTabsAreRotatedButCaptionsAreHorizontal Then
+                iLng = picDraw.Height
+                picDraw.Height = picDraw.Width
+                picDraw.Width = iLng
+                If mRightToLeft Then
+                    ' see the note in the Left case above: pre-unmirror in the final frame so the
+                    ' paste through the RTL-layout DC mirrors the image back into place
+                    Set p = RotatePic(p, ntFlipHorizontal)
+                End If
+                picDraw.PaintPicture p, 0, 0
+            Else
+                Set UserControl.Picture = p
+            End If
     End Select
     iAlreadyNeedToBePainted = GetUpdateRect(mUserControlHwnd, iTmpRect, 0&) <> 0&
-    picDraw.Cls
+    'picDraw.Cls
     
     ' to avoid flickering on windowless contained controls, if not changed, validate the tab body area
     If (Not mBodyReset) Then
         If Not iAlreadyNeedToBePainted Then
             GetClientRect mUserControlHwnd, iTmpRect
             If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ntTabOrientationTopRight) Then
-                iTmpRect.Top = mClientStart + 3
+                iTmpRect.Top = mBodyStart + 3
             ElseIf (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
-                iTmpRect.Bottom = iTmpRect.Bottom - mClientStart - 3
+                iTmpRect.Bottom = iTmpRect.Bottom - mBodyStart - 3
             ElseIf (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop) Or (mTabOrientation = ntTabOrientationLeftHorizontal) Or (mTabOrientation = ntTabOrientationLeftTopHorizontal) Then
-                iTmpRect.Left = mClientStart + 3
+                If mRightToLeft Then
+                    ' under RTL the tab strip is visually on the opposite (right) side
+                    iTmpRect.Right = iTmpRect.Right - mBodyStart - 3
+                Else
+                    iTmpRect.Left = mBodyStart + 3
+                End If
             ElseIf (mTabOrientation = ssTabOrientationRight) Or (mTabOrientation = ntTabOrientationRightBottom) Or (mTabOrientation = ntTabOrientationRightHorizontal) Or (mTabOrientation = ntTabOrientationRightBottomHorizontal) Then
-                iTmpRect.Right = iTmpRect.Right - mClientStart - 3
+                If mRightToLeft Then
+                    ' under RTL the tab strip is visually on the opposite (left) side
+                    iTmpRect.Left = mBodyStart + 3
+                Else
+                    iTmpRect.Right = iTmpRect.Right - mBodyStart - 3
+                End If
             End If
             ValidateRect mUserControlHwnd, iTmpRect
         End If
@@ -7724,7 +8491,7 @@ Private Sub Draw()
     mBodyReset = False
     
     ' rotate caption RECTs according to TabOrientation
-    If (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
+    If mOrientationIsBottom Then
         For t = 0 To mTabs - 1
             iTabData = mTabData(t)
             If iTabData.Visible Then
@@ -7738,6 +8505,13 @@ Private Sub Draw()
                     .Top = iScaleHeight - 3 - .Bottom
                     .Bottom = iScaleHeight - 3 - iLng
                 End With
+                If iTabData.CloseButtonRect.Right > iTabData.CloseButtonRect.Left Then
+                    With iTabData.CloseButtonRect
+                        iLng = .Top - 2
+                        .Top = iScaleHeight - 3 - .Bottom
+                        .Bottom = iScaleHeight - 3 - iLng
+                    End With
+                End If
             End If
             mTabData(t) = iTabData
         Next t
@@ -7765,6 +8539,18 @@ Private Sub Draw()
                     .Left = iTmpRect.Top
                     .Right = .Left + iTmpRect.Bottom - iTmpRect.Top
                 End With
+                If iTabData.CloseButtonRect.Right > iTabData.CloseButtonRect.Left Then
+                    With iTabData.CloseButtonRect
+                        iTmpRect.Top = .Top
+                        iTmpRect.Bottom = .Bottom
+                        iTmpRect.Left = .Left
+                        iTmpRect.Right = .Right
+                        .Top = iScaleWidth - iTmpRect.Right
+                        .Bottom = .Top + iTmpRect.Right - iTmpRect.Left
+                        .Left = iTmpRect.Top
+                        .Right = .Left + iTmpRect.Bottom - iTmpRect.Top
+                    End With
+                End If
             End If
             mTabData(t) = iTabData
         Next t
@@ -7792,18 +8578,47 @@ Private Sub Draw()
                     .Left = iScaleHeight - iTmpRect.Bottom
                     .Right = .Left + iTmpRect.Bottom - iTmpRect.Top
                 End With
+                If iTabData.CloseButtonRect.Right > iTabData.CloseButtonRect.Left Then
+                    With iTabData.CloseButtonRect
+                        iTmpRect.Top = .Top
+                        iTmpRect.Bottom = .Bottom
+                        iTmpRect.Left = .Left
+                        iTmpRect.Right = .Right
+                        .Top = iTmpRect.Left
+                        .Bottom = .Top + iTmpRect.Right - iTmpRect.Left
+                        .Left = iScaleHeight - iTmpRect.Bottom
+                        .Right = .Left + iTmpRect.Bottom - iTmpRect.Top
+                    End With
+                End If
             End If
             mTabData(t) = iTabData
         Next t
     End If
-    If mRows <> mRows_Prev Then
-        RaiseEvent RowsChange
+    
+    ' draw captions for bottom orientations
+    If mOrientationIsBottom Or mTabsAreRotatedButCaptionsAreHorizontal Then
+        For iRow = 0 To mRows - 1
+            For t = 0 To mTabs - 1
+                If mTabData(t).Visible Then
+                    If mTabData(t).RowPos = iRow Then
+                        If t <> mTab Then
+                            DrawTabPicureAndCaption t
+                            DrawTabCloseButton t
+                        End If
+                    End If
+                End If
+            Next t
+        Next iRow
+        DrawTabPicureAndCaption CLng(mTab)
+        DrawTabCloseButton CLng(mTab)
+        Set UserControl.Picture = picDraw.Image
     End If
-    mRows_Prev = mRows
-    If ((mClientStart <> mClientStart_Prev) And (mAutoRelocateControls = ntRelocateAlways) Or (mTabOrientation <> mTabOrientation_Prev) And (mAutoRelocateControls > 0)) And (mTabOrientation_Prev <> -1) Then
+    picDraw.Cls
+    
+    If ((mBodyStart <> mBodyStart_Prev) And (mAutoRelocateControls = ntRelocateAlways) Or (mTabOrientation <> mTabOrientation_Prev) And (mAutoRelocateControls > 0)) And (mTabOrientation_Prev <> -1) Then
         RearrangeContainedControlsPositions
     End If
-    mClientStart_Prev = mClientStart
+    mBodyStart_Prev = mBodyStart
     mTabOrientation_Prev = mTabOrientation
     
     If mBackStyle = ntOpaque Then
@@ -7814,7 +8629,19 @@ Private Sub Draw()
         tmrCheckContainedControlsAdditionDesignTime.Interval = 50
         If Not mAmbientUserMode Then tmrCheckContainedControlsAdditionDesignTime.Enabled = True
         picAux.Move 0, 0, UserControl.ScaleWidth, UserControl.ScaleHeight
-        Set picAux.Picture = UserControl.Picture
+        If mRightToLeft Then
+            ' the Picture gets rendered into picAux through its RTL-layout DC, which mirrors it.
+            ' That would leave the transparency mask horizontally flipped with respect to what is
+            ' actually displayed (the UserControl paints the Picture bitmap as-is, its DC has no
+            ' RTL layout), making the transparent regions appear as if the tabs were on the other
+            ' side. So pre-unmirror the Picture in memory and let the DC mirroring land it back
+            ' aligned with the screen. The contained controls' rects below are fine as they are:
+            ' their coordinates come from the inverted (mirrored) UserControl scale, and the RTL
+            ' DC maps them to the correct physical spot.
+            Set picAux.Picture = RotatePic(UserControl.Picture, ntFlipHorizontal)
+        Else
+            Set picAux.Picture = UserControl.Picture
+        End If
         
         Dim iCtl As Object
         Dim iLeft As Long
@@ -7839,13 +8666,118 @@ Private Sub Draw()
         picAux.Cls
     End If
     
-    RaiseEvent_Resize
+    ' set the client space data
+    mClientSpaceData.RECT.Left = mBodyRect.Left
+    mClientSpaceData.RECT.Top = mBodyRect.Top
+    mClientSpaceData.RECT.Right = mBodyRect.Right
+    mClientSpaceData.RECT.Bottom = mBodyRect.Bottom
+    If mControlIsThemed Then
+        If mOrientationIsBottom Then
+            mClientSpaceData.RECT.Left = mClientSpaceData.RECT.Left - 2 + mThemedBodyLeftBorderPixels
+            mClientSpaceData.RECT.Top = mClientSpaceData.RECT.Top + mThemedBodyTopBorderPixels
+            mClientSpaceData.RECT.Right = mClientSpaceData.RECT.Right + 3 - mThemedBodyRightBorderPixels
+            mClientSpaceData.RECT.Bottom = mClientSpaceData.RECT.Bottom + 5 - mThemedBodyTopBorderPixels
+        ElseIf (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop) Or (mTabOrientation = ntTabOrientationLeftHorizontal) Or (mTabOrientation = ntTabOrientationLeftTopHorizontal) Then
+            mClientSpaceData.RECT.Left = mClientSpaceData.RECT.Left - 4 + mThemedBodyTopBorderPixels
+            mClientSpaceData.RECT.Top = mClientSpaceData.RECT.Top + mThemedBodyTopBorderPixels
+            mClientSpaceData.RECT.Right = mClientSpaceData.RECT.Right + 3 - mThemedBodyRightBorderPixels
+            mClientSpaceData.RECT.Bottom = mClientSpaceData.RECT.Bottom + 1 - mThemedBodyBottomBorderPixels
+        ElseIf (mTabOrientation = ssTabOrientationRight) Or (mTabOrientation = ntTabOrientationRightBottom) Or (mTabOrientation = ntTabOrientationRightHorizontal) Or (mTabOrientation = ntTabOrientationRightBottomHorizontal) Then
+            mClientSpaceData.RECT.Left = mClientSpaceData.RECT.Left - 2 + mThemedBodyLeftBorderPixels
+            mClientSpaceData.RECT.Top = mClientSpaceData.RECT.Top + mThemedBodyTopBorderPixels
+            mClientSpaceData.RECT.Right = mClientSpaceData.RECT.Right + 5 - mThemedBodyTopBorderPixels
+            mClientSpaceData.RECT.Bottom = mClientSpaceData.RECT.Bottom + 2 - mThemedBodyBottomBorderPixels
+        Else
+            mClientSpaceData.RECT.Left = mClientSpaceData.RECT.Left - 2 + mThemedBodyLeftBorderPixels
+            mClientSpaceData.RECT.Top = mClientSpaceData.RECT.Top - 2 + mThemedBodyTopBorderPixels
+            mClientSpaceData.RECT.Right = mClientSpaceData.RECT.Right + 3 - mThemedBodyRightBorderPixels
+            mClientSpaceData.RECT.Bottom = mClientSpaceData.RECT.Bottom + 2 - mThemedBodyBottomBorderPixels
+        End If
+    ElseIf mAppearanceIsPP Then
+        If mOrientationIsBottom Then
+            mClientSpaceData.RECT.Left = mClientSpaceData.RECT.Left - 1
+            mClientSpaceData.RECT.Top = mClientSpaceData.RECT.Top + 1
+            mClientSpaceData.RECT.Right = mClientSpaceData.RECT.Right + 1
+            mClientSpaceData.RECT.Bottom = mClientSpaceData.RECT.Bottom + 3
+        ElseIf (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop) Or (mTabOrientation = ntTabOrientationLeftHorizontal) Or (mTabOrientation = ntTabOrientationLeftTopHorizontal) Then
+            mClientSpaceData.RECT.Left = mClientSpaceData.RECT.Left - 3
+            mClientSpaceData.RECT.Top = mClientSpaceData.RECT.Top + 1
+            mClientSpaceData.RECT.Right = mClientSpaceData.RECT.Right + 1
+            mClientSpaceData.RECT.Bottom = mClientSpaceData.RECT.Bottom + 1
+        ElseIf (mTabOrientation = ssTabOrientationRight) Or (mTabOrientation = ntTabOrientationRightBottom) Or (mTabOrientation = ntTabOrientationRightHorizontal) Or (mTabOrientation = ntTabOrientationRightBottomHorizontal) Then
+            mClientSpaceData.RECT.Left = mClientSpaceData.RECT.Left - 1
+            mClientSpaceData.RECT.Top = mClientSpaceData.RECT.Top + 1
+            mClientSpaceData.RECT.Right = mClientSpaceData.RECT.Right + 3
+            mClientSpaceData.RECT.Bottom = mClientSpaceData.RECT.Bottom + 1
+        Else
+            mClientSpaceData.RECT.Left = mClientSpaceData.RECT.Left - 1
+            mClientSpaceData.RECT.Top = mClientSpaceData.RECT.Top - 1
+            mClientSpaceData.RECT.Right = mClientSpaceData.RECT.Right + 1
+            mClientSpaceData.RECT.Bottom = mClientSpaceData.RECT.Bottom + 1
+        End If
+    ElseIf mAppearanceIsFlat Then
+        ' it is already OK
+    Else ' tabbed dialog
+        If mOrientationIsBottom Then
+            mClientSpaceData.RECT.Left = mClientSpaceData.RECT.Left + 1
+            mClientSpaceData.RECT.Top = mClientSpaceData.RECT.Top + 3
+            mClientSpaceData.RECT.Bottom = mClientSpaceData.RECT.Bottom + 2
+        ElseIf (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop) Or (mTabOrientation = ntTabOrientationLeftHorizontal) Or (mTabOrientation = ntTabOrientationLeftTopHorizontal) Then
+            mClientSpaceData.RECT.Left = mClientSpaceData.RECT.Left - 1
+            mClientSpaceData.RECT.Top = mClientSpaceData.RECT.Top + 3
+        ElseIf (mTabOrientation = ssTabOrientationRight) Or (mTabOrientation = ntTabOrientationRightBottom) Or (mTabOrientation = ntTabOrientationRightHorizontal) Or (mTabOrientation = ntTabOrientationRightBottomHorizontal) Then
+            mClientSpaceData.RECT.Left = mClientSpaceData.RECT.Left + 1
+            mClientSpaceData.RECT.Top = mClientSpaceData.RECT.Top + 3
+            mClientSpaceData.RECT.Right = mClientSpaceData.RECT.Right + 2
+        Else
+            mClientSpaceData.RECT.Left = mClientSpaceData.RECT.Left + 1
+            mClientSpaceData.RECT.Top = mClientSpaceData.RECT.Top + 1
+        End If
+    End If
+    ' rotate info set on DrawBody procedure
+    Select Case mTabOrientation
+        Case ssTabOrientationTop, ntTabOrientationTopRight
+            mClientSpaceData.RECT.Top = mClientSpaceData.RECT.Top + mFlatBodySeparationLineHeightDPIScaled - 1
+            ' It is already OK
+        Case ssTabOrientationBottom, ntTabOrientationBottomRight
+            mClientSpaceData.RECT.Bottom = mClientSpaceData.RECT.Bottom - mFlatBodySeparationLineHeightDPIScaled + 1
+            ' flip vertical
+            iLng = mClientSpaceData.LeftBottomRoundness
+            mClientSpaceData.LeftBottomRoundness = mClientSpaceData.LeftTopRoundness
+            mClientSpaceData.LeftTopRoundness = iLng
+            iLng = mClientSpaceData.RightBottomRoundness
+            mClientSpaceData.RightBottomRoundness = mClientSpaceData.RightTopRoundness
+            mClientSpaceData.RightTopRoundness = iLng
+        Case ssTabOrientationLeft, ntTabOrientationLeftTop, ntTabOrientationLeftHorizontal, ntTabOrientationLeftTopHorizontal
+            mClientSpaceData.RECT.Left = mClientSpaceData.RECT.Left + mFlatBodySeparationLineHeightDPIScaled - 1
+            ' rotate 90 degrees counter clock wise
+            iLng = mClientSpaceData.LeftBottomRoundness
+            mClientSpaceData.LeftBottomRoundness = mClientSpaceData.LeftTopRoundness
+            mClientSpaceData.LeftTopRoundness = mClientSpaceData.RightTopRoundness
+            mClientSpaceData.RightTopRoundness = mClientSpaceData.RightBottomRoundness
+            mClientSpaceData.RightBottomRoundness = iLng
+        Case Else ' ssTabOrientationRight, ntTabOrientationRightBottom, ntTabOrientationRightHorizontal, ntTabOrientationRightBottomHorizontal
+            mClientSpaceData.RECT.Right = mClientSpaceData.RECT.Right - mFlatBodySeparationLineHeightDPIScaled + 1
+            ' rotate 90 degrees clock wise
+            iLng = mClientSpaceData.LeftBottomRoundness
+            mClientSpaceData.LeftBottomRoundness = mClientSpaceData.RightBottomRoundness
+            mClientSpaceData.RightBottomRoundness = mClientSpaceData.RightTopRoundness
+            mClientSpaceData.RightTopRoundness = mClientSpaceData.LeftTopRoundness
+            mClientSpaceData.LeftTopRoundness = iLng
+    End Select
     
     If mSubclassControlsPaintingPending Then SubclassControlsPainting
     
     If lblTDILabel.Visible Then
-        lblTDILabel.Move ScaleX(mClientRect.Left, vbPixels, UserControl.ScaleMode), ScaleY(mClientRect.Top, vbPixels, UserControl.ScaleMode), ScaleX(mClientRect.Right - mClientRect.Left, vbPixels, UserControl.ScaleMode), ScaleY(mClientRect.Bottom - mClientRect.Top, vbPixels, UserControl.ScaleMode)
+        lblTDILabel.Move ScaleX(mBodyRect.Left, vbPixels, UserControl.ScaleMode), ScaleY(mBodyRect.Top, vbPixels, UserControl.ScaleMode), ScaleX(mBodyRect.Right - mBodyRect.Left, vbPixels, UserControl.ScaleMode), ScaleY(mBodyRect.Bottom - mBodyRect.Top, vbPixels, UserControl.ScaleMode)
     End If
+
+    If mRows <> mRows_Prev Then
+        RaiseEvent RowsChange
+    End If
+    mRows_Prev = mRows
+    
+    RaiseEvent_Resize
 
     
 TheExit:
@@ -7869,6 +8801,7 @@ End Sub
 
 Private Sub RaiseEvent_Resize()
     Static sInside As Boolean
+    Dim iBytes() As Byte
     
     If UserControl.EventsFrozen Then
         mResizeEventPending = True
@@ -7878,13 +8811,14 @@ Private Sub RaiseEvent_Resize()
         ElseIf Not sInside Then
             sInside = True
             mResizeEventPending = False
-            If mTDIMode = ntTDIModeForms Then TDIResizeFormContainers
-            If (mClientRect_Prev.Left <> mClientRect.Left) Or (mClientRect_Prev.Top <> mClientRect.Top) Or (mClientRect_Prev.Right <> mClientRect.Right) Or (mClientRect_Prev.Bottom <> mClientRect.Bottom) Then
+            ReDim iBytes(LenB(mClientSpaceData))
+            CopyMemory iBytes(0), mClientSpaceData, LenB(mClientSpaceData)
+            If StrComp(iBytes, mClientSpaceDataPrev_Binary) <> 0 Then
                 RaiseEvent Resize
-                mClientRect_Prev.Left = mClientRect.Left
-                mClientRect_Prev.Top = mClientRect.Top
-                mClientRect_Prev.Right = mClientRect.Right
-                mClientRect_Prev.Bottom = mClientRect.Bottom
+                CopyMemory mClientSpaceDataPrev_Binary(0), iBytes(0), UBound(iBytes) + 1
+                If mTDIMode = ntTDIModeForms Then
+                    TDIResizeFormContainers
+                End If
             End If
             sInside = False
         End If
@@ -7895,15 +8829,17 @@ Private Sub TDIResizeFormContainers()
     Dim c As Long
     Dim iSM As Long
     
+    CreateClientRegion
     iSM = UserControl.ScaleMode
     UserControl.ScaleMode = vbTwips
     For c = 1 To mTabs - 1
         If mTabData(c).Visible Then
-            If (mTabData(c).Data >= picTDIFormContainer.LBound) And (mTabData(c).Data <= picTDIFormContainer.UBound) Then
-                If IsIconic(mFormHwnd) = 0 Then
+            If IsIconic(mFormHwnd) = 0 Then
+                If (mTabData(c).Data >= picTDIFormContainer.LBound) And (mTabData(c).Data <= picTDIFormContainer.UBound) Then
                     On Error Resume Next
                     picTDIFormContainer(mTabData(c).Data).Move ClientLeft, ClientTop, ClientWidth, ClientHeight
-                    MoveWindow mTDIModeFormsFormData_FormHwnd(mTabData(c).Data), 0, 0, mClientRect.Right - mClientRect.Left + 2, mClientRect.Bottom - mClientRect.Top + 3, 1
+                    SetWindowRgn picTDIFormContainer(mTabData(c).Data).hWnd, CloneRegion(mClientRegion), True
+                    MoveWindow mTDIModeFormsFormData_FormHwnd(mTabData(c).Data), 0, 0, picTDIFormContainer(mTabData(c).Data).ScaleWidth + 2, picTDIFormContainer(mTabData(c).Data).ScaleHeight + 2, 1
                     On Error GoTo 0
                 End If
             End If
@@ -7922,6 +8858,7 @@ Private Sub DrawTab(ByVal nTab As Long)
     Dim iRightOffset As Long
     Dim iTopOffset As Long
     Dim iBottomOffset As Long
+    Dim iBottomOffset2 As Long
     Dim iHighlighted As Boolean
     Dim iTabData As T_TabData
     Dim iExtI As Long
@@ -8049,18 +8986,21 @@ Private Sub DrawTab(ByVal nTab As Long)
         Dim iFlatBarPosition As NTFlatBarPositionConstants
         Dim iHighlightFlatDrawBorder As Boolean
         Dim iHighlightFlatDrawBorder_Color As Long
+        Dim iFlatBarTopVisible As Boolean
         
         iFlatTabsSeparationLineColor = TranslatedColor(mFlatTabsSeparationLineColor)
         iFlatBorderColor = TranslatedColor(mFlatBorderColor)
         
         iFlatBarPosition = mFlatBarPosition
-        If (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
+        If mOrientationIsBottom Then
             If iFlatBarPosition = ntBarPositionTop Then
                 iFlatBarPosition = ntBarPositionBottom
             Else
                 iFlatBarPosition = ntBarPositionTop
             End If
         End If
+        
+        iFlatBarTopVisible = (mHighlightFlatBar Or mHighlightFlatBarSelectedTab) And (iFlatBarPosition = ntBarPositionTop) And (mFlatBarHeightDPIScaled > 0)
         
         If iHighlighted And (Not iActive) Then
             If mHighlightFlatBar Or mHighlightFlatBarSelectedTab Then
@@ -8130,9 +9070,14 @@ Private Sub DrawTab(ByVal nTab As Long)
                         iFlatBarTopColor = iFlatTabsSeparationLineColor
                     End If
                 End If
+            'ElseIf Not mOrientationIsBottom Then
             Else
                 iFlatBarTopHeight = 1
-                iFlatBarTopColor = iFlatBorderColor '  iHighlightColor
+                If mFlatBorderMode = ntBorderSelectedTab And (Not iActive) Then
+                    iFlatBarTopColor = iBackColorTabs2 'iTabColor_FlatBarColorSelectedTab
+                Else
+                    iFlatBarTopColor = iFlatBorderColor '  iHighlightColor ' iTabColor_FlatBarColorInactive
+                End If
             End If
         End If
         
@@ -8177,12 +9122,24 @@ Private Sub DrawTab(ByVal nTab As Long)
             If iRoundedTabs Then
                 If (iFlatLeftRoundness > 0) Then
                     If Not ((Not (iTabData.LeftTab And ((mRows > 1) And (iTabData.RowPos <> 0)))) Or mShowsRowsPerspective2 Or (mFlatRoundnessTabsDPIScaled > 0)) Then
-                        iFlatLeftRoundness = 0
+                        If (mTabWidthStyle2 = ntTWTabCaptionWidthFillRows) Or (mTabWidthStyle2 = ntTWTabCaptionWidth) Or (mTabWidthStyle2 = ntTWFixed) Then
+                            If mLeftMostTabsLeftPos2(iTabData.RowPos - 1) <= iTabData.TabRect.Left Then
+                                iFlatLeftRoundness = 0
+                            End If
+                        Else
+                            iFlatLeftRoundness = 0
+                        End If
                     End If
                 End If
                 If (iFlatRightRoundness > 0) Then
                     If Not ((Not (iTabData.RightTab And ((mRows > 1) And (iTabData.RowPos <> 0)))) Or mShowsRowsPerspective2 Or (mFlatRoundnessTabsDPIScaled > 0)) Then
-                        iFlatRightRoundness = 0
+                        If (mTabWidthStyle2 = ntTWTabCaptionWidthFillRows) Or (mTabWidthStyle2 = ntTWTabCaptionWidth) Or (mTabWidthStyle2 = ntTWFixed) Then
+                            If mRightMostTabsRightPos2(iTabData.RowPos - 1) >= iTabData.TabRect.Right Then
+                                iFlatRightRoundness = 0
+                            End If
+                        Else
+                            iFlatRightRoundness = 0
+                        End If
                     End If
                 End If
             End If
@@ -8208,9 +9165,21 @@ Private Sub DrawTab(ByVal nTab As Long)
     
     With iTabData.TabRect
         If mControlIsThemed Then
+            If iActive Then
+                If iTabData.RightTabEnding Then
+                    If (mBodyWidth - .Right) < 2 Then
+                        .Right = mBodyWidth + 1
+                    End If
+                End If
+                If iTabData.LeftTab Then
+                    If .Left < 4 Then
+                        .Left = 0
+                    End If
+                End If
+            End If
             If Not iTabData.Enabled Then
                 iState = TIS_DISABLED
-            ElseIf ((iActive And ControlHasFocus) And (Not mShowFocusRect) And mAmbientUserMode) Or iActive And ((mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Or (mTabOrientation = ssTabOrientationRight) Or (mTabOrientation = ntTabOrientationRightBottom) Or (mTabOrientation = ntTabOrientationRightHorizontal) Or (mTabOrientation = ntTabOrientationRightBottomHorizontal)) Then
+            ElseIf ((iActive And ControlHasFocus) And (Not mShowFocusRect) And mAmbientUserMode) Or iActive And (mOrientationIsBottom Or (mTabOrientation = ssTabOrientationRight) Or (mTabOrientation = ntTabOrientationRightBottom) Or (mTabOrientation = ntTabOrientationRightHorizontal) Or (mTabOrientation = ntTabOrientationRightBottomHorizontal)) Then
                 iState = TIS_SELECTED ' I had to put TIS_SELECTED instead of TIS_FOCUSED before
             ElseIf iActive Then
                 iState = TIS_SELECTED
@@ -8268,8 +9237,9 @@ Private Sub DrawTab(ByVal nTab As Long)
                 picAux.Cls
                 
                 iTRect2 = iTRect
-                iTRect2.Bottom = iTRect.Bottom + 1
-                
+                If Not ((mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Or (mTabOrientation = ssTabOrientationRight) Or (mTabOrientation = ntTabOrientationRightBottom) Or (mTabOrientation = ntTabOrientationRightHorizontal) Or (mTabOrientation = ntTabOrientationRightBottomHorizontal)) Then
+                    iTRect2.Bottom = iTRect.Bottom + 1
+                End If
                 DrawThemeBackground mTheme, picAux.hDC, iPartId, iState, iTRect2, iTRect
                 SetThemedTabTransparentPixels iTabData.LeftTab, (iState = TIS_FOCUSED) Or iTabData.RightTab, (iTabData.TopTab Or (mTabSeparation2 > 0)) And Not (iState = TIS_SELECTED)
                 Call TransparentBlt(picDraw.hDC, iLeft, iTop, iTRect.Right, iTRect.Bottom, picAux.hDC, 0, 0, iTRect.Right, iTRect.Bottom, cAuxTransparentColor)
@@ -8280,7 +9250,7 @@ Private Sub DrawTab(ByVal nTab As Long)
             If iActive Then
                 ' active tab background
                 If mAppearanceIsPP Then
-                    iExtI = 2
+                    iExtI = 1
                     iLeftOffset = -1
                     iRightOffset = 1
                     iTopOffset = 0
@@ -8291,10 +9261,14 @@ Private Sub DrawTab(ByVal nTab As Long)
                         iCurv = 2
                     End If
                 ElseIf mAppearanceIsFlat Then
-                    iBottomOffset = 3
+                    iBottomOffset = 4
+                    iExtI = -1
                     If iTabData.LeftTab Then
                         iLeftOffset = -2
+                        iBottomOffset = iBottomOffset + 3
+                        iExtI = iExtI - 3
                     End If
+                    iBottomOffset2 = iBottomOffset + mFlatBodySeparationLineHeightDPIScaled - 1
                 Else
                     iExtI = 1
                     If iRoundedTabs Then
@@ -8311,9 +9285,9 @@ Private Sub DrawTab(ByVal nTab As Long)
                 ' inactive tab background
                 iExtI = 6
                 If mAppearanceIsPP Then
-                    iLeftOffset = 0
+                    iLeftOffset = -1
                     iRightOffset = 0
-                    iTopOffset = 0 '2
+                    iTopOffset = 1 '2
                     iBottomOffset = 5
                     If iRoundedTabs Then
                         iCurv = 3
@@ -8321,28 +9295,32 @@ Private Sub DrawTab(ByVal nTab As Long)
                         iCurv = 2
                     End If
                 ElseIf mAppearanceIsFlat Then
-                    iBottomOffset = 6
+                    iBottomOffset = 6 ' 2
                     If iTabData.LeftTab Then
                         iLeftOffset = -2
                     End If
                     If iTabData.RowPos = (mRows - 1) Then
-                        If iFlatLeftRoundness > iBottomOffset Then iBottomOffset = iFlatLeftRoundness
-                        If iFlatRightRoundness > iBottomOffset Then iBottomOffset = iFlatRightRoundness
+                        If iFlatLeftRoundness + 4 > iBottomOffset Then iBottomOffset = iFlatLeftRoundness + 4
+                        If iFlatRightRoundness + 4 > iBottomOffset Then iBottomOffset = iFlatRightRoundness + 4
                     End If
                     If iTabData.RightTab Then
-                        If Abs(mClientRect.Right - iTabData.TabRect.Right) > 5 Then
+                        If Abs(mBodyRect.Right - iTabData.TabRect.Right) > 5 Then
                             iBottomOffset = 11
                             If (iTabData.RowPos <> (mRows - 1)) And (iShowFlatBarBottom) Then
-                                iBottomOffset = iBottomOffset - 2
+                                iBottomOffset = iBottomOffset - 5 ' - 2
                                 iExtI = iExtI - 3
                             Else
                                 iExtI = 0 ' -5
                             End If
                         End If
                     End If
+                    iBottomOffset2 = iBottomOffset
                     If (iTabData.RowPos <> (mRows - 1)) And (iShowFlatBarBottom) Then
-                        iBottomOffset = iBottomOffset - mFlatBarHeightDPIScaled - 2
+                        'iBottomOffset = iBottomOffset - mFlatBarHeightDPIScaled - 2
                         iExtI = iExtI - 3
+                    ElseIf iTabData.RightTab And Not (iTabData.RowPos = mRows - 1) Then
+                        iBottomOffset2 = 6
+                        iExtI = iExtI - 5
                     End If
                 Else
                     iLeftOffset = -1
@@ -8361,7 +9339,7 @@ Private Sub DrawTab(ByVal nTab As Long)
                         If iHighlightFlatDrawBorder Then
                             Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Bottom, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + 1), iBackColorTabs2, iBackColorTabs2, 0, 0, iFlatLeftRoundness, iFlatRightRoundness)
                         Else
-                            Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Bottom, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iBackColorTabs2, iBackColorTabs2, 0, 0)
+                            Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Bottom, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset2), iBackColorTabs2, iBackColorTabs2, 0, 0)
                         End If
                     ElseIf iHighlightGradient = ntGradientDouble Then
                         Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset, (.Bottom + .Top + iTopOffset) / 2 + 2, iBackColorTabs2, iHighlightColor, iFlatLeftRoundness, iFlatRightRoundness)
@@ -8369,33 +9347,36 @@ Private Sub DrawTab(ByVal nTab As Long)
                         If iHighlightFlatDrawBorder Then
                             Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Bottom, .Right + iRightOffset, .Bottom + 1, iBackColorTabs2, iBackColorTabs2, 0, 0, iFlatLeftRoundness, iFlatRightRoundness)
                         Else
-                            Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Bottom, .Right + iRightOffset, .Bottom + iBottomOffset, iBackColorTabs2, iBackColorTabs2, 0, 0)
+                            Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Bottom, .Right + iRightOffset, .Bottom + iBottomOffset2, iBackColorTabs2, iBackColorTabs2, 0, 0)
                         End If
                     ElseIf iHighlightGradient = ntGradientPlain Then
                         If iHighlightFlatDrawBorder Then
                             Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + 1), iHighlightColor, iHighlightColor, iFlatLeftRoundness, iFlatRightRoundness, iFlatLeftRoundness, iFlatRightRoundness)
                         Else
-                            Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iHighlightColor, iHighlightColor, iFlatLeftRoundness, iFlatRightRoundness)
+                            Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset2), iHighlightColor, iHighlightColor, iFlatLeftRoundness, iFlatRightRoundness)
                         End If
                     ElseIf iHighlightGradient = ntGradientNone Then
-                        Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iBackColorTabs2, iBackColorTabs2, iFlatLeftRoundness, iFlatRightRoundness)
+                        Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset2), iBackColorTabs2, iBackColorTabs2, iFlatLeftRoundness, iFlatRightRoundness)
                     End If
                 Else
                     If iHighlightFlatDrawBorder Then
                         Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset, .Bottom + 1, iBackColorTabs2, iBackColorTabs2, iFlatLeftRoundness, iFlatRightRoundness, iFlatLeftRoundness, iFlatRightRoundness)
                     Else
-                        Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset, .Bottom + iBottomOffset, iBackColorTabs2, iBackColorTabs2, iFlatLeftRoundness, iFlatRightRoundness)
+                        Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset, .Bottom + iBottomOffset2, iBackColorTabs2, iBackColorTabs2, iFlatLeftRoundness, iFlatRightRoundness)
                     End If
+                End If
+                If (iTabData.RowPos < (mRows - 1)) And iTabData.LeftTab And (Not iActive) Then
+                    Call FillCurvedGradient2(.Left + iLeftOffset + 1, .Bottom + iBottomOffset2, .Right + iRightOffset, .Bottom + iBottomOffset2 + iFlatLeftRoundness / 2, iBackColorTabs2, iBackColorTabs2, 0, 0)
                 End If
             Else
                 If iHighlighted Then
                     If iHighlightGradient = ntGradientSimple Then
-                        Call FillCurvedGradient(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom), iHighlightColor, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
-                        Call FillCurvedGradient(.Left + iLeftOffset + 1, .Bottom, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iBackColorTabs2, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
+                        Call FillCurvedGradient(.Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom), iHighlightColor, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
+                        Call FillCurvedGradient(.Left + iLeftOffset + 2, .Bottom, .Right + iRightOffset + 2 + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iBackColorTabs2, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), False, False)
                     ElseIf iHighlightGradient = ntGradientDouble Then
                         Call FillCurvedGradient(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset, (.Bottom + .Top + iTopOffset) / 2 + 2, iBackColorTabs2, iHighlightColor, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
-                        Call FillCurvedGradient(.Left + iLeftOffset + 1, (.Bottom + .Top + iTopOffset) / 2, .Right + iRightOffset, .Bottom, iHighlightColor, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
-                        Call FillCurvedGradient(.Left + iLeftOffset + 1, .Bottom, .Right + iRightOffset, .Bottom + iBottomOffset, iBackColorTabs2, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), True, True)
+                        Call FillCurvedGradient(.Left + iLeftOffset + 2, (.Bottom + .Top + iTopOffset) / 2, .Right + iRightOffset, .Bottom, iHighlightColor, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), False, False)
+                        Call FillCurvedGradient(.Left + iLeftOffset + 2, .Bottom, .Right + iRightOffset + 2, .Bottom + iBottomOffset, iBackColorTabs2, iBackColorTabs2, IIf(mAppearanceIsFlat, -1, iCurv), False, False)
                     ElseIf iHighlightGradient = ntGradientPlain Then
                         Call FillCurvedGradient(.Left + iLeftOffset + 1, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 1, 0), (.Bottom + iBottomOffset), iHighlightColor, iHighlightColor, iCurv, True, True)
                     ElseIf iHighlightGradient = ntGradientNone Then
@@ -8409,7 +9390,7 @@ Private Sub DrawTab(ByVal nTab As Long)
             'top line
             If mAppearanceIsPP Then
                 If iRoundedTabs Then
-                    picDraw.Line (.Left + iLeftOffset + 2, .Top + 1)-(.Right - 2, .Top + 1), i3DHighlightH
+                    picDraw.Line (.Left + iLeftOffset + 4, .Top + 1)-(.Right - 2, .Top + 1), i3DHighlightH
                 Else
                     picDraw.Line (.Left + iLeftOffset + 2, .Top + 1)-(.Right - 1, .Top + 1), i3DHighlightH
                 End If
@@ -8422,7 +9403,8 @@ Private Sub DrawTab(ByVal nTab As Long)
                 End If
             ElseIf mAppearanceIsFlat Then
                 If (iFlatBarTopHeight > 0) Then
-                    FillCurvedGradient2 .Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 2, 0), .Top + iTopOffset + iFlatBarTopHeight, iFlatBarTopColor, iFlatBarTopColor, iFlatLeftRoundness, iFlatRightRoundness
+                    'FillCurvedGradient2 .Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset + IIf(iTabData.RightTab, 2, 0), .Top + iTopOffset + iFlatBarTopHeight, iFlatBarTopColor, iFlatBarTopColor, iFlatLeftRoundness, iFlatRightRoundness
+                    FillCurvedGradient2 .Left + iLeftOffset, .Top + iTopOffset, .Right + iRightOffset, .Top + iTopOffset + iFlatBarTopHeight, iFlatBarTopColor, iFlatBarTopColor, iFlatLeftRoundness, iFlatRightRoundness
                     If iHighlighted And (iFlatBarTopHeight > 1) Then
                         If IIf(iActive, mHighlightFlatBarWithGripSelectedTab, mHighlightFlatBarWithGrip) Then
                             Dim iTriangle(2) As POINTAPI
@@ -8441,7 +9423,8 @@ Private Sub DrawTab(ByVal nTab As Long)
                             Else
                                 iLng = Abs(mFlatBarGripHeightDPIScaled)
                                 ' top point
-                                If mFlatBarHeightDPIScaled - Abs(mFlatBarGripHeightDPIScaled) < (mFlatBarHeightDPIScaled * 0.33) Or (mTabOrientation <> ssTabOrientationBottom) Or (mTabOrientation <> ntTabOrientationBottomRight) Or (mTabOrientation <> ntTabOrientationBottomRight) Then
+                                'If mFlatBarHeightDPIScaled - Abs(mFlatBarGripHeightDPIScaled) < (mFlatBarHeightDPIScaled * 0.33) Or (mTabOrientation <> ssTabOrientationBottom) Or (mTabOrientation <> ntTabOrientationBottomRight) Then
+                                If mFlatBarHeightDPIScaled - Abs(mFlatBarGripHeightDPIScaled) < (mFlatBarHeightDPIScaled * 0.33) Then
                                     iTriangle(0).X = (.Left + .Right) / 2 + cEpsilon
                                     iTriangle(0).Y = .Top + (iLng + iFlatBarTopHeight)
                                     ' left point
@@ -8465,41 +9448,46 @@ Private Sub DrawTab(ByVal nTab As Long)
                         End If
                     End If
                 End If
+                
                 If iShowFlatBarBottom Then
                     If iActive Then
                         iColor = iTabColor_FlatBarColorSelectedTab
                     ElseIf iTabData.Hovered And mAmbientUserMode Then
                         iColor = iTabColor_FlatBarGlowColor
                     Else
-                        iColor = iFlatBarTopColor
+                        iColor = iTabColor_FlatBarColorInactive
                     End If
                     iColor = TranslatedColor(iColor)
                     
-                    FillCurvedGradient2 .Left + iLeftOffset, .Bottom - mFlatBarHeightDPIScaled + 3, .Right + iRightOffset, .Bottom + 3, iColor, iColor, 0, 0
+                    'FillCurvedGradient2 .Left + iLeftOffset, .Bottom, .Right + iRightOffset, .Bottom + mFlatBarHeightDPIScaled + 1, iColor, iColor, 0, 0
+                    '(orig) FillCurvedGradient2 .Left + iLeftOffset, .Bottom - mFlatBarHeightDPIScaled + 3, .Right + iRightOffset, .Bottom + 3, iColor, iColor, 0, 0
+                    'FillCurvedGradient2 .Left + iLeftOffset, .Bottom - mFlatBarHeightDPIScaled + 5, .Right + iRightOffset, .Bottom + 5, iColor, iColor, 0, 0
+                    FillCurvedGradient2 .Left + iLeftOffset, .Bottom - mFlatBarHeightDPIScaled + 2, .Right + iRightOffset, .Bottom + 2, iColor, iColor, 0, 0
                     If IIf(iActive, mHighlightFlatBarWithGripSelectedTab, mHighlightFlatBarWithGrip) Then
                         If (mFlatBarGripHeightDPIScaled > 0) And iHighlighted Then
                             ' top point
                             iTriangle(0).X = (.Left + .Right) / 2 + cEpsilon
-                            iTriangle(0).Y = .Bottom + 2 + mFlatBarGripHeightDPIScaled
+                            iTriangle(0).Y = .Bottom + 1 + mFlatBarGripHeightDPIScaled
                             ' left point
                             iTriangle(1).X = (.Left + .Right) / 2 - mFlatBarGripHeightDPIScaled + cEpsilon
-                            iTriangle(1).Y = .Bottom + 2
+                            iTriangle(1).Y = .Bottom + 1
                             ' right point
                             iTriangle(2).X = (.Left + .Right) / 2 + mFlatBarGripHeightDPIScaled + cEpsilon
-                            iTriangle(2).Y = .Bottom + 2
+                            iTriangle(2).Y = .Bottom + 1
                             DrawTriangle iTriangle, iColor
                         ElseIf iHighlighted Then
-                            If mFlatBarHeightDPIScaled - Abs(mFlatBarGripHeightDPIScaled) < (mFlatBarHeightDPIScaled * 0.33) Or (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
+                            'If mFlatBarHeightDPIScaled - Abs(mFlatBarGripHeightDPIScaled) < (mFlatBarHeightDPIScaled * 0.33) Or mOrientationIsBottom Then
+                            If mFlatBarHeightDPIScaled - Abs(mFlatBarGripHeightDPIScaled) < (mFlatBarHeightDPIScaled * 0.33) Then
                                 iLng = Abs(mFlatBarGripHeightDPIScaled) + mFlatBarHeightDPIScaled
                                 ' top point
                                 iTriangle(0).X = (.Left + .Right) / 2 + cEpsilon
-                                iTriangle(0).Y = .Bottom + 2 - iLng
+                                iTriangle(0).Y = .Bottom + 1 - iLng
                                 ' left point
                                 iTriangle(1).X = (.Left + .Right) / 2 - iLng + cEpsilon
-                                iTriangle(1).Y = .Bottom + 2
+                                iTriangle(1).Y = .Bottom + 1
                                 ' right point
                                 iTriangle(2).X = (.Left + .Right) / 2 + iLng + cEpsilon
-                                iTriangle(2).Y = .Bottom + 2
+                                iTriangle(2).Y = .Bottom + 1
                                 DrawTriangle iTriangle, iColor
                             End If
                             
@@ -8523,13 +9511,13 @@ Private Sub DrawTab(ByVal nTab As Long)
                             iColor = TranslatedColor(iColor)
                             ' top point
                             iTriangle(0).X = (.Left + .Right) / 2 + cEpsilon
-                            iTriangle(0).Y = .Bottom + 2 + mFlatBarGripHeightDPIScaled
+                            iTriangle(0).Y = .Bottom + 1 + mFlatBarGripHeightDPIScaled
                             ' left point
                             iTriangle(1).X = (.Left + .Right) / 2 + mFlatBarGripHeightDPIScaled + cEpsilon
-                            iTriangle(1).Y = .Bottom + 2
+                            iTriangle(1).Y = .Bottom + 1
                             ' right point
                             iTriangle(2).X = (.Left + .Right) / 2 - mFlatBarGripHeightDPIScaled + cEpsilon
-                            iTriangle(2).Y = .Bottom + 2
+                            iTriangle(2).Y = .Bottom + 1
                             DrawTriangle iTriangle, iColor
                         End If
                     End If
@@ -8556,22 +9544,27 @@ Private Sub DrawTab(ByVal nTab As Long)
                     picDraw.Line (.Right, .Top + 3)-(.Right, .Bottom + iExtI), i3DDKShadow
                     picDraw.Line (.Right - 1, .Top + 3)-(.Right - 1, .Bottom + iExtI), i3DShadowV
                 ElseIf (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop) Or (mTabOrientation = ntTabOrientationLeftHorizontal) Or (mTabOrientation = ntTabOrientationLeftTopHorizontal) Then
-                    picDraw.Line (.Right, .Top + 3)-(.Right, .Bottom + iExtI), i3DHighlightH
+                    picDraw.Line (.Right, .Top + 3)-(.Right, .Bottom + iExtI + IIf(iTabData.RightTabEnding, 1, 0)), i3DHighlightH
                     picDraw.Line (.Right - 1, .Top + 3)-(.Right - 1, .Bottom + iExtI), iBackColorTabs2
                 Else
-                    picDraw.Line (.Right, .Top + 3)-(.Right, .Bottom + iExtI - 1), i3DDKShadow
-                    picDraw.Line (.Right, .Bottom + iExtI - 1)-(.Right + 1, .Bottom + iExtI - 1), i3DShadowV
-                    picDraw.Line (.Right - 1, .Top + 3)-(.Right - 1, .Bottom + iExtI), i3DShadowV
+                    picDraw.Line (.Right, .Top + 3)-(.Right, .Bottom + iExtI - 1 + IIf(iTabData.RightTabEnding, 2, 0)), i3DDKShadow
+                    picDraw.Line (.Right - 1, .Top + 3)-(.Right - 1, .Bottom + iExtI + IIf(iTabData.RightTabEnding, 1, 0)), i3DShadowV
                 End If
             ElseIf mAppearanceIsFlat Then
                 If iHighlightFlatDrawBorder Then
                     picDraw.Line (.Right, .Top + iTopOffset + iFlatRightRoundness)-(.Right, .Bottom - iFlatRightRoundness + 1), iHighlightFlatDrawBorder_Color
                 ElseIf Not ((iFlatRightLineColor = iTabColor_BackColorTab) And iTabData.RightTab And (iFlatRightRoundness > 0)) Then
-                    If ((iHighlightGradient = ntGradientPlain) Or (iHighlightGradient = ntGradientSimple)) And iHighlighted And (Not iActive) And (mHighlightFlatBar Or mHighlightFlatBarSelectedTab) Then
-                        picDraw.Line (.Right, .Top + iTopOffset + iFlatRightRoundness)-(.Right, .Bottom + iBottomOffset + iExtI), iHighlightColor
-                    Else
-                        picDraw.Line (.Right, .Top + iTopOffset + iFlatRightRoundness)-(.Right, .Bottom + iBottomOffset + iExtI), iFlatRightLineColor
+                    'If ((iHighlightGradient = ntGradientPlain) Or (iHighlightGradient = ntGradientSimple)) And iHighlighted And (Not iActive) And (mHighlightFlatBar Or mHighlightFlatBarSelectedTab) Then
+                    '    picDraw.Line (.Right, .Top + iTopOffset + iFlatRightRoundness)-(.Right, .Bottom + iBottomOffset + iExtI), iHighlightColor
+                    'Else
+                    iLng = iFlatRightRoundness
+                    If iFlatBarTopVisible And (iFlatBarTopHeight > iLng) Then
+                        iLng = iFlatBarTopHeight
                     End If
+                    
+                    picDraw.Line (.Right, .Top + iTopOffset + iLng)-(.Right, .Bottom + iBottomOffset + iExtI + IIf(iActive And iTabData.RightTabEnding, 3 + mFlatBodySeparationLineHeightDPIScaled, 0)), iFlatRightLineColor
+                    'picDraw.Line (.Right, .Top + iTopOffset + iLng)-(.Right, .Bottom + IIf(iActive, IIf(Abs(.Right - mBodyWidth) < 2, 3, 1), 0)), iFlatRightLineColor
+                    'End If
                 End If
             Else
                 picDraw.Line (.Right, .Top + 4)-(.Right, .Bottom + iExtI), i3DDKShadow
@@ -8594,28 +9587,30 @@ Private Sub DrawTab(ByVal nTab As Long)
                     If iRoundedTabs Then
                         picDraw.Line (.Left, .Top + 3)-(.Left, .Bottom + iExtI), i3DHighlightV
                     Else
-                        picDraw.Line (.Left, .Top + 2)-(.Left, .Bottom + iExtI), i3DHighlightV
+                        picDraw.Line (.Left, .Top + 1)-(.Left, .Bottom + iExtI), i3DHighlightV
                     End If
                 Else
-                    picDraw.Line (.Left, .Top + 2)-(.Left, .Bottom), i3DDKShadow
-                    picDraw.Line (.Left + 1, .Top + 2)-(.Left + 1, .Bottom + iExtI), i3DShadow
+                    picDraw.Line (.Left, .Top + 3 + IIf(iRoundedTabs, 1, 0))-(.Left, .Bottom), i3DDKShadow
+                    picDraw.Line (.Left + 1, .Top + 3)-(.Left + 1, .Bottom + iExtI), i3DShadow
                     If iRoundedTabs Then
-                        picDraw.Line (.Left, .Top + 3)-(.Left, .Bottom + iExtI), i3DDKShadow
-                        picDraw.Line (.Left + 1, .Top + 3)-(.Left + 1, .Bottom + iExtI), i3DShadow
+                        picDraw.Line (.Left, .Top + 4)-(.Left, .Bottom + iExtI + IIf(iTabData.LeftTab, 1, 0)), i3DDKShadow
+                        picDraw.Line (.Left + 1, .Top + 3)-(.Left + 1, .Bottom + iExtI + IIf(iTabData.LeftTab, 1, 0)), i3DShadow
                     Else
                         picDraw.Line (.Left, .Top + 2)-(.Left, .Bottom + iExtI), i3DDKShadow
-                        picDraw.Line (.Left + 1, .Top + 2)-(.Left + 1, .Bottom + iExtI), i3DShadow
+                        picDraw.Line (.Left + 1, .Top + 2)-(.Left + 1, .Bottom + iExtI + IIf(iTabData.LeftTab, 1, 0)), i3DShadow
                     End If
                 End If
             ElseIf mAppearanceIsFlat Then
                 If iHighlightFlatDrawBorder Then
                     picDraw.Line (.Left + iLeftOffset, .Top + iTopOffset + iFlatLeftRoundness)-(.Left + iLeftOffset, .Bottom - iFlatLeftRoundness + 1), iHighlightFlatDrawBorder_Color
                 ElseIf iFlatLeftLineColor <> iTabColor_BackColorTab Then
-                    If ((iHighlightGradient = ntGradientPlain) Or (iHighlightGradient = ntGradientSimple)) And iHighlighted And (Not iActive) And (mHighlightFlatBar Or mHighlightFlatBarSelectedTab) Then
-                        picDraw.Line (.Left + iLeftOffset, .Top + iTopOffset + iFlatLeftRoundness)-(.Left + iLeftOffset, .Bottom + iBottomOffset + iExtI), iHighlightColor
-                    Else
-                        picDraw.Line (.Left + iLeftOffset, .Top + iTopOffset + iFlatLeftRoundness)-(.Left + iLeftOffset, .Bottom + iBottomOffset + iExtI), iFlatLeftLineColor
+                    iLng = iFlatLeftRoundness
+                    If iFlatBarTopHeight > iLng Then
+                        iLng = iFlatBarTopHeight
                     End If
+                    'picDraw.Line (.Left + iLeftOffset, .Top + iTopOffset + iLng)-(.Left + iLeftOffset, .Bottom + iBottomOffset + iExtI), iFlatLeftLineColor
+                    picDraw.Line (.Left + iLeftOffset, .Top + iTopOffset + iLng)-(.Left + iLeftOffset, .Bottom + iBottomOffset + iExtI + IIf((iTabData.RowPos < (mRows - 1)) And iTabData.LeftTab And (Not iActive), iFlatLeftRoundness / 2, 0)), iFlatLeftLineColor
+                    'picDraw.Line (.Left + iLeftOffset, .Top + iTopOffset + iLng)-(.Left + iLeftOffset, .Bottom + IIf(iTabData.LeftTab, 1, 0)), iFlatLeftLineColor
                 End If
             Else
                 If iRoundedTabs Then
@@ -8637,17 +9632,17 @@ Private Sub DrawTab(ByVal nTab As Long)
                         Else
                             picDraw.Line (.Left, .Top + 5)-(.Left, .Bottom + iExtI), i3DHighlightV ' iBackColorTabs2
                         End If
-                        
                     End If
                 Else
                     picDraw.Line (.Left, .Top + 4)-(.Left, .Bottom + iExtI), i3DHighlightV
                     If iActive Then
                         picDraw.Line (.Left + 1, .Top + 4)-(.Left + 1, .Bottom + 1 + iExtI), i3DHighlightV
+                        picDraw.Line (.Left, .Top + 4)-(.Left, .Bottom + 1 + iExtI), i3DHighlightV
                         picDraw.Line (.Left, .Bottom + iExtI)-(.Left, .Bottom + iExtI + 2), i3DHighlightV   ' points of top line of body
                         picDraw.Line (.Left + 1, .Bottom + iExtI + 1)-(.Left + 1, .Bottom + iExtI + 2), i3DHighlightV ' point of top line of body
                     End If
                 End If
-                picDraw.Line (.Left - 1, .Top + 5)-(.Left - 1, .Bottom + iExtI), i3DDKShadow
+                picDraw.Line (.Left - 1, .Top + IIf(iTabData.LeftTab, 4, 5))-(.Left - 1, .Bottom + iExtI), i3DDKShadow
             End If
             
             'top-right corner
@@ -8728,18 +9723,18 @@ Private Sub DrawTab(ByVal nTab As Long)
             If mAppearanceIsPP Then
                 If (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop) Or (mTabOrientation = ntTabOrientationLeftHorizontal) Or (mTabOrientation = ntTabOrientationLeftTopHorizontal) Then
                     If iRoundedTabs Then
-                        picDraw.Line (.Left + 1, .Top + 2)-(.Left + 1, .Top + 3), i3DHighlightV
-                        picDraw.Line (.Left + 1, .Top + 1)-(.Left + 2, .Top + 1), i3DHighlightV
+                        picDraw.Line (.Left + 2, .Top + 2)-(.Left + 2, .Top + 3), i3DHighlightV
+                        'picDraw.Line (.Left + 1, .Top + 1)-(.Left + 2, .Top + 1), vbBlue ' i3DHighlightV
                     Else
-                        picDraw.Line (.Left, .Top + 2)-(.Left + 3, .Top - 1), i3DHighlightV
+                        picDraw.Line (.Left, .Top + 2)-(.Left + 3, .Top), i3DHighlightV
                     End If
                 ElseIf (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ntTabOrientationTopRight) Then
                     If iRoundedTabs Then
                         picDraw.Line (.Left + 1, .Top + 2)-(.Left + 1, .Top + 3), i3DHighlightH
                         picDraw.Line (.Left, .Top + 3)-(.Left, .Top + 4), i3DHighlightH
-                        picDraw.Line (.Left + 1, .Top + 1)-(.Left + 3, .Top + 1), i3DHighlightH
+                        picDraw.Line (.Left + 2, .Top + 1)-(.Left + 3, .Top + 1), i3DHighlightH
                     Else
-                        picDraw.Line (.Left, .Top + 2)-(.Left + 3, .Top - 1), i3DHighlightH
+                        picDraw.Line (.Left, .Top + 2)-(.Left + 3, .Top), i3DHighlightH
                     End If
                 Else
                     If iRoundedTabs Then
@@ -8747,7 +9742,7 @@ Private Sub DrawTab(ByVal nTab As Long)
                         picDraw.Line (.Left, .Top + 2)-(.Left, .Top + 3), i3DDKShadow
                         picDraw.Line (.Left + 1, .Top + 1)-(.Left + 3, .Top + 1), i3DDKShadow
                     Else
-                        picDraw.Line (.Left, .Top + 2)-(.Left + 3, .Top - 1), i3DHighlightH
+                        picDraw.Line (.Left, .Top + 2)-(.Left + 3, .Top), i3DHighlightH
                     End If
                 End If
             ElseIf mAppearanceIsFlat Then
@@ -8779,13 +9774,17 @@ Private Sub DrawTab(ByVal nTab As Long)
                         picDraw.Line (.Left + iLeftOffset + 2, .Top + 5)-(.Left + iLeftOffset + 5, .Top + 2), i3DHighlightH
                     End If
                 Else
-                    picDraw.Line (.Left + iLeftOffset - 1, .Top + 4)-(.Left + iLeftOffset + 3, .Top), i3DDKShadow
+                    picDraw.Line (.Left + iLeftOffset, .Top + 3)-(.Left + iLeftOffset + 3, .Top), i3DDKShadow
                     If iActive Then
                         picDraw.Line (.Left + iLeftOffset + 1, .Top + 3)-(.Left + iLeftOffset + 3, .Top + 1), i3DHighlightH
                         picDraw.Line (.Left + iLeftOffset + 1, .Top + 4)-(.Left + iLeftOffset + 4, .Top + 1), i3DHighlightH
                         picDraw.Line (.Left + iLeftOffset + 2, .Top + 4)-(.Left + iLeftOffset + 4, .Top + 2), i3DHighlightH
                     Else
-                        picDraw.Line (.Left + iLeftOffset, .Top + 4)-(.Left + iLeftOffset + 3, .Top + 1), i3DHighlightH
+                        If iTabData.LeftTab Then
+                            picDraw.Line (.Left + iLeftOffset + 1, .Top + 3)-(.Left + iLeftOffset + 3, .Top + 1), i3DHighlightH
+                        Else
+                            picDraw.Line (.Left + iLeftOffset + 1, .Top + 3)-(.Left + iLeftOffset + 3, .Top + 1), i3DHighlightH
+                        End If
                     End If
                 End If
             End If
@@ -8806,15 +9805,75 @@ Private Sub DrawTab(ByVal nTab As Long)
     End With
 End Sub
 
-Private Sub DrawInactiveBodyPart(ByVal nLeft As Long, ByVal nTop As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal nXShift As Long, ByVal nRowPos As Long, nTab As Long)
-    Dim iDoEndVerticalLine As Boolean
+Private Sub DrawInactiveBodyPart(ByVal nLeft As Long, ByVal nTop As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal nRowPos As Long, ByVal nTab As Long)
+    'Dim iDoEndVerticalLine As Boolean
     Dim iDoBottomLine As Boolean
     Dim iBackColorTabs As Long
     Dim iLineColor As Long
     Dim iFlatBorderColor As Long
     Dim iLinePos As Long
+    Dim iAuxFlatRoundnessTopLeft As Long
+    Dim iAuxFlatRoundnessTopRight As Long
+    Dim iLng As Long
+    Dim iFlatBarPosition As NTFlatBarPositionConstants
+    Dim t As Long
     
-    If (nWidth < 1) Or (nHeight < 1) Or (nXShift > mClientWidth) Then Exit Sub
+    If (nWidth < 1) Or (nHeight < 1) Then Exit Sub
+     
+    ' nRowPos = 0 is the row at the top
+    
+    If Abs(nLeft + nWidth - mTabData(nTab).TabRect.Right) < 5 Then
+        If mControlIsThemed Then
+            If (mBodyWidth - mTabData(nTab).TabRect.Right) - mThemedBodyRightBorderPixels < 5 Then
+                mTabData(nTab).TabRect.Right = nLeft + nWidth
+            End If
+        Else
+            nWidth = mTabData(nTab).TabRect.Right - nLeft
+        End If
+    End If
+    If mControlIsThemed Then
+        If mTabData(nTab).RowPos = mRows - 2 Then
+            If mTabData(nTab).TabRect.Right < mRightMostTabsRightPos(nRowPos + 1) Then
+                For t = 0 To mTabs - 1
+                    If mTabData(t).RowPos = nRowPos + 1 Then
+                        If mTabData(t).RightTab Then
+                            If nLeft + nWidth - mTabData(t).TabRect.Right < 5 Then
+                                mTabData(t).TabRect.Right = nLeft + nWidth + 2
+                            End If
+                            Exit For
+                        End If
+                    End If
+                Next
+            End If
+        End If
+    End If
+    If mRows > 1 Then
+        If nRowPos = mRows - 2 Then ' the row over the one that is the first over the body
+            If ((mLeftMostTabsLeftPos(nRowPos + 1) - nLeft) > 0) And mLeftMostTabsLeftPos(nRowPos + 1) - nLeft < (mTabData(nTab).TabRect.Right - mTabData(nTab).TabRect.Left) / 3 Then
+                If Not mRightMostTabsRightPos(nRowPos + 1) < mTabData(nTab).TabRect.Right Then
+                    If Not mLeftMostTabsLeftPos(nRowPos + 1) > mTabData(nTab).TabRect.Left Then
+                        Exit Sub
+                    End If
+                End If
+            End If
+            If (nLeft + nWidth) - mRightMostTabsRightPos(nRowPos + 1) < (mTabData(nTab).TabRect.Right - mTabData(nTab).TabRect.Left) / 3 Then
+                If Not (mRightMostTabsRightPos(nRowPos + 1) < mTabData(nTab).TabRect.Right) Then
+                    If Not mLeftMostTabsLeftPos(nRowPos + 1) > mTabData(nTab).TabRect.Left Then
+                        Exit Sub
+                    End If
+                End If
+            End If
+        End If
+    End If
+    
+    iFlatBarPosition = mFlatBarPosition
+    If mOrientationIsBottom Then
+        If iFlatBarPosition = ntBarPositionTop Then
+            iFlatBarPosition = ntBarPositionBottom
+        Else
+            iFlatBarPosition = ntBarPositionTop
+        End If
+    End If
     
     If IsEmpty(mTabData(nTab).CustomColors.BackColorTab) Or (mHandleHighContrastTheme And mHighContrastThemeOn) Then
         iBackColorTabs = mBackColorTabs2
@@ -8823,18 +9882,53 @@ Private Sub DrawInactiveBodyPart(ByVal nLeft As Long, ByVal nTop As Long, ByVal 
     End If
     
     If mControlIsThemed Then
-        If (nWidth > mThemedBodyRightShadowPixels) Then
+        If (nWidth > mThemedBodyRightBorderPixels) Then
             EnsureInactiveBodyThemedReady
-            BitBlt picDraw.hDC, nLeft, nTop, nWidth, nHeight, picInactiveBodyThemed.hDC, nXShift, 0, vbSrcCopy
+            iLng = picInactiveBodyThemed.Width - nWidth - 1
+            If picInactiveBodyThemed.Width - iLng > nWidth Then
+                nWidth = nWidth + ((picInactiveBodyThemed.Width - iLng) - nWidth)
+            End If
+            BitBlt picDraw.hDC, nLeft, nTop, nWidth, nHeight, picInactiveBodyThemed.hDC, iLng, 0, vbSrcCopy
         End If
     Else
-        iDoEndVerticalLine = (mClientWidth - (nWidth + nXShift) <= 0)
-        iDoBottomLine = mClientHeight - nHeight <= 0
+        'iDoEndVerticalLine = True ' (mBodyWidth - (nWidth + nXShift) <= 0)
+        iDoBottomLine = mBodyHeight - nHeight <= 0
         
         If mAppearanceIsFlat Then
-            If Not (mHighlightFlatBar And (mFlatBarPosition = ntBarPositionBottom) And (mFlatBarHeightDPIScaled > 0)) Then
-                FillCurvedGradient2 nLeft, nTop, nLeft + nWidth, nTop + nHeight, iBackColorTabs, iBackColorTabs, mFlatRoundnessTopDPIScaled, mFlatRoundnessTopDPIScaled, mFlatRoundnessBottomDPIScaled, mFlatRoundnessBottomDPIScaled
+            iAuxFlatRoundnessTopLeft = mFlatRoundnessTopDPIScaled
+            iAuxFlatRoundnessTopRight = mFlatRoundnessTopDPIScaled
+            If nRowPos < mRows - 1 Then
+                If mTabsAlignedAtTheEnd Then
+                    If nLeft <= mFlatRoundnessTopDPIScaled Then
+                        nLeft = 1
+                    End If
+                    If nLeft = 1 Then
+                        If mLeftMostTabsLeftPos(nRowPos) <= mFlatRoundnessTopDPIScaled - 3 Then
+                            iAuxFlatRoundnessTopLeft = 0
+                        End If
+'                    ElseIf nRowPos < (mRows - 1) Then
+'                        If mLeftMostTabsLeftPos(nRowPos) > 0 Then
+'                            iAuxFlatRoundnessTopLeft = 0
+'                            nLeft = nLeft - 1
+'                            nWidth = nWidth + 1
+'                        End If
+                    End If
+                    If mTabData(nTab).TabRect.Left <= (nLeft + 1) Then
+                        'iAuxFlatRoundnessTopRight = 0
+                        iAuxFlatRoundnessTopLeft = 0
+                    End If
+                End If
+                If mTabData(nTab).TabRect.Right >= (nLeft + nWidth - 1) Then
+                    iAuxFlatRoundnessTopRight = 0
+                End If
+                If nWidth = mScaleWidth - nLeft Then
+                    If mRightMostTabsRightPos(nRowPos) >= (mScaleWidth - (mFlatRoundnessTopDPIScaled - 3)) Then
+                        iAuxFlatRoundnessTopRight = 0
+                    End If
+                End If
             End If
+            iLng = 0
+            FillCurvedGradient2 nLeft, nTop, nLeft + nWidth, nTop + nHeight, iBackColorTabs, iBackColorTabs, iAuxFlatRoundnessTopLeft, iAuxFlatRoundnessTopRight, mFlatRoundnessBottomDPIScaled, mFlatRoundnessBottomDPIScaled
         Else
             picDraw.Line (nLeft, nTop)-(nLeft + nWidth, nTop + nHeight), iBackColorTabs, BF
         End If
@@ -8853,77 +9947,36 @@ Private Sub DrawInactiveBodyPart(ByVal nLeft As Long, ByVal nTop As Long, ByVal 
             Else
                 iFlatBorderColor = TranslatedColor(mFlatTabsSeparationLineColor)
             End If
-            picDraw.Line (nLeft - 1 + IIf(mTabsAlignedAtTheEnd, mFlatRoundnessTopDPIScaled, 0), nTop)-(nLeft + nWidth - mFlatRoundnessTopDPIScaled, nTop), iFlatBorderColor 'm3DDKShadow
+            picDraw.Line (nLeft - 1 + IIf(mTabsAlignedAtTheEnd, iAuxFlatRoundnessTopLeft, 0), nTop)-(nLeft + nWidth - iAuxFlatRoundnessTopRight, nTop), iFlatBorderColor   'm3DDKShadow
         Else
             picDraw.Line (nLeft - 1, nTop)-(nLeft + nWidth, nTop), m3DDKShadow
             picDraw.Line (nLeft - 1, nTop + 1)-(nLeft + 1 + nWidth, nTop + 1), m3DHighlightH
         End If
         
-        ' (end vertical line) right line for top (top left) alignment
-        If iDoEndVerticalLine Then
-            If mTabsAlignedAtTheEnd Then
-                iLinePos = nLeft
-            Else
-                iLinePos = nLeft + nWidth
-            End If
-            If mAppearanceIsFlat Then
-                If mTabsAlignedAtTheEnd Then
-                    picDraw.Line (iLinePos - 1, nTop + mFlatRoundnessTopDPIScaled)-(iLinePos, nTop + nHeight - mFlatRoundnessBottomDPIScaled), iFlatBorderColor
-                Else
-                    If ((iLinePos) - mRightMostTabsRightPos(nRowPos)) > mFlatRoundnessTopDPIScaled Then
-                        picDraw.Line (iLinePos, nTop + mFlatRoundnessTopDPIScaled)-(iLinePos, nTop + nHeight - mFlatRoundnessBottomDPIScaled), iFlatBorderColor
-                    Else
-                        picDraw.Line (iLinePos, nTop)-(iLinePos, nTop + nHeight - mFlatRoundnessBottomDPIScaled), iFlatBorderColor
-                    End If
-                End If
-                ' top-right corner
-                If (mFlatRoundnessTopDPIScaled > 0) Then
-                    If ((iLinePos) - mRightMostTabsRightPos(nRowPos)) > mFlatRoundnessTopDPIScaled Then
-                        iLineColor = iFlatBorderColor
-                        If iLineColor <> iBackColorTabs Then
-                            DrawRoundedCorner ntCornerTopRight, iLinePos, nTop, mFlatRoundnessTopDPIScaled, iLineColor
-                        End If
-                    End If
-                End If
-            Else
-                If mTabsAlignedAtTheEnd Then
-                    If mAppearanceIsPP Then
-                        picDraw.Line (iLinePos - 1, nTop + 1)-(iLinePos, nTop + nHeight), m3DHighlightV
-                    Else
-                        picDraw.Line (iLinePos, nTop + 1)-(iLinePos, nTop + nHeight), m3DHighlightV
-                        picDraw.Line (iLinePos - 1, nTop + 1)-(iLinePos - 1, nTop + nHeight), m3DDKShadow
-                    End If
-                Else
-                    If ((mTabOrientation <> ssTabOrientationLeft) And (mTabOrientation <> ntTabOrientationLeftTop) And (mTabOrientation <> ntTabOrientationLeftHorizontal) And (mTabOrientation <> ntTabOrientationLeftTopHorizontal)) Or (Not mAppearanceIsPP) Then
-                        picDraw.Line (iLinePos, nTop)-(iLinePos, nTop + nHeight), m3DDKShadow
-                        picDraw.Line (iLinePos - 1, nTop + 1)-(iLinePos - 1, nTop + nHeight), m3DShadowV
-                    Else
-                        picDraw.Line (iLinePos, nTop)-(iLinePos, nTop + nHeight), m3DHighlightH
-                    End If
-                End If
-            End If
-        End If
+        ' left line
         If mTabsAlignedAtTheEnd Then
-            'do TabsAlignedAtTheEnd right line
-            iLinePos = nLeft + nWidth
-            If mAppearanceIsFlat Then
+            iLinePos = nLeft
+        Else
+            iLinePos = nLeft + nWidth '- 1
+        End If
+        If mAppearanceIsFlat Then
+            'Right Line
+            If mTabsAlignedAtTheEnd Then
+                picDraw.Line (iLinePos - 1, nTop + iAuxFlatRoundnessTopLeft)-(iLinePos - 1, nTop + nHeight - mFlatRoundnessBottomDPIScaled), iFlatBorderColor
+            Else
                 If ((iLinePos) - mRightMostTabsRightPos(nRowPos)) > mFlatRoundnessTopDPIScaled Then
-                    picDraw.Line (iLinePos, nTop + mFlatRoundnessTopDPIScaled)-(iLinePos, nTop + nHeight - mFlatRoundnessBottomDPIScaled), iFlatBorderColor
+                    picDraw.Line (iLinePos, nTop + iAuxFlatRoundnessTopRight)-(iLinePos, nTop + nHeight - mFlatRoundnessBottomDPIScaled), iFlatBorderColor
                 Else
-                    picDraw.Line (iLinePos, nTop)-(iLinePos, nTop + nHeight - mFlatRoundnessBottomDPIScaled), iFlatBorderColor
+                    picDraw.Line (iLinePos, nTop + iAuxFlatRoundnessTopRight)-(iLinePos, nTop + nHeight - mFlatRoundnessBottomDPIScaled), iFlatBorderColor
                 End If
-                ' top-right corner
-                If (mFlatRoundnessTopDPIScaled > 0) Then
-                    If ((iLinePos) - mRightMostTabsRightPos(nRowPos)) > mFlatRoundnessTopDPIScaled Then
-                        iLineColor = iFlatBorderColor
-                        If iLineColor <> iBackColorTabs Then
-                            DrawRoundedCorner ntCornerTopRight, iLinePos, nTop, mFlatRoundnessTopDPIScaled, iLineColor
-                        End If
-                    End If
-                If mFlatRoundnessTopDPIScaled > 0 Then
-                    ' top left inactive rounded corner
-                    DrawRoundedCorner ntCornerTopleft, nLeft, nTop, mFlatRoundnessTopDPIScaled, iLineColor
-                End If
+            End If
+        Else
+            If mTabsAlignedAtTheEnd Then
+                If mAppearanceIsPP Then
+                    picDraw.Line (iLinePos - 1, nTop + 1)-(iLinePos, nTop + nHeight), m3DHighlightV
+                Else
+                    picDraw.Line (iLinePos, nTop + 1)-(iLinePos, nTop + nHeight), m3DHighlightV
+                    picDraw.Line (iLinePos - 1, nTop + 1)-(iLinePos - 1, nTop + nHeight), m3DDKShadow
                 End If
             Else
                 If ((mTabOrientation <> ssTabOrientationLeft) And (mTabOrientation <> ntTabOrientationLeftTop) And (mTabOrientation <> ntTabOrientationLeftHorizontal) And (mTabOrientation <> ntTabOrientationLeftTopHorizontal)) Or (Not mAppearanceIsPP) Then
@@ -8934,6 +9987,48 @@ Private Sub DrawInactiveBodyPart(ByVal nLeft As Long, ByVal nTop As Long, ByVal 
                 End If
             End If
         End If
+        'If mTabsAlignedAtTheEnd And nDoRightLine Then
+        If mTabsAlignedAtTheEnd Then
+            'do TabsAlignedAtTheEnd right line
+            iLinePos = nLeft + nWidth
+            If mAppearanceIsFlat Then
+                If ((iLinePos) - mRightMostTabsRightPos(nRowPos)) > mFlatRoundnessTopDPIScaled Then
+                    picDraw.Line (iLinePos, nTop + IIf(mTabOrientation = ntTabOrientationBottomRight, 0, mFlatRoundnessTopDPIScaled))-(iLinePos, nTop + nHeight - mFlatRoundnessBottomDPIScaled), iFlatBorderColor
+                Else
+                    picDraw.Line (iLinePos, nTop)-(iLinePos, nTop + nHeight - mFlatRoundnessBottomDPIScaled), iFlatBorderColor
+                End If
+                If (mFlatRoundnessTopDPIScaled > 0) Then
+                    ' top-right corner
+                    If (((iLinePos) - mRightMostTabsRightPos(nRowPos)) > mFlatRoundnessTopDPIScaled) And (Not (mTabOrientation = ntTabOrientationBottomRight)) Then
+                        iLineColor = iFlatBorderColor
+                        If iLineColor <> iBackColorTabs Then
+                            DrawRoundedCorner ntCornerTopRight, iLinePos, nTop, mFlatRoundnessTopDPIScaled, iLineColor, , mTabData(nTab).TabRect.Right
+                        End If
+                    End If
+                End If
+            Else
+                If ((mTabOrientation <> ssTabOrientationLeft) And (mTabOrientation <> ntTabOrientationLeftTop) And (mTabOrientation <> ntTabOrientationLeftHorizontal) And (mTabOrientation <> ntTabOrientationLeftTopHorizontal)) Or (Not mAppearanceIsPP) Then
+                    picDraw.Line (iLinePos, nTop)-(iLinePos, nTop + nHeight), m3DDKShadow
+                    picDraw.Line (iLinePos - 1, nTop + 1)-(iLinePos - 1, nTop + nHeight), m3DShadowV
+                Else
+                    picDraw.Line (iLinePos, nTop)-(iLinePos, nTop + nHeight), m3DHighlightH
+                End If
+            End If
+        End If
+        If mAppearanceIsFlat Then
+            ' top-left corner
+            If (iAuxFlatRoundnessTopLeft > 0) Then
+                iLineColor = iFlatBorderColor
+                DrawRoundedCorner ntCornerTopleft, nLeft - 1, nTop, iAuxFlatRoundnessTopLeft, iFlatBorderColor, , mTabData(nTab).TabRect.Left
+            End If
+            ' top-right corner
+            If (mFlatRoundnessTopDPIScaled > 0) Then
+                iLineColor = iFlatBorderColor
+                If iLineColor <> iBackColorTabs Then
+                    DrawRoundedCorner ntCornerTopRight, iLinePos, nTop, mFlatRoundnessTopDPIScaled, iLineColor, , mTabData(nTab).TabRect.Right
+                End If
+            End If
+        End If
         
         'bottom line
         If iDoBottomLine Then
@@ -8941,8 +10036,8 @@ Private Sub DrawInactiveBodyPart(ByVal nLeft As Long, ByVal nTop As Long, ByVal 
                 picDraw.Line (nLeft - 1, nTop + nHeight)-(nLeft + nWidth + 1 - mFlatRoundnessBottomDPIScaled, nTop + nHeight), iFlatBorderColor
             Else
                 If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ntTabOrientationTopRight) Or (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop) Or (mTabOrientation = ntTabOrientationLeftHorizontal) Or (mTabOrientation = ntTabOrientationLeftTopHorizontal) Then
-                    picDraw.Line (nLeft - 1, nTop - 1 + nHeight)-(nLeft + nWidth, nTop - 1 + nHeight), m3DShadow
-                    picDraw.Line (nLeft - 1, nTop + nHeight)-(nLeft + nWidth + 1, nTop + nHeight), m3DDKShadow
+                    picDraw.Line (nLeft - 1, nTop - 1 + nHeight)-(nLeft - 1 + nWidth, nTop - 1 + nHeight), m3DShadow
+                    picDraw.Line (nLeft - 1, nTop + nHeight)-(nLeft - 1 + nWidth + 1, nTop + nHeight), m3DDKShadow
                 Else
                     picDraw.Line (nLeft - 1, nTop - 1 + nHeight)-(nLeft + nWidth, nTop - 1 + nHeight), m3DHighlight
                 End If
@@ -8953,7 +10048,7 @@ Private Sub DrawInactiveBodyPart(ByVal nLeft As Long, ByVal nTop As Long, ByVal 
             If mFlatRoundnessBottomDPIScaled > 0 Then
                 iLineColor = iFlatBorderColor
                 ' botom-right corner
-                DrawRoundedCorner ntCornerBottomRight, nLeft + nWidth, nTop + nHeight, mFlatRoundnessBottomDPIScaled, iLineColor
+                DrawRoundedCorner ntCornerBottomRight, nLeft + nWidth - 1, nTop + nHeight, mFlatRoundnessBottomDPIScaled, iLineColor
             End If
         End If
     End If
@@ -8961,25 +10056,25 @@ End Sub
 
 
 Private Sub DrawBody(ByVal nScaleHeight As Long)
-    Dim iLng As Long
+    Dim iClientStartShift As Long
     Dim iLineColor As Long
     Dim iFlatBorderColor As Long
     Dim iFlatBodySeparationLineColor As Long
     Dim iColor As Long
     Dim iActiveTabIsLeft As Boolean
-    Dim iTopLeftCornerIsRounded As Boolean
-    Dim iTopRightCornerIsRounded As Boolean
-    Dim iBool As Boolean
+    Dim iTopLeftCornerRoundness As Long
+    Dim iTopRightCornerRoundness As Long
+    Dim iLng As Long
     
     If mControlIsThemed Then
         EnsureBodyThemedReady
-        BitBlt picDraw.hDC, 0, mClientStart - 2, picBodyThemed.ScaleWidth, picBodyThemed.ScaleHeight, picBodyThemed.hDC, 0, 0, vbSrcCopy
+        BitBlt picDraw.hDC, 0, mBodyStart - 2, picBodyThemed.ScaleWidth, picBodyThemed.ScaleHeight, picBodyThemed.hDC, 0, 0, vbSrcCopy
     Else
         ' background
         If mAppearanceIsPP Then
-            iLng = -1
+            iClientStartShift = -1
         Else
-            iLng = 1
+            iClientStartShift = 0
         End If
         
         iColor = mBackColorSelectedTab2
@@ -8991,67 +10086,74 @@ Private Sub DrawBody(ByVal nScaleHeight As Long)
             If mTab > -1 Then
                 iActiveTabIsLeft = mTabData(mTab).LeftTab
             End If
-            If ((mClientWidth - mTabData(mTab).TabRect.Right) > 3) And ((mFlatBorderMode = ntBorderSelectedTab) Or ((mClientWidth - mRightMostTabsRightPos(mRows - 1)) > 3)) Then
-                If (mFlatRoundnessTopDPIScaled > 0) And (mFlatBodySeparationLineHeight = 1) Then
-                    iTopRightCornerIsRounded = True
+            If (mFlatRoundnessTopDPIScaled > 0) And (mFlatBodySeparationLineHeight = 1) Then
+                If mTabsAlignedAtTheEnd Then
+                    If mLeftMostTabsLeftPos(mRows - 1) > (mFlatRoundnessTopDPIScaled - 3) And (mFlatBodySeparationLineHeight = 1) Then
+                        iTopLeftCornerRoundness = mFlatRoundnessTopDPIScaled
+                    End If
+                End If
+                If ((mBodyWidth - mTabData(mTab).TabRect.Right) > 3) And ((mFlatBorderMode = ntBorderSelectedTab) Or ((mBodyWidth - mRightMostTabsRightPos(mRows - 1)) > 3)) Then
+                    If (mFlatRoundnessTopDPIScaled > 0) And (mFlatBodySeparationLineHeight = 1) Then
+                        iTopRightCornerRoundness = mFlatRoundnessTopDPIScaled
+                    End If
+                End If
+                If ((mFlatBorderMode = ntBorderSelectedTab) And (mHighlightFlatDrawBorderSelectedTab)) Then
+                    iTopLeftCornerRoundness = mFlatRoundnessTopDPIScaled
                 End If
             End If
-            iTopLeftCornerIsRounded = (mFlatBorderMode = ntBorderSelectedTab) And (mHighlightFlatDrawBorderSelectedTab Or (Not iActiveTabIsLeft))
-            If mTabsAlignedAtTheEnd Then
-                iBool = iTopLeftCornerIsRounded
-                iTopLeftCornerIsRounded = iTopRightCornerIsRounded
-                iTopRightCornerIsRounded = iBool
+            If mTabData(mTab).TabRect.Right >= (mBodyWidth - 3) Then
+                iTopRightCornerRoundness = 0
             End If
-            FillCurvedGradient2 0, mClientStart + iLng, mClientWidth - 1, nScaleHeight - 1, iColor, iColor, IIf(iTopLeftCornerIsRounded And (mFlatRoundnessTopDPIScaled > 0) And (mFlatBodySeparationLineHeight = 1), mFlatRoundnessTopDPIScaled, 0), IIf(((mClientWidth - mTabData(mTab).TabRect.Right) > 3) And ((mFlatBorderMode = ntBorderSelectedTab) Or ((mClientWidth - mRightMostTabsRightPos(mRows - 1)) > 3)), IIf(mTabsAlignedAtTheEnd, 0, mFlatRoundnessTopDPIScaled), 0), mFlatRoundnessBottomDPIScaled, mFlatRoundnessBottomDPIScaled
+            FillCurvedGradient2 0, mBodyStart + iClientStartShift, mBodyWidth - 1, nScaleHeight - 1, iColor, iColor, iTopLeftCornerRoundness, IIf(((mBodyWidth - mTabData(mTab).TabRect.Right) > 3) And ((mFlatBorderMode = ntBorderSelectedTab) Or ((mBodyWidth - mRightMostTabsRightPos(mRows - 1)) > 3)), IIf(mTabsAlignedAtTheEnd, 0, mFlatRoundnessTopDPIScaled), 0), mFlatRoundnessBottomDPIScaled, mFlatRoundnessBottomDPIScaled
         Else
-            picDraw.Line (0, mClientStart + iLng)-(mClientWidth - 1, nScaleHeight - 1), iColor, BF
+            picDraw.Line (0, mBodyStart + iClientStartShift)-(mBodyWidth - 1, nScaleHeight - 1), iColor, BF
         End If
         
         If mAppearanceIsPP Then
             ' top line
             If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ntTabOrientationTopRight) Or (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop) Or (mTabOrientation = ntTabOrientationLeftHorizontal) Or (mTabOrientation = ntTabOrientationLeftTopHorizontal) Then
-                picDraw.Line (1, mClientStart - 2)-(mClientWidth - 1, mClientStart - 2), m3DHighlightH_Sel
+                picDraw.Line (0, mBodyStart - 1)-(mBodyWidth - 1, mBodyStart - 1), m3DHighlightH_Sel
             Else
-                picDraw.Line (0, mClientStart - 2)-(mClientWidth - 1, mClientStart - 2), m3DDKShadow_Sel
-                picDraw.Line (1, mClientStart - 1)-(mClientWidth - 1, mClientStart - 1), m3DShadow_Sel
+                picDraw.Line (0, mBodyStart - 2)-(mBodyWidth - 1, mBodyStart - 2), m3DDKShadow_Sel
+                picDraw.Line (1, mBodyStart - 1)-(mBodyWidth - 1, mBodyStart - 1), m3DShadow_Sel
             End If
             
             If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ntTabOrientationTopRight) Then
                 'left line
-                picDraw.Line (0, mClientStart - 1)-(0, nScaleHeight - 1), m3DHighlightV_Sel
+                picDraw.Line (0, mBodyStart - 1)-(0, nScaleHeight - 1), m3DHighlightV_Sel
                 
                 'right line
-                picDraw.Line (mClientWidth - 1, mClientStart - 2)-(mClientWidth - 1, nScaleHeight - 1), m3DDKShadow_Sel
-                picDraw.Line (mClientWidth - 2, mClientStart - 1)-(mClientWidth - 2, nScaleHeight - 2), m3DShadowV_Sel
+                picDraw.Line (mBodyWidth - 1, mBodyStart - 2)-(mBodyWidth - 1, nScaleHeight - 1), m3DDKShadow_Sel
+                picDraw.Line (mBodyWidth - 2, mBodyStart - 1)-(mBodyWidth - 2, nScaleHeight - 2), m3DShadowV_Sel
                 
                 'bottom line
-                picDraw.Line (0, nScaleHeight - 1)-(mClientWidth, nScaleHeight - 1), m3DDKShadow_Sel
-                If mClientHeight > 3 Then
-                    picDraw.Line (1, nScaleHeight - 2)-(mClientWidth - 1, nScaleHeight - 2), m3DShadowH_Sel
+                picDraw.Line (0, nScaleHeight - 1)-(mBodyWidth, nScaleHeight - 1), m3DDKShadow_Sel
+                If mBodyHeight > 3 Then
+                    picDraw.Line (1, nScaleHeight - 2)-(mBodyWidth - 1, nScaleHeight - 2), m3DShadowH_Sel
                 End If
             ElseIf (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop) Or (mTabOrientation = ntTabOrientationLeftHorizontal) Or (mTabOrientation = ntTabOrientationLeftTopHorizontal) Then
                 'left line
-                picDraw.Line (0, mClientStart - 1)-(0, nScaleHeight - 1), m3DDKShadow_Sel
-                picDraw.Line (1, mClientStart - 1)-(1, nScaleHeight - 1), m3DShadow_Sel
+                picDraw.Line (0, mBodyStart - 1)-(0, nScaleHeight - 1), m3DDKShadow_Sel
+                picDraw.Line (1, mBodyStart - 1)-(1, nScaleHeight - 1), m3DShadow_Sel
             
                 'right line
-                picDraw.Line (mClientWidth - 1, mClientStart - 2)-(mClientWidth - 1, nScaleHeight - 1), m3DHighlight_Sel
+                picDraw.Line (mBodyWidth - 1, mBodyStart - 2)-(mBodyWidth - 1, nScaleHeight - 1), m3DHighlight_Sel
             
                 'bottom line
-                picDraw.Line (0, nScaleHeight - 1)-(mClientWidth, nScaleHeight - 1), m3DDKShadow_Sel
-                If mClientHeight > 3 Then
-                    picDraw.Line (1, nScaleHeight - 2)-(mClientWidth - 1, nScaleHeight - 2), m3DShadowH_Sel
+                picDraw.Line (0, nScaleHeight - 1)-(mBodyWidth, nScaleHeight - 1), m3DDKShadow_Sel
+                If mBodyHeight > 3 Then
+                    picDraw.Line (1, nScaleHeight - 2)-(mBodyWidth - 1, nScaleHeight - 2), m3DShadowH_Sel
                 End If
             Else 'Bottom or Right
                 'left line
-                picDraw.Line (0, mClientStart - 1)-(0, nScaleHeight - 1), m3DHighlightV_Sel
+                picDraw.Line (0, mBodyStart - 1)-(0, nScaleHeight - 1), m3DHighlightV_Sel
                 
                 'right line
-                picDraw.Line (mClientWidth - 1, mClientStart - 2)-(mClientWidth - 1, nScaleHeight), m3DDKShadow_Sel
-                picDraw.Line (mClientWidth - 2, mClientStart - 1)-(mClientWidth - 2, nScaleHeight - 1), m3DShadowV_Sel
+                picDraw.Line (mBodyWidth - 1, mBodyStart - 2)-(mBodyWidth - 1, nScaleHeight), m3DDKShadow_Sel
+                picDraw.Line (mBodyWidth - 2, mBodyStart - 1)-(mBodyWidth - 2, nScaleHeight - 1), m3DShadowV_Sel
                 
                 ' bottom line
-                picDraw.Line (0, nScaleHeight - 1)-(mClientWidth - 1, nScaleHeight - 1), m3DShadowH_Sel
+                picDraw.Line (0, nScaleHeight - 1)-(mBodyWidth - 1, nScaleHeight - 1), m3DShadowH_Sel
             End If
         ElseIf mAppearanceIsFlat Then
             iFlatBorderColor = TranslatedColor(mFlatBorderColor)
@@ -9063,44 +10165,46 @@ Private Sub DrawBody(ByVal nScaleHeight As Long)
             
             ' top line
             If (iFlatBodySeparationLineColor <> mBackColorTabs2) Then
-                If Not (((mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight)) And (mFlatBarHeightDPIScaled > 0) And mHighlightFlatBar) Then
-                    If mFlatBodySeparationLineHeight = 1 Then
-                        'picDraw.Line (IIf(iTopLeftCornerIsRounded, mFlatRoundnessTopDPIScaled, 0), mClientStart)-(mClientWidth - 1 - IIf(mFlatBorderMode = ntBorderSelectedTab, mFlatRoundnessTopDPIScaled, 0) - IIf(iTopRightCornerIsRounded, mFlatRoundnessTopDPIScaled, 0), mClientStart), iFlatBodySeparationLineColor
-                        picDraw.Line (IIf(iTopLeftCornerIsRounded, mFlatRoundnessTopDPIScaled, 0), mClientStart)-(mClientWidth - 1 - IIf(mFlatBorderMode = ntBorderSelectedTab, mFlatRoundnessTopDPIScaled, 0), mClientStart), iFlatBodySeparationLineColor
-                    ElseIf mFlatBodySeparationLineHeight > 1 Then
-                        picDraw.Line (0, mClientStart + 1)-(mClientWidth - 2, mClientStart + mFlatBodySeparationLineHeightDPIScaled), iFlatBodySeparationLineColor, BF
-                    End If
+'                If Not (mOrientationIsBottom And (mFlatBarHeightDPIScaled > 0) And mHighlightFlatBar) Then
+                If mFlatBodySeparationLineHeight = 1 Then
+                    'picDraw.Line (IIf(iTopLeftCornerIsRounded, mFlatRoundnessTopDPIScaled, 0), mBodyStart)-(mBodyWidth - 1 - IIf(mFlatBorderMode = ntBorderSelectedTab, mFlatRoundnessTopDPIScaled, 0) - IIf(iTopRightCornerIsRounded, mFlatRoundnessTopDPIScaled, 0), mBodyStart), iFlatBodySeparationLineColor
+                    picDraw.Line (iTopLeftCornerRoundness, mBodyStart)-(mBodyWidth - 1 - iTopRightCornerRoundness, mBodyStart), iFlatBodySeparationLineColor
+                ElseIf mFlatBodySeparationLineHeight > 1 Then
+                    picDraw.Line (0, mBodyStart)-(mBodyWidth - 2, mBodyStart + mFlatBodySeparationLineHeightDPIScaled), iFlatBodySeparationLineColor, BF
                 End If
+ '               End If
             End If
             
             ' left line
-            picDraw.Line (0, mClientStart + IIf(iTopLeftCornerIsRounded And (mFlatBodySeparationLineHeight = 1), mFlatRoundnessTopDPIScaled, 0))-(0, nScaleHeight - 1 - mFlatRoundnessBottomDPIScaled), iFlatBorderColor
+            picDraw.Line (0, mBodyStart + iTopLeftCornerRoundness)-(0, nScaleHeight - 1 - mFlatRoundnessBottomDPIScaled), iFlatBorderColor
+            
             ' top-right corner round
-            If iTopRightCornerIsRounded Then
-                If ((mClientWidth - mTabData(mTab).TabRect.Right) > 3) And mFlatBorderMode = ntBorderSelectedTab Then
+            If iTopRightCornerRoundness > 0 Then
+                If ((mBodyWidth - mTabData(mTab).TabRect.Right) > 3) And mFlatBorderMode = ntBorderSelectedTab Then
                     iLineColor = iFlatBodySeparationLineColor
                 Else
                     iLineColor = iFlatBorderColor
                 End If
-                DrawRoundedCorner ntCornerTopRight, mClientWidth - 1, mClientStart, mFlatRoundnessTopDPIScaled, iLineColor
+                DrawRoundedCorner ntCornerTopRight, mBodyWidth - 1, mBodyStart, iTopRightCornerRoundness, iLineColor
             End If
+            
             ' right line
-            picDraw.Line (mClientWidth - 1, mClientStart + IIf(iTopRightCornerIsRounded, mFlatRoundnessTopDPIScaled, 0))-(mClientWidth - 1, nScaleHeight - 1 - mFlatRoundnessBottomDPIScaled), iFlatBorderColor
+            picDraw.Line (mBodyWidth - 1, mBodyStart + iTopRightCornerRoundness)-(mBodyWidth - 1, nScaleHeight - 1 - mFlatRoundnessBottomDPIScaled), iFlatBorderColor
             ' bottom line
-            picDraw.Line (mFlatRoundnessBottomDPIScaled, nScaleHeight - 1)-(mClientWidth - mFlatRoundnessBottomDPIScaled, nScaleHeight - 1), iFlatBorderColor
+            picDraw.Line (mFlatRoundnessBottomDPIScaled, nScaleHeight - 1)-(mBodyWidth - mFlatRoundnessBottomDPIScaled, nScaleHeight - 1), iFlatBorderColor
             
-            If iTopLeftCornerIsRounded Then
-                ' top-left corner
-                If (mFlatRoundnessTopDPIScaled > 0) And (mFlatBodySeparationLineHeight = 1) Then
-                    DrawRoundedCorner ntCornerTopleft, 0, mClientStart, mFlatRoundnessTopDPIScaled, iFlatBorderColor
-                End If
+            ' top-left corner
+            If iTopLeftCornerRoundness > 0 Then
+                DrawRoundedCorner ntCornerTopleft, 0, mBodyStart, iTopLeftCornerRoundness, iFlatBorderColor
             End If
             
-            If (mClientWidth - mRightMostTabsRightPos(mRows - 1)) > 3 Then
-                If mTabsAlignedAtTheEnd Then
-                    picDraw.Line (IIf(iTopLeftCornerIsRounded, mFlatRoundnessTopDPIScaled, 0), mClientStart)-(mLeftMostTabsRightPos(mRows - 1), mClientStart), iFlatBorderColor
-                Else
-                    picDraw.Line (mRightMostTabsRightPos(mRows - 1), mClientStart)-(mClientWidth - 1 - IIf(mFlatBodySeparationLineHeight = 1, mFlatRoundnessTopDPIScaled, 0), mClientStart), iFlatBorderColor ' iFlatBodySeparationLineColor
+            If mTabsAlignedAtTheEnd Then
+                If (mBodyWidth - mLeftMostTabsLeftPos(mRows - 1)) > 3 Then
+                    picDraw.Line (iTopLeftCornerRoundness, mBodyStart)-(mLeftMostTabsLeftPos(mRows - 1), mBodyStart), iFlatBorderColor
+                End If
+            Else
+                If (mBodyWidth - mRightMostTabsRightPos(mRows - 1)) > 3 Then
+                    picDraw.Line (mRightMostTabsRightPos(mRows - 1), mBodyStart)-(mBodyWidth - 1 - IIf(mFlatBodySeparationLineHeight = 1, mFlatRoundnessTopDPIScaled, 0), mBodyStart), iFlatBorderColor ' iFlatBodySeparationLineColor
                 End If
             End If
             
@@ -9110,37 +10214,138 @@ Private Sub DrawBody(ByVal nScaleHeight As Long)
                 DrawRoundedCorner ntCornerBottomLeft, 0, nScaleHeight - 1, mFlatRoundnessBottomDPIScaled, iLineColor
                 
                 ' botom-right corner
-                DrawRoundedCorner ntCornerBottomRight, mClientWidth - 1, nScaleHeight - 1, mFlatRoundnessBottomDPIScaled, iLineColor
+                DrawRoundedCorner ntCornerBottomRight, mBodyWidth - 1, nScaleHeight - 1, mFlatRoundnessBottomDPIScaled, iLineColor
             End If
         Else
             ' top line
-            picDraw.Line (0, mClientStart - 2)-(mClientWidth - 1, mClientStart - 2), m3DDKShadow_Sel
-            picDraw.Line (2, mClientStart - 1)-(mClientWidth - 1, mClientStart - 1), m3DHighlightH_Sel
-            picDraw.Line (3, mClientStart)-(mClientWidth - 2, mClientStart), m3DHighlightH_Sel
+            picDraw.Line (0, mBodyStart - 2)-(mBodyWidth - 1, mBodyStart - 2), m3DDKShadow_Sel
+            picDraw.Line (2, mBodyStart - 1)-(mBodyWidth - 1, mBodyStart - 1), m3DHighlightH_Sel
+            picDraw.Line (3, mBodyStart)-(mBodyWidth - 2, mBodyStart), m3DHighlightH_Sel
             
             ' left line
-            picDraw.Line (0, mClientStart - 1)-(0, nScaleHeight - 1), m3DDKShadow_Sel
-            picDraw.Line (1, mClientStart - 1)-(1, nScaleHeight - 2), m3DHighlightV_Sel
-            picDraw.Line (2, mClientStart + 1)-(2, nScaleHeight - 3), m3DHighlightV_Sel
+            picDraw.Line (0, mBodyStart - 2)-(0, nScaleHeight - 1), m3DDKShadow_Sel
+            picDraw.Line (1, mBodyStart - 1)-(1, nScaleHeight - 2), m3DHighlightV_Sel
+            picDraw.Line (2, mBodyStart)-(2, nScaleHeight - 3), m3DHighlightV_Sel
 
             ' right line
-            picDraw.Line (mClientWidth - 1, mClientStart - 2)-(mClientWidth - 1, nScaleHeight - 1), m3DDKShadow_Sel
-            picDraw.Line (mClientWidth - 2, mClientStart - 1)-(mClientWidth - 2, nScaleHeight - 2), m3DShadowV_Sel
-            picDraw.Line (mClientWidth - 3, mClientStart)-(mClientWidth - 3, nScaleHeight - 3), m3DShadowV_Sel
+            picDraw.Line (mBodyWidth - 1, mBodyStart - 2)-(mBodyWidth - 1, nScaleHeight - 1), m3DDKShadow_Sel
+            picDraw.Line (mBodyWidth - 2, mBodyStart - 1)-(mBodyWidth - 2, nScaleHeight - 2), m3DShadowV_Sel
+            picDraw.Line (mBodyWidth - 3, mBodyStart)-(mBodyWidth - 3, nScaleHeight - 3), m3DShadowV_Sel
             
             ' bottom line
-            picDraw.Line (0, nScaleHeight - 1)-(mClientWidth, nScaleHeight - 1), m3DDKShadow_Sel
-            If mClientHeight > 3 Then
-                picDraw.Line (1, nScaleHeight - 2)-(mClientWidth - 1, nScaleHeight - 2), m3DShadowH_Sel
+            picDraw.Line (0, nScaleHeight - 1)-(mBodyWidth, nScaleHeight - 1), m3DDKShadow_Sel
+            If mBodyHeight > 3 Then
+                picDraw.Line (1, nScaleHeight - 2)-(mBodyWidth - 1, nScaleHeight - 2), m3DShadowH_Sel
             End If
-            If mClientHeight > 4 Then
-                picDraw.Line (2, nScaleHeight - 3)-(mClientWidth - 2, nScaleHeight - 3), m3DShadowH_Sel
+            If mBodyHeight > 4 Then
+                picDraw.Line (2, nScaleHeight - 3)-(mBodyWidth - 2, nScaleHeight - 3), m3DShadowH_Sel
             End If
         End If
     End If
+    If mAppearanceIsFlat Then
+        mClientSpaceData.LeftTopRoundness = iTopLeftCornerRoundness
+        mClientSpaceData.RightTopRoundness = iTopRightCornerRoundness
+        mClientSpaceData.LeftBottomRoundness = mFlatRoundnessBottomDPIScaled
+        mClientSpaceData.RightBottomRoundness = mFlatRoundnessBottomDPIScaled
+'    ElseIf mControlIsThemed Then
+'        mClientSpaceData.LeftTopRoundness = 0
+'        mClientSpaceData.RightTopRoundness = 0
+'        mClientSpaceData.LeftBottomRoundness = 0
+'        mClientSpaceData.RightBottomRoundness = 0
+'    ElseIf mTabAppearance2 = ntTATabbedDialog Then
+'        mClientSpaceData.LeftTopRoundness = 0
+'        mClientSpaceData.RightTopRoundness = 0
+'        mClientSpaceData.LeftBottomRoundness = 0
+'        mClientSpaceData.RightBottomRoundness = 0
+'    ElseIf mTabAppearance2 = ntTATabbedDialogRounded Then
+'        mClientSpaceData.LeftTopRoundness = 0
+'        mClientSpaceData.RightTopRoundness = 0
+'        mClientSpaceData.LeftBottomRoundness = 0
+'        mClientSpaceData.RightBottomRoundness = 0
+'    ElseIf mTabAppearance2 = ntTATabbedDialog Then
+'        mClientSpaceData.LeftTopRoundness = 0
+'        mClientSpaceData.RightTopRoundness = 0
+'        mClientSpaceData.LeftBottomRoundness = 0
+'        mClientSpaceData.RightBottomRoundness = 0
+'    ElseIf mTabAppearance2 = ntTAPropertyPageRounded Then
+'        mClientSpaceData.LeftTopRoundness = 0
+'        mClientSpaceData.RightTopRoundness = 0
+'        mClientSpaceData.LeftBottomRoundness = 0
+'        mClientSpaceData.RightBottomRoundness = 0
+    Else
+        mClientSpaceData.LeftTopRoundness = 0
+        mClientSpaceData.RightTopRoundness = 0
+        mClientSpaceData.LeftBottomRoundness = 0
+        mClientSpaceData.RightBottomRoundness = 0
+    End If
+End Sub
+
+' Draws the close button (the 'x') of a tab, point 1 of ToDo NewTab 2. Independent from
+' the regular Icon (which stays free for the developer to use even when the close button
+' is shown). Unlike the Icon, the 'x' is always drawn upright (not rotated) regardless of
+' TabOrientation, positioned near the edge of the tab that corresponds to "the right" for
+' horizontal orientations (Top/Bottom families) or the analogous far edge for the rotated
+' Left/Right orientations.
+Private Sub DrawTabCloseButton(ByVal nTab As Long)
+    Dim iTabRect As RECT
+    Dim iBtnRect As RECT
+    Dim iBtnSide As Long
+    Dim iCenterOther As Long
+    Dim iCharacter As String
+    Dim iCharRect As RECT
+    Dim iColor As Long
+    Dim iFontPrev As StdFont
+    Dim iForeColorPrev As Long
+    Dim iFlags As Long
+    
+    If Not mTabData(nTab).Visible Then Exit Sub
+    If Not TabCloseButtonEffective(nTab) Then
+        mTabData(nTab).CloseButtonRect.Left = 0
+        mTabData(nTab).CloseButtonRect.Top = 0
+        mTabData(nTab).CloseButtonRect.Right = 0
+        mTabData(nTab).CloseButtonRect.Bottom = 0
+        Exit Sub
+    End If
+    
+    SetupCloseButtonFont
+    iTabRect = mTabData(nTab).TabRect
+    iBtnSide = mTabData(nTab).CloseButtonWidth - mCloseButtonMarginDPIScaled ' square-ish, a bit smaller than the full reserved width
+    If iBtnSide < 1 Then iBtnSide = 1
+    
+    ' Everything here is drawn in the same virtual "along-strip = Left/Right" space regardless of
+    ' the final screen orientation - Draw() rotates the whole canvas as a single bitmap at the end
+    ' for Bottom/Left/Right (see the RotatePic calls), so the close button's far end is always
+    ' iTabRect.Right, the same as the horizontal orientations - never Bottom/Top.
+    iCenterOther = (iTabRect.Top + iTabRect.Bottom) \ 2
+    iBtnRect.Right = iTabRect.Right - mCloseButtonMarginDPIScaled
+    iBtnRect.Left = iBtnRect.Right - iBtnSide
+    iBtnRect.Top = iCenterOther - iBtnSide \ 2
+    iBtnRect.Bottom = iBtnRect.Top + iBtnSide
+    mTabData(nTab).CloseButtonRect = iBtnRect
+    
+    If Not mTabData(nTab).CloseButtonEnabled Then
+        iColor = ToGray(TranslatedColor(mCloseButtonColor))
+    ElseIf mTabData(nTab).CloseButtonHovered Then
+        iColor = TranslatedColor(mCloseButtonColorHighlight)
+    Else
+        iColor = TranslatedColor(mCloseButtonColor)
+    End If
+    
+    iCharacter = ChrU(mCloseButtonCharCode)
+    iCharRect = iBtnRect
+    iFlags = DT_SINGLELINE Or DT_CENTER Or DT_VCENTER
+    Set iFontPrev = picDraw.Font
+    Set picDraw.Font = mCloseButtonFont
+    iForeColorPrev = picDraw.ForeColor
+    picDraw.ForeColor = iColor
+    DrawTextW picDraw.hDC, StrPtr(iCharacter), -1, iCharRect, iFlags
+    Set picDraw.Font = iFontPrev
+    picDraw.ForeColor = iForeColorPrev
 End Sub
 
 Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
+    Dim iPrevLayoutWnd As Long
+    Dim iPrevLayoutDC As Long
     Dim iTabData As T_TabData
     Dim iTabRect As RECT
     Dim iTabSpaceRect As RECT
@@ -9156,6 +10361,14 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     Dim iPicLeft As Long
     Dim iPicTop As Long
     Dim iLng As Long
+    Dim iCapReserve As Long
+    Dim iEdgeMargin As Long
+    Dim iCapLeft As Long
+    Dim iCapRight As Long
+    Dim iGap As Long
+    Dim iPairTotal As Long
+    Dim iAreaLeft As Long
+    Dim iAreaRight As Long
     Dim iPicSourceShiftX As Long
     Dim iPicSourceShiftY As Long
     Dim iTabSpaceWidth As Long
@@ -9178,13 +10391,15 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     Dim iIconFont As StdFont
     Dim iFlatBarHeightTop As Long
     Dim iFlatBarHeightBottom As Long
+    Dim iFlatBarThicknessLeft As Long
+    Dim iFlatBarThicknessRight As Long
+    
     Dim iAuxRect As RECT
     Dim iGMPrev As Long
     Dim iTx1 As XFORM
     Dim iGMPrev2 As Long
     Dim iTx2 As XFORM
     Dim iTx2Prev As XFORM
-    Dim iFlatBarPosition As NTFlatBarPositionConstants
     Dim iTabCenterX As Long
     Dim iTabCenterY As Long
     Dim iActive As Boolean
@@ -9207,31 +10422,25 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     iTabData = mTabData(nTab)
     iTabRect = iTabData.TabRect
     
-    If mTabsAreRotatedButCaptionsAreHorizontal Then
-        iTabCenterX = (iTabRect.Left + iTabRect.Right) / 2
-        iTabCenterY = (iTabRect.Top + iTabRect.Bottom) / 2
-        iTabRect = RotateRect90Degrees(iTabRect, True, iTabCenterX, iTabCenterY)
-    End If
-    
-    If mTabsAreRotatedButCaptionsAreHorizontal Then
-        iGMPrev2 = SetGraphicsMode(picDraw.hDC, GM_ADVANCED)
-        GetWorldTransform picDraw.hDC, iTx2Prev
-        If (mTabOrientation = ntTabOrientationLeftHorizontal) Or (mTabOrientation = ntTabOrientationLeftTopHorizontal) Then
-            iTx2.eM11 = 0
-            iTx2.eM12 = 1
-            iTx2.eM21 = -1
-            iTx2.eM22 = 0
-            iTx2.eDx = iTabCenterX
-            iTx2.eDy = iTabCenterY
-        Else
-            iTx2.eM11 = 0
-            iTx2.eM12 = -1
-            iTx2.eM21 = 1
-            iTx2.eM22 = 0
-            iTx2.eDx = iTabCenterX
-            iTx2.eDy = iTabCenterY
+    If mAppearanceIsFlat Then
+        If mHighlightFlatBar Or mHighlightFlatBarSelectedTab Then
+            If mFlatBarPosition = ntBarPositionTop Then
+                iFlatBarHeightTop = mFlatBarHeightDPIScaled
+            Else
+                iFlatBarHeightBottom = mFlatBarHeightDPIScaled
+            End If
+            If mTabsAreRotatedButCaptionsAreHorizontal Then
+                If (mTabOrientation = ntTabOrientationRightHorizontal) Or (mTabOrientation = ntTabOrientationRightBottomHorizontal) Then
+                    iFlatBarThicknessLeft = iFlatBarHeightBottom
+                    iFlatBarThicknessRight = iFlatBarHeightTop
+                Else
+                    iFlatBarThicknessLeft = iFlatBarHeightTop
+                    iFlatBarThicknessRight = iFlatBarHeightBottom
+                End If
+                iFlatBarHeightBottom = 0
+                iFlatBarHeightTop = 0
+            End If
         End If
-        SetWorldTransform picDraw.hDC, iTx2
     End If
     
     iActive = (nTab = mTab)
@@ -9258,40 +10467,6 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
                     iTabRect.Right = iTabRect.Right + mMouseX2 - mMouseX
                     iTabRect.Top = iTabRect.Top + mMouseY2 - mMouseY
                     iTabRect.Bottom = iTabRect.Bottom + mMouseY2 - mMouseY
-                End If
-            End If
-        End If
-    End If
-    
-    iFlatBarPosition = mFlatBarPosition
-    
-    If mAppearanceIsFlat Then
-        If mHighlightFlatBar Or mHighlightFlatBarSelectedTab Then
-            If iFlatBarPosition = ntBarPositionTop Then
-                If (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
-                    iFlatBarHeightBottom = -mFlatBarHeightDPIScaled
-                Else
-                    iFlatBarHeightTop = mFlatBarHeightDPIScaled
-                End If
-                If (mHighlightFlatBarWithGrip And (Not iActive) And iTabData.Hovered And mAmbientUserMode) Or (mHighlightFlatBarWithGripSelectedTab And iActive) Then
-                    If mFlatBarGripHeightDPIScaled < 0 Then
-                        If (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
-                            iFlatBarHeightBottom = iFlatBarHeightBottom - Abs(mFlatBarGripHeightDPIScaled) - 1
-                        Else
-                            iFlatBarHeightTop = iFlatBarHeightTop + Abs(mFlatBarGripHeightDPIScaled) + 1
-                        End If
-                    Else
-                        If (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
-                            iFlatBarHeightBottom = iFlatBarHeightBottom - Abs(mFlatBarGripHeightDPIScaled) - 1
-                        End If
-                    End If
-                End If
-            Else
-                iFlatBarHeightBottom = mFlatBarHeightDPIScaled
-                If mHighlightFlatBarWithGrip Or mHighlightFlatBarWithGripSelectedTab Then
-                    If mFlatBarGripHeightDPIScaled < 0 Then
-                        iFlatBarHeightBottom = iFlatBarHeightBottom + Abs(mFlatBarGripHeightDPIScaled) + 1
-                    End If
                 End If
             End If
         End If
@@ -9423,19 +10598,12 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     iTabSpaceRect.Left = iTabRect.Left + 2
     If mAppearanceIsFlat Then iTabSpaceRect.Left = iTabSpaceRect.Left + 1
     iTabSpaceRect.Top = iTabRect.Top
-    If (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
-        If iActive And Not mAppearanceIsFlat Then
-            iTabSpaceRect.Bottom = iTabRect.Bottom + 2
-        Else
-            iTabSpaceRect.Bottom = iTabRect.Bottom + 4
-        End If
+    If mAppearanceIsFlat Then
+        iTabSpaceRect.Bottom = iTabRect.Bottom
     Else
-        If mAppearanceIsFlat Then
-            iTabSpaceRect.Bottom = iTabRect.Bottom
-        Else
-            iTabSpaceRect.Bottom = iTabRect.Bottom - 2
-        End If
+        iTabSpaceRect.Bottom = iTabRect.Bottom - 2
     End If
+'    End If
     iTabSpaceRect.Right = iTabRect.Right - 2
     
     If mAppearanceIsPP And iTabData.Selected Then
@@ -9451,7 +10619,6 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
         iFlags = DT_CALCRECT Or DT_SINGLELINE Or DT_CENTER
         Set picAuxIconFont.Font = iIconFont
         iDo = True
-        If mAmbientUserMode And (mTDIMode = ntTDIModeForms) Then iDo = Not mTDIFormWithoutCloseButton(iTabData.Data)
         If iDo Then
             DrawTextW picAuxIconFont.hDC, StrPtr(iIconCharacter), -1, iIconCharRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
             iPicWidth = (iIconCharRect.Right - iIconCharRect.Left)
@@ -9476,33 +10643,47 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
         iPicWidth = pScaleX(iAuxPicture.Width, vbHimetric, vbPixels)
         iPicHeight = pScaleY(iAuxPicture.Height, vbHimetric, vbPixels)
         If (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop) Then
-            picAux.Width = iPicWidth
-            picAux.Height = iPicHeight
-            picAux.Cls
-            picAux.BackColor = mBackColorTabs
-            picRotate.Cls
-            picAux.PaintPicture iAuxPicture, 0, 0
-            RotatePic picAux, picRotate, nt90DegreesClockWise
-            Set iAuxPicture = picRotate.Image
-            picRotate.Cls
-            picAux.Cls
+'            picAux.Width = iPicWidth
+'            picAux.Height = iPicHeight
+'            picAux.Cls
+'            picAux.BackColor = mBackColorTabs
+'            picRotate.Cls
+'            picAux.PaintPicture iAuxPicture, 0, 0
+'            RotatePic picAux, picRotate, nt90DegreesClockWise
+'            Set iAuxPicture = picRotate.Image
+'            picRotate.Cls
+'            picAux.Cls
+            If mRightToLeft Then
+                ' under RTL the final image rotation direction is swapped, so the icon
+                ' pre-rotation that compensates it (leaving the icon upright) swaps too
+                Set iAuxPicture = RotatePic(iAuxPicture, nt90DegreesCounterClockWise)
+            Else
+                Set iAuxPicture = RotatePic(iAuxPicture, nt90DegreesClockWise)
+            End If
             iPicWidth = pScaleX(iAuxPicture.Width, vbHimetric, vbPixels)
             iPicHeight = pScaleY(iAuxPicture.Height, vbHimetric, vbPixels)
         ElseIf (mTabOrientation = ssTabOrientationRight) Or (mTabOrientation = ntTabOrientationRightBottom) Then
-            picAux.Width = iPicWidth
-            picAux.Height = iPicHeight
-            picAux.Cls
-            picAux.BackColor = mBackColorTabs
-            picRotate.Cls
-            picAux.PaintPicture iAuxPicture, 0, 0
-            RotatePic picAux, picRotate, nt90DegreesCounterClockWise
-            Set iAuxPicture = picRotate.Image
-            picRotate.Cls
-            picAux.Cls
+'            picAux.Width = iPicWidth
+'            picAux.Height = iPicHeight
+'            picAux.Cls
+'            picAux.BackColor = mBackColorTabs
+'            picRotate.Cls
+'            picAux.PaintPicture iAuxPicture, 0, 0
+'            RotatePic picAux, picRotate, nt90DegreesCounterClockWise
+'            Set iAuxPicture = picRotate.Image
+'            picRotate.Cls
+'            picAux.Cls
+            If mRightToLeft Then
+                ' see the note in the Left branch above
+                Set iAuxPicture = RotatePic(iAuxPicture, nt90DegreesClockWise)
+            Else
+                Set iAuxPicture = RotatePic(iAuxPicture, nt90DegreesCounterClockWise)
+            End If
             iPicWidth = pScaleX(iAuxPicture.Width, vbHimetric, vbPixels)
             iPicHeight = pScaleY(iAuxPicture.Height, vbHimetric, vbPixels)
         End If
     End If
+    
     If iDrawIcon Then
         iIconAlignment = mIconAlignment
         If (mTDIMode = ntTDIModeForms) Or mIsTDIFormsSampleInPropertyPage Then
@@ -9533,13 +10714,6 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     
     ' Calculate iMeasureRect for one liner and without elipsis for both cases, WordWrap or not
     iMeasureRect = iTabSpaceRect
-    If mTDIMode = ntTDIModeForms Then
-        If iTabData.Data > 0 Then
-            If (mTDIFormIconCustomData(iTabData.Data).Width > 0) Then
-                iTabSpaceRect.Left = iTabSpaceRect.Left + mTDIFormIconCustomData(iTabData.Data).Width * 1.06 - 4 '+ 6 - 4
-            End If
-        End If
-    End If
     iMeasureRect.Bottom = iMeasureRect.Top + 5
     
     iFlags = DT_CALCRECT Or DT_SINGLELINE Or mAlignmentDTFlag
@@ -9583,18 +10757,40 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
         iPicHeightToShow = iPicHeight
     End If
     
-    iMeasureRect.Right = iTabSpaceRect.Right
-    If iDrawIcon And ((iIconAlignment <> ntIconAlignCenteredOnTab) And (iIconAlignment <> ntIconAlignAtTop) And (iIconAlignment <> ntIconAlignAtBottom)) Then
-        iMeasureRect.Left = iTabSpaceRect.Left + iPicWidthToShow + IIf(iIsTDIFormsFirstTab, 0, mTabIconDistanceToCaptionDPIScaled)
-    Else
-        iMeasureRect.Left = iTabSpaceRect.Left
+    iAreaLeft = iTabSpaceRect.Left + iFlatBarThicknessLeft
+    iAreaRight = iTabSpaceRect.Right - iFlatBarThicknessRight
+    If TabCloseButtonEffective(nTab) Then
+        iAreaRight = iAreaRight - mTabData(nTab).CloseButtonWidth
+    End If
+    iGap = mTabIconDistanceToCaptionDPIScaled
+    iEdgeMargin = 4.5 * mDPIScale
+    
+    ' How much width to take away from the caption's measurement/ellipsis, to leave room for a docked icon.
+    ' Only the combinations where the icon is forced right next to the caption need this; in every
+    ' other combination the caption is positioned independently of the icon (computed further below).
+    iCapReserve = 0
+    If iDrawIcon Then
+        Select Case iIconAlignment
+            Case ntIconAlignBeforeCaption, ntIconAlignAfterCaption
+                iCapReserve = iPicWidthToShow + iGap
+            Case ntIconAlignStart
+                If mCaptionAlignment = ntAlignmentLeft Then iCapReserve = iPicWidthToShow + iGap
+            Case ntIconAlignEnd
+                If mCaptionAlignment = ntAlignmentRight Then iCapReserve = iPicWidthToShow + iGap
+            Case ntIconAlignCenteredBeforeCaption
+                If mCaptionAlignment = ntAlignmentLeft Then iCapReserve = iPicWidthToShow + iGap
+            Case ntIconAlignCenteredAfterCaption
+                If mCaptionAlignment = ntAlignmentRight Then iCapReserve = iPicWidthToShow + iGap
+            Case ntIconAlignCenteredOnTab
+                If mCaptionAlignment = ntAlignmentCenter Then iCapReserve = iPicWidthToShow + iGap
+        End Select
     End If
     
+    iMeasureRect.Left = iAreaLeft
+    iMeasureRect.Right = iAreaRight - iCapReserve
     iMeasureRect.Top = 0
     iMeasureRect.Bottom = iMeasureRect.Top + 5
     
-    iCaptionRect.Left = iMeasureRect.Left
-    iCaptionRect.Right = iMeasureRect.Right
     ' Calculate iMeasureRect again, without elipsis for WordWrap and with elipsis for single line, and without both text centering
     If mWordWrap Then
         iFlags = DT_CALCRECT Or DT_WORDBREAK
@@ -9604,17 +10800,8 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     iCaption = iTabData.Caption & IIf(picDraw.Font.Italic, "  ", "")
 
     DrawTextW picDraw.hDC, StrPtr(iCaption & IIf(iFlags And DT_MODIFYSTRING, "    ", "")), IIf(iFlags And DT_MODIFYSTRING, Len(iCaption), -1), iMeasureRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
-'    If nTab = 0 Then Stop
     iMeasureWidth = (iMeasureRect.Right - iMeasureRect.Left)
     iMeasureHeight = (iMeasureRect.Bottom - iMeasureRect.Top)
-    
-    If iDrawIcon Then
-        If (iIconAlignment = ntIconAlignAfterCaption) Or (iIconAlignment = ntIconAlignCenteredAfterCaption) Or (iIconAlignment = ntIconAlignEnd) Then
-            iLng = iTabSpaceRect.Right - iPicWidthToShow - mTabIconDistanceToCaptionDPIScaled
-            iCaptionRect.Left = iCaptionRect.Left - iCaptionRect.Right + iLng
-            iCaptionRect.Right = iLng
-        End If
-    End If
     
     If (iIconAlignment = ntIconAlignAtBottom) Then
         iCaptionRect.Top = iTabSpaceRect.Top + iFlatBarHeightTop
@@ -9622,15 +10809,22 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
         iCaptionRect.Bottom = iTabSpaceRect.Bottom - iFlatBarHeightBottom
         iCaptionRect.Top = iCaptionRect.Bottom - iMeasureHeight
     Else
-        iCaptionRect.Top = iTabSpaceRect.Top + (iTabSpaceHeight - iFlatBarHeightTop - iFlatBarHeightBottom) / 2 - iMeasureHeight / 2 + iFlatBarHeightTop
+        iCaptionRect.Top = iTabSpaceRect.Top + (iTabSpaceHeight - IIf(mTabsAreRotatedButCaptionsAreHorizontal, 0, iFlatBarHeightTop + iFlatBarHeightBottom)) / 2 - iMeasureHeight / 2 + IIf(mTabsAreRotatedButCaptionsAreHorizontal, 0, iFlatBarHeightTop)
     End If
     iCaptionRect.Bottom = iCaptionRect.Top + iMeasureHeight + 1
     
-    If (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
-        iGMPrev = SetGraphicsMode(picDraw.hDC, GM_ADVANCED)
-        iTx1.eM11 = 1: iTx1.eM22 = -1: iTx1.eDx = 0: iTx1.eDy = iTabSpaceRect.Top + iFlatBarHeightTop / 2 + iTabSpaceRect.Bottom
-        SetWorldTransform picDraw.hDC, iTx1
-    End If
+    ' Default caption position (used as-is when there's no icon at all; overridden below when there is one)
+    Select Case mCaptionAlignment
+        Case ntAlignmentLeft
+            iCapLeft = iAreaLeft
+            iCapRight = iCapLeft + iMeasureWidth
+        Case ntAlignmentRight
+            iCapRight = iAreaRight
+            iCapLeft = iCapRight - iMeasureWidth
+        Case Else ' Center
+            iCapLeft = iAreaLeft + (iAreaRight - iAreaLeft - iMeasureWidth) / 2
+            iCapRight = iCapLeft + iMeasureWidth
+    End Select
     
     If iDrawIcon Then
         If iIconAlignment = ntIconAlignAtBottom Then
@@ -9638,27 +10832,184 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
         ElseIf iIconAlignment = ntIconAlignAtTop Then
             iPicTop = (iTabSpaceRect.Top + iCaptionRect.Top - iPicHeight) / 2
         Else
-            iPicTop = iTabSpaceRect.Top + (iTabSpaceHeight - iPicHeightToShow - iFlatBarHeightTop - iFlatBarHeightBottom) / 2 + 0.49 + iFlatBarHeightTop
+            iPicTop = iTabSpaceRect.Top + (iTabSpaceHeight - iPicHeightToShow - IIf(mTabsAreRotatedButCaptionsAreHorizontal, 0, iFlatBarHeightTop + iFlatBarHeightBottom)) / 2 + 0.49 + IIf(mTabsAreRotatedButCaptionsAreHorizontal, 0, iFlatBarHeightTop)
         End If
-        ' Position of pic
-        If iIconAlignment = ntIconAlignStart Then
-            iPicLeft = iTabSpaceRect.Left + 4.5 * mDPIScale
-        ElseIf iIconAlignment = ntIconAlignEnd Then
-            iPicLeft = iTabSpaceRect.Right - iPicWidthToShow - 4.5 * mDPIScale
-        ElseIf (iIconAlignment = ntIconAlignCenteredOnTab) Or (iIconAlignment = ntIconAlignAtTop) Or (iIconAlignment = ntIconAlignAtBottom) Then
-            iPicLeft = (iTabSpaceRect.Right + iTabSpaceRect.Left - iPicWidthToShow) / 2
-        ElseIf iTabData.Caption <> "" Then
-            If iIconAlignment = ntIconAlignBeforeCaption Then
-                iPicLeft = (iCaptionRect.Right + iCaptionRect.Left) / 2 - iMeasureWidth / 2 - mTabIconDistanceToCaptionDPIScaled - iPicWidthToShow
-            ElseIf iIconAlignment = ntIconAlignAfterCaption Then
-                iPicLeft = (iCaptionRect.Right + iCaptionRect.Left) / 2 + iMeasureWidth / 2 + mTabIconDistanceToCaptionDPIScaled
-            ElseIf iIconAlignment = ntIconAlignCenteredBeforeCaption Then
-                iPicLeft = iTabSpaceRect.Left + (((iCaptionRect.Right + iCaptionRect.Left) / 2 - iMeasureWidth / 2) - iTabSpaceRect.Left) / 2 - iPicWidthToShow / 2
-            ElseIf iIconAlignment = ntIconAlignCenteredAfterCaption Then
-                iPicLeft = iTabSpaceRect.Right - (iTabSpaceRect.Right - ((iCaptionRect.Right + iCaptionRect.Left) / 2 + iMeasureWidth / 2)) / 2 - iPicWidthToShow / 2
-            End If
+        
+        ' Horizontal position of the icon AND the caption box, computed together.
+        ' "Docked" combinations force the caption box to be exactly text-width and glued next to the icon.
+        ' "Independent" combinations position the caption per CaptionAlignment alone, then center/place
+        ' the icon in whatever space is actually left over.
+        If iTabData.Caption <> "" Then
+            Select Case iIconAlignment
+                Case ntIconAlignBeforeCaption
+                    Select Case mCaptionAlignment
+                        Case ntAlignmentLeft
+                            iPicLeft = iAreaLeft
+                            iCapLeft = iPicLeft + iPicWidthToShow + IIf(iIsTDIFormsFirstTab, 0, iGap)
+                            iCapRight = iCapLeft + iMeasureWidth
+                        Case ntAlignmentRight
+                            iCapRight = iAreaRight
+                            iCapLeft = iCapRight - iMeasureWidth
+                            iPicLeft = iCapLeft - iGap - iPicWidthToShow
+                        Case Else ' Center
+                            iPairTotal = iPicWidthToShow + iGap + iMeasureWidth
+                            iPicLeft = iAreaLeft + (iAreaRight - iAreaLeft - iPairTotal) / 2
+                            iCapLeft = iPicLeft + iPicWidthToShow + iGap
+                            iCapRight = iCapLeft + iMeasureWidth
+                    End Select
+                Case ntIconAlignAfterCaption
+                    Select Case mCaptionAlignment
+                        Case ntAlignmentLeft
+                            iCapLeft = iAreaLeft
+                            iCapRight = iCapLeft + iMeasureWidth
+                            iPicLeft = iCapRight + iGap
+                        Case ntAlignmentRight
+                            iPicLeft = iAreaRight - iPicWidthToShow
+                            iCapRight = iPicLeft - iGap
+                            iCapLeft = iCapRight - iMeasureWidth
+                        Case Else ' Center
+                            iPairTotal = iMeasureWidth + iGap + iPicWidthToShow
+                            iCapLeft = iAreaLeft + (iAreaRight - iAreaLeft - iPairTotal) / 2
+                            iCapRight = iCapLeft + iMeasureWidth
+                            iPicLeft = iCapRight + iGap
+                    End Select
+                Case ntIconAlignCenteredBeforeCaption
+                    Select Case mCaptionAlignment
+                        Case ntAlignmentLeft
+                            iPicLeft = iAreaLeft
+                            iCapLeft = iPicLeft + iPicWidthToShow + IIf(iIsTDIFormsFirstTab, 0, iGap)
+                            iCapRight = iCapLeft + iMeasureWidth
+                        Case ntAlignmentRight
+                            iCapRight = iAreaRight
+                            iCapLeft = iCapRight - iMeasureWidth
+                            If (iCapLeft - iAreaLeft) >= (iPicWidthToShow + iGap) * 2 Then
+                                iPicLeft = iAreaLeft + ((iCapLeft - iAreaLeft) - iPicWidthToShow) / 2
+                            Else
+                                ' Not generous enough to center the icon independently in the gap -
+                                ' dock it right next to the caption so it doesn't look stranded.
+                                iPicLeft = iCapLeft - iGap - iPicWidthToShow
+                            End If
+                        Case Else ' Center
+                            ' Default: center the icon+caption pair as one block (like BeforeCaption
+                            ' does), which is what looks right when the tab is sized to its content.
+                            ' Only switch to the independent layout (caption centered in the whole
+                            ' width, icon centered in the leftover) when there's genuinely generous
+                            ' surplus - the leftover on the icon's side must comfortably exceed the
+                            ' icon, otherwise the caption looks off-center against the icon.
+                            iPairTotal = iPicWidthToShow + iGap + iMeasureWidth
+                            iCapLeft = iAreaLeft + (iAreaRight - iAreaLeft - iMeasureWidth) / 2
+                            If (iCapLeft - iAreaLeft) >= (iPicWidthToShow + iGap) * 2 Then
+                                iCapRight = iCapLeft + iMeasureWidth
+                                iPicLeft = iAreaLeft + ((iCapLeft - iAreaLeft) - iPicWidthToShow) / 2
+                            Else
+                                iPicLeft = iAreaLeft + (iAreaRight - iAreaLeft - iPairTotal) / 2
+                                iCapLeft = iPicLeft + iPicWidthToShow + iGap
+                                iCapRight = iCapLeft + iMeasureWidth
+                            End If
+                    End Select
+                Case ntIconAlignCenteredAfterCaption
+                    Select Case mCaptionAlignment
+                        Case ntAlignmentRight
+                            iPicLeft = iAreaRight - iPicWidthToShow
+                            iCapRight = iPicLeft - iGap
+                            iCapLeft = iCapRight - iMeasureWidth
+                        Case ntAlignmentLeft
+                            iCapLeft = iAreaLeft
+                            iCapRight = iCapLeft + iMeasureWidth
+                            If (iAreaRight - iCapRight) >= (iPicWidthToShow + iGap) * 2 Then
+                                iPicLeft = iCapRight + ((iAreaRight - iCapRight) - iPicWidthToShow) / 2
+                            Else
+                                iPicLeft = iCapRight + iGap
+                            End If
+                        Case Else ' Center
+                            ' Mirror of CenteredBeforeCaption: default to the centered pair, only go
+                            ' independent when the leftover on the icon's (right) side is generous.
+                            iPairTotal = iMeasureWidth + iGap + iPicWidthToShow
+                            iCapLeft = iAreaLeft + (iAreaRight - iAreaLeft - iMeasureWidth) / 2
+                            iCapRight = iCapLeft + iMeasureWidth
+                            If (iAreaRight - iCapRight) >= (iPicWidthToShow + iGap) * 2 Then
+                                iPicLeft = iCapRight + ((iAreaRight - iCapRight) - iPicWidthToShow) / 2
+                            Else
+                                iCapLeft = iAreaLeft + (iAreaRight - iAreaLeft - iPairTotal) / 2
+                                iCapRight = iCapLeft + iMeasureWidth
+                                iPicLeft = iCapRight + iGap
+                            End If
+                    End Select
+                Case ntIconAlignStart
+                    iPicLeft = iAreaLeft + iEdgeMargin
+                    Select Case mCaptionAlignment
+                        Case ntAlignmentLeft
+                            iCapLeft = iPicLeft + iPicWidthToShow + iGap
+                            iCapRight = iCapLeft + iMeasureWidth
+                        Case ntAlignmentRight
+                            iCapRight = iAreaRight
+                            iCapLeft = iCapRight - iMeasureWidth
+                        Case Else ' Center: in the space left over after the icon's fixed slot, not
+                                  ' the whole tab - the icon never moves, so there's no overlap risk
+                                  ' either way, and no extra width needs to be reserved for it.
+                            iLng = iPicLeft + iPicWidthToShow + iGap
+                            iCapLeft = iLng + (iAreaRight - iLng - iMeasureWidth) / 2
+                            iCapRight = iCapLeft + iMeasureWidth
+                    End Select
+                Case ntIconAlignEnd
+                    iPicLeft = iAreaRight - iPicWidthToShow - iEdgeMargin
+                    Select Case mCaptionAlignment
+                        Case ntAlignmentRight
+                            iCapRight = iPicLeft - iGap
+                            iCapLeft = iCapRight - iMeasureWidth
+                        Case ntAlignmentLeft
+                            iCapLeft = iAreaLeft
+                            iCapRight = iCapLeft + iMeasureWidth
+                        Case Else ' Center: in the space left over before the icon's fixed slot (mirror
+                                  ' of the Start case) - no overlap risk, no extra width to reserve.
+                            iLng = iPicLeft - iGap
+                            iCapLeft = iAreaLeft + (iLng - iAreaLeft - iMeasureWidth) / 2
+                            iCapRight = iCapLeft + iMeasureWidth
+                    End Select
+                Case ntIconAlignCenteredOnTab, ntIconAlignAtTop, ntIconAlignAtBottom
+                    If (iIconAlignment = ntIconAlignCenteredOnTab) And (mCaptionAlignment = ntAlignmentCenter) Then
+                        ' Prefer the icon truly centered on the tab, with the caption to its right -
+                        ' that's what gives CenteredOnTab a distinct meaning from BeforeCaption. Only
+                        ' when the caption doesn't fit beside a truly-centered icon (typical with an
+                        ' auto-sized tab, where the width was measured for the docked pair) fall back
+                        ' to the docked centered pair, same as before.
+                        iPicLeft = iAreaLeft + (iAreaRight - iAreaLeft - iPicWidthToShow) / 2
+                        iCapLeft = iPicLeft + iPicWidthToShow + iGap
+                        iCapRight = iCapLeft + iMeasureWidth
+                        If iCapRight > iAreaRight Then
+                            iPairTotal = iPicWidthToShow + iGap + iMeasureWidth
+                            iPicLeft = iAreaLeft + (iAreaRight - iAreaLeft - iPairTotal) / 2
+                            iCapLeft = iPicLeft + iPicWidthToShow + iGap
+                            iCapRight = iCapLeft + iMeasureWidth
+                        End If
+                    Else
+                        ' The icon is always centered horizontally regardless of CaptionAlignment; the
+                        ' caption is positioned independently and may overlap the icon (left as is for now).
+                        iPicLeft = (iAreaRight + iAreaLeft - iPicWidthToShow) / 2
+                        Select Case mCaptionAlignment
+                            Case ntAlignmentLeft
+                                iCapLeft = iAreaLeft
+                                iCapRight = iCapLeft + iMeasureWidth
+                            Case ntAlignmentRight
+                                iCapRight = iAreaRight
+                                iCapLeft = iCapRight - iMeasureWidth
+                            Case Else ' Center
+                                iCapLeft = iAreaLeft + (iAreaRight - iAreaLeft - iMeasureWidth) / 2
+                                iCapRight = iCapLeft + iMeasureWidth
+                        End Select
+                    End If
+            End Select
         Else
-            iPicLeft = (iTabSpaceRect.Right + iTabSpaceRect.Left) / 2 - iPicWidthToShow / 2
+            ' No caption: just center the icon as before, per its own alignment concept.
+            ' (iCapLeft/iCapRight keep the default computed above; it's irrelevant since there's no text.)
+            Select Case iIconAlignment
+                Case ntIconAlignStart
+                    iPicLeft = iAreaLeft + iEdgeMargin
+                Case ntIconAlignEnd
+                    iPicLeft = iAreaRight - iPicWidthToShow - iEdgeMargin
+                Case Else
+                    iPicLeft = (iAreaRight + iAreaLeft - iPicWidthToShow) / 2
+            End Select
         End If
         If iPicLeft < iTabSpaceRect.Left Then
             iPicLeft = iTabSpaceRect.Left
@@ -9689,8 +11040,19 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
             iForeColorPrev = picDraw.ForeColor
             picDraw.ForeColor = iIconColor
             iLng = ((iTabRect.Bottom - iTabRect.Top) - (iIconCharRect.Bottom - iIconCharRect.Top)) / 2
-            iIconCharRect.Left = iPicLeft + iTabData.IconLeftOffset * mDPIScale
-            iIconCharRect.Right = iPicLeft + iTabData.IconLeftOffset * mDPIScale + iPicWidth
+            ' The Centered* alignments position the icon precisely via iPicLeft; IconLeftOffset is a
+            ' fine-tuning nudge meant for the docked alignments (Before/After/Start/End), so applying
+            ' it here too would shove the glyph off its computed spot and into the caption.
+            ' Use iIconAlignment (the local, already adjusted for the TDI-first-tab override and the
+            ' Left/Right orientation swap) - not mIconAlignment - to match how iPicLeft was computed.
+            Select Case iIconAlignment
+                Case ntIconAlignCenteredBeforeCaption, ntIconAlignCenteredAfterCaption, ntIconAlignCenteredOnTab
+                    iIconCharRect.Left = iPicLeft
+                    iIconCharRect.Right = iPicLeft + iPicWidth
+                Case Else
+                    iIconCharRect.Left = iPicLeft + iTabData.IconLeftOffset * mDPIScale
+                    iIconCharRect.Right = iPicLeft + iTabData.IconLeftOffset * mDPIScale + iPicWidth
+            End Select
             iIconCharRect.Top = iPicTop + iTabData.IconTopOffset * mDPIScale
             iIconCharRect.Bottom = iPicTop + iTabData.IconTopOffset * mDPIScale + iPicHeight + 1
             If (mIconAlignment = ntIconAlignAfterCaption) Or (mIconAlignment = ntIconAlignCenteredAfterCaption) Or (mIconAlignment = ntIconAlignEnd) Then
@@ -9707,9 +11069,26 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
                 End If
             End If
             If (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop) Or (mTabOrientation = ssTabOrientationRight) Or (mTabOrientation = ntTabOrientationRightBottom) Then
+                If mRightToLeft Then
+                    ' the world transform composed with the mirrored DC layout does not render
+                    ' the glyph (RTL mirroring is internally a reflection in the world transform,
+                    ' and SetWorldTransform under GM_ADVANCED tramples it), so draw the glyph with
+                    ' the mirroring temporarily disabled, at an explicitly mirrored position.
+                    ' NOTE: the layout must be changed BEFORE entering GM_ADVANCED, and the rect
+                    ' mirroring is undone below after restoring everything
+                    iPrevLayoutWnd = GetLayout(GetDC(picDraw.hWnd))
+                    iPrevLayoutDC = GetLayout(picDraw.hDC)
+                    SetLayout GetDC(picDraw.hWnd), 0
+                    SetLayout picDraw.hDC, 0
+                    iLng = iIconCharRect.Left
+                    iIconCharRect.Left = picDraw.ScaleWidth - iIconCharRect.Right
+                    iIconCharRect.Right = picDraw.ScaleWidth - iLng
+                End If
                 iGMPrev2 = SetGraphicsMode(picDraw.hDC, GM_ADVANCED)
                 GetWorldTransform picDraw.hDC, iTx2Prev
-                If (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop) Then
+                ' under RTL the final image rotation direction is swapped, so the glyph
+                ' pre-rotation matrix that compensates it swaps between the two branches too
+                If (((mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop)) And (Not mRightToLeft)) Or (((mTabOrientation = ssTabOrientationRight) Or (mTabOrientation = ntTabOrientationRightBottom)) And mRightToLeft) Then
                     iTx2.eM11 = 0
                     iTx2.eM12 = 1
                     iTx2.eM21 = -1
@@ -9721,18 +11100,6 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
                     iIconCharRect.Top = 0
                     iIconCharRect.Right = iPicHeight
                     iIconCharRect.Bottom = iPicWidth + 1
-'                ElseIf (mTabOrientation = ssTabOrientationBottom) or (mTabOrientation = ntTabOrientationBottomright) Then
-'                    iTx2.eM11 = 1
-'                    iTx2.eM12 = 0
-'                    iTx2.eM21 = 0
-'                    iTx2.eM22 = -1
-'                    iTx2.eDx = (iIconCharRect.Left + iIconCharRect.Right) / 2 - iPicWidth / 2
-'                    iTx2.eDy = (iIconCharRect.Top + iIconCharRect.Bottom) / 2 + iPicHeight / 2
-'                    iLng = iIconCharRect.Left
-'                    iIconCharRect.Left = 0
-'                    iIconCharRect.Top = 0
-'                    iIconCharRect.Right = iPicHeight
-'                    iIconCharRect.Bottom = iPicWidth + 1
                 Else
                     iTx2.eM11 = 0
                     iTx2.eM12 = -1
@@ -9748,37 +11115,24 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
                 End If
                 SetWorldTransform picDraw.hDC, iTx2
             End If
-            If mTabsAreRotatedButCaptionsAreHorizontal Then
-                iAuxRect = iIconCharRect
-                iIconCharRect.Right = iIconCharRect.Right - iTabCenterX
-                iIconCharRect.Left = iIconCharRect.Left - iTabCenterX
-                iIconCharRect.Bottom = iIconCharRect.Bottom - iTabCenterY
-                iIconCharRect.Top = iIconCharRect.Top - iTabCenterY
-            End If
             DrawTextW picDraw.hDC, StrPtr(iIconCharacter), -1, iIconCharRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
             If (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop) Or (mTabOrientation = ssTabOrientationRight) Or (mTabOrientation = ntTabOrientationRightBottom) Then
                 SetWorldTransform picDraw.hDC, iTx2Prev
                 SetGraphicsMode picDraw.hDC, iGMPrev2
                 iIconCharRect = iAuxRect
-            End If
-            If mTabsAreRotatedButCaptionsAreHorizontal Then
-                iIconCharRect = RotateRect90Degrees(iAuxRect, False, iTabCenterX, iTabCenterY)
-                If (mTabOrientation = ntTabOrientationRightHorizontal) Or (mTabOrientation = ntTabOrientationRightBottomHorizontal) Then
-                    iIconCharRect.Top = (iTabRect.Right - iTabRect.Left) - iIconCharRect.Top
-                    iIconCharRect.Bottom = (iTabRect.Right - iTabRect.Left) - iIconCharRect.Bottom
-                Else
-                    iLng = iIconCharRect.Top: iIconCharRect.Top = iIconCharRect.Bottom: iIconCharRect.Bottom = iLng
+                If mRightToLeft Then
+                    SetLayout GetDC(picDraw.hWnd), iPrevLayoutWnd
+                    SetLayout picDraw.hDC, iPrevLayoutDC
+                    ' undo the rect mirroring done above (iAuxRect captured the mirrored values)
+                    iLng = iIconCharRect.Left
+                    iIconCharRect.Left = picDraw.ScaleWidth - iIconCharRect.Right
+                    iIconCharRect.Right = picDraw.ScaleWidth - iLng
                 End If
-                iLng = iIconCharRect.Left: iIconCharRect.Left = iIconCharRect.Right: iIconCharRect.Right = iLng
             End If
             mTabData(nTab).IconRect = iIconCharRect
             Set picDraw.Font = iFontPrev
             picDraw.ForeColor = iForeColorPrev
         Else
-            If mTabsAreRotatedButCaptionsAreHorizontal Then
-                iPicLeft = iPicLeft - iTabCenterX
-                iPicTop = iPicTop - iTabCenterY
-            End If
             If mRightToLeft Then
                 SetLayout GetDC(picDraw.hWnd), LAYOUT_RTL Or LAYOUT_BITMAPORIENTATIONPRESERVED
             End If
@@ -9792,6 +11146,8 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
             End If
         End If
     End If
+    iCaptionRect.Left = iCapLeft
+    iCaptionRect.Right = iCapRight
     'Now draw the text
     If mWordWrap Then
         iFlags = DT_WORDBREAK Or DT_END_ELLIPSIS Or DT_MODIFYSTRING Or mAlignmentDTFlag
@@ -9806,165 +11162,54 @@ Private Sub DrawTabPicureAndCaption(ByVal nTab As Long)
     picDraw.ForeColor = iForeColor2
     If iCaptionRect.Right - iCaptionRect.Left < 8 Then iCaptionRect.Right = iCaptionRect.Left + 8 ' protection, because this API crashes the program in this case
     
-    If mTabsAreRotatedButCaptionsAreHorizontal Then
-        iCaptionRect.Right = iCaptionRect.Right - iTabCenterX
-        iCaptionRect.Left = iCaptionRect.Left - iTabCenterX
-        iCaptionRect.Bottom = iCaptionRect.Bottom - iTabCenterY
-        iCaptionRect.Top = iCaptionRect.Top - iTabCenterY
-    End If
-    
-    If mTDIMode = ntTDIModeForms Then
-        If (iTabData.Data <> 0) Then
-            If (mTDIFormIconCustomData(iTabData.Data).Width > 0) Then
-                iTDIFormsNoIcons = True
-                iTDIFormIcon_Left = iTabRect.Left + 6 + mTDIFormIconCustomData(iTabData.Data).Width * 0.03
-                iTDIFormIcon_Top = iCaptionRect.Top + (iCaptionRect.Bottom - iCaptionRect.Top) / 2 - mTDIFormIconCustomData(iTabData.Data).Height / 2 + 0.49
-                If mTDIFormIconCustomData(iTabData.Data).UseIconFont Then
-                    iTDIFormIcon_Top = iTDIFormIcon_Top + 1.49
-                End If
-                iTDIFormIcon_Left = iTDIFormIcon_Left + mTDIFormIconCustomData(iTabData.Data).LeftOffset
-                iTDIFormIcon_Top = iTDIFormIcon_Top + mTDIFormIconCustomData(iTabData.Data).TopOffset
-                If mTDIFormIconCustomData(iTabData.Data).UseIconFont Then
-                    iTDIFormIcon_IconCharRect.Left = iTDIFormIcon_Left
-                    iTDIFormIcon_IconCharRect.Top = iTDIFormIcon_Top
-                    iTDIFormIcon_IconCharRect.Right = iTDIFormIcon_Left + mTDIFormIconCustomData(iTabData.Data).Width
-                    iTDIFormIcon_IconCharRect.Bottom = iTabRect.Bottom ' iTDIFormIcon_Top + mTDIFormIconCustomData(iTabData.Data).Height
-                    
-                    iForeColorPrev = picDraw.ForeColor
-                    If mAmbientUserMode And iTabData.Hovered And (Not iActive) And iTabData.Enabled Then
-                        picDraw.ForeColor = mTDIFormIconCustomData(iTabData.Data).IconColorMouseHover
-                    ElseIf mAmbientUserMode And iActive And iTabData.Enabled Then
-                        picDraw.ForeColor = mTDIFormIconCustomData(iTabData.Data).IconColorSelected
-                    Else
-                        picDraw.ForeColor = mTDIFormIconCustomData(iTabData.Data).IconColor
-                    End If
-                    Set iTDIFormsFontPrev = picDraw.Font
-                    Set picDraw.Font = mTDIFormIconCustomData(iTabData.Data).IconFont
-                    DrawTextW picDraw.hDC, StrPtr(mTDIFormIconCustomData(iTabData.Data).IconCharStr), -1, iTDIFormIcon_IconCharRect, DT_SINGLELINE Or DT_CENTER Or IIf(mRightToLeft, DT_RTLREADING, 0)
-                    Set picDraw.Font = iTDIFormsFontPrev
-                    picDraw.ForeColor = iForeColorPrev
-                    
-                    iTDIFormsNoIcons = False
-                ElseIf (Not mTDIFormIconCustomData(iTabData.Data).Icon Is Nothing) Then
-                    If Not (mTDIFormIconCustomData(iTabData.Data).Icon.Handle = 0) Then
-                        If mTDIFormIconCustomData(iTabData.Data).Icon.Type = vbPicTypeBitmap And mUseMaskColor Then
-                            Call DrawImage(picDraw.hDC, mTDIFormIconCustomData(iTabData.Data).Icon.Handle, TranslatedColor(mMaskColor), iTDIFormIcon_Left, iTDIFormIcon_Top, mTDIFormIconCustomData(iTabData.Data).Width, mTDIFormIconCustomData(iTabData.Data).Height, iPicSourceShiftX, iPicSourceShiftY)
-                        Else
-                            picDraw.PaintPicture mTDIFormIconCustomData(iTabData.Data).Icon, iTDIFormIcon_Left, iTDIFormIcon_Top, mTDIFormIconCustomData(iTabData.Data).Width, mTDIFormIconCustomData(iTabData.Data).Height, 1, 1, UserControl.ScaleX(mTDIFormIconCustomData(iTabData.Data).Icon.Width, vbHimetric, vbPixels), UserControl.ScaleY(mTDIFormIconCustomData(iTabData.Data).Icon.Height, vbHimetric, vbPixels)
-                        End If
-                        iTDIFormsNoIcons = False
-                    End If
-                End If
-                If iTDIFormsNoIcons And (Not mTDIModeFormsFormData_FormIcon(iTabData.Data) Is Nothing) Then
-                    iCaptionRect.Left = iCaptionRect.Left - mTDIFormIconCustomData(iTabData.Data).Width * 1.06 + 4
-                End If
-            End If
-        End If
-    End If
-    
     DrawTextW picDraw.hDC, StrPtr(iCaption & IIf(iFlags And DT_MODIFYSTRING, "    ", "")), IIf(iFlags And DT_MODIFYSTRING, Len(iCaption), -1), iCaptionRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
     
     ' Draw the focus rect
     If mAmbientUserMode Then    'only at run time
         If (iActive) And ControlHasFocus And mShowFocusRect Then
-            If mTabsAreRotatedButCaptionsAreHorizontal Then
-                If mAppearanceIsPP Then
-                    iFocusRect = iTabRect
-                    
-                    iLng = iFocusRect.Top
-                    iFocusRect.Top = iFocusRect.Left
-                    iFocusRect.Left = iLng
-                    iLng = iFocusRect.Bottom
-                    iFocusRect.Bottom = iFocusRect.Right
-                    iFocusRect.Right = iLng
-                    
-                    iFocusRect.Left = iFocusRect.Left + 3
-                    iFocusRect.Top = iFocusRect.Top + 4
-                    iFocusRect.Right = iFocusRect.Right - 2
-
-                    iFocusRect.Right = (iFocusRect.Right - iFocusRect.Left) / 2
-                    iFocusRect.Left = -iFocusRect.Right
-                    iFocusRect.Bottom = (iFocusRect.Bottom - iFocusRect.Top) / 2
-                    iFocusRect.Top = -iFocusRect.Bottom
-                Else
-                    iFocusRect.Left = -iMeasureWidth / 2 - 2
-                    iFocusRect.Right = iFocusRect.Left + iMeasureWidth + 3
-                    iFocusRect.Top = iCaptionRect.Top - 1
-                    iFocusRect.Bottom = iFocusRect.Top + iMeasureHeight + 2
-                End If
-                picDraw.ForeColor = iForeColor
-                If mAppearanceIsPP Then
-                    iFocusRect.Top = iFocusRect.Top - 1
-                    iFocusRect.Bottom = iFocusRect.Bottom - 1
-                End If
-                
-                If iFocusRect.Right > ((iTabSpaceRect.Bottom - iTabSpaceRect.Top) / 2) Then
-                    iFocusRect.Right = ((iTabSpaceRect.Bottom - iTabSpaceRect.Top) / 2)
-                End If
-                If iFocusRect.Left < ((-(iTabSpaceRect.Bottom - iTabSpaceRect.Top) / 2) + 1) Then
-                    iFocusRect.Left = (-(iTabSpaceRect.Bottom - iTabSpaceRect.Top) / 2) + 1
-                End If
-                If iFocusRect.Bottom > ((iTabSpaceRect.Right - iTabSpaceRect.Left) / 2) Then
-                    iFocusRect.Bottom = ((iTabSpaceRect.Right - iTabSpaceRect.Left) / 2)
-                End If
-                If iFocusRect.Top < ((-(iTabSpaceRect.Right - iTabSpaceRect.Left) / 2) + 1) Then
-                    iFocusRect.Top = (-(iTabSpaceRect.Right - iTabSpaceRect.Left) / 2) + 1
+            If mAppearanceIsPP Then
+                iFocusRect = iTabRect
+                iFocusRect.Left = iFocusRect.Left + 3
+                iFocusRect.Top = iFocusRect.Top + 4
+                iFocusRect.Right = iFocusRect.Right - 2
+                If (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop) Then
+                    iFocusRect.Left = iFocusRect.Left + 1
+                    iFocusRect.Right = iFocusRect.Right + 1
                 End If
             Else
-                If mAppearanceIsPP Then
-                    iFocusRect = iTabRect
-                    iFocusRect.Left = iFocusRect.Left + 3
-                    iFocusRect.Top = iFocusRect.Top + 4
-                    iFocusRect.Right = iFocusRect.Right - 2
-                    If (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop) Then
-                        iFocusRect.Left = iFocusRect.Left + 1
-                        iFocusRect.Right = iFocusRect.Right + 1
-                    End If
-                Else
-                    iFocusRect.Left = (iCaptionRect.Left + iCaptionRect.Right) / 2 - iMeasureWidth / 2 - 2
-                    iFocusRect.Right = iFocusRect.Left + iMeasureWidth + 3
-                    iFocusRect.Top = iCaptionRect.Top - 1
-                    iFocusRect.Bottom = iFocusRect.Top + iMeasureHeight + 2
-                End If
-                picDraw.ForeColor = iForeColor
-                If mAppearanceIsPP Then
-                    iFocusRect.Top = iFocusRect.Top - 1
-                    iFocusRect.Bottom = iFocusRect.Bottom - 1
-                End If
-                
-                If iFocusRect.Right > (iTabSpaceRect.Right) Then
-                    iFocusRect.Right = iTabSpaceRect.Right
-                End If
-                If iFocusRect.Left < (iTabSpaceRect.Left + 1) Then
-                    iFocusRect.Left = iTabSpaceRect.Left + 1
-                End If
-                If iFocusRect.Bottom > (iTabSpaceRect.Bottom) Then
-                    iFocusRect.Bottom = iTabSpaceRect.Bottom
-                End If
-                If iFocusRect.Top < (iTabSpaceRect.Top + 1) Then
-                    iFocusRect.Top = iTabSpaceRect.Top + 1
-                End If
+                iFocusRect.Left = (iCaptionRect.Left + iCaptionRect.Right) / 2 - iMeasureWidth / 2 - 2
+                iFocusRect.Right = iFocusRect.Left + iMeasureWidth + 3
+                iFocusRect.Top = iCaptionRect.Top - 1
+                iFocusRect.Bottom = iFocusRect.Top + iMeasureHeight + 2
+            End If
+            picDraw.ForeColor = iForeColor
+            If mAppearanceIsPP Then
+                iFocusRect.Top = iFocusRect.Top - 1
+                iFocusRect.Bottom = iFocusRect.Bottom - 1
+            End If
+            
+            If iFocusRect.Right > (iTabSpaceRect.Right) Then
+                iFocusRect.Right = iTabSpaceRect.Right
+            End If
+            If iFocusRect.Left < (iTabSpaceRect.Left + 1) Then
+                iFocusRect.Left = iTabSpaceRect.Left + 1
+            End If
+            If iFocusRect.Bottom > (iTabSpaceRect.Bottom) Then
+                iFocusRect.Bottom = iTabSpaceRect.Bottom
+            End If
+            If iFocusRect.Top < (iTabSpaceRect.Top + 1) Then
+                iFocusRect.Top = iTabSpaceRect.Top + 1
             End If
             
             Call DrawFocusRect(picDraw.hDC, iFocusRect)
         End If
     End If
 
-    If mTabsAreRotatedButCaptionsAreHorizontal Then
-        SetWorldTransform picDraw.hDC, iTx2Prev
-        SetGraphicsMode picDraw.hDC, iGMPrev2
-    End If
-
-    If (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
-        iTx1.eM11 = 1: iTx1.eM22 = 1: iTx1.eDx = 0: iTx1.eDy = 0
-        SetWorldTransform picDraw.hDC, iTx1
-        SetGraphicsMode picDraw.hDC, iGMPrev
-    End If
-
     If picDraw.FontBold <> iFontBoldPrev Then
         picDraw.FontBold = iFontBoldPrev
     End If
 End Sub
+
 
 Private Function RotateRect90Degrees(nRect As RECT, Optional nCCW As Boolean, Optional nCenterX As Variant, Optional nCenterY As Variant) As RECT
     Dim iCenterX As Single
@@ -10195,7 +11440,7 @@ Private Sub FillCurvedGradient2(ByVal nLeft As Long, ByVal nTop As Long, ByVal n
                         If iDistance > 0 Then iDistance = 0
                         If iDistance > -1 Then
                             iDistance = (1 - Abs(iDistance)) * 100
-                            SetPixelV picDraw.hDC, nLeft + iX, iY, MixColors(iCol, GetPixel(picDraw.hDC, nLeft + iX, iY), iDistance)
+                            SetPixelV picDraw.hDC, nLeft + iX, iY, MixColors(GetPixel(picDraw.hDC, nLeft + iX, iY), iCol, iDistance)
                         End If
                     Next
                 End If
@@ -10206,7 +11451,7 @@ Private Sub FillCurvedGradient2(ByVal nLeft As Long, ByVal nTop As Long, ByVal n
                         If iDistance > 0 Then iDistance = 0
                         If iDistance > -1 Then
                             iDistance = (1 - Abs(iDistance)) * 100
-                            SetPixelV picDraw.hDC, nRight - iX - 1, iY, MixColors(iCol, GetPixel(picDraw.hDC, nRight - iX - 1, iY), iDistance)
+                            SetPixelV picDraw.hDC, nRight - iX - 1, iY, MixColors(GetPixel(picDraw.hDC, nRight - iX - 1, iY), iCol, iDistance)
                         End If
                     Next
                 End If
@@ -10274,7 +11519,7 @@ Private Sub FillCurvedGradient2(ByVal nLeft As Long, ByVal nTop As Long, ByVal n
                         If iDistance > 0 Then iDistance = 0
                         If iDistance > -1 Then
                             iDistance = (1 - Abs(iDistance)) * 100
-                            SetPixelV picDraw.hDC, nLeft + iX, iY, MixColors(iCol, GetPixel(picDraw.hDC, nLeft + iX, iY), iDistance)
+                            SetPixelV picDraw.hDC, nLeft + iX, iY, MixColors(GetPixel(picDraw.hDC, nLeft + iX, iY), iCol, iDistance)
                         End If
                     Next
                 End If
@@ -10285,7 +11530,7 @@ Private Sub FillCurvedGradient2(ByVal nLeft As Long, ByVal nTop As Long, ByVal n
                         If iDistance > 0 Then iDistance = 0
                         If iDistance > -1 Then
                             iDistance = (1 - Abs(iDistance)) * 100
-                            SetPixelV picDraw.hDC, nRight - iX - 1, iY, MixColors(iCol, GetPixel(picDraw.hDC, nRight - iX - 1, iY), iDistance)
+                            SetPixelV picDraw.hDC, nRight - iX - 1, iY, MixColors(GetPixel(picDraw.hDC, nRight - iX - 1, iY), iCol, iDistance)
                         End If
                     Next
                 End If
@@ -10306,17 +11551,27 @@ Private Sub FillCurvedGradient2(ByVal nLeft As Long, ByVal nTop As Long, ByVal n
     End If
 End Sub
 
-Private Sub DrawRoundedCorner(ByVal nCorner As NTCornerPositionConstants, ByVal nX As Long, ByVal nY As Long, ByVal nRoundness As Long, ByVal nColor As Long, Optional ByVal nSkipAtTop As Long)
+Private Sub DrawRoundedCorner(ByVal nCorner As NTCornerPositionConstants, ByVal nX As Long, ByVal nY As Long, ByVal nRoundness As Long, ByVal nColor As Long, Optional ByVal nSkipAtTop As Long, Optional nLimit As Long = -999)
     Dim iX As Long
     Dim iY As Long
     Dim iDistance As Single
     
+    If nLimit = -999 Then
+        Select Case nCorner
+            Case ntCornerTopleft, ntCornerBottomLeft
+                nLimit = 1000000
+            Case Else
+                nLimit = -1000000
+        End Select
+    End If
     If nCorner = ntCornerTopRight Then
         For iX = nX To nX - nRoundness Step -1
             For iY = nY + nSkipAtTop To nY + nRoundness
                 iDistance = Sqr((nRoundness - (iX - nX + nRoundness * 2)) ^ 2 + (nRoundness - (iY - (nY))) ^ 2) - nRoundness
                 If (Abs(iDistance) < 1) Then
-                    SetPixelV picDraw.hDC, iX, iY, MixColors(nColor, GetPixel(picDraw.hDC, iX, iY), (1 - Abs(iDistance)) * 100)
+                    If iX >= nLimit Then
+                        SetPixelV picDraw.hDC, iX, iY, MixColors(GetPixel(picDraw.hDC, iX, iY), nColor, (1 - Abs(iDistance)) * 100)
+                    End If
                 End If
             Next
         Next
@@ -10325,7 +11580,9 @@ Private Sub DrawRoundedCorner(ByVal nCorner As NTCornerPositionConstants, ByVal 
             For iY = nY + nSkipAtTop To nY + nRoundness
                 iDistance = Sqr((nRoundness - ((nX - iX) + nRoundness * 2)) ^ 2 + (nRoundness - (iY - (nY))) ^ 2) - nRoundness
                 If (Abs(iDistance) < 1) Then
-                    SetPixelV picDraw.hDC, iX, iY, MixColors(nColor, GetPixel(picDraw.hDC, iX, iY), (1 - Abs(iDistance)) * 100)
+                    If iX <= nLimit Then
+                        SetPixelV picDraw.hDC, iX, iY, MixColors(GetPixel(picDraw.hDC, iX, iY), nColor, (1 - Abs(iDistance)) * 100)
+                    End If
                 End If
             Next
         Next
@@ -10334,7 +11591,9 @@ Private Sub DrawRoundedCorner(ByVal nCorner As NTCornerPositionConstants, ByVal 
             For iY = nY To nY - nRoundness Step -1
                 iDistance = Sqr((nX - iX - nRoundness) ^ 2 + (nRoundness - (nY - iY)) ^ 2) - nRoundness
                 If (Abs(iDistance) < 1) Then
-                    SetPixelV picDraw.hDC, iX, iY, MixColors(nColor, GetPixel(picDraw.hDC, iX, iY), (1 - Abs(iDistance)) * 100)
+                    If iX >= nLimit Then
+                        SetPixelV picDraw.hDC, iX, iY, MixColors(GetPixel(picDraw.hDC, iX, iY), nColor, (1 - Abs(iDistance)) * 100)
+                    End If
                 End If
             Next
         Next
@@ -10343,7 +11602,9 @@ Private Sub DrawRoundedCorner(ByVal nCorner As NTCornerPositionConstants, ByVal 
             For iY = nY To nY - nRoundness Step -1
                 iDistance = Sqr((nRoundness - (nX - iX) - nRoundness * 2) ^ 2 + (nRoundness - (nY - iY)) ^ 2) - nRoundness
                 If (Abs(iDistance) < 1) Then
-                    SetPixelV picDraw.hDC, iX, iY, MixColors(nColor, GetPixel(picDraw.hDC, iX, iY), (1 - Abs(iDistance)) * 100)
+                    If iX <= nLimit Then
+                        SetPixelV picDraw.hDC, iX, iY, MixColors(GetPixel(picDraw.hDC, iX, iY), nColor, (1 - Abs(iDistance)) * 100)
+                    End If
                 End If
             Next
         Next
@@ -10351,8 +11612,8 @@ Private Sub DrawRoundedCorner(ByVal nCorner As NTCornerPositionConstants, ByVal 
 End Sub
 
 Private Sub DrawTriangle(nTriangle() As POINTAPI, ByVal iColor As Long)
-    Dim iBrush As Long
-    Dim iPrevObj As Long
+    Dim iBrush As LongPtr
+    Dim iPrevObj As LongPtr
     
     iBrush = CreateSolidBrush(iColor)
     picDraw.ForeColor = iColor
@@ -10362,9 +11623,9 @@ Private Sub DrawTriangle(nTriangle() As POINTAPI, ByVal iColor As Long)
     DeleteObject iBrush
 End Sub
 
-Private Sub DrawImage(ByVal lDestHDC As Long, ByVal lhBmp As Long, ByVal lTransColor As Long, ByVal nLeft As Long, ByVal nTop As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal nXOrigin As Long, Optional ByVal nYOrigin As Long)
-    Dim lHDC As Long
-    Dim lhBmpOld As Long
+Private Sub DrawImage(ByVal lDestHDC As LongPtr, ByVal lhBmp As LongPtr, ByVal lTransColor As Long, ByVal nLeft As Long, ByVal nTop As Long, ByVal nWidth As Long, ByVal nHeight As Long, Optional ByVal nXOrigin As Long, Optional ByVal nYOrigin As Long)
+    Dim lHDC As LongPtr
+    Dim lhBmpOld As LongPtr
     Dim utBmp As BITMAP
     
     lHDC = CreateCompatibleDC(lDestHDC)
@@ -10507,9 +11768,9 @@ Private Sub SetColors()
     End If
     
     If Not IsEmpty(mTabData(mTab).CustomColors.FlatBarColorSelectedTab) Then
-        iCol = MixColors(mTabData(mTab).CustomColors.FlatBarColorSelectedTab, mFlatBarColorInactive, 60)
+        iCol = MixColors(mFlatBarColorInactive, mTabData(mTab).CustomColors.FlatBarColorSelectedTab, 60)
     Else
-        iCol = MixColors(mFlatBarColorSelectedTab, mFlatBarColorInactive, 60)
+        iCol = MixColors(mFlatBarColorInactive, mFlatBarColorSelectedTab, 60)
     End If
     ColorRGBToHLS iCol, iCol_H, iCol_L, iCol_S
     mFlatBarColorHighlight_ColorAutomatic = ColorHLSToRGB(iCol_H, iCol_L, iCol_S * 0.75)
@@ -10518,9 +11779,9 @@ Private Sub SetColors()
     End If
     
     For c = 1 To 10
-        mHighlightEffectColors_Strong(c) = MixColors(mGlowColor, mBackColorTabs, 10 * c)
-        mHighlightEffectColors_Light(c) = MixColors(mGlowColor, mBackColorTabs, 6 * c)
-        mFlatBarHighlightEffectColors(c) = MixColors(mFlatBarColorHighlight, mFlatBarColorInactive, 10 * c)
+        mHighlightEffectColors_Strong(c) = MixColors(mBackColorTabs, mGlowColor, 10 * c)
+        mHighlightEffectColors_Light(c) = MixColors(mBackColorTabs, mGlowColor, 6 * c)
+        mFlatBarHighlightEffectColors(c) = MixColors(mFlatBarColorInactive, mFlatBarColorHighlight, 10 * c)
     Next c
     
     ' Active Tab (TabSel) colors
@@ -10682,14 +11943,14 @@ Private Sub SetColors()
         mGlowColor_Sel = mTabData(mTab).CustomColors.HighlightColorSelectedTab
     End If
     mGlowColor_Sel_Bk = mGlowColor_Sel
-    mGlowColor_Sel_Light = MixColors(mGlowColor_Sel, iBackColorSelectedTab, 60)
+    mGlowColor_Sel_Light = MixColors(iBackColorSelectedTab, mGlowColor_Sel, 60)
     
     If iBackColorTabs_L > 150 Then
-        iFlatSeparationColorTabs = MixColors(m3DDKShadow, TranslatedColor(mBackColorTabs), 12)
-        iFlatSeparationColorBody = MixColors(m3DDKShadow, TranslatedColor(mBackColorTabs), 17)
+        iFlatSeparationColorTabs = MixColors(TranslatedColor(mBackColorTabs), m3DDKShadow, 12)
+        iFlatSeparationColorBody = MixColors(TranslatedColor(mBackColorTabs), m3DDKShadow, 17)
     Else
-        iFlatSeparationColorTabs = MixColors(m3DDKShadow, TranslatedColor(mBackColorTabs), 15)
-        iFlatSeparationColorBody = MixColors(m3DDKShadow, TranslatedColor(mBackColorTabs), 15)
+        iFlatSeparationColorTabs = MixColors(TranslatedColor(mBackColorTabs), m3DDKShadow, 15)
+        iFlatSeparationColorBody = MixColors(TranslatedColor(mBackColorTabs), m3DDKShadow, 15)
     End If
     SetHighlightMode
     
@@ -10794,60 +12055,68 @@ Private Function GetGlowColor(nBackColorTabs_H As Integer, nBackColorTabs_L As I
     End If
 End Function
 
-Private Function MixColors(ByVal nColor1 As Long, ByVal nColor2 As Long, ByVal nPercentageColor1 As Long) As Long
-    Dim iColor1 As Long
-    Dim iColor2 As Long
-    Dim iColor1_R  As Byte
-    Dim iColor1_G   As Byte
-    Dim iColor1_B   As Byte
-    Dim iColor2_R  As Byte
-    Dim iColor2_G   As Byte
-    Dim iColor2_B   As Byte
+Private Function MixColors(ByVal nColor1 As Long, ByVal nColor2 As Long, ByVal nPercentColor2 As Long) As Long
+    If nPercentColor2 > 100 Then nPercentColor2 = 100
+    If nPercentColor2 < 0 Then nPercentColor2 = 0
+    nColor1 = TranslatedColor(nColor1)
+    nColor2 = TranslatedColor(nColor2)
+    If nPercentColor2 = 0 Then
+        MixColors = nColor1
+        Exit Function
+    End If
+    If nPercentColor2 = 100 Then
+        MixColors = nColor2
+        Exit Function
+    End If
     
-    iColor1 = TranslatedColor(nColor1)
-    iColor2 = TranslatedColor(nColor2)
+    Dim iB1 As Long, iG1 As Long, iR1 As Long
+    Dim iB2 As Long, iG2 As Long, iR2 As Long
+    Dim iR As Long, iG As Long, iB As Long
     
-    iColor1_R = iColor1 And 255
-    iColor1_G = (iColor1 \ 256) And 255
-    iColor1_B = (iColor1 \ 65536) And 255
-    iColor2_R = iColor2 And 255
-    iColor2_G = (iColor2 \ 256) And 255
-    iColor2_B = (iColor2 \ 65536) And 255
+    iR1 = nColor1 And 255
+    iG1 = (nColor1 \ 256) And 255
+    iB1 = (nColor1 \ 65536) And 255
     
-    If nPercentageColor1 > 100 Then nPercentageColor1 = 100
-    If nPercentageColor1 < 0 Then nPercentageColor1 = 0
+    iR2 = nColor2 And 255
+    iG2 = (nColor2 \ 256) And 255
+    iB2 = (nColor2 \ 65536) And 255
     
-    MixColors = RGB((iColor1_R * nPercentageColor1 + iColor2_R * (100 - nPercentageColor1)) / 100, (iColor1_G * nPercentageColor1 + iColor2_G * (100 - nPercentageColor1)) / 100, (iColor1_B * nPercentageColor1 + iColor2_B * (100 - nPercentageColor1)) / 100)
+    iR = (iR1 * (100 - nPercentColor2) + iR2 * nPercentColor2) \ 100
+    iG = (iG1 * (100 - nPercentColor2) + iG2 * nPercentColor2) \ 100
+    iB = (iB1 * (100 - nPercentColor2) + iB2 * nPercentColor2) \ 100
+    If iR > 255 Then iR = 255
+    If iG > 255 Then iG = 255
+    If iB > 255 Then iB = 255
     
+    MixColors = RGB(iR, iG, iB)
 End Function
-
 
 Public Property Get ClientLeft() As Single
 Attribute ClientLeft.VB_Description = "Returns the left of the tab body."
 Attribute ClientLeft.VB_ProcData.VB_Invoke_Property = ";Position"
     EnsureDrawn
-    ClientLeft = FixRoundingError(UserControl.ScaleX(mClientRect.Left, vbPixels, vbTwips))
+    ClientLeft = FixRoundingError(UserControl.ScaleX(mClientSpaceData.RECT.Left, vbPixels, vbTwips))
 End Property
 
 Public Property Get ClientTop() As Single
 Attribute ClientTop.VB_Description = "Returns the space occupied by tabs, or where the tab body begins."
 Attribute ClientTop.VB_ProcData.VB_Invoke_Property = ";Position"
     EnsureDrawn
-    ClientTop = FixRoundingError(UserControl.ScaleY(mClientRect.Top, vbPixels, vbTwips))
+    ClientTop = FixRoundingError(UserControl.ScaleY(mClientSpaceData.RECT.Top, vbPixels, vbTwips))
 End Property
 
 Public Property Get ClientWidth() As Single
 Attribute ClientWidth.VB_Description = "Returns the width of the tab body."
 Attribute ClientWidth.VB_ProcData.VB_Invoke_Property = ";Position"
     EnsureDrawn
-    ClientWidth = FixRoundingError(UserControl.ScaleX(mClientRect.Right - mClientRect.Left, vbPixels, vbTwips))
+    ClientWidth = FixRoundingError(UserControl.ScaleX(mClientSpaceData.RECT.Right - mClientSpaceData.RECT.Left + 0.49, vbPixels, vbTwips))
 End Property
 
 Public Property Get ClientHeight() As Single
 Attribute ClientHeight.VB_Description = "Returns the height of the tab body."
 Attribute ClientHeight.VB_ProcData.VB_Invoke_Property = ";Position"
     EnsureDrawn
-    ClientHeight = FixRoundingError(UserControl.ScaleY(mClientRect.Bottom - mClientRect.Top, vbPixels, vbTwips))
+    ClientHeight = FixRoundingError(UserControl.ScaleY(mClientSpaceData.RECT.Bottom - mClientSpaceData.RECT.Top + 0.49, vbPixels, vbTwips))
 End Property
 
 Private Sub EnsureDrawn()
@@ -10865,52 +12134,153 @@ Private Sub EnsureDrawn()
     End If
 End Sub
 
-Private Sub RotatePic(picSrc As PictureBox, picDest As PictureBox, ByVal nDirection As NTRotatePicDirectionConstants)
+'Private Sub RotatePic(picSrc As PictureBox, picDest As PictureBox, ByVal nDirection As NTRotatePicDirectionConstants)
+'    Dim pt(0 To 2) As POINTAPI
+'    Dim iHeight As Long
+'    Dim iWidth As Long
+'    Dim iHdcDestMem As LongPtr
+'
+'    iHeight = picSrc.Height
+'    iWidth = picSrc.Width
+'
+'    'Set the coordinates of the parallelogram
+'    If nDirection = nt90DegreesClockWise Then ' 90 degrees
+'        pt(0).X = iHeight
+'        pt(0).Y = 0
+'        pt(1).X = iHeight
+'        pt(1).Y = iWidth
+'        pt(2).X = 0
+'        pt(2).Y = 0
+'        picDest.Width = picSrc.Height
+'        picDest.Height = picSrc.Width
+'    ElseIf nDirection = nt90DegreesCounterClockWise Then ' 270 degrees
+'        pt(0).X = 0
+'        pt(0).Y = iWidth
+'        pt(1).X = 0
+'        pt(1).Y = 0
+'        pt(2).X = iHeight
+'        pt(2).Y = iWidth
+'        picDest.Width = picSrc.Height
+'        picDest.Height = picSrc.Width
+'    ElseIf nDirection = ntFlipVertical Then ' vertical
+'        pt(0).X = 0
+'        pt(0).Y = iHeight
+'        pt(1).X = iWidth
+'        pt(1).Y = iHeight
+'        pt(2).X = 0
+'        pt(2).Y = 0
+'        picDest.Width = picSrc.Width
+'        picDest.Height = picSrc.Height
+'    ElseIf nDirection = ntFlipHorizontal Then ' horizontal
+'        pt(0).X = iWidth
+'        pt(0).Y = 0
+'        pt(1).X = 0
+'        pt(1).Y = 0
+'        pt(2).X = iWidth
+'        pt(2).Y = iHeight
+'        picDest.Width = picSrc.Width
+'        picDest.Height = picSrc.Height
+'    End If
+'
+'    picDest.Cls
+'    PlgBlt picDest.hdc, pt(0), picSrc.hdc, 0, 0, iWidth, iHeight, ByVal 0&, ByVal 0&, ByVal 0&
+'End Sub
+
+Private Function RotatePic(ByVal srcPic As IPictureDisp, ByVal direction As NTRotatePicDirectionConstants) As IPictureDisp
     Dim pt(0 To 2) As POINTAPI
-    Dim iHeight As Long
-    Dim iWidth As Long
-    
-    iHeight = picSrc.Height
-    iWidth = picSrc.Width
-    
-    'Set the coordinates of the parallelogram
-    If nDirection = nt90DegreesClockWise Then ' 90 degrees
-        pt(0).X = iHeight
-        pt(0).Y = 0
-        pt(1).X = iHeight
-        pt(1).Y = iWidth
-        pt(2).X = 0
-        pt(2).Y = 0
-    ElseIf nDirection = nt90DegreesCounterClockWise Then ' 270 degrees
-        pt(0).X = 0
-        pt(0).Y = iWidth
-        pt(1).X = 0
-        pt(1).Y = 0
-        pt(2).X = iHeight
-        pt(2).Y = iWidth
-    ElseIf nDirection = ntFlipVertical Then ' vertical
-        pt(0).X = 0
-        pt(0).Y = iHeight
-        pt(1).X = iWidth
-        pt(1).Y = iHeight
-        pt(2).X = 0
-        pt(2).Y = 0
-    ElseIf nDirection = ntFlipHorizontal Then ' horizontal
-        pt(0).X = iWidth
-        pt(0).Y = 0
-        pt(1).X = 0
-        pt(1).Y = 0
-        pt(2).X = iWidth
-        pt(2).Y = iHeight
-    End If
-    
-    picDest.Width = picSrc.Height
-    picDest.Height = picSrc.Width
-    picDest.Cls
-    
-    picDest.Cls
-    PlgBlt picDest.hDC, pt(0), picSrc.hDC, 0, 0, iWidth, iHeight, ByVal 0&, ByVal 0&, ByVal 0&
-End Sub
+    Dim hdcDestMem As LongPtr
+    Dim hBmpDestMem As LongPtr
+    Dim hOldBmpDestMem As LongPtr
+    Dim iWidth As Long, iHeight As Long
+    Dim bResult As Long
+    Dim picWidth As Long, picHeight As Long
+    Dim rotatedWidth As Long, rotatedHeight As Long
+    Dim hdcScreen As LongPtr
+    Dim hdcOriginal As LongPtr
+    Dim hBmpSrc As LongPtr
+    Dim hOldBmpOriginal As LongPtr
+
+    ' Get original bitmap handle from StdPicture
+    hBmpSrc = srcPic.Handle
+
+    ' Get width and height in pixels from StdPicture (using ScaleX/ScaleY requires a PictureBox or API)
+    picWidth = ScaleX(srcPic.Width, vbHimetric, vbPixels)
+    picHeight = ScaleY(srcPic.Height, vbHimetric, vbPixels)
+
+    ' Determine rotated dimensions
+    Select Case direction
+        Case nt90DegreesClockWise, nt90DegreesCounterClockWise
+            rotatedWidth = picHeight
+            rotatedHeight = picWidth
+        Case Else
+            rotatedWidth = picWidth
+            rotatedHeight = picHeight
+    End Select
+
+    hdcScreen = GetDC(0)
+
+    ' Get a DC compatible to draw original bitmap into memory DC
+    ' Create DC for original bitmap and select original bitmap
+    hdcOriginal = CreateCompatibleDC(hdcScreen)
+    hOldBmpOriginal = SelectObject(hdcOriginal, hBmpSrc)
+
+    ' Create Destination memory DC and bitmap for rotated image
+    hdcDestMem = CreateCompatibleDC(hdcScreen)
+    hBmpDestMem = CreateCompatibleBitmap(hdcScreen, rotatedWidth, rotatedHeight)
+    hOldBmpDestMem = SelectObject(hdcDestMem, hBmpDestMem)
+
+    ' Set points for PlgBlt based on rotation direction
+    Select Case direction
+        Case nt90DegreesClockWise ' 90 degrees clockwise
+            pt(0).X = rotatedWidth
+            pt(0).Y = 0
+            pt(1).X = rotatedWidth
+            pt(1).Y = rotatedHeight
+            pt(2).X = 0
+            pt(2).Y = 0
+        Case nt90DegreesCounterClockWise ' 270 degrees / 90 counter-clockwise
+            pt(0).X = 0
+            pt(0).Y = rotatedHeight
+            pt(1).X = 0
+            pt(1).Y = 0
+            pt(2).X = rotatedWidth
+            pt(2).Y = rotatedHeight
+        Case ntFlipVertical ' Vertical flip
+            pt(0).X = 0
+            pt(0).Y = rotatedHeight - 1
+            pt(1).X = rotatedWidth
+            pt(1).Y = rotatedHeight
+            pt(2).X = 0
+            pt(2).Y = -1
+        Case ntFlipHorizontal ' Horizontal flip
+            pt(0).X = rotatedWidth
+            pt(0).Y = 0
+            pt(1).X = 0
+            pt(1).Y = -1
+            pt(2).X = rotatedWidth - 1
+            pt(2).Y = rotatedHeight
+    End Select
+
+    ' Perform PlgBlt to rotate/flips in memory
+    bResult = PlgBlt(hdcDestMem, pt(0), hdcOriginal, 0, 0, picWidth, picHeight, ByVal 0&, ByVal 0&, ByVal 0&)
+
+    ' Cleanup original DC
+    SelectObject hdcOriginal, hOldBmpOriginal
+    DeleteDC hdcOriginal
+    ' Cleanup source memory DC
+    ReleaseDC 0, hdcScreen
+
+    ' Cleanup destination DC, but keep bitmap to create StdPicture
+    SelectObject hdcDestMem, hOldBmpDestMem
+
+    ' Create return StdPicture from rotated bitmap handle
+    Set RotatePic = CreatePicture(hBmpDestMem, vbPicTypeBitmap)
+
+    ' Cleanup destination DC (bitmap still selected in DC for IPicture)
+    DeleteDC hdcDestMem
+    ' Do NOT delete hBmpDestMem here! It is used by created StdPicture
+
+End Function
 
 Private Function ContainerScaleMode() As ScaleModeConstants
     ContainerScaleMode = vbTwips
@@ -11151,8 +12521,8 @@ Attribute Refresh.VB_Description = "Redraws the control."
     Dim c As Long
     
     If mTDIMode = ntTDIModeForms Then
-        For c = 0 To UBound(mTDIFormIconCustomData)
-            mTDIFormIconCustomData(c).Redraw = True
+        For c = 0 To UBound(mTDIFormIconLastHwnd)
+            mTDIFormIconLastHwnd(c) = 0
         Next
     End If
     
@@ -11179,6 +12549,7 @@ Private Sub RaiseEvent_TabMouseEnter(ByVal nTab As Long)
     If DraggingATab Then Exit Sub
     mTabData(nTab).Hovered = True
     RaiseEvent TabMouseEnter(nTab)
+    
     mCurrentMousePointerIsHand = False
     If mTabMousePointerHand Then
         If nTab <> mTab Then
@@ -11252,6 +12623,14 @@ Private Sub RaiseEvent_TabMouseLeave(ByVal nTab As Long)
         End If
     End If
     mTabData(nTab).Hovered = False
+    If mTabData(nTab).CloseButtonHovered Then
+        mTabData(nTab).CloseButtonHovered = False
+        RaiseEvent CloseButtonMouseLeave(nTab)
+    End If
+    If mMouseIsOverCloseButton_Tab = nTab Then
+        mMouseIsOverCloseButton = False
+        mMouseIsOverCloseButton_Tab = -1
+    End If
     RaiseEvent TabMouseLeave(nTab)
     If nTab <> mTab Then
         If (mHighlightGradient <> ntGradientNone) Or mAppearanceIsFlat Or mControlIsThemed Then PostDrawMessage
@@ -11338,8 +12717,8 @@ Private Sub EnsureBodyThemedReady()
         
         iRect.Left = 0
         iRect.Top = 0
-        iRect.Right = mClientWidth  '+ 1 '- 1
-        iRect.Bottom = mClientHeight '- 1 '+ 1 '- 1
+        iRect.Right = mBodyWidth + 1  '- 1
+        iRect.Bottom = mBodyHeight '- 1 '+ 1 '- 1
         picBodyThemed.Width = iRect.Right
         If iRect.Bottom > 0 Then
             picBodyThemed.Height = iRect.Bottom
@@ -11348,18 +12727,20 @@ Private Sub EnsureBodyThemedReady()
         picBodyThemed.Cls
         If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ntTabOrientationTopRight) Then
             DrawThemeBackground mTheme, picBodyThemed.hDC, TABP_PANE, 0&, iRect, iRect
-        ElseIf (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop) Or (mTabOrientation = ntTabOrientationLeftHorizontal) Or (mTabOrientation = ntTabOrientationLeftTopHorizontal) Then
+        ElseIf (((mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop) Or (mTabOrientation = ntTabOrientationLeftHorizontal) Or (mTabOrientation = ntTabOrientationLeftTopHorizontal)) And (Not mRightToLeft)) Or (((mTabOrientation = ssTabOrientationRight) Or (mTabOrientation = ntTabOrientationRightBottom) Or (mTabOrientation = ntTabOrientationRightHorizontal) Or (mTabOrientation = ntTabOrientationRightBottomHorizontal)) And mRightToLeft) Then
+            ' this recipe belongs to the counterclockwise final rotation; under RTL the rotation
+            ' directions are swapped, so the Right orientations use it instead of the Left ones.
             ' shadow must be at the bottom, and since the image will be rotated it must be at the left here.
             picAux.Cls
             picAux.Width = picBodyThemed.Width
             picAux.Height = picBodyThemed.Height
             DrawThemeBackground mTheme, picAux.hDC, TABP_PANE, 0&, iRect, iRect
             picBodyThemed.PaintPicture picAux.Image, picAux.ScaleWidth - 1, 0, -picAux.ScaleWidth, picAux.ScaleHeight
-        Else ' (mTabOrientation = ssTabOrientationBottom) or (mTabOrientation = ntTabOrientationBottomRight) Or (mTabOrientation = ssTabOrientationRight) Rr (mTabOrientation = ntTabOrientationRightBottom)  Or (mTabOrientation = ntTabOrientationRightHorizontal)  Or (mTabOrientation = ntTabOrientationRightBottomHorizontal)
+        Else ' mOrientationIsBottom Or (mTabOrientation = ssTabOrientationRight) Rr (mTabOrientation = ntTabOrientationRightBottom)  Or (mTabOrientation = ntTabOrientationRightHorizontal)  Or (mTabOrientation = ntTabOrientationRightBottomHorizontal)
             picAux.Cls
             picAux.Width = picBodyThemed.Width
             picAux.Height = picBodyThemed.Height
-            iRect.Bottom = iRect.Bottom + mThemedBodyBottomShadowPixels
+            iRect.Bottom = iRect.Bottom + mThemedBodyBottomBorderPixels
             DrawThemeBackground mTheme, picAux.hDC, TABP_PANE, 0&, iRect, iRect
             picBodyThemed.PaintPicture picAux.Image, 0, picAux.ScaleHeight - 1, picAux.ScaleWidth, -picAux.ScaleHeight
         End If
@@ -11532,31 +12913,51 @@ Private Sub SetThemeExtraData()
     End If
     
     iThreshold = 120
-    mThemedBodyBottomShadowPixels = 0
+    mThemedBodyBottomBorderPixels = 0
     Do
         For Y = picAux.ScaleHeight - 9 To picAux.ScaleHeight - 1
             iCol = GetPixel(picAux.hDC, 15, Y)
             ColorRGBToHLS iCol, iCol_H, iCol_L, iCol_S
             If Abs(iCol_L - iColB_L) > iThreshold Then
-                mThemedBodyBottomShadowPixels = picAux.ScaleHeight - Y - 1
+                mThemedBodyBottomBorderPixels = picAux.ScaleHeight - Y - 1
                 Exit For
             End If
         Next Y
-        If mThemedBodyBottomShadowPixels = 0 Then
+        If mThemedBodyBottomBorderPixels = 0 Then
             iThreshold = iThreshold - 10
             If iThreshold < 1 Then
                 iThreshold = 20
                 Exit Do
             End If
         End If
-    Loop While mThemedBodyBottomShadowPixels = 0
+    Loop While mThemedBodyBottomBorderPixels = 0
     
-    mThemedBodyRightShadowPixels = 0
+    mThemedBodyRightBorderPixels = 0
     For X = picAux.ScaleWidth - 9 To picAux.ScaleWidth - 1
         iCol = GetPixel(picAux.hDC, X, 15)
         ColorRGBToHLS iCol, iCol_H, iCol_L, iCol_S
         If Abs(iCol_L - iColB_L) > iThreshold Then
-            mThemedBodyRightShadowPixels = picAux.ScaleWidth - X - 1
+            mThemedBodyRightBorderPixels = picAux.ScaleWidth - X - 1
+            Exit For
+        End If
+    Next X
+    
+    mThemedBodyTopBorderPixels = 0
+    For Y = 9 To 0 Step -1
+        iCol = GetPixel(picAux.hDC, 15, Y)
+        ColorRGBToHLS iCol, iCol_H, iCol_L, iCol_S
+        If Abs(iCol_L - iColB_L) > iThreshold Then
+            mThemedBodyTopBorderPixels = Y + 1
+            Exit For
+        End If
+    Next Y
+    
+    mThemedBodyLeftBorderPixels = 0
+    For X = 9 To 0 Step -1
+        iCol = GetPixel(picAux.hDC, X, 15)
+        ColorRGBToHLS iCol, iCol_H, iCol_L, iCol_S
+        If Abs(iCol_L - iColB_L) > iThreshold Then
+            mThemedBodyLeftBorderPixels = X + 1
             Exit For
         End If
     Next X
@@ -11613,6 +13014,152 @@ Private Sub ResetCachedThemeImages()
     mBodyReset = True
 End Sub
 
+' TDI mode forms (point 2, ToDo NewTab 2 - Etapa B): syncs a tab's Icon from the underlying
+' form window into the STANDARD per-tab Icon properties (TabPicture/TabIconCharHex/TabIconFont/
+' TabIconLeftOffset/TabIconTopOffset, plus per-tab CustomColors for the icon colors), instead of
+' the old ad-hoc TDIFormIconCustomData subsystem. This way measurement, drawing, and Caption+Icon
+' alignment are exactly the same code path as for any other icon - including reserving room for
+' the close button. Only re-syncs (and only re-raises TDIFormsShowTabIcon) when the tab's
+' underlying form window handle changes, or after Refresh() resets mTDIFormIconLastHwnd.
+Private Sub TDISyncFormTabIcon(ByVal nTab As Long)
+    Dim iData As Long
+    Dim iHwnd As LongPtr
+    Dim iIcon As StdPicture
+    Dim iWidth As Long
+    Dim iHeight As Long
+    Dim iUseIconFont As Boolean
+    Dim iIconFont As StdFont
+    Dim iIconChar As Variant
+    Dim iIconColor As Long
+    Dim iIconColorHighlighted As Long
+    Dim iIconColorSelected As Long
+    Dim iLeftOffset As Long
+    Dim iTopOffset As Long
+    Dim iNoIcon As Boolean
+    Dim iTabHeight As Long
+    Dim iCharRect As RECT
+    Dim iFontPrev As StdFont
+    Dim iCharCode As Long
+    
+    iData = mTabData(nTab).Data
+    iHwnd = mTDIModeFormsFormData_FormHwnd(iData)
+    If mTDIFormIconLastHwnd(iData) = iHwnd Then Exit Sub
+    
+    If Not mTabData(nTab).Picture Is Nothing Then
+        Set iIcon = mTabData(nTab).Picture
+    Else
+        Set iIcon = mTDIModeFormsFormData_FormIcon(iData)
+    End If
+    
+    If Not iIcon Is Nothing Then
+        iWidth = UserControl.ScaleX(iIcon.Width, vbHimetric, vbPixels)
+        iHeight = UserControl.ScaleY(iIcon.Height, vbHimetric, vbPixels)
+    Else
+        iWidth = 32
+        iHeight = 32
+    End If
+    
+    Set iIconFont = New StdFont
+    If Not mTabData(nTab).IconFont Is Nothing Then
+        If FontExists(mTabData(nTab).IconFont.Name) Then
+            iIconFont.Name = mTabData(nTab).IconFont.Name
+            iIconFont.Size = 41
+            iIconFont.Bold = True
+            iIconChar = "&HE160&"
+        Else
+            iIconFont.Name = "Arial"
+            iIconFont.Size = 41
+            iIconFont.Bold = True
+            iIconChar = "&H2666&"
+        End If
+        
+        Set iFontPrev = picDraw.Font
+        Set picDraw.Font = iIconFont
+        iTabHeight = (mTabData(nTab).TabRect.Bottom - mTabData(nTab).TabRect.Top)
+        If iTabHeight = 0 Then iTabHeight = ScaleY(mTabHeight, vbHimetric, vbPixels)
+        Do
+            iIconFont.Size = iIconFont.Size - 1
+            iCharRect.Left = 0
+            iCharRect.Top = 0
+            iCharRect.Right = 0
+            iCharRect.Bottom = 0
+            DrawTextW picDraw.hDC, StrPtr(iIconChar), -1, iCharRect, DT_CALCRECT Or DT_SINGLELINE Or DT_CENTER Or IIf(mRightToLeft, DT_RTLREADING, 0)
+            If iIconFont.Size < 5 Then Exit Do
+        Loop While ((iCharRect.Bottom - iCharRect.Top) + 8) > iTabHeight
+        Set picDraw.Font = iFontPrev
+    End If
+    
+    iIconColor = mIconColor
+    iIconColorHighlighted = mIconColorTabHighlighted
+    iIconColorSelected = mIconColorSelectedTab
+    
+    RaiseEvent TDIFormsShowTabIcon(nTab, GetWindowCaption(iHwnd), iHwnd, iIcon, iLeftOffset, iTopOffset, iWidth, iHeight, iUseIconFont, iIconFont, iIconChar, iIconColor, iIconColorHighlighted, iIconColorSelected, iNoIcon)
+    
+    If iNoIcon Then
+        Set mTabData(nTab).Picture = Nothing
+        mTabData(nTab).PicToUseSet = False
+        mTabData(nTab).PicDisabledSet = False
+        mTabData(nTab).IconChar = 0
+    ElseIf iUseIconFont Then
+        If IsNumeric(iIconChar) Then
+            iCharCode = CLng(iIconChar)
+        ElseIf VarType(iIconChar) = vbString Then
+            If Left$(iIconChar, 2) = "&H" Then
+                iCharCode = Val(iIconChar)
+            Else
+                iCharCode = AscW(iIconChar)
+            End If
+        Else
+            RaiseError 1385, TypeName(Me), "IconChar format not recognized."
+        End If
+        Set mTabData(nTab).IconFont = iIconFont
+        mTabData(nTab).IconFontName = iIconFont.Name
+        mTabData(nTab).DoNotUseIconFont = False
+        mTabData(nTab).IconChar = iCharCode
+        mTabData(nTab).IconLeftOffset = iLeftOffset
+        mTabData(nTab).IconTopOffset = iTopOffset
+    Else
+        Set mTabData(nTab).Picture = iIcon
+        mTabData(nTab).PicToUseSet = False
+        mTabData(nTab).PicDisabledSet = False
+        mTabData(nTab).IconChar = 0
+        mTabData(nTab).IconLeftOffset = iLeftOffset
+        mTabData(nTab).IconTopOffset = iTopOffset
+    End If
+    
+    ' Resolve the actual colors to use (custom from the event, or the general fallback),
+    ' and pin the icon-specific hover variants (IconColorMouseHover / IconColorMouseHoverSelectedTab)
+    ' to be identical to their non-hover counterpart. The old ad-hoc TDI forms icon never reacted
+    ' to hovering the icon itself - only IconColorTabHighlighted (whole-tab hover) should have any
+    ' visible effect here, same as before.
+    Dim iResolvedIconColor As Long
+    Dim iResolvedSelectedColor As Long
+    
+    If IsValidOLE_COLOR(iIconColor) Then
+        iResolvedIconColor = iIconColor
+    Else
+        iResolvedIconColor = mIconColor
+    End If
+    If IsValidOLE_COLOR(iIconColorSelected) Then
+        iResolvedSelectedColor = iIconColorSelected
+    Else
+        iResolvedSelectedColor = mIconColorSelectedTab
+    End If
+    
+    mTabData(nTab).CustomColors.IconColor = iResolvedIconColor
+    mTabData(nTab).CustomColors.IconColorMouseHover = iResolvedIconColor
+    mTabData(nTab).CustomColors.IconColorSelectedTab = iResolvedSelectedColor
+    mTabData(nTab).CustomColors.IconColorMouseHoverSelectedTab = iResolvedSelectedColor
+    If IsValidOLE_COLOR(iIconColorHighlighted) Then
+        mTabData(nTab).CustomColors.IconColorTabHighlighted = iIconColorHighlighted
+    Else
+        mTabData(nTab).CustomColors.IconColorTabHighlighted = Empty
+    End If
+    
+    mTDIFormIconLastHwnd(iData) = iHwnd
+    mSetAutoTabHeightPending = True
+End Sub
+
 Private Function MeasureTabIconAndCaption(ByVal nTab As Long) As Long
     Dim iPicWidth As Long
     Dim iCaptionWidth As Long
@@ -11622,6 +13169,40 @@ Private Function MeasureTabIconAndCaption(ByVal nTab As Long) As Long
     Dim iFontBoldPrev As Boolean
     Dim iCaption As String
     Dim iTabHeight As Long
+    Dim iCloseButtonCharRect As RECT
+    Dim iCloseButtonCharacter As String
+    Dim iEffectiveIconAlignment As NTIconAlignmentConstants
+    
+    ' Resolve the icon alignment the SAME way DrawTabPicureAndCaption does, so the width reserved
+    ' here matches how the icon will actually be positioned/drawn: the TDI-forms first tab forces
+    ' Start, and Left-side orientations swap Before<->After / CenteredBefore<->CenteredAfter /
+    ' Start<->End. Getting this wrong (e.g. using the raw mIconAlignment) desyncs the reserved
+    ' width from the drawing and shifts font icons.
+    iEffectiveIconAlignment = mIconAlignment
+    If (mTDIMode = ntTDIModeForms) Or mIsTDIFormsSampleInPropertyPage Then
+        If nTab = FindTab(0, ntFindOriginalIndex) Then
+            iEffectiveIconAlignment = ntIconAlignStart
+        End If
+    End If
+    If (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop) Then
+        Select Case iEffectiveIconAlignment
+            Case ntIconAlignAfterCaption: iEffectiveIconAlignment = ntIconAlignBeforeCaption
+            Case ntIconAlignBeforeCaption: iEffectiveIconAlignment = ntIconAlignAfterCaption
+            Case ntIconAlignCenteredAfterCaption: iEffectiveIconAlignment = ntIconAlignCenteredBeforeCaption
+            Case ntIconAlignCenteredBeforeCaption: iEffectiveIconAlignment = ntIconAlignCenteredAfterCaption
+            Case ntIconAlignStart: iEffectiveIconAlignment = ntIconAlignEnd
+            Case ntIconAlignEnd: iEffectiveIconAlignment = ntIconAlignStart
+        End Select
+    End If
+    
+    ' TDI mode forms (point 2, ToDo NewTab 2): sync this tab's Icon from the underlying form
+    ' window (and the TDIFormsShowTabIcon event) into the standard per-tab Icon properties,
+    ' before measuring, so it's treated exactly like any other icon from here on.
+    If mTDIMode = ntTDIModeForms Then
+        If mTabData(nTab).Data > 0 Then
+            TDISyncFormTabIcon nTab
+        End If
+    End If
     
     ' pic
     If (Not mTabData(nTab).DoNotUseIconFont) And (mTabData(nTab).IconChar <> 0) Then
@@ -11642,25 +13223,27 @@ Private Function MeasureTabIconAndCaption(ByVal nTab As Long) As Long
         iFlags = DT_CALCRECT Or DT_SINGLELINE Or DT_CENTER
         Set picAuxIconFont.Font = iIconFont
         DrawTextW picAuxIconFont.hDC, StrPtr(iIconCharacter), -1, iIconCharRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
-        If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ntTabOrientationTopRight) Or (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
+        If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ntTabOrientationTopRight) Or (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Or mTabsAreRotatedButCaptionsAreHorizontal Then
             iPicWidth = (iIconCharRect.Right - iIconCharRect.Left)
         Else
             iPicWidth = (iIconCharRect.Bottom - iIconCharRect.Top)
         End If
-        If (mIconAlignment = ntIconAlignAfterCaption) Or (mIconAlignment = ntIconAlignCenteredAfterCaption) Or (mIconAlignment = ntIconAlignEnd) Then
+        If (iEffectiveIconAlignment = ntIconAlignAfterCaption) Or (iEffectiveIconAlignment = ntIconAlignEnd) Then
             If mTabData(nTab).IconLeftOffset > 0 Then
                 iPicWidth = iPicWidth + mTabData(nTab).IconLeftOffset * mDPIScale
             End If
-        ElseIf (mIconAlignment = ntIconAlignBeforeCaption) Or (mIconAlignment = ntIconAlignCenteredBeforeCaption) Or (mIconAlignment = ntIconAlignStart) Then
+        ElseIf (iEffectiveIconAlignment = ntIconAlignBeforeCaption) Or (iEffectiveIconAlignment = ntIconAlignStart) Then
             If mTabData(nTab).IconLeftOffset < 0 Then
                 iPicWidth = iPicWidth - mTabData(nTab).IconLeftOffset * mDPIScale
             End If
         End If
+        ' Note: the Centered* alignments deliberately don't get the IconLeftOffset compensation here,
+        ' because their drawing code ignores IconLeftOffset (the icon is positioned precisely instead).
     Else
         iPicWidth = 0
         If Not mTabData(nTab).PicToUseSet Then SetPicToUse nTab
         If Not mTabData(nTab).PicToUse Is Nothing Then
-            If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ntTabOrientationTopRight) Or (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
+            If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ntTabOrientationTopRight) Or (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Or mTabsAreRotatedButCaptionsAreHorizontal Then
                 iPicWidth = pScaleX(mTabData(nTab).PicToUse.Width, vbHimetric, vbPixels)
             Else
                 iPicWidth = pScaleX(mTabData(nTab).PicToUse.Height, vbHimetric, vbPixels)
@@ -11695,13 +13278,17 @@ Private Function MeasureTabIconAndCaption(ByVal nTab As Long) As Long
         picAux.FontBold = iFontBoldPrev
     End If
     
-    If mIconAlignment = ntIconAlignCenteredOnTab Then
-        If iPicWidth > iCaptionWidth Then
+    If iEffectiveIconAlignment = ntIconAlignCenteredOnTab Then
+        If mCaptionAlignment = ntAlignmentCenter Then
+            ' Docked as a centered pair when drawn (see DrawTabPicureAndCaption) - needs the
+            ' combined width, not just the wider of the two as if they were overlaid.
+            MeasureTabIconAndCaption = iPicWidth + mTabIconDistanceToCaptionDPIScaled + iCaptionWidth
+        ElseIf iPicWidth > iCaptionWidth Then
             MeasureTabIconAndCaption = iPicWidth
         Else
             MeasureTabIconAndCaption = iCaptionWidth
         End If
-    ElseIf (mIconAlignment = ntIconAlignAtTop) Or (mIconAlignment = ntIconAlignAtBottom) Then
+    ElseIf (iEffectiveIconAlignment = ntIconAlignAtTop) Or (iEffectiveIconAlignment = ntIconAlignAtBottom) Then
         If iPicWidth > iCaptionWidth Then
             MeasureTabIconAndCaption = iPicWidth
         Else
@@ -11710,170 +13297,129 @@ Private Function MeasureTabIconAndCaption(ByVal nTab As Long) As Long
         MeasureTabIconAndCaption = MeasureTabIconAndCaption + 4
     Else
         MeasureTabIconAndCaption = iPicWidth + mTabIconDistanceToCaptionDPIScaled + iCaptionWidth
+        ' Start/End/CenteredBefore/CenteredAfter no longer need extra reserved width here: Start/End
+        ' now center the caption in the space left over after the icon's fixed edge slot (instead of
+        ' the whole tab), and CenteredBefore/CenteredAfter fall back to the same docked, no-overlap
+        ' layout as Before/AfterCaption when the area is exactly this minimum (see the positioning
+        ' code). Reserving double width here just left a visible empty gap in the tab.
     End If
     
-    ' TDI mode forms
-    If mTDIMode = ntTDIModeForms Then
-        If mTabData(nTab).Data > 0 Then
-            Dim iTabData As T_TabData
-            Dim iTDIFormsNoIcons As Boolean
-            Dim iTDIFormIcon_Icon As StdPicture
-            Dim iTDIFormIcon_Width As Long
-            Dim iTDIFormIcon_Height As Long
-            Dim iTDIFormIcon_UseIconFont As Boolean
-            Dim iTDIFormIcon_IconFont As StdFont
-            Dim iTDIFormIcon_IconCharRect As RECT
-            Dim iTDIFormIcon_IconChar As Variant
-            Dim iTDIFormIcon_IconCharStr As String
-            Dim iTDIFormsFontPrev As StdFont
-            Dim iTDIFormIcon_IconColor As Long
-            Dim iTDIFormIcon_IconColorMouseHover As Long
-            Dim iTDIFormIcon_IconColorSelected As Long
-            Dim iTDIFormIcon_LeftOffset As Long
-            Dim iTDIFormIcon_TopOffset As Long
-            Dim iTabPosString As String
-            Dim iNoIcon As Boolean
-            
-            iTabData = mTabData(nTab)
-            
-            iTDIFormsNoIcons = True
-            iTabPosString = CStr(iTabData.PosH) & "-" & CStr(iTabData.RowPos)
-            If (mTDIFormIconCustomData(iTabData.Data).hWnd <> mTDIModeFormsFormData_FormHwnd(iTabData.Data)) Or mTDIFormIconCustomData(iTabData.Data).Redraw Then
-                If (Not mTDIFormIconCustomData(iTabData.Data).Icon Is Nothing) Then
-                    Set iTDIFormIcon_Icon = mTDIFormIconCustomData(iTabData.Data).Icon
-                Else
-                    Set iTDIFormIcon_Icon = mTDIModeFormsFormData_FormIcon(iTabData.Data)
-                End If
-                
-                If Not iTDIFormIcon_Icon Is Nothing Then
-                    iTDIFormIcon_Width = UserControl.ScaleX(iTDIFormIcon_Icon.Width, vbHimetric, vbPixels)
-                    iTDIFormIcon_Height = UserControl.ScaleY(iTDIFormIcon_Icon.Height, vbHimetric, vbPixels)
-                Else
-                    iTDIFormIcon_Width = 32
-                    iTDIFormIcon_Height = 32
-                End If
-                
-                iTDIFormIcon_UseIconFont = False
-                Set iTDIFormIcon_IconFont = New StdFont
-                If (Not mTabData(nTab).IconFont Is Nothing) Then
-                    If FontExists(iTabData.IconFont.Name) Then
-                        iTDIFormIcon_IconFont.Name = iTabData.IconFont.Name
-                        iTDIFormIcon_IconFont.Size = 41
-                        iTDIFormIcon_IconFont.Bold = True
-                        iTDIFormIcon_IconChar = "&HE160&"
-                    Else
-                        iTDIFormIcon_IconFont.Name = "Arial"
-                        iTDIFormIcon_IconFont.Size = 41
-                        iTDIFormIcon_IconFont.Bold = True
-                        iTDIFormIcon_IconChar = "&H2666&"
-                    End If
-                End If
-                
-                If mTabData(0).IconChar <> 0 Then
-                    iTDIFormIcon_IconFont.Size = mTabData(0).IconFont.Size
-                Else
-                    Set iTDIFormsFontPrev = picDraw.Font
-                    Set picDraw.Font = iTDIFormIcon_IconFont
-                    iTabHeight = (iTabData.TabRect.Bottom - iTabData.TabRect.Top)
-                    If iTabHeight = 0 Then iTabHeight = ScaleY(mTabHeight, vbHimetric, vbPixels)
-                    Do
-                        iTDIFormIcon_IconFont.Size = iTDIFormIcon_IconFont.Size - 1
-                        iTDIFormIcon_IconCharRect.Left = 0
-                        iTDIFormIcon_IconCharRect.Right = 0
-                        iTDIFormIcon_IconCharRect.Top = 0
-                        iTDIFormIcon_IconCharRect.Bottom = 0
-                        DrawTextW picDraw.hDC, StrPtr(iTDIFormIcon_IconChar), -1, iTDIFormIcon_IconCharRect, DT_CALCRECT Or DT_SINGLELINE Or DT_CENTER Or IIf(mRightToLeft, DT_RTLREADING, 0)
-                        If iTDIFormIcon_IconFont.Size < 5 Then Exit Do
-                    Loop While ((iTDIFormIcon_IconCharRect.Bottom - iTDIFormIcon_IconCharRect.Top) + 8) > iTabHeight
-                    Set picDraw.Font = iTDIFormsFontPrev
-                End If
-                
-                iTDIFormIcon_IconColor = mIconColor
-                iTDIFormIcon_IconColorMouseHover = mIconColorTabHighlighted
-                iTDIFormIcon_IconColorSelected = mIconColorSelectedTab
-                
-                iTDIFormIcon_LeftOffset = 0
-                iTDIFormIcon_TopOffset = 0
-                
-                RaiseEvent TDIFormsShowTabIcon(nTab, GetWindowCaption(mTDIModeFormsFormData_FormHwnd(iTabData.Data)), mTDIModeFormsFormData_FormHwnd(iTabData.Data), iTDIFormIcon_Icon, iTDIFormIcon_LeftOffset, iTDIFormIcon_TopOffset, iTDIFormIcon_Width, iTDIFormIcon_Height, iTDIFormIcon_UseIconFont, iTDIFormIcon_IconFont, iTDIFormIcon_IconChar, iTDIFormIcon_IconColor, iTDIFormIcon_IconColorMouseHover, iTDIFormIcon_IconColorSelected, iNoIcon)
-                
-                If iNoIcon Then iTDIFormIcon_Width = 0
-                If iTDIFormIcon_UseIconFont Then
-                    mTDIFormIconCustomData(iTabData.Data).UseIconFont = True
-                    Set mTDIFormIconCustomData(iTabData.Data).IconFont = iTDIFormIcon_IconFont
-                    If (VarType(iTDIFormIcon_IconChar) = vbString) And (Not IsNumeric(iTDIFormIcon_IconChar)) Then
-                        If Left$(iTDIFormIcon_IconChar, 2) = "&H" Then
-                            mTDIFormIconCustomData(iTabData.Data).IconCharStr = ChrU(Val(iTDIFormIcon_IconChar))
-                        Else
-                            mTDIFormIconCustomData(iTabData.Data).IconCharStr = iTDIFormIcon_IconChar
-                        End If
-                    ElseIf IsNumeric(iTDIFormIcon_IconChar) Then
-                        mTDIFormIconCustomData(iTabData.Data).IconCharStr = ChrU(iTDIFormIcon_IconChar)
-                    Else
-                        RaiseError 1385, TypeName(Me), "IconChar format not recognized."
-                    End If
-                    iTDIFormIcon_IconCharStr = mTDIFormIconCustomData(iTabData.Data).IconCharStr
-                    
-                    If IsValidOLE_COLOR(iTDIFormIcon_IconColor) Then
-                        mTDIFormIconCustomData(iTabData.Data).IconColor = iTDIFormIcon_IconColor
-                    Else
-                        mTDIFormIconCustomData(iTabData.Data).IconColor = mIconColor
-                    End If
-                    If IsValidOLE_COLOR(iTDIFormIcon_IconColorMouseHover) Then
-                        mTDIFormIconCustomData(iTabData.Data).IconColorMouseHover = iTDIFormIcon_IconColorMouseHover
-                    Else
-                        mTDIFormIconCustomData(iTabData.Data).IconColorMouseHover = mIconColorTabHighlighted
-                    End If
-                    If IsValidOLE_COLOR(iTDIFormIcon_IconColorSelected) Then
-                        mTDIFormIconCustomData(iTabData.Data).IconColorSelected = iTDIFormIcon_IconColorSelected
-                    Else
-                        mTDIFormIconCustomData(iTabData.Data).IconColorSelected = mIconColorSelectedTab
-                    End If
-                    
-                    iTDIFormIcon_IconCharRect.Left = 0
-                    iTDIFormIcon_IconCharRect.Right = 0
-                    iTDIFormIcon_IconCharRect.Top = 0
-                    iTDIFormIcon_IconCharRect.Bottom = 0
-                    
-                    Set iTDIFormsFontPrev = picDraw.Font
-                    Set picDraw.Font = iTDIFormIcon_IconFont
-                    
-                    DrawTextW picDraw.hDC, StrPtr(iTDIFormIcon_IconCharStr), -1, iTDIFormIcon_IconCharRect, DT_CALCRECT Or DT_SINGLELINE Or DT_CENTER Or IIf(mRightToLeft, DT_RTLREADING, 0)
-                    
-                    Set picDraw.Font = iTDIFormsFontPrev
-                    
-                    iTDIFormIcon_Width = iTDIFormIcon_IconCharRect.Right - iTDIFormIcon_IconCharRect.Left
-                    iTDIFormIcon_Height = iTDIFormIcon_IconCharRect.Bottom - iTDIFormIcon_IconCharRect.Top
-                Else
-                    If iTDIFormIcon_Height <= 0 Then iTDIFormIcon_Width = 0
-                    Set mTDIFormIconCustomData(iTabData.Data).Icon = iTDIFormIcon_Icon
-                    If iTDIFormIcon_Icon Is Nothing Then
-                        iTDIFormIcon_Width = 0
-                    ElseIf iTDIFormIcon_Icon.Handle = 0 Then
-                        iTDIFormIcon_Width = 0
-                    End If
-                End If
-                mTDIFormIconCustomData(iTabData.Data).hWnd = mTDIModeFormsFormData_FormHwnd(iTabData.Data)
-                mTDIFormIconCustomData(iTabData.Data).TabPosString = iTabPosString
-                mTDIFormIconCustomData(iTabData.Data).Width = iTDIFormIcon_Width
-                mTDIFormIconCustomData(iTabData.Data).Height = iTDIFormIcon_Height
-                mTDIFormIconCustomData(iTabData.Data).LeftOffset = iTDIFormIcon_LeftOffset
-                mTDIFormIconCustomData(iTabData.Data).TopOffset = iTDIFormIcon_TopOffset
-                mTDIFormIconCustomData(iTabData.Data).Redraw = False
-            End If
-            
-            If Not mTDIModeFormsFormData_FormIcon(mTabData(nTab).Data) Is Nothing Then
-                MeasureTabIconAndCaption = MeasureTabIconAndCaption + mTDIFormIconCustomData(iTabData.Data).Width + 4
-            Else
-                MeasureTabIconAndCaption = MeasureTabIconAndCaption + 4
-            End If
+    
+    ' Close button (point 1, ToDo NewTab 2). Reserves its own space, independent of the
+    ' regular Icon, so a tab can have both a picture/icon and a close button at the same time.
+    If TabCloseButtonEffective(nTab) Then
+        SetupCloseButtonFont
+        iCloseButtonCharacter = ChrU(mCloseButtonCharCode)
+        iCloseButtonCharRect.Left = 0
+        iCloseButtonCharRect.Top = 0
+        iCloseButtonCharRect.Right = 0
+        iCloseButtonCharRect.Bottom = 0
+        Set picAuxIconFont.Font = mCloseButtonFont
+        DrawTextW picAuxIconFont.hDC, StrPtr(iCloseButtonCharacter), -1, iCloseButtonCharRect, DT_CALCRECT Or DT_SINGLELINE Or DT_CENTER
+        mTabData(nTab).CloseButtonWidth = (iCloseButtonCharRect.Right - iCloseButtonCharRect.Left) + mCloseButtonMarginDPIScaled * 2
+        MeasureTabIconAndCaption = MeasureTabIconAndCaption + mTabData(nTab).CloseButtonWidth
+    Else
+        mTabData(nTab).CloseButtonWidth = 0
+    End If
+End Function
+
+' Measures the extent along the strip (the tab's "height") that tab nTab needs to show
+' its caption (wrapped, if WordWrap is on and the column width requires it), its icon
+' and its close button, for the Horizontal TabOrientations
+' (mTabsAreRotatedButCaptionsAreHorizontal). This is the per-tab counterpart of
+' SetAutoTabHeight, which computes one global TabHeight from single-line text: here the
+' caption can wrap to several lines, and where it wraps depends on nColumnWidth (the
+' column's final width in pixels, after TabMinWidth/TabMaxWidth were applied).
+' Requires MeasureTabIconAndCaption to have run for this tab (it fills CloseButtonWidth).
+Private Function MeasureTabHeightForHorizontalCaptions(ByVal nTab As Long, ByVal nColumnWidth As Long) As Long
+    Dim iCaptionRect As RECT
+    Dim iCaption As String
+    Dim iFlags As Long
+    Dim iFontBoldPrev As Boolean
+    Dim iCaptionAvailableWidth As Long
+    Dim iPicWidth As Long
+    Dim iPicHeight As Long
+    Dim iCaptionHeight As Long
+    Dim iIconCharacter As String
+    Dim iIconCharRect As RECT
+    Dim iIconFont As StdFont
+    Dim iStacked As Boolean
+    
+    ' Icon size: width matters when it sits beside the caption (reduces the caption's
+    ' available width), height matters to fit vertically (or to stack for AtTop/AtBottom)
+    If (Not mTabData(nTab).DoNotUseIconFont) And (mTabData(nTab).IconChar <> 0) Then
+        If mTabData(nTab).IconFont Is Nothing Then
+            Set iIconFont = mDefaultIconFont
+        Else
+            Set iIconFont = mTabData(nTab).IconFont
+        End If
+        iIconCharacter = ChrU(mTabData(nTab).IconChar)
+        iFlags = DT_CALCRECT Or DT_SINGLELINE Or DT_CENTER
+        Set picAuxIconFont.Font = iIconFont
+        DrawTextW picAuxIconFont.hDC, StrPtr(iIconCharacter), -1, iIconCharRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
+        iPicWidth = iIconCharRect.Right - iIconCharRect.Left
+        iPicHeight = iIconCharRect.Bottom - iIconCharRect.Top
+    Else
+        If Not mTabData(nTab).PicToUseSet Then SetPicToUse nTab
+        If Not mTabData(nTab).PicToUse Is Nothing Then
+            iPicWidth = pScaleX(mTabData(nTab).PicToUse.Width, vbHimetric, vbPixels)
+            iPicHeight = pScaleY(mTabData(nTab).PicToUse.Height, vbHimetric, vbPixels)
         End If
     End If
+    
+    iStacked = (mIconAlignment = ntIconAlignAtTop) Or (mIconAlignment = ntIconAlignAtBottom)
+    
+    ' Caption available width inside the column: start from the column width and subtract
+    ' the same general padding/flat extras counted when the column width was computed, plus
+    ' the icon beside the caption (when not stacked) and the close button
+    iCaptionAvailableWidth = nColumnWidth - 10
+    If mAppearanceIsFlat Then
+        iCaptionAvailableWidth = iCaptionAvailableWidth - IIf(mFlatBarGripHeightDPIScaled > 0, mFlatBarGripHeightDPIScaled, 0) - mFlatBarHeightDPIScaled
+    End If
+    If Not iStacked Then
+        If iPicWidth > 0 Then
+            iCaptionAvailableWidth = iCaptionAvailableWidth - iPicWidth - mTabIconDistanceToCaptionDPIScaled
+        End If
+    End If
+    iCaptionAvailableWidth = iCaptionAvailableWidth - mTabData(nTab).CloseButtonWidth
+    If iCaptionAvailableWidth < 10 Then iCaptionAvailableWidth = 10
+    
+    ' Measure the caption height, wrapping with the same flags the drawing code uses
+    iFontBoldPrev = picAux.FontBold
+    picAux.FontBold = mFont.Bold Or mHighlightCaptionBoldSelectedTab Or mHighlightCaptionBold
+    picAux.FontUnderLine = mFont.Underline Or mHighlightCaptionUnderlinedSelectedTab Or mHighlightCaptionUnderlined
+    iCaptionRect.Left = 0
+    iCaptionRect.Top = 0
+    iCaptionRect.Right = iCaptionAvailableWidth
+    iCaptionRect.Bottom = 5
+    If mWordWrap Then
+        iFlags = DT_CALCRECT Or DT_WORDBREAK
+    Else
+        iFlags = DT_CALCRECT Or DT_SINGLELINE
+    End If
+    iCaption = mTabData(nTab).Caption & IIf(picAux.Font.Italic, " ", "")
+    DrawTextW picAux.hDC, StrPtr(iCaption), -1, iCaptionRect, iFlags Or IIf(mRightToLeft, DT_RTLREADING, 0)
+    iCaptionHeight = iCaptionRect.Bottom - iCaptionRect.Top
+    If picAux.FontBold <> iFontBoldPrev Then
+        picAux.FontBold = iFontBoldPrev
+    End If
+    
+    ' Combine caption and icon: stacked for AtTop/AtBottom, side by side otherwise
+    If iStacked Then
+        MeasureTabHeightForHorizontalCaptions = iCaptionHeight + iPicHeight + IIf(iPicHeight > 0, 2 * mDPIScale, 0)
+    ElseIf iPicHeight > iCaptionHeight Then
+        MeasureTabHeightForHorizontalCaptions = iPicHeight
+    Else
+        MeasureTabHeightForHorizontalCaptions = iCaptionHeight
+    End If
+    
+    ' Vertical breathing room, same spirit as SetAutoTabHeight's padding
+    MeasureTabHeightForHorizontalCaptions = MeasureTabHeightForHorizontalCaptions + 12 * mDPIScale
 End Function
 
 Public Function IsThemed() As Boolean
 Attribute IsThemed.VB_Description = "Returns a boolean value indicating whether the Windows visual styles are applied to the control or not."
-    Dim iTheme As Long
+    Dim iTheme As LongPtr
     
     IsThemed = mVisualStyles And (mBackStyle <> ntTransparent)
     If IsThemed Then
@@ -11901,7 +13447,7 @@ Private Sub SetVisibleControls(ByVal iPreviousTab As Long)
     Dim iCtl As Object
     Dim iCtlName As Variant
     Dim iContainedControlsString As String
-    Dim iHwnd As Long
+    Dim iHwnd As LongPtr
     Dim c As Long
     Dim iLeft As Long
     Dim iIsLine As Boolean
@@ -12033,7 +13579,7 @@ Private Sub SetVisibleControls(ByVal iPreviousTab As Long)
     End If
 End Sub
 
-Private Function GetControlHwnd(nControl As Object) As Long
+Private Function GetControlHwnd(nControl As Object) As LongPtr
     On Error Resume Next
     GetControlHwnd = nControl.hWndUserControl
     If GetControlHwnd = 0 Then
@@ -12041,7 +13587,7 @@ Private Function GetControlHwnd(nControl As Object) As Long
     End If
 End Function
 
-Private Function GetControlHwnd2(nControl As Object) As Long
+Private Function GetControlHwnd2(nControl As Object) As LongPtr
     On Error Resume Next
     GetControlHwnd2 = nControl.hWnd
 End Function
@@ -12141,7 +13687,7 @@ End Sub
 
 Private Sub SubclassControlsPainting()
     Dim iSubclassTheControls As Boolean
-    Dim iHwnd As Long
+    Dim iHwnd As LongPtr
     Dim c As Long
     Dim iBKColor As Long
     Dim iControls As Object
@@ -12365,12 +13911,12 @@ Private Sub SubclassControlsPainting()
     
 End Sub
 
-Private Function GetContainerByHwnd(ByVal nHwnd As Long) As Object
+Private Function GetContainerByHwnd(ByVal nHwnd As LongPtr) As Object
     Dim iParent As Object
     Dim iControls As Object
     Dim iCtl As Object
-    Dim iHwndParent As Long
-    Dim iHwnd As Long
+    Dim iHwndParent As LongPtr
+    Dim iHwnd As LongPtr
     
     On Error Resume Next
     Set iParent = UserControl.Extender.Parent
@@ -12743,26 +14289,32 @@ Private Sub PostDrawMessage()
     End If
 End Sub
 
-Friend Property Get TabControlsNames(ByVal Index As Long) As Object
-    If (Index < 0) Or (Index >= mTabs) Then
+Friend Property Get TabControlsNames(ByVal nTab As Variant) As Object
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    Set TabControlsNames = mTabData(Index).Controls
+    Set TabControlsNames = mTabData(iIndex).Controls
 End Property
 
-Friend Property Set TabControlsNames(ByVal Index As Long, nValue As Object)
-    If (Index < 0) Or (Index >= mTabs) Then
+Friend Property Set TabControlsNames(ByVal nTab As Variant, nValue As Object)
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    Set mTabData(Index).Controls = nValue
+    Set mTabData(iIndex).Controls = nValue
 End Property
 
 Friend Sub HideAllContainedControls()
     Dim iCtl As Object
     Dim c As Long
-    Dim iHwnd As Long
+    Dim iHwnd As LongPtr
     Dim iIsLine As Boolean
     
     If mUserControlTerminated Then Exit Sub
@@ -12795,7 +14347,7 @@ End Sub
 Friend Sub MakeContainedControlsInSelTabVisible()
     Dim iCtl As Object
     Dim iCtlName As Variant
-    Dim iHwnd As Long
+    Dim iHwnd As LongPtr
     Dim c As Long
     Dim iIsLine As Boolean
     
@@ -13104,14 +14656,14 @@ Private Sub RearrangeContainedControlsPositions()
     Dim iIsLine As Boolean
     
     If (mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ntTabOrientationTopRight) Or (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
-        iBodyStart = pScaleY(mClientStart - 5, vbPixels, vbTwips)
+        iBodyStart = pScaleY(mBodyStart - 5, vbPixels, vbTwips)
     Else
-        iBodyStart = pScaleX(mClientStart - 5, vbPixels, vbTwips)
+        iBodyStart = pScaleX(mBodyStart - 5, vbPixels, vbTwips)
     End If
     If (mTabOrientation_Prev = ssTabOrientationTop) Or (mTabOrientation_Prev = ntTabOrientationTopRight) Or (mTabOrientation_Prev = ssTabOrientationBottom) Or (mTabOrientation_Prev = ntTabOrientationBottomRight) Then
-        iBodyStart_Prev = pScaleY(mClientStart_Prev - 5, vbPixels, vbTwips)
+        iBodyStart_Prev = pScaleY(mBodyStart_Prev - 5, vbPixels, vbTwips)
     Else
-        iBodyStart_Prev = pScaleX(mClientStart_Prev - 5, vbPixels, vbTwips)
+        iBodyStart_Prev = pScaleX(mBodyStart_Prev - 5, vbPixels, vbTwips)
     End If
     
     On Error Resume Next
@@ -13125,7 +14677,7 @@ Private Sub RearrangeContainedControlsPositions()
                 Else
                     iCtl.Top = iCtl.Top - iBodyStart_Prev + iBodyStart
                 End If
-            ElseIf (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
+            ElseIf mOrientationIsBottom Then
                 If iIsLine Then
                     iCtl.Y1 = iCtl.Y1 + iBodyStart_Prev - iBodyStart
                     iCtl.Y2 = iCtl.Y2 + iBodyStart_Prev - iBodyStart
@@ -13178,7 +14730,7 @@ Private Sub RearrangeContainedControlsPositions()
                 Else
                     iCtl.Top = iCtl.Top + iBodyStart
                 End If
-            ElseIf (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
+            ElseIf mOrientationIsBottom Then
                 '
             ElseIf (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop) Or (mTabOrientation = ntTabOrientationLeftHorizontal) Or (mTabOrientation = ntTabOrientationLeftTopHorizontal) Then
                 If iIsLine Then
@@ -13195,13 +14747,14 @@ Private Sub RearrangeContainedControlsPositions()
     Err.Clear
 End Sub
 
-Public Property Get TabControls(ByVal nTab As Long, Optional GetChilds As Boolean = True) As Collection
+Public Property Get TabControls(ByVal nTab As Variant, Optional GetChilds As Boolean = True) As Collection
 Attribute TabControls.VB_Description = "Returns a collection of the controls that are inside a tab."
     Dim iCtlName As Variant
     Dim iCtl As Object
     Dim iCtl2 As Object
     Dim iObj As Object
     
+    nTab = GetTabIndex(nTab)
     If (nTab < 0) Or (nTab > (mTabs - 1)) Then
         RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
         Exit Property
@@ -13377,7 +14930,7 @@ Friend Function pScaleY(Height As Variant, Optional ByVal FromScale As Variant, 
 End Function
 
 Private Sub SetDPI()
-    Dim iDC As Long
+    Dim iDC As LongPtr
     Dim iTx As Single
     Dim iTY As Single
     
@@ -13425,7 +14978,7 @@ Attribute Object.VB_Description = "Returns the control instance without the exte
 End Property
 
 Private Function IsMsgBoxShown() As Boolean
-    Dim iHwnd As Long
+    Dim iHwnd As LongPtr
      
     Do Until IsWindowLocal(iHwnd)
         iHwnd = FindWindowEx(0&, iHwnd, "#32770", vbNullString)
@@ -13434,7 +14987,7 @@ Private Function IsMsgBoxShown() As Boolean
     IsMsgBoxShown = True
 End Function
 
-Private Function IsWindowLocal(ByVal nHwnd As Long) As Boolean
+Private Function IsWindowLocal(ByVal nHwnd As LongPtr) As Boolean
     Dim iIdProcess As Long
     
     Call GetWindowThreadProcessId(nHwnd, iIdProcess)
@@ -13632,7 +15185,7 @@ Public Property Let ControlLeft(nControl As Variant, ByVal Left As Single)
     End If
 End Property
 
-Public Sub ControlMove(nControl As Variant, ByVal Left As Single, ByVal Top As Single, Optional ByVal Width As Variant, Optional ByVal Height As Variant, Optional ByVal IndexOfOtherTabToMoveTheControl As Long = -1)
+Public Sub ControlMove(nControl As Variant, ByVal Left As Single, ByVal Top As Single, Optional ByVal Width As Variant, Optional ByVal Height As Variant, Optional ByVal TabToMoveTheControl)
 Attribute ControlMove.VB_Description = "Replaces the ControlName.Move method. The difference is that it takes into account the Left offset of controls on inactive tabs."
     Dim iCtl As Object
     Dim iFound As Boolean
@@ -13646,7 +15199,13 @@ Attribute ControlMove.VB_Description = "Replaces the ControlName.Move method. Th
     Dim iAuxLeft As Single
     Dim iControlName As String
     Dim iObj As Object
+    Dim iTabToMoveTheControl As Long
     
+    If Not IsMissing(TabToMoveTheControl) Then
+        iTabToMoveTheControl = GetTabIndex(TabToMoveTheControl)
+    Else
+        iTabToMoveTheControl = -1
+    End If
     Left = Left - mPendingLeftOffset
     
     If IsObject(nControl) Then
@@ -13724,13 +15283,13 @@ Attribute ControlMove.VB_Description = "Replaces the ControlName.Move method. Th
             End If
             iAuxLeft = iCtl.Left
         End If
-        If IndexOfOtherTabToMoveTheControl > -1 Then
+        If iTabToMoveTheControl > -1 Then
             iCtlName = ControlName(iCtl)
             iFound = False
             For t = 0 To mTabs - 1
                 For c = 1 To mTabData(t).Controls.Count
                     If mTabData(t).Controls(c) = iCtlName Then
-                        If t <> IndexOfOtherTabToMoveTheControl Then
+                        If t <> iTabToMoveTheControl Then
                             mTabData(t).Controls.Remove iCtlName
                         Else
                             iFound = True
@@ -13741,16 +15300,16 @@ Attribute ControlMove.VB_Description = "Replaces the ControlName.Move method. Th
                 If iFound Then Exit For
             Next
             On Error Resume Next
-            mTabData(IndexOfOtherTabToMoveTheControl).Controls.Add iCtlName, iCtlName
+            mTabData(iTabToMoveTheControl).Controls.Add iCtlName, iCtlName
             On Error GoTo 0
-            If (iAuxLeft < -mLeftThresholdHided) And (IndexOfOtherTabToMoveTheControl = mTab) Then
+            If (iAuxLeft < -mLeftThresholdHided) And (iTabToMoveTheControl = mTab) Then
                 If iIsLine Then
                     iCtl.X1 = iCtl.X1 + mLeftOffsetToHide
                     iCtl.X2 = iCtl.X2 + mLeftOffsetToHide
                 Else
                     iCtl.Left = iCtl.Left + mLeftOffsetToHide
                 End If
-            ElseIf (iAuxLeft >= -mLeftThresholdHided) And (IndexOfOtherTabToMoveTheControl <> mTab) Then
+            ElseIf (iAuxLeft >= -mLeftThresholdHided) And (iTabToMoveTheControl <> mTab) Then
                 If iIsLine Then
                     iCtl.X1 = iCtl.X1 - mLeftOffsetToHide
                     iCtl.X2 = iCtl.X2 - mLeftOffsetToHide
@@ -13793,7 +15352,7 @@ Attribute ControlGetTab.VB_Description = "Returns the tab where a control is."
     Next
 End Function
 
-Public Sub ControlSetTab(nControl As Variant, ByVal nTab As Long)
+Public Sub ControlSetTab(nControl As Variant, ByVal nTab As Variant)
 Attribute ControlSetTab.VB_Description = "Sets or change the tab where a contained control is."
     Dim iCtl As Object
     Dim iWithIndex As Boolean
@@ -13803,6 +15362,7 @@ Attribute ControlSetTab.VB_Description = "Sets or change the tab where a contain
     Dim iControlName As String
     Dim iObj As Object
     
+    iIndex = GetTabIndex(nTab)
     If IsObject(nControl) Then
         On Error Resume Next
         Set iObj = nControl
@@ -13819,7 +15379,7 @@ Attribute ControlSetTab.VB_Description = "Sets or change the tab where a contain
         Exit Sub
     End If
     
-    If ControlGetTab(iControlName) <> nTab Then
+    If ControlGetTab(iControlName) <> iIndex Then
         iWithIndex = InStr(iControlName, "(") > 0
         For Each iCtl In UserControlContainedControls
             iName = LCase$(iCtl.Name)
@@ -13841,9 +15401,9 @@ Attribute ControlSetTab.VB_Description = "Sets or change the tab where a contain
             RaiseError 1501, , "Control not found."
         Else
             If TypeName(iCtl) = "Line" Then
-                ControlMove iControlName, ControlLeft(iControlName), iCtl.Y1, iCtl.X2 - iCtl.X1, iCtl.Y2 - iCtl.Y1, nTab
+                ControlMove iControlName, ControlLeft(iControlName), iCtl.Y1, iCtl.X2 - iCtl.X1, iCtl.Y2 - iCtl.Y1, iIndex
             Else
-                ControlMove iControlName, ControlLeft(iControlName), iCtl.Top, iCtl.Width, iCtl.Height, nTab
+                ControlMove iControlName, ControlLeft(iControlName), iCtl.Top, iCtl.Width, iCtl.Height, iIndex
             End If
         End If
     End If
@@ -13856,7 +15416,10 @@ Private Sub SetAutoTabHeight()
     Dim iOrigHeight As Long
     Dim iVerticalSpaceFromIconToCaption As Long
     
-    If Not mAutoTabHeight Then Exit Sub
+    If Not mAutoTabHeight Then
+        mSetAutoTabHeightPending = False
+        Exit Sub
+    End If
     
     If Not picAux2.Font Is mFont Then
         Set picAux2.Font = mFont
@@ -13921,9 +15484,10 @@ Private Sub SetAutoTabHeight()
     Next
     iVerticalSpaceFromIconToCaption = pScaleY(iVerticalSpaceFromIconToCaption * 0.15, vbHimetric, vbPixels)
     
-    If mAppearanceIsFlat Then
+    mTabsAreRotatedButCaptionsAreHorizontal = (mTabOrientation = ntTabOrientationLeftHorizontal) Or (mTabOrientation = ntTabOrientationLeftTopHorizontal) Or (mTabOrientation = ntTabOrientationRightHorizontal) Or (mTabOrientation = ntTabOrientationRightBottomHorizontal)
+    If mAppearanceIsFlat And (Not mTabsAreRotatedButCaptionsAreHorizontal) Then
         If mHighlightFlatBar Or mHighlightFlatBarSelectedTab Then
-            If (mFlatBarPosition = ntBarPositionTop) And ((mTabOrientation <> ssTabOrientationBottom) Or (mTabOrientation <> ntTabOrientationBottomRight)) Or (mFlatBarPosition = ntBarPositionBottom) And ((mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight)) Then
+            If (mFlatBarPosition = ntBarPositionTop) And ((mTabOrientation <> ssTabOrientationBottom) Or (mTabOrientation <> ntTabOrientationBottomRight)) Or (mFlatBarPosition = ntBarPositionBottom) And mOrientationIsBottom Then
                 mTabHeight = mTabHeight + ScaleY(mFlatBarHeightDPIScaled, vbPixels, vbHimetric)
                 If mHighlightFlatBarWithGrip Or mHighlightFlatBarWithGripSelectedTab Then
                     If mFlatBarGripHeightDPIScaled < 0 Then
@@ -14124,65 +15688,82 @@ Friend Property Set Themes(ByVal nThemes As NewTabThemes)
 End Property
 
 
-Public Property Get TabData(ByVal Index As Long) As Long
+Public Property Get TabData(ByVal nTab As Variant) As Long
 Attribute TabData.VB_Description = "Used to store any data in Long format, similar to ListBox's ItemData. If the tabs are reordered, it will keep this data for this tab."
 Attribute TabData.VB_ProcData.VB_Invoke_Property = ";Data"
-    If (Index < 0) Or (Index >= mTabs) Then
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    TabData = mTabData(Index).Data
+    TabData = mTabData(iIndex).Data
 End Property
 
-Public Property Let TabData(ByVal Index As Long, ByVal nValue As Long)
-    If (Index < 0) Or (Index >= mTabs) Then
+Public Property Let TabData(ByVal nTab As Variant, ByVal nValue As Long)
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    If nValue <> mTabData(Index).Data Then
-        mTabData(Index).Data = nValue
+    If nValue <> mTabData(iIndex).Data Then
+        mTabData(iIndex).Data = nValue
         PropertyChanged "TabData"
     End If
 End Property
 
 
-Public Property Get TabTag(ByVal Index As Long) As String
+Public Property Get TabTag(ByVal nTab As Variant) As String
 Attribute TabTag.VB_Description = "Returns/sets a custom String data for each tab."
 Attribute TabTag.VB_ProcData.VB_Invoke_Property = ";Data"
-    If (Index < 0) Or (Index >= mTabs) Then
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    TabTag = mTabData(Index).Tag
+    TabTag = mTabData(iIndex).Tag
 End Property
 
-Public Property Let TabTag(ByVal Index As Long, ByVal nValue As String)
-    If (Index < 0) Or (Index >= mTabs) Then
+Public Property Let TabTag(ByVal nTab As Variant, ByVal nValue As String)
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    If nValue <> mTabData(Index).Tag Then
-        mTabData(Index).Tag = nValue
+    If nValue <> mTabData(iIndex).Tag Then
+        mTabData(iIndex).Tag = nValue
         PropertyChanged "TabTag"
     End If
 End Property
 
 
-Public Property Get TabKey(ByVal Index As Long) As String
+Public Property Get TabKey(ByVal nTab As Variant) As String
 Attribute TabKey.VB_Description = "A key that can be used to set the current/active/selected tab with the 'Tab' property.  Keys are case insensitive."
 Attribute TabKey.VB_ProcData.VB_Invoke_Property = ";Data"
-    If (Index < 0) Or (Index >= mTabs) Then
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    TabKey = mTabData(Index).Key
+    TabKey = mTabData(iIndex).Key
 End Property
 
-Public Property Let TabKey(ByVal Index As Long, ByVal nValue As String)
+Public Property Let TabKey(ByVal nTab As Variant, ByVal nValue As String)
     Dim c As Long
     Dim iLCKey As String
+    Dim iIndex As Long
     
-    If (Index < 0) Or (Index >= mTabs) Then
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
@@ -14192,10 +15773,10 @@ Public Property Let TabKey(ByVal Index As Long, ByVal nValue As String)
             Exit Property
         End If
     End If
-    If nValue <> mTabData(Index).Key Then
+    If nValue <> mTabData(iIndex).Key Then
         If nValue <> "" Then
             For c = 0 To mTabs - 1
-                If c <> Index Then
+                If c <> iIndex Then
                     iLCKey = LCase$(nValue)
                     If mTabData(c).Key <> "" Then
                         If LCase$(mTabData(c).Key) = iLCKey Then
@@ -14206,7 +15787,7 @@ Public Property Let TabKey(ByVal Index As Long, ByVal nValue As String)
                 End If
             Next
         End If
-        mTabData(Index).Key = nValue
+        mTabData(iIndex).Key = nValue
         PropertyChanged "TabKey"
     End If
 End Property
@@ -14261,11 +15842,11 @@ Private Sub ShowPicCover()
     Const WS_EX_TOOLWINDOW = &H80
     Const WS_EX_TRANSPARENT As Long = &H20
     Dim iWindowStyle As Long
-    Dim iDC As Long
+    Dim iDC As LongPtr
     Static sShowing As Boolean
     Dim iFormRect As RECT
     Dim iPt As POINTAPI
-    Dim iFormHwnd As Long
+    Dim iFormHwnd As LongPtr
     
     If sShowing Or mSettingTDIMode Then Exit Sub
     sShowing = True
@@ -14288,10 +15869,10 @@ Private Sub ShowPicCover()
     iFormRect.Top = iFormRect.Top + iPt.Y
     iFormRect.Bottom = iFormRect.Bottom + iPt.Y
     
-    iRect.Right = iRect.Left + mClientRect.Right
-    iRect.Bottom = iRect.Top + mClientRect.Bottom
-    iRect.Left = iRect.Left + mClientRect.Left
-    iRect.Top = iRect.Top + mClientRect.Top
+    iRect.Right = iRect.Left + mBodyRect.Right
+    iRect.Bottom = iRect.Top + mBodyRect.Bottom
+    iRect.Left = iRect.Left + mBodyRect.Left
+    iRect.Top = iRect.Top + mBodyRect.Top
     
     If iFormHwnd <> 0 Then
         If iRect.Right > (iFormRect.Right) Then iRect.Right = iFormRect.Right
@@ -14317,7 +15898,7 @@ Private Sub ShowPicCover()
     tmrTabTransition.Enabled = True
     MoveWindow picCover.hWnd, iRect.Left, iRect.Top, iRect.Right - iRect.Left, iRect.Bottom - iRect.Top, 0
     iDC = GetDC(mUserControlHwnd)
-    BitBlt picCover.hDC, 0, 0, iRect.Right - iRect.Left, iRect.Bottom - iRect.Top, iDC, mClientRect.Left, mClientRect.Top, vbSrcCopy
+    BitBlt picCover.hDC, 0, 0, iRect.Right - iRect.Left, iRect.Bottom - iRect.Top, iDC, mBodyRect.Left, mBodyRect.Top, vbSrcCopy
     ReleaseDC mUserControlHwnd, iDC
     picCover.Refresh
     
@@ -14523,44 +16104,56 @@ Private Sub SetHighlightMode()
     End If
 End Sub
 
-Public Function GetTabLeft(ByVal Index As Long) As Single
+Public Function GetTabLeft(ByVal nTab As Variant) As Single
 Attribute GetTabLeft.VB_Description = "Returns the left position of a tab."
-    If (Index < 0) Or (Index >= mTabs) Then
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
         Exit Function
     End If
     EnsureDrawn
-    GetTabLeft = FixRoundingError(UserControl.ScaleX(mTabData(Index).TabRect.Left, vbPixels, vbTwips))
+    GetTabLeft = FixRoundingError(UserControl.ScaleX(mTabData(iIndex).TabRect.Left, vbPixels, vbTwips))
 End Function
 
-Public Function GetTabTop(ByVal Index As Long) As Single
+Public Function GetTabTop(ByVal nTab As Variant) As Single
 Attribute GetTabTop.VB_Description = "Returns the top position of a tab."
-    If (Index < 0) Or (Index >= mTabs) Then
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
         Exit Function
     End If
     EnsureDrawn
-    GetTabTop = FixRoundingError(UserControl.ScaleY(mTabData(Index).TabRect.Top, vbPixels, vbTwips))
+    GetTabTop = FixRoundingError(UserControl.ScaleY(mTabData(iIndex).TabRect.Top, vbPixels, vbTwips))
 End Function
 
-Public Function GetTabWidth(ByVal Index As Long) As Single
+Public Function GetTabWidth(ByVal nTab As Variant) As Single
 Attribute GetTabWidth.VB_Description = "Returns the width of a tab."
-    If (Index < 0) Or (Index >= mTabs) Then
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
         Exit Function
     End If
     EnsureDrawn
-    GetTabWidth = FixRoundingError(UserControl.ScaleX(mTabData(Index).TabRect.Right - mTabData(Index).TabRect.Left, vbPixels, vbTwips))
+    GetTabWidth = FixRoundingError(UserControl.ScaleX(mTabData(iIndex).TabRect.Right - mTabData(iIndex).TabRect.Left, vbPixels, vbTwips))
 End Function
 
-Public Function GetTabHeight(ByVal Index As Long) As Single
+Public Function GetTabHeight(ByVal nTab As Variant) As Single
 Attribute GetTabHeight.VB_Description = "Returns the height of a tab."
-    If (Index < 0) Or (Index >= mTabs) Then
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
         Exit Function
     End If
     EnsureDrawn
-    GetTabHeight = FixRoundingError(UserControl.ScaleY(mTabData(Index).TabRect.Bottom - mTabData(Index).TabRect.Top, vbPixels, vbTwips))
+    GetTabHeight = FixRoundingError(UserControl.ScaleY(mTabData(iIndex).TabRect.Bottom - mTabData(iIndex).TabRect.Top, vbPixels, vbTwips))
 End Function
 
 Private Sub SetPropertyChanged(Optional nPropertyName As String)
@@ -14673,7 +16266,7 @@ Private Property Let DraggingATab(nValue As Boolean)
         If (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight) Then
             iRc.Left = iPt.X
             iRc.Right = UserControl.ScaleX(UserControl.ScaleWidth, UserControl.ScaleMode, vbPixels) + iPt.X
-            iPt2.Y = mClientRect.Bottom
+            iPt2.Y = mBodyRect.Bottom
             iPt3.Y = mScaleHeight
             ClientToScreen mUserControlHwnd, iPt2
             ClientToScreen mUserControlHwnd, iPt3
@@ -14681,14 +16274,14 @@ Private Property Let DraggingATab(nValue As Boolean)
             iRc.Bottom = iPt3.Y + mMouseY - mTabData(mTab).TabRect.Bottom
         ElseIf (mTabOrientation = ssTabOrientationLeft) Or (mTabOrientation = ntTabOrientationLeftTop) Or (mTabOrientation = ntTabOrientationLeftHorizontal) Or (mTabOrientation = ntTabOrientationLeftTopHorizontal) Then
             iRc.Left = iPt.X + mMouseX - mTabData(mTab).TabRect.Left
-            iRc.Right = iPt.X + mClientRect.Left + mMouseX - mTabData(mTab).TabRect.Right
+            iRc.Right = iPt.X + mBodyRect.Left + mMouseX - mTabData(mTab).TabRect.Right
             iRc.Top = iPt.Y
             iPt3.Y = mScaleHeight
             ClientToScreen mUserControlHwnd, iPt3
             iRc.Bottom = iPt3.Y
         ElseIf (mTabOrientation = ssTabOrientationRight) Or (mTabOrientation = ntTabOrientationRightBottom) Or (mTabOrientation = ntTabOrientationRightHorizontal) Or (mTabOrientation = ntTabOrientationRightBottomHorizontal) Then
-            iRc.Left = iPt.X + mClientRect.Left + mClientRect.Right + mMouseX - mTabData(mTab).TabRect.Left
-            iRc.Right = UserControl.ScaleX(UserControl.ScaleWidth, UserControl.ScaleMode, vbPixels) + iPt.X + mClientRect.Left + mMouseX - mTabData(mTab).TabRect.Right
+            iRc.Left = iPt.X + mBodyRect.Left + mBodyRect.Right + mMouseX - mTabData(mTab).TabRect.Left
+            iRc.Right = UserControl.ScaleX(UserControl.ScaleWidth, UserControl.ScaleMode, vbPixels) + iPt.X + mBodyRect.Left + mMouseX - mTabData(mTab).TabRect.Right
             iRc.Top = iPt.Y
             iPt3.Y = mScaleHeight
             ClientToScreen mUserControlHwnd, iPt3
@@ -14697,7 +16290,7 @@ Private Property Let DraggingATab(nValue As Boolean)
             iRc.Left = iPt.X
             iRc.Right = UserControl.ScaleX(UserControl.ScaleWidth, UserControl.ScaleMode, vbPixels) + iPt.X
             iRc.Top = iPt.Y + mMouseY - mTabData(mTab).TabRect.Top
-            iRc.Bottom = mClientRect.Top + iPt.Y + mMouseY - mTabData(mTab).TabRect.Bottom
+            iRc.Bottom = mBodyRect.Top + iPt.Y + mMouseY - mTabData(mTab).TabRect.Bottom
         End If
         
         tmrTabDragging.Enabled = True
@@ -14903,18 +16496,12 @@ Private Sub TDIConfigureTDIModeOnce()
     Dim iFont As StdFont
     
     CanReorderTabs = True
-    IconColorMouseHover = vbRed
-    IconColorMouseHoverSelectedTab = vbRed
-    mTDIIconColorMouseHover = IconColorMouseHover
     
     mTDIChangingTabCount = True
     If mTDIMode = ntTDIModeControls Then
         Tabs = 2
     ElseIf mTDIMode = ntTDIModeForms Then
         Tabs = 1
-        TabIconLeftOffset(0) = 0
-        TabIconTopOffset(0) = 0
-        TabIconCharHex(0) = ""
     Else
         Tabs = 1
         TabCaption(0) = "Tab 0"
@@ -14930,6 +16517,63 @@ Private Sub TDIConfigureTDIModeOnce()
     mTDIChangingTabCount = False
 End Sub
     
+' Resolves whether the close button ('x') should show for a given tab.
+' - Outside of TDI mode: the three-state per-tab TabCloseButton property, resolved against
+'   the general CloseButton property, combined with TabCloseButtonEnabled.
+' - In TDI mode (point 2, ToDo NewTab 2): CloseButton/TabCloseButton/TabCloseButtonEnabled are
+'   ignored completely. Instead it's decided by TDICloseButtonShown (set once when the tab was
+'   created, via the TDIBeforeNewTab event) and, for TDIModeForms, further gated by
+'   mTDIFormWithoutCloseButton (forms without a system close button never get one here either).
+Private Function TabCloseButtonEffective(ByVal nTab As Long) As Boolean
+    Dim iShow As Boolean
+    
+    If mTDIMode <> ntTDIModeNone Then
+        iShow = mTabData(nTab).TDICloseButtonShown
+        If iShow And mAmbientUserMode And (mTDIMode = ntTDIModeForms) Then
+            If (mTabData(nTab).Data >= 0) And (mTabData(nTab).Data <= UBound(mTDIFormWithoutCloseButton)) Then
+                iShow = Not mTDIFormWithoutCloseButton(mTabData(nTab).Data)
+            End If
+        End If
+        TabCloseButtonEffective = iShow
+        Exit Function
+    End If
+    
+    Select Case mTabData(nTab).CloseButton
+        Case ntYes
+            iShow = True
+        Case ntNo
+            iShow = False
+        Case Else ' ntYNAuto
+            iShow = mCloseButton
+    End Select
+    TabCloseButtonEffective = iShow
+End Function
+
+' Sets up (once) the font and char code used to draw the close button 'x',
+' with the same font cascade/fallback already used elsewhere in TDI mode
+' (Segoe MDL2 Assets -> Marlett -> Arial), so it does not depend on GDI+.
+Private Sub SetupCloseButtonFont()
+    If mCloseButtonFontIsSetUp Then Exit Sub
+    
+    Set mCloseButtonFont = New StdFont
+    If FontExists("Segoe MDL2 Assets") Then
+        mCloseButtonFont.Name = "Segoe MDL2 Assets"
+        mCloseButtonFont.Bold = True
+        mCloseButtonFont.Size = 10
+        mCloseButtonCharCode = &HE106 ' Segoe MDL2 Assets "Cancel" glyph
+    ElseIf FontExists("Marlett") Then
+        mCloseButtonFont.Name = "Marlett"
+        mCloseButtonFont.Size = 15
+        mCloseButtonCharCode = &H72 ' Marlett "r" = close box glyph
+    Else
+        mCloseButtonFont.Name = "Arial"
+        mCloseButtonFont.Bold = True
+        mCloseButtonFont.Size = 15
+        mCloseButtonCharCode = &H78 ' "x"
+    End If
+    mCloseButtonFontIsSetUp = True
+End Sub
+
 Private Function FontExists(nFontName As String) As Boolean
     Dim iFont As New StdFont
     
@@ -14952,14 +16596,11 @@ Private Sub TDISetTDIMode()
     Redraw = False
     
     Set iFont = New StdFont
-    If FontExists("Segoe MDL2 Assets") Then
-        If mTDIMode = ntTDIModeControls Then
+    If mTDIMode = ntTDIModeControls Then
+        If FontExists("Segoe MDL2 Assets") Then
             iFont.Name = "Segoe MDL2 Assets"
             iFont.Bold = True
-            iFont.Size = 10 ' size of the X to close the tab
-            Set TabIconFont(0) = iFont
-        End If
-        If mTDIMode = ntTDIModeControls Then
+            iFont.Size = 10
             Set TabIconFont(1) = CloneFont(iFont)
             TabIconFont(1).Size = 10 ' size of the + to add a new tab
             TabIconFont(1).Bold = True
@@ -14967,17 +16608,7 @@ Private Sub TDISetTDIMode()
             TabIconLeftOffset(1) = -2 * mDPIScale
             TabIconTopOffset(1) = 1 * mDPIScale
             TabIconCharHex(1) = "&HF8AA&"
-            TabIconLeftOffset(0) = -3 * mDPIScale
-            TabIconTopOffset(0) = 1 * mDPIScale
-            TabIconCharHex(0) = "&HE106&"
-        End If
-    ElseIf FontExists("Marlett") Then
-        iFont.Name = "Marlett"
-        'iFont.Bold = True
-        iFont.Size = 15 ' size of the X to close the tab
-        Set TabIconFont(0) = iFont
-        If mTDIMode = ntTDIModeControls Then
-            Set iFont = New StdFont
+        Else
             iFont.Name = "Arial"
             iFont.Size = 15
             iFont.Bold = True
@@ -14986,29 +16617,10 @@ Private Sub TDISetTDIMode()
             TabIconLeftOffset(1) = -2 * mDPIScale
             TabIconTopOffset(1) = 2 * mDPIScale
             TabIconCharHex(1) = "&H2B&"
-            TabIconLeftOffset(0) = -3 * mDPIScale
-            TabIconTopOffset(0) = 1 * mDPIScale
-            TabIconCharHex(0) = "&H72&"
-        End If
-    Else
-        iFont.Name = "Arial"
-        iFont.Size = 15
-        iFont.Bold = True
-        Set TabIconFont(0) = iFont
-        If mTDIMode = ntTDIModeControls Then
-            Set TabIconFont(1) = CloneFont(iFont)
-            TabToolTipText(1) = "Add a new tab"
-            TabIconLeftOffset(1) = -2 * mDPIScale
-            TabIconTopOffset(1) = 2 * mDPIScale
-            TabIconCharHex(1) = "&H2B&"
-            TabIconLeftOffset(0) = 0
-            TabIconTopOffset(0) = 0
-            TabIconCharHex(0) = "&H78&"
         End If
     End If
     
     mSettingTDIMode = True
-    mTDIIconColorMouseHover = IconColorMouseHover
     mTDIChangingTabCount = True
     If mTDIMode = ntTDIModeControls Then
         Tabs = 2
@@ -15021,7 +16633,11 @@ Private Sub TDISetTDIMode()
         TabCaption(1) = ""
         mTabData(1).Data = -1
     End If
-    mIconAlignment = ntIconAlignEnd
+    If mTDIMode = ntTDIModeControls Then
+        mIconAlignment = ntIconAlignEnd ' the "+" icon on tab 1 goes at the end/right
+    ElseIf mTDIMode = ntTDIModeForms Then
+        mIconAlignment = ntIconAlignStart ' form icons go before the caption, like the old ad-hoc mechanism did
+    End If
     mBackColor = Ambient.BackColor
     
     If Not mAmbientUserMode Then
@@ -15037,34 +16653,6 @@ Private Sub TDISetTDIMode()
         lblTDILabel.ForeColor = mForeColorSelectedTab
         DrawDelayed
     Else
-        If Not FontExists(TabIconFont(0).Name) Then
-            Set iFont = New StdFont
-            If FontExists("Segoe MDL2 Assets") Then
-                iFont.Name = "Segoe MDL2 Assets"
-                iFont.Size = 10
-                iFont.Bold = True
-                Set TabIconFont(0) = iFont
-                TabIconLeftOffset(0) = -3 * mDPIScale
-                TabIconTopOffset(0) = 1 * mDPIScale
-                If TabIconCharHex(0) <> "" Then TabIconCharHex(0) = "&HE106&"
-            ElseIf FontExists("Marlett") Then
-                iFont.Name = "Marlett"
-                iFont.Size = 15
-                iFont.Bold = True
-                Set TabIconFont(0) = iFont
-                TabIconLeftOffset(0) = 0
-                TabIconTopOffset(0) = 0
-                If TabIconCharHex(0) <> "" Then TabIconCharHex(0) = "&H72&"
-            Else
-                iFont.Name = "Arial"
-                iFont.Size = 15
-                iFont.Bold = True
-                Set TabIconFont(0) = iFont
-                TabIconLeftOffset(0) = 0
-                TabIconTopOffset(0) = 0
-                If TabIconCharHex(0) <> "" Then TabIconCharHex(0) = "&H78&"
-            End If
-        End If
         If mTDIMode = ntTDIModeControls Then
             If Not FontExists(TabIconFont(1).Name) Then
                 Set iFont = New StdFont
@@ -15089,9 +16677,6 @@ Private Sub TDISetTDIMode()
                 End If
             End If
         End If
-        mTDIIconColorMouseHover = mIconColorMouseHover
-        mIconColorMouseHover = mIconColor
-        mIconColorMouseHoverSelectedTab = mIconColor
         If mTDIMode = ntTDIModeControls Then
             TDIStoreTab0ControlInfo
             mTDILastTabNumber = mTDILastTabNumber + 1
@@ -15111,7 +16696,7 @@ Private Sub TDISetTDIMode()
             ReDim mTDIModeFormsFormData_FormHwnd(100)
             ReDim mTDIModeFormsFormData_OldParentHwnd(100)
             ReDim mTDIModeFormsFormData_FormIcon(100)
-            ReDim mTDIFormIconCustomData(100)
+            ReDim mTDIFormIconLastHwnd(100)
             ReDim mTDIFormWithoutCloseButton(100)
             InstallCBTHook Me
         End If
@@ -15198,37 +16783,8 @@ Private Sub TDIPrepareNewTab(nTabCaption As String, nLoadTabControls As Boolean,
     MoveTab mTabs - 2, mTabs - 1
     mTabData(mTabs - 2).TDITabNumber = mTDILastTabNumber
     
-    If mTDIMode = ntTDIModeForms Then
-        Set TabIconFont(mTabs - 2) = CloneFont(TabIconFont(mTabs - 1))
-    Else
-        Set TabIconFont(mTabs - 2) = TabIconFont(0)
-    End If
-    
-    If nShowTabCloseButton Then
-        If TabIconFont(mTabs - 2).Name = "Arial" Then
-            TabIconFont(mTabs - 2).Size = 15
-            TabIconLeftOffset(mTabs - 2) = -3 * mDPIScale
-            TabIconTopOffset(mTabs - 2) = -1 * mDPIScale
-            TabIconCharHex(mTabs - 2) = "&H78&"
-        ElseIf TabIconFont(mTabs - 2).Name = "Marlett" Then
-            TabIconFont(mTabs - 2).Size = 15
-            TabIconLeftOffset(mTabs - 2) = -3 * mDPIScale
-            TabIconTopOffset(mTabs - 2) = -1 * mDPIScale
-            TabIconCharHex(mTabs - 2) = "&H72&"
-        Else
-            TabIconFont(mTabs - 2).Size = 10
-            TabIconLeftOffset(mTabs - 2) = -3 * mDPIScale
-            TabIconTopOffset(mTabs - 2) = 1 * mDPIScale
-            TabIconCharHex(mTabs - 2) = "&HE106&"
-        End If
-    End If
-    TabCaption(mTabs - 2) = nTabCaption & IIf(nShowTabCloseButton, "   ", "")
-    If mAmbientUserMode Then
-        mIconColorMouseHover = mIconColor
-        mIconColorMouseHoverSelectedTab = mIconColor
-    End If
-    tmrTDIIconColor.Enabled = False
-    tmrTDIIconColor.Enabled = True
+    mTabData(mTabs - 2).TDICloseButtonShown = nShowTabCloseButton
+    TabCaption(mTabs - 2) = nTabCaption
     
     If nPosition = -1 Then
         nPosition = mTabs - 2
@@ -15380,14 +16936,14 @@ Friend Function IsParentEnabled() As Boolean
     IsParentEnabled = UserControl.Parent.Enabled
 End Function
 
-Friend Sub TDIPutFormIntoTab(ByVal nHwndForm As Long)
+Friend Sub TDIPutFormIntoTab(ByVal nHwndForm As LongPtr)
     Const WS_CAPTION As Long = &HC00000
     Const WS_THICKFRAME As Long = &H40000
     Const GWL_STYLE As Long = (-16)
     Const WM_GETICON As Long = &H7F
     Const ICON_BIG As Long = 1
     Const WS_SYSMENU = &H80000
-    Dim iIconHandle As Long
+    Dim iIconHandle As LongPtr
     Dim iFormCaption As String
     
     mTDIAddingNewTabForForm = True
@@ -15397,7 +16953,7 @@ Friend Sub TDIPutFormIntoTab(ByVal nHwndForm As Long)
             ReDim Preserve mTDIModeFormsFormData_FormHwnd(mTabs + 100)
             ReDim Preserve mTDIModeFormsFormData_OldParentHwnd(mTabs + 100)
             ReDim Preserve mTDIModeFormsFormData_FormIcon(mTabs + 100)
-            ReDim Preserve mTDIFormIconCustomData(mTabs + 100)
+            ReDim Preserve mTDIFormIconLastHwnd(mTabs + 100)
             ReDim Preserve mTDIFormWithoutCloseButton(mTabs + 100)
         End If
         mTDIModeFormsFormData_FormHwnd(mTabs - 1) = nHwndForm
@@ -15406,9 +16962,10 @@ Friend Sub TDIPutFormIntoTab(ByVal nHwndForm As Long)
         Load picTDIFormContainer(mTabs - 1)
         UserControl.ScaleMode = vbTwips
         picTDIFormContainer(mTabs - 1).Move ClientLeft, ClientTop, ClientWidth, ClientHeight
+        SetWindowRgn picTDIFormContainer(mTabs - 1).hWnd, CloneRegion(mClientRegion), True
         SetScaleMode
         SetWindowLong nHwndForm, GWL_STYLE, GetWindowLong(nHwndForm, GWL_STYLE) And Not (WS_CAPTION Or WS_THICKFRAME)
-        MoveWindow nHwndForm, 0, 0, mClientRect.Right - mClientRect.Left + 2, mClientRect.Bottom - mClientRect.Top + 3, 1
+        MoveWindow nHwndForm, 0, 0, mBodyRect.Right - mBodyRect.Left + 2, mBodyRect.Bottom - mBodyRect.Top + 3, 1
         mTDIFormWithoutCloseButton(mTabs - 1) = (GetWindowLong(nHwndForm, GWL_STYLE) And WS_SYSMENU) = 0
         
         mTDISubclassedFormsHwnds.Add nHwndForm, CStr(nHwndForm)
@@ -15431,35 +16988,28 @@ Friend Sub TDIPutFormIntoTab(ByVal nHwndForm As Long)
     mTDIAddingNewTabForForm = False
 End Sub
 
-Private Function CreatePicture(ByVal hImage As Long, ByVal nType As PictureTypeConstants) As IPictureDisp
-    'This function creates a picture object from a handle to a bitmap or a icon
-    'hImage is the handle to the bitmap or icon
-    'Type is the type of the image (can be either vbPicTypeBitmap or vbPicTypeIcon
-    Dim PicInfo As PicBmp
-    Dim TmpPic As IPictureDisp
-    Dim IID_IDispatch As GUID
- 
-    'Setup the Guid for the function
-    With IID_IDispatch
-        
-        .Data1 = &H20400
-        .Data4(0) = &HC0
-        .Data4(7) = &H46
+Private Function CreatePicture(ByVal Handle As LongPtr, ByVal PicType As PictureTypeConstants) As IPictureDisp
+    Dim PICD As PICTDESC, IID As CLSID, NewPicture As IPicture
     
-    End With
+    If Handle = 0 Then Exit Function
     
-    'Setup the pic structure
-    With PicInfo
-        .Size = Len(PicInfo)
-        .Type = nType
-        .hBmp = hImage
+    With PICD
+        .cbSizeOfStruct = LenB(PICD)
+        .PicType = PicType
+        .hImage = Handle
     End With
- 
-    'create the picture
-    OleCreatePictureIndirect PicInfo, IID_IDispatch, 1, TmpPic
- 
-    Set CreatePicture = TmpPic
- 
+    With IID
+        .Data1 = &H7BF80980
+        .Data2 = &HBF32
+        .Data3 = &H101A
+        .Data4(0) = &H8B
+        .Data4(1) = &HBB
+        .Data4(3) = &HAA
+        .Data4(5) = &H30
+        .Data4(6) = &HC
+        .Data4(7) = &HAB
+    End With
+    If OleCreatePictureIndirect(PICD, IID, 1, NewPicture) = 0 Then Set CreatePicture = NewPicture
 End Function
 
 Private Function GetUniqueCaption(nCaption As String, nTabToIgnore As Long) As String
@@ -15513,7 +17063,7 @@ Private Function GetUniqueCaption(nCaption As String, nTabToIgnore As Long) As S
     Loop
 End Function
 
-Private Function GetWindowCaption(ByVal hWnd As Long) As String
+Private Function GetWindowCaption(ByVal hWnd As LongPtr) As String
     Dim Buffer As String
     Const WM_GETTEXT = &HD
     
@@ -15521,12 +17071,12 @@ Private Function GetWindowCaption(ByVal hWnd As Long) As String
     GetWindowCaption = Left$(Buffer, DefWindowProcW(hWnd, WM_GETTEXT, Len(Buffer), StrPtr(Buffer)))
 End Function
 
-Friend Sub TDIFormClosing(ByVal nHwndForm As Long)
+Friend Sub TDIFormClosing(ByVal nHwndForm As LongPtr)
     Dim c As Long
     Dim i As Long
     Dim iDone As Boolean
     Const WA_ACTIVE As Long = 1
-    Dim iHwnd As Long
+    Dim iHwnd As LongPtr
     
     If mShowingModalForm Then
         PostMessage mFormHwnd, WM_NCACTIVATE, WA_ACTIVE, 0&
@@ -15551,31 +17101,33 @@ Friend Sub TDIFormClosing(ByVal nHwndForm As Long)
         End If
         mTabData(i).Visible = False
         DrawDelayed
-        For c = i - 1 To 1 Step -1
-            If mTabData(c).Visible Then
-                TabSel = c
-                iDone = True
-                Exit For
-            End If
-        Next
-        If Not iDone Then
-            For c = i + 1 To mTabs - 1
+        If i = mTab Then ' only reassign the active tab if the one closing was the active one
+            For c = i - 1 To 1 Step -1
                 If mTabData(c).Visible Then
                     TabSel = c
                     iDone = True
                     Exit For
                 End If
             Next
-        End If
-        If Not iDone Then
-            If TabVisible(0) = True Then
-                TabSel = 0
+            If Not iDone Then
+                For c = i + 1 To mTabs - 1
+                    If mTabData(c).Visible Then
+                        TabSel = c
+                        iDone = True
+                        Exit For
+                    End If
+                Next
+            End If
+            If Not iDone Then
+                If TabVisible(0) = True Then
+                    TabSel = 0
+                End If
             End If
         End If
     End If
 End Sub
 
-Friend Sub TDIFocusForm(ByVal nHwndForm As Long)
+Friend Sub TDIFocusForm(ByVal nHwndForm As LongPtr)
     Dim c As Long
     Const WA_ACTIVE As Long = 1
     
@@ -15616,6 +17168,8 @@ Public Function FindTab(ByVal Find As Variant, Optional ByVal Method As NTFindTa
 Attribute FindTab.VB_Description = "Finds a tab based on the values provided in the parameters and returns its index. If the tab is not found, it returns -1."
     Dim c As Long
     Dim iStartingTab As Long
+    Dim iCtlName As String
+    Dim iCtl As Object
     
     If Not IsMissing(StartingTab) Then
         iStartingTab = Val(StartingTab)
@@ -15673,6 +17227,19 @@ Attribute FindTab.VB_Description = "Finds a tab based on the values provided in 
             
             iLCFind = LCase(Find)
             If LCase$(mTabData(c).Key) = iLCFind Then
+                FindTab = c
+                Exit Function
+            End If
+        Next
+    ElseIf Method = ntFindContainedControl Then
+        If IsObject(Find) Then
+            Set iCtl = Find
+            iCtlName = ControlName(iCtl)
+        ElseIf VarType(Find) = vbString Then
+            iCtlName = Find
+        End If
+        For c = iStartingTab To mTabs - 1
+            If ControlIsInTab(iCtlName, c) Then
                 FindTab = c
                 Exit Function
             End If
@@ -15750,27 +17317,33 @@ Attribute SetThemeData.VB_Description = "Applies a theme from data contained in 
 End Sub
 
 
-Public Property Get TabFixedWidth(ByVal Index As Long) As Long
+Public Property Get TabFixedWidth(ByVal nTab As Variant) As Long
 Attribute TabFixedWidth.VB_Description = "Returns/sets a fixed width for a tab. To set it for its automatic width (according to the TabWidthStyle setting), set it to 0."
 Attribute TabFixedWidth.VB_ProcData.VB_Invoke_Property = ";Tabs"
-    If (Index < 0) Or (Index >= mTabs) Then
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    TabFixedWidth = UserControl.ScaleX(mTabData(Index).FixedWidth, vbPixels, vbTwips)
+    TabFixedWidth = UserControl.ScaleX(mTabData(iIndex).FixedWidth, vbPixels, vbTwips)
 End Property
 
-Public Property Let TabFixedWidth(ByVal Index As Long, ByVal nValue As Long)
-    If (Index < 0) Or (Index >= mTabs) Then
+Public Property Let TabFixedWidth(ByVal nTab As Variant, ByVal nValue As Long)
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
-    If nValue <> mTabData(Index).FixedWidth Then
+    If nValue <> mTabData(iIndex).FixedWidth Then
         If (nValue < 0) Then
             RaiseError 380, TypeName(Me) ' invalid property value
             Exit Property
         End If
-        mTabData(Index).FixedWidth = UserControl.ScaleX(nValue, vbTwips, vbPixels)
+        mTabData(iIndex).FixedWidth = UserControl.ScaleX(nValue, vbTwips, vbPixels)
         PropertyChanged "TabFixedWidth"
         DrawDelayed
     End If
@@ -15795,10 +17368,13 @@ Private Function ColorsHaveEnoughContrast(ByVal nColor1 As Long, ByVal nColor2 A
 End Function
 
 
-Public Property Get TabCustomColor(ByVal Index As Long, Optional ByVal ColorID As NTTabCustomColorIDConstants = ntCCBackColorTab) As OLE_COLOR
+Public Property Get TabCustomColor(ByVal nTab As Variant, Optional ByVal ColorID As NTTabCustomColorIDConstants = ntCCBackColorTab) As OLE_COLOR
 Attribute TabCustomColor.VB_Description = "Returns/sets a custom color for a tab. It may be a color when it is inactive or active."
 Attribute TabCustomColor.VB_ProcData.VB_Invoke_Property = ";Appearance"
-    If (Index < 0) Or (Index >= mTabs) Then
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
@@ -15809,115 +17385,117 @@ Attribute TabCustomColor.VB_ProcData.VB_Invoke_Property = ";Appearance"
     
     Select Case ColorID
         Case ntCCBackColorTab
-            If IsEmpty(mTabData(Index).CustomColors.BackColorTab) Then
+            If IsEmpty(mTabData(iIndex).CustomColors.BackColorTab) Then
                 TabCustomColor = mBackColorTabs
             Else
-                TabCustomColor = mTabData(Index).CustomColors.BackColorTab
+                TabCustomColor = mTabData(iIndex).CustomColors.BackColorTab
             End If
         Case ntCCBackColorSelectedTab
-            If IsEmpty(mTabData(Index).CustomColors.BackColorSelectedTab) Then
+            If IsEmpty(mTabData(iIndex).CustomColors.BackColorSelectedTab) Then
                 TabCustomColor = mBackColorSelectedTab
             Else
-                TabCustomColor = mTabData(Index).CustomColors.BackColorSelectedTab
+                TabCustomColor = mTabData(iIndex).CustomColors.BackColorSelectedTab
             End If
         Case ntCCHighlightColor
-            If IsEmpty(mTabData(Index).CustomColors.HighlightColor) Then
+            If IsEmpty(mTabData(iIndex).CustomColors.HighlightColor) Then
                 TabCustomColor = mHighlightColor
             Else
-                TabCustomColor = mTabData(Index).CustomColors.HighlightColor
+                TabCustomColor = mTabData(iIndex).CustomColors.HighlightColor
             End If
         Case ntCCHighlightColorSelectedTab
-            If IsEmpty(mTabData(Index).CustomColors.HighlightColorSelectedTab) Then
+            If IsEmpty(mTabData(iIndex).CustomColors.HighlightColorSelectedTab) Then
                 TabCustomColor = mHighlightColorSelectedTab
             Else
-                TabCustomColor = mTabData(Index).CustomColors.HighlightColorSelectedTab
+                TabCustomColor = mTabData(iIndex).CustomColors.HighlightColorSelectedTab
             End If
         Case ntCCFlatBarColorInactive
-            If IsEmpty(mTabData(Index).CustomColors.FlatBarColorInactive) Then
+            If IsEmpty(mTabData(iIndex).CustomColors.FlatBarColorInactive) Then
                 TabCustomColor = mFlatBarColorInactive
             Else
-                TabCustomColor = mTabData(Index).CustomColors.FlatBarColorInactive
+                TabCustomColor = mTabData(iIndex).CustomColors.FlatBarColorInactive
             End If
         Case ntCCFlatBarColorHighlight
-            If IsEmpty(mTabData(Index).CustomColors.FlatBarColorHighlight) Then
+            If IsEmpty(mTabData(iIndex).CustomColors.FlatBarColorHighlight) Then
                 TabCustomColor = mFlatBarColorHighlight
             Else
-                TabCustomColor = mTabData(Index).CustomColors.FlatBarColorHighlight
+                TabCustomColor = mTabData(iIndex).CustomColors.FlatBarColorHighlight
             End If
         Case ntCCFlatBarColorSelectedTab
-            If IsEmpty(mTabData(Index).CustomColors.FlatBarColorSelectedTab) Then
+            If IsEmpty(mTabData(iIndex).CustomColors.FlatBarColorSelectedTab) Then
                 TabCustomColor = mFlatBarColorSelectedTab
             Else
-                TabCustomColor = mTabData(Index).CustomColors.FlatBarColorSelectedTab
+                TabCustomColor = mTabData(iIndex).CustomColors.FlatBarColorSelectedTab
             End If
         Case ntCCFlatTabBorderColorHighlight
-            If IsEmpty(mTabData(Index).CustomColors.FlatTabBorderColorHighlight) Then
+            If IsEmpty(mTabData(iIndex).CustomColors.FlatTabBorderColorHighlight) Then
                 TabCustomColor = mFlatTabBorderColorHighlight
             Else
-                TabCustomColor = mTabData(Index).CustomColors.FlatTabBorderColorHighlight
+                TabCustomColor = mTabData(iIndex).CustomColors.FlatTabBorderColorHighlight
             End If
         Case ntCCFlatTabBorderColorSelectedTab
-            If IsEmpty(mTabData(Index).CustomColors.FlatTabBorderColorSelectedTab) Then
+            If IsEmpty(mTabData(iIndex).CustomColors.FlatTabBorderColorSelectedTab) Then
                 TabCustomColor = mFlatTabBorderColorSelectedTab
             Else
-                TabCustomColor = mTabData(Index).CustomColors.FlatTabBorderColorSelectedTab
+                TabCustomColor = mTabData(iIndex).CustomColors.FlatTabBorderColorSelectedTab
             End If
         Case ntCCForeColor
-            If IsEmpty(mTabData(Index).CustomColors.ForeColor) Then
+            If IsEmpty(mTabData(iIndex).CustomColors.ForeColor) Then
                 TabCustomColor = mForeColor
             Else
-                TabCustomColor = mTabData(Index).CustomColors.ForeColor
+                TabCustomColor = mTabData(iIndex).CustomColors.ForeColor
             End If
         Case ntCCForeColorHighlighted
-            If IsEmpty(mTabData(Index).CustomColors.ForeColorHighlighted) Then
+            If IsEmpty(mTabData(iIndex).CustomColors.ForeColorHighlighted) Then
                 TabCustomColor = mForeColorHighlighted
             Else
-                TabCustomColor = mTabData(Index).CustomColors.ForeColorHighlighted
+                TabCustomColor = mTabData(iIndex).CustomColors.ForeColorHighlighted
             End If
         Case ntCCForeColorSelectedTab
-            If IsEmpty(mTabData(Index).CustomColors.ForeColorSelectedTab) Then
+            If IsEmpty(mTabData(iIndex).CustomColors.ForeColorSelectedTab) Then
                 TabCustomColor = mForeColorSelectedTab
             Else
-                TabCustomColor = mTabData(Index).CustomColors.ForeColorSelectedTab
+                TabCustomColor = mTabData(iIndex).CustomColors.ForeColorSelectedTab
             End If
         Case ntCCIconColor
-            If IsEmpty(mTabData(Index).CustomColors.IconColor) Then
+            If IsEmpty(mTabData(iIndex).CustomColors.IconColor) Then
                 TabCustomColor = mIconColor
             Else
-                TabCustomColor = mTabData(Index).CustomColors.IconColor
+                TabCustomColor = mTabData(iIndex).CustomColors.IconColor
             End If
         Case ntCCIconColorSelectedTab
-            If IsEmpty(mTabData(Index).CustomColors.IconColorSelectedTab) Then
+            If IsEmpty(mTabData(iIndex).CustomColors.IconColorSelectedTab) Then
                 TabCustomColor = mIconColorSelectedTab
             Else
-                TabCustomColor = mTabData(Index).CustomColors.IconColorSelectedTab
+                TabCustomColor = mTabData(iIndex).CustomColors.IconColorSelectedTab
             End If
         Case ntCCIconColorMouseHover
-            If IsEmpty(mTabData(Index).CustomColors.IconColorMouseHover) Then
+            If IsEmpty(mTabData(iIndex).CustomColors.IconColorMouseHover) Then
                 TabCustomColor = mIconColorMouseHover
             Else
-                TabCustomColor = mTabData(Index).CustomColors.IconColorMouseHover
+                TabCustomColor = mTabData(iIndex).CustomColors.IconColorMouseHover
             End If
         Case ntCCIconColorMouseHoverSelectedTab
-            If IsEmpty(mTabData(Index).CustomColors.IconColorMouseHoverSelectedTab) Then
+            If IsEmpty(mTabData(iIndex).CustomColors.IconColorMouseHoverSelectedTab) Then
                 TabCustomColor = mIconColorMouseHoverSelectedTab
             Else
-                TabCustomColor = mTabData(Index).CustomColors.IconColorMouseHoverSelectedTab
+                TabCustomColor = mTabData(iIndex).CustomColors.IconColorMouseHoverSelectedTab
             End If
         Case ntCCIconColorTabHighlighted
-            If IsEmpty(mTabData(Index).CustomColors.IconColorTabHighlighted) Then
+            If IsEmpty(mTabData(iIndex).CustomColors.IconColorTabHighlighted) Then
                 TabCustomColor = mIconColorTabHighlighted
             Else
-                TabCustomColor = mTabData(Index).CustomColors.IconColorTabHighlighted
+                TabCustomColor = mTabData(iIndex).CustomColors.IconColorTabHighlighted
             End If
     End Select
 End Property
 
-Public Property Let TabCustomColor(ByVal Index As Long, Optional ByVal ColorID As NTTabCustomColorIDConstants = ntCCBackColorTab, ByVal nValue As OLE_COLOR)
+Public Property Let TabCustomColor(ByVal nTab As Variant, Optional ByVal ColorID As NTTabCustomColorIDConstants = ntCCBackColorTab, ByVal nValue As OLE_COLOR)
     Dim c As Long
     Dim iCol As Long
+    Dim iIndex As Long
     
-    If (Index < 0) Or (Index >= mTabs) Then
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Property
     End If
@@ -15932,9 +17510,9 @@ Public Property Let TabCustomColor(ByVal Index As Long, Optional ByVal ColorID A
     Select Case ColorID
         Case ntCCBackColorTab
             If (nValue = mBackColorTabs) Or (nValue = -1) Then
-                mTabData(Index).CustomColors.BackColorTab = Empty
+                mTabData(iIndex).CustomColors.BackColorTab = Empty
             Else
-                mTabData(Index).CustomColors.BackColorTab = nValue
+                mTabData(iIndex).CustomColors.BackColorTab = nValue
             
                 Dim iBCol As Long
                 Dim iBackColorTabs_H As Integer
@@ -15946,135 +17524,135 @@ Public Property Let TabCustomColor(ByVal Index As Long, Optional ByVal ColorID A
                 ColorRGBToHLS iBCol, iBackColorTabs_H, iBackColorTabs_L, iBackColorTabs_S
                 iGlowColor = GetGlowColor(iBackColorTabs_H, iBackColorTabs_L, iBackColorTabs_S)
                 For c = 1 To 10
-                    mTabData(Index).CustomColors.HighlightEffectColors_Strong(c) = MixColors(iGlowColor, nValue, 10 * c)
-                    mTabData(Index).CustomColors.HighlightEffectColors_Light(c) = MixColors(iGlowColor, nValue, 6 * c)
+                    mTabData(iIndex).CustomColors.HighlightEffectColors_Strong(c) = MixColors(nValue, iGlowColor, 10 * c)
+                    mTabData(iIndex).CustomColors.HighlightEffectColors_Light(c) = MixColors(nValue, iGlowColor, 6 * c)
                 Next c
             End If
         Case ntCCBackColorSelectedTab
             If (nValue = mBackColorSelectedTab) Or (nValue = -1) Then
-                mTabData(Index).CustomColors.BackColorSelectedTab = Empty
+                mTabData(iIndex).CustomColors.BackColorSelectedTab = Empty
                 iCol = mBackColorSelectedTab
             Else
-                mTabData(Index).CustomColors.BackColorSelectedTab = nValue
+                mTabData(iIndex).CustomColors.BackColorSelectedTab = nValue
                 iCol = nValue
             End If
             SetColors
-            If Index = mTab Then SetControlsBackColor iCol
+            If iIndex = mTab Then SetControlsBackColor iCol
         Case ntCCHighlightColor
             If (nValue = mHighlightColor) Or (nValue = -1) Then
-                mTabData(Index).CustomColors.HighlightColor = Empty
+                mTabData(iIndex).CustomColors.HighlightColor = Empty
             Else
-                mTabData(Index).CustomColors.HighlightColor = nValue
+                mTabData(iIndex).CustomColors.HighlightColor = nValue
             End If
         Case ntCCHighlightColorSelectedTab
             If (nValue = mHighlightColorSelectedTab) Or (nValue = -1) Then
-                mTabData(Index).CustomColors.HighlightColorSelectedTab = Empty
+                mTabData(iIndex).CustomColors.HighlightColorSelectedTab = Empty
             Else
-                mTabData(Index).CustomColors.HighlightColorSelectedTab = nValue
+                mTabData(iIndex).CustomColors.HighlightColorSelectedTab = nValue
             End If
             SetColors
         Case ntCCFlatBarColorInactive
             If (nValue = mFlatBarColorInactive) Or (nValue = -1) Then
-                mTabData(Index).CustomColors.FlatBarColorInactive = Empty
+                mTabData(iIndex).CustomColors.FlatBarColorInactive = Empty
             Else
-                mTabData(Index).CustomColors.FlatBarColorInactive = nValue
+                mTabData(iIndex).CustomColors.FlatBarColorInactive = nValue
                 Dim iFlatBarColorHighlight As Long
                 
-                If IsEmpty(mTabData(Index).CustomColors.FlatBarColorHighlight) Then
+                If IsEmpty(mTabData(iIndex).CustomColors.FlatBarColorHighlight) Then
                     iFlatBarColorHighlight = mFlatBarColorHighlight
                 Else
-                    iFlatBarColorHighlight = mTabData(Index).CustomColors.FlatBarColorHighlight
+                    iFlatBarColorHighlight = mTabData(iIndex).CustomColors.FlatBarColorHighlight
                 End If
                 For c = 1 To 10
-                    mTabData(Index).CustomColors.FlatBarHighlightEffectColors(c) = MixColors(iFlatBarColorHighlight, mTabData(Index).CustomColors.FlatBarColorInactive, 10 * c)
+                    mTabData(iIndex).CustomColors.FlatBarHighlightEffectColors(c) = MixColors(mTabData(iIndex).CustomColors.FlatBarColorInactive, iFlatBarColorHighlight, 10 * c)
                 Next c
-                mTabData(Index).CustomColors.FlatBarGlowColor = mTabData(Index).CustomColors.FlatBarHighlightEffectColors(10)
+                mTabData(iIndex).CustomColors.FlatBarGlowColor = mTabData(iIndex).CustomColors.FlatBarHighlightEffectColors(10)
             End If
         Case ntCCFlatBarColorHighlight
             If (nValue = mFlatBarColorHighlight) Or (nValue = -1) Then
-                mTabData(Index).CustomColors.FlatBarColorHighlight = Empty
+                mTabData(iIndex).CustomColors.FlatBarColorHighlight = Empty
             Else
-                mTabData(Index).CustomColors.FlatBarColorHighlight = nValue
+                mTabData(iIndex).CustomColors.FlatBarColorHighlight = nValue
                 
                 Dim iFlatBarColorInactive As Long
                 
-                If IsEmpty(mTabData(Index).CustomColors.FlatBarColorInactive) Then
+                If IsEmpty(mTabData(iIndex).CustomColors.FlatBarColorInactive) Then
                     iFlatBarColorInactive = mFlatBarColorInactive
                 Else
-                    iFlatBarColorInactive = mTabData(Index).CustomColors.FlatBarColorInactive
+                    iFlatBarColorInactive = mTabData(iIndex).CustomColors.FlatBarColorInactive
                 End If
                 For c = 1 To 10
-                    mTabData(Index).CustomColors.FlatBarHighlightEffectColors(c) = MixColors(mTabData(Index).CustomColors.FlatBarColorHighlight, iFlatBarColorInactive, 10 * c)
+                    mTabData(iIndex).CustomColors.FlatBarHighlightEffectColors(c) = MixColors(iFlatBarColorInactive, mTabData(iIndex).CustomColors.FlatBarColorHighlight, 10 * c)
                 Next c
-                mTabData(Index).CustomColors.FlatBarGlowColor = mTabData(Index).CustomColors.FlatBarHighlightEffectColors(10)
+                mTabData(iIndex).CustomColors.FlatBarGlowColor = mTabData(iIndex).CustomColors.FlatBarHighlightEffectColors(10)
             End If
         Case ntCCFlatBarColorSelectedTab
             If (nValue = mFlatBarColorSelectedTab) Or (nValue = -1) Then
-                mTabData(Index).CustomColors.FlatBarColorSelectedTab = Empty
+                mTabData(iIndex).CustomColors.FlatBarColorSelectedTab = Empty
             Else
-                mTabData(Index).CustomColors.FlatBarColorSelectedTab = nValue
+                mTabData(iIndex).CustomColors.FlatBarColorSelectedTab = nValue
             End If
             SetColors
         Case ntCCFlatTabBorderColorHighlight
             If (nValue = mFlatTabBorderColorHighlight) Or (nValue = -1) Then
-                mTabData(Index).CustomColors.FlatTabBorderColorHighlight = Empty
+                mTabData(iIndex).CustomColors.FlatTabBorderColorHighlight = Empty
             Else
-                mTabData(Index).CustomColors.FlatTabBorderColorHighlight = nValue
+                mTabData(iIndex).CustomColors.FlatTabBorderColorHighlight = nValue
             End If
         Case ntCCFlatTabBorderColorSelectedTab
             If (nValue = mFlatTabBorderColorSelectedTab) Or (nValue = -1) Then
-                mTabData(Index).CustomColors.FlatTabBorderColorSelectedTab = Empty
+                mTabData(iIndex).CustomColors.FlatTabBorderColorSelectedTab = Empty
             Else
-                mTabData(Index).CustomColors.FlatTabBorderColorSelectedTab = nValue
+                mTabData(iIndex).CustomColors.FlatTabBorderColorSelectedTab = nValue
             End If
         Case ntCCForeColor
             If (nValue = mForeColor) Or (nValue = -1) Then
-                mTabData(Index).CustomColors.ForeColor = Empty
+                mTabData(iIndex).CustomColors.ForeColor = Empty
             Else
-                mTabData(Index).CustomColors.ForeColor = nValue
+                mTabData(iIndex).CustomColors.ForeColor = nValue
             End If
         Case ntCCForeColorHighlighted
             If (nValue = mForeColorHighlighted) Or (nValue = -1) Then
-                mTabData(Index).CustomColors.ForeColorHighlighted = Empty
+                mTabData(iIndex).CustomColors.ForeColorHighlighted = Empty
             Else
-                mTabData(Index).CustomColors.ForeColorHighlighted = nValue
+                mTabData(iIndex).CustomColors.ForeColorHighlighted = nValue
             End If
         Case ntCCForeColorSelectedTab
             If (nValue = mForeColorSelectedTab) Or (nValue = -1) Then
-                mTabData(Index).CustomColors.ForeColorSelectedTab = Empty
+                mTabData(iIndex).CustomColors.ForeColorSelectedTab = Empty
             Else
-                mTabData(Index).CustomColors.ForeColorSelectedTab = nValue
+                mTabData(iIndex).CustomColors.ForeColorSelectedTab = nValue
             End If
             SetControlsProperForeColor
         Case ntCCIconColor
             If (nValue = mIconColor) Or (nValue = -1) Then
-                mTabData(Index).CustomColors.IconColor = Empty
+                mTabData(iIndex).CustomColors.IconColor = Empty
             Else
-                mTabData(Index).CustomColors.IconColor = nValue
+                mTabData(iIndex).CustomColors.IconColor = nValue
             End If
         Case ntCCIconColorSelectedTab
             If (nValue = mIconColorSelectedTab) Or (nValue = -1) Then
-                mTabData(Index).CustomColors.IconColorSelectedTab = Empty
+                mTabData(iIndex).CustomColors.IconColorSelectedTab = Empty
             Else
-                mTabData(Index).CustomColors.IconColorSelectedTab = nValue
+                mTabData(iIndex).CustomColors.IconColorSelectedTab = nValue
             End If
         Case ntCCIconColorMouseHover
             If (nValue = mIconColorMouseHover) Or (nValue = -1) Then
-                mTabData(Index).CustomColors.IconColorMouseHover = Empty
+                mTabData(iIndex).CustomColors.IconColorMouseHover = Empty
             Else
-                mTabData(Index).CustomColors.IconColorMouseHover = nValue
+                mTabData(iIndex).CustomColors.IconColorMouseHover = nValue
             End If
         Case ntCCIconColorMouseHoverSelectedTab
             If (nValue = mIconColorMouseHoverSelectedTab) Or (nValue = -1) Then
-                mTabData(Index).CustomColors.IconColorMouseHoverSelectedTab = Empty
+                mTabData(iIndex).CustomColors.IconColorMouseHoverSelectedTab = Empty
             Else
-                mTabData(Index).CustomColors.IconColorMouseHoverSelectedTab = nValue
+                mTabData(iIndex).CustomColors.IconColorMouseHoverSelectedTab = nValue
             End If
         Case ntCCIconColorTabHighlighted
             If (nValue = mIconColorTabHighlighted) Or (nValue = -1) Then
-                mTabData(Index).CustomColors.IconColorTabHighlighted = Empty
+                mTabData(iIndex).CustomColors.IconColorTabHighlighted = Empty
             Else
-                mTabData(Index).CustomColors.IconColorTabHighlighted = nValue
+                mTabData(iIndex).CustomColors.IconColorTabHighlighted = nValue
             End If
     End Select
     PropertyChanged "TabCustomColor"
@@ -16084,7 +17662,6 @@ End Property
 Private Property Get CanReorderTabsEffective() As Boolean
     CanReorderTabsEffective = mCanReorderTabs And ((mTabOrientation = ssTabOrientationTop) Or (mTabOrientation = ntTabOrientationTopRight) Or (mTabOrientation = ssTabOrientationBottom) Or (mTabOrientation = ntTabOrientationBottomRight))
 End Property
-
 
 Public Property Get CaptionAlignment() As NTAlignmentConstants
 Attribute CaptionAlignment.VB_Description = "Returns/sets the alignment of the tab captions."
@@ -16112,13 +17689,13 @@ Public Property Let CaptionAlignment(ByVal nValue As NTAlignmentConstants)
     End If
 End Property
 
-Public Function TDIGetFormHwndByTab(ByVal Index As Long) As Long
+Public Function TDIGetFormHwndByTab(ByVal Index As Long) As LongPtr
 Attribute TDIGetFormHwndByTab.VB_Description = "When in TDI mode forms, it returns the hWnd of the form that is in that tab index."
     On Error Resume Next
     TDIGetFormHwndByTab = mTDIModeFormsFormData_FormHwnd(mTabData(Index).Data)
 End Function
 
-Public Function TDIGetTabByFormHwnd(ByVal FormhWnd As Long) As Long
+Public Function TDIGetTabByFormHwnd(ByVal FormhWnd As LongPtr) As Long
 Attribute TDIGetTabByFormHwnd.VB_Description = "When in TDI mode forms, it returns the tab index by supplying the hWnd of the form."
     Dim c As Long
     
@@ -16135,13 +17712,16 @@ Friend Property Let IsTDIFormsSampleInPropertyPage(ByVal nValue As Boolean)
     mIsTDIFormsSampleInPropertyPage = nValue
 End Property
 
-Public Function GetTabOriginalIndex(ByVal Index As Long) As Long
+Public Function GetTabOriginalIndex(ByVal nTab As Variant) As Long
 Attribute GetTabOriginalIndex.VB_Description = "It returns the original index of the tab by supplying the current index. If CanReorderTabs is set to True, the tab index can change."
-    If (Index < 0) Or (Index >= mTabs) Then
+    Dim iIndex As Long
+    
+    iIndex = GetTabIndex(nTab)
+    If (iIndex < 0) Or (iIndex >= mTabs) Then
         RaiseError 381, TypeName(Me) ' invalid property array index
         Exit Function
     End If
-    GetTabOriginalIndex = mTabData(Index).OriginalIndex
+    GetTabOriginalIndex = mTabData(iIndex).OriginalIndex
 End Function
 
 Private Function IsNumericInteger(nValue As Variant) As Boolean
@@ -16170,6 +17750,138 @@ Friend Property Get Subclassed() As Boolean
     Subclassed = mSubclassed
 End Property
 
+Private Sub CreateClientRegion()
+    Dim iRgnCorner As LongPtr
+    Dim iRgnCircle As LongPtr
+    Dim iRect As RECT
+    
+    Const RGN_DIFF As Long = 4
+    Const RGN_AND  As Long = 1
+    
+    If mClientRegion <> 0 Then
+        DeleteObject mClientRegion
+        mClientRegion = 0
+    End If
+    If mAppearanceIsFlat Then
+        If mClientSpaceData.LeftTopRoundness <> 0 Or mClientSpaceData.RightTopRoundness <> 0 Or mClientSpaceData.LeftBottomRoundness <> 0 Or mClientSpaceData.RightBottomRoundness <> 0 Then
+            iRect.Left = 0
+            iRect.Right = mClientSpaceData.RECT.Right - mClientSpaceData.RECT.Left
+            iRect.Top = 0
+            iRect.Bottom = mClientSpaceData.RECT.Bottom - mClientSpaceData.RECT.Top
+            mClientRegion = CreateRectRgn(iRect.Left, iRect.Top, iRect.Right + 1, iRect.Bottom + 1)
+            If mClientSpaceData.LeftTopRoundness <> 0 Then
+                iRgnCorner = CreateRectRgn(iRect.Left, iRect.Top, iRect.Left + mClientSpaceData.LeftTopRoundness + 1, iRect.Top + mClientSpaceData.LeftTopRoundness + 1)
+                iRgnCircle = CreateEllipticRgn(iRect.Left - 1, iRect.Top - 1, iRect.Left + mClientSpaceData.LeftTopRoundness * 2 + 3, iRect.Top + mClientSpaceData.LeftTopRoundness * 2 + 3)
+                CombineRgn iRgnCorner, iRgnCorner, iRgnCircle, RGN_DIFF
+                DeleteObject iRgnCircle
+                CombineRgn mClientRegion, mClientRegion, iRgnCorner, RGN_DIFF
+                DeleteObject iRgnCorner
+            End If
+            If mClientSpaceData.RightTopRoundness <> 0 Then
+                iRgnCorner = CreateRectRgn(iRect.Right - mClientSpaceData.RightTopRoundness, iRect.Top, iRect.Right + 1, iRect.Top + mClientSpaceData.RightTopRoundness)
+                iRgnCircle = CreateEllipticRgn(iRect.Right - mClientSpaceData.RightTopRoundness * 2 - 2, iRect.Top - 1, iRect.Right + 3, iRect.Top + mClientSpaceData.RightTopRoundness * 2 + 3)
+                CombineRgn iRgnCorner, iRgnCorner, iRgnCircle, RGN_DIFF
+                DeleteObject iRgnCircle
+                CombineRgn mClientRegion, mClientRegion, iRgnCorner, RGN_DIFF
+                DeleteObject iRgnCorner
+            End If
+            If mClientSpaceData.LeftBottomRoundness <> 0 Then
+                iRgnCorner = CreateRectRgn(iRect.Left - 1, iRect.Bottom - mClientSpaceData.LeftBottomRoundness - 1, iRect.Left + mClientSpaceData.LeftBottomRoundness - 1, iRect.Bottom + 1)
+                iRgnCircle = CreateEllipticRgn(iRect.Left - 1, iRect.Bottom - mClientSpaceData.LeftBottomRoundness * 2 - 1, iRect.Left + mClientSpaceData.LeftBottomRoundness * 2 + 3, iRect.Bottom + 3)
+                CombineRgn iRgnCorner, iRgnCorner, iRgnCircle, RGN_DIFF
+                DeleteObject iRgnCircle
+                CombineRgn mClientRegion, mClientRegion, iRgnCorner, RGN_DIFF
+                DeleteObject iRgnCorner
+            End If
+            If mClientSpaceData.RightBottomRoundness <> 0 Then
+                iRgnCorner = CreateRectRgn(iRect.Right - mClientSpaceData.RightBottomRoundness, iRect.Bottom - mClientSpaceData.RightBottomRoundness - 1, iRect.Right + 2, iRect.Bottom + 1)
+                iRgnCircle = CreateEllipticRgn(iRect.Right - mClientSpaceData.RightBottomRoundness * 2 - 1, iRect.Bottom - mClientSpaceData.RightBottomRoundness * 2 - 2, iRect.Right + 3, iRect.Bottom + 3)
+                CombineRgn iRgnCorner, iRgnCorner, iRgnCircle, RGN_DIFF
+                DeleteObject iRgnCircle
+                CombineRgn mClientRegion, mClientRegion, iRgnCorner, RGN_DIFF
+                DeleteObject iRgnCorner
+            End If
+        End If
+    End If
+End Sub
+
+Private Function CloneRegion(nRegion As LongPtr) As LongPtr
+    Const RGN_COPY As Long = 5
+    
+    If nRegion = 0 Then Exit Function
+    CloneRegion = CreateRectRgn(0, 0, 0, 0)
+    CombineRgn CloneRegion, nRegion, 0, RGN_COPY
+End Function
+
+Public Function GetClientRgn() As LongPtr
+Attribute GetClientRgn.VB_Description = "Returns a handle that is a region object containing the client area (intended to be used by Windows APIs)."
+    Static sClientSpaceDataPrev_Binary() As Byte
+    Static sClientSpaceDataPrev_Init As Boolean
+    Dim iBytes() As Byte
+    
+    If mAppearanceIsFlat Then
+        If (mFlatRoundnessTop > 0) Or (mFlatRoundnessTop > 0) Then
+            EnsureDrawn
+            ReDim iBytes(LenB(mClientSpaceData))
+            CopyMemory iBytes(0), mClientSpaceData, LenB(mClientSpaceData)
+            If Not sClientSpaceDataPrev_Init Then
+                ReDim sClientSpaceDataPrev_Binary(LenB(mClientSpaceData))
+                sClientSpaceDataPrev_Init = True
+            End If
+            If (StrComp(iBytes, sClientSpaceDataPrev_Binary) <> 0) Or (mClientRegion = 0) Then
+                CreateClientRegion
+                CopyMemory sClientSpaceDataPrev_Binary(0), iBytes(0), UBound(iBytes) + 1
+            End If
+        End If
+    Else
+        If mClientRegion <> 0 Then
+            DeleteObject mClientRegion
+            mClientRegion = 0
+        End If
+    End If
+    If mClientRegion <> 0 Then
+        GetClientRgn = CloneRegion(mClientRegion)
+        ReDim Preserve mClientRegionsServed(UBound(mClientRegionsServed))
+        mClientRegionsServed(UBound(mClientRegionsServed)) = GetClientRgn
+    End If
+End Function
+
+Private Function GetTabIndex(nValue As Variant) As Long
+    If IsNumericInteger(nValue) Then
+        ' OK, it is an index
+        GetTabIndex = nValue
+    ElseIf VarType(nValue) = vbString Then
+        GetTabIndex = FindTab(nValue, ntFindKey)
+        If GetTabIndex = -1 Then
+            GetTabIndex = FindTab(nValue, ntFindCaption)
+            If GetTabIndex = -1 Then
+                RaiseError 5, TypeName(Me), "Invalid procedure call or argument. String not found as TabKey or Caption. Or nValue must be numeric integer if it is a tab index."   ' Invalid procedure call or argument
+                Exit Function
+            Else
+                nValue = GetTabIndex
+            End If
+        Else
+            nValue = GetTabIndex
+        End If
+    Else
+        RaiseError 380, TypeName(Me), "Invalid argument. Tabs are identified by its tab index, TabKey or Caption."
+        Exit Function
+    End If
+End Function
+
+Private Function GetShiftState() As Integer
+    Dim ShiftState As Integer
+    Const VK_SHIFT = &H10
+    Const VK_CONTROL = &H11
+    Const VK_MENU = &H12 ' Alt key
+
+    ShiftState = 0
+    If (GetKeyState(VK_SHIFT) And &H8000) <> 0 Then ShiftState = ShiftState Or 1 ' vbShiftMask
+    If (GetKeyState(VK_CONTROL) And &H8000) <> 0 Then ShiftState = ShiftState Or 2 ' vbCtrlMask
+    If (GetKeyState(VK_MENU) And &H8000) <> 0 Then ShiftState = ShiftState Or 4 ' vbAltMask
+    GetShiftState = ShiftState
+End Function
+
 'Tab is a reserved keyword in VB6, but you can remove that restriction.
 'To be able to compile with Tab property, you need to replace VBA6.DLL with this version: https://github.com/EduardoVB/NewTab/raw/main/control-source/lib/VBA6.DLL
 'VBA6.DLL is in VS6's installation folder, usually:
@@ -16186,28 +17898,7 @@ Attribute Tab.VB_ProcData.VB_Invoke_Property = ";Tabs"
 End Property
 
 Public Property Let Tab(ByVal nValue As Variant)
-    Dim iTab As Long
-    
-    If IsNumericInteger(nValue) Then
-        ' OK, it is an index
-    ElseIf VarType(nValue) = vbString Then
-        iTab = FindTab(nValue, ntFindKey)
-        If iTab = -1 Then
-            iTab = FindTab(nValue, ntFindCaption)
-            If iTab = -1 Then
-                RaiseError 5, TypeName(Me), "Invalid procedure call or argument. String not found as TabKey or Caption. Or nValue must be numeric integer if it is a tab index."   ' Invalid procedure call or argument
-                Exit Property
-            Else
-                nValue = iTab
-            End If
-        Else
-            nValue = iTab
-        End If
-    Else
-        RaiseError 380, TypeName(Me), "Invalid property value. nValue must be a tab index or a TabKey."
-        Exit Property
-    End If
-    TabSel = nValue
+    TabSel = GetTabIndex(nValue)
 End Property
 #Else
 Public Property Get SelectedTab() As Variant
@@ -16219,28 +17910,7 @@ Attribute SelectedTab.VB_ProcData.VB_Invoke_Property = ";Tabs"
 End Property
 
 Public Property Let SelectedTab(ByVal nValue As Variant)
-    Dim iTab As Long
-    
-    If IsNumericInteger(nValue) Then
-        ' OK, it is an index
-    ElseIf VarType(nValue) = vbString Then
-        iTab = FindTab(nValue, ntFindKey)
-        If iTab = -1 Then
-            iTab = FindTab(nValue, ntFindCaption)
-            If iTab = -1 Then
-                RaiseError 5, TypeName(Me), "Invalid procedure call or argument. String not found as TabKey or Caption. Or nValue must be numeric integer if it is a tab index."   ' Invalid procedure call or argument
-                Exit Property
-            Else
-                nValue = iTab
-            End If
-        Else
-            nValue = iTab
-        End If
-    Else
-        RaiseError 380, TypeName(Me), "Invalid property value. nValue must be a tab index or a TabKey."
-        Exit Property
-    End If
-    TabSel = nValue
+    TabSel = GetTabIndex(nValue)
 End Property
 #End If
 

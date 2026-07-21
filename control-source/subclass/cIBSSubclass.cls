@@ -13,11 +13,22 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
 Option Explicit
 
-Public Function MsgResponse(ByVal hWnd As Long, ByVal iMsg As Long) As Long
+' Shim so classic VB6 understands the LongPtr type (twinBASIC already has it natively).
+' Has to live in a public class (not a standard module), otherwise VB6 throws
+' "Only public objects and types can be used as parameters... for public procedures of public classes"
+' when it's used in this interface's parameters.
+' TODO: double-check the conditional constant's name (tB64 is a placeholder).
+#If Not tB64 Then
+    Public Enum LongPtr
+        [_]
+    End Enum
+#End If
+
+Public Function MsgResponse(ByVal hWnd As LongPtr, ByVal iMsg As Long) As Long
     '
 End Function
 
-Function WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, ByRef wParam As Long, ByRef lParam As Long, ByRef bConsume As Boolean) As Long
+Function WindowProc(ByVal hWnd As LongPtr, ByVal iMsg As Long, ByRef wParam As LongPtr, ByRef lParam As LongPtr, ByRef bConsume As Boolean) As LongPtr
 Attribute WindowProc.VB_Description = "Raised whenever a message you have subclassed is sent."
     '
 End Function

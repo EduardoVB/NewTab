@@ -1,3 +1,16 @@
+2025-07-20 Changed to OLE version 15.
+2026-07-20 Fixed BackStyle bug with RightToLeft.
+2026-07-20 Removed TabOrientation restrictions with RightToLeft. RightToLeft now can work with any TabOrientation setting.
+2026-07-19 Changed pointers from Long to LongPtr to be already prepared for 64 bits.
+2026-07-19 Added option to FindTab and SelectTab methods of finding a tab by a contained control. The contained control can be a reference to it or its name. If it is part of a control array, the name must contain the index like for example "Label1(5)".
+2026-07-18 Added HorizontalTabHeightStyle property that is equivalent to TabWidthStyles that controls the width of the tabs, but for controlling the heights of horizontal tabs (used in TabOrientation: LeftHorizontal, RightHorizontal, LeftTopHorizontal and RightBottomHorizontal).
+2026-07-18 Removed TabOrientation restrictions for TDI modes. TDI modes now can work with any TabOrientation setting.
+2026-07-18 Fix in right tabs alignment when showing full rows when there are many tabs in the rows (like 15) and more than one row.
+2026-07-18 Fix in tabs insertion point after dragging when CanReorderTabs = True.
+2026-07-17 Changed how the TDI modes show the close button and the TDI mode form the icon.
+2026-07-17 Added CloseButton property that determines if the tabs will have a close button, along with companion properties CloseButtonColor, CloseButtonColorHighlight, TabCloseButton and TabCloseButtonEnabled (these last two are fine grain for each tab).
+2026-07-17 Fixed some bugs in the positions of caption and icon in certain combinations of CaptionAlignment, IconAlignment and TabOrientation.
+2025-10-20 Changed parameters that identify tabs previously limited to tab indexes to allow TabKeys and tab captions as identifiers. For example in TabVisible, TabEnabled and other Tab* properties.
 2025-09-08 Handled clipboard error in pagNewTabThemes and pagNewTabIcons.
 2025-09-04 Fix in right tab of rounded tabs.
 2025-07-27 Fix in the themes property page.

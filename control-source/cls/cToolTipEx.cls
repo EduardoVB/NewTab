@@ -81,26 +81,35 @@ Private Const MOUSEEVENTF_LEFTDOWN = &H2 ' Left button down
 Public Event Closed()
 Public Event BeforeClose()
 
-Private Declare Function MoveWindow Lib "user32" (ByVal hWnd As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
-Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, lpRect As RECT) As Long
+Private Declare Function MoveWindow Lib "user32" (ByVal hWnd As LongPtr, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal bRepaint As Long) As Long
+Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As LongPtr, lpRect As RECT) As Long
 Private Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
-Private Declare Function ScreenToClient Lib "user32" (ByVal hWnd As Long, lpPoint As POINTAPI) As Long
-Private Declare Function TranslateColor Lib "olepro32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As Long, Col As Long) As Long
-Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function ScreenToClient Lib "user32" (ByVal hWnd As LongPtr, lpPoint As POINTAPI) As Long
+Private Declare Function TranslateColor Lib "olepro32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As LongPtr, Col As Long) As Long
+' GWL_HWNDPARENT holds an HWND: SetWindowLong truncates to 32 bits even on 64-bit
+' Windows, so the ...LongPtr variant has to be used. NOTE: SetWindowLongPtrA only
+' exists as a real DLL symbol on 64-bit Windows; on 32-bit that name doesn't
+' exist (it's a C-side macro pointing at SetWindowLongA), so the Alias has to
+' be conditioned on bitness.
+#If Win64 Then
+    Private Declare Function SetWindowLongPtr Lib "user32" Alias "SetWindowLongPtrA" (ByVal hWnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As LongPtr) As LongPtr
+#Else
+    Private Declare Function SetWindowLongPtr Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As LongPtr) As LongPtr
+#End If
 Private Const GWL_HWNDPARENT As Long = (-8)
-Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function ClientToScreen Lib "user32" (ByVal hWnd As Long, lpPoint As POINTAPI) As Long
-Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As Long, ByVal hMenu As Long, ByVal hInstance As Long, lpParam As Any) As Long
-Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, lParam As Any) As Long
-Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function GetMessageExtraInfo Lib "user32" () As Long
-Private Declare Sub mouse_event Lib "user32" (ByVal dwFlags As Long, ByVal dX As Long, ByVal dY As Long, ByVal cButtons As Long, ByVal dwExtraInfo As Long)
+Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As LongPtr) As Long
+Private Declare Function ClientToScreen Lib "user32" (ByVal hWnd As LongPtr, lpPoint As POINTAPI) As Long
+Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As LongPtr, ByVal hMenu As LongPtr, ByVal hInstance As LongPtr, lpParam As Any) As LongPtr
+Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hWnd As LongPtr, ByVal wMsg As Long, ByVal wParam As LongPtr, lParam As Any) As LongPtr
+Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hWnd As LongPtr, ByVal wMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
+Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As LongPtr) As Long
+Private Declare Function GetMessageExtraInfo Lib "user32" () As LongPtr
+Private Declare Sub mouse_event Lib "user32" (ByVal dwFlags As Long, ByVal dX As Long, ByVal dY As Long, ByVal cButtons As Long, ByVal dwExtraInfo As LongPtr)
 Private Declare Function SystemParametersInfoW Lib "user32" (ByVal uAction As Long, ByVal uParam As Long, ByRef pvParam As Any, ByVal fWinIni As Long) As Long
 Private Declare Sub CopyMemoryAny1 Lib "kernel32" Alias "RtlMoveMemory" (lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
-Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As Long, ByVal nIndex As Long) As Long
-Private Declare Function GetDC Lib "user32" (ByVal hWnd As Long) As Long
-Private Declare Function ReleaseDC& Lib "user32" (ByVal hWnd As Long, ByVal hDC As Long)
+Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As LongPtr, ByVal nIndex As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hWnd As LongPtr) As LongPtr
+Private Declare Function ReleaseDC& Lib "user32" (ByVal hWnd As LongPtr, ByVal hDC As LongPtr)
 
 Private Enum bsSystemFontConstants
    bsIconFont = 1
@@ -164,12 +173,12 @@ Private Const TOOLTIPS_CLASSA = "tooltips_class32"
 Private Type TOOLINFOW
     cbSize As Long
     uFlags As Long
-    hWnd As Long
+    hWnd As LongPtr
     uId As Long
     RECT As RECT
-    hInst As Long
-    lpszText As Long
-    lParam As Long
+    hInst As LongPtr
+    lpszText As LongPtr
+    lParam As LongPtr
 End Type
 
 Public Enum vbExBalloonTooltipIconConstants
@@ -202,10 +211,10 @@ Private mTag As String
 Private mRightToLeft As Boolean
 
 'private data
-Private mTTHwnd As Long ' hWnd of the tooltip
-Private mParentHwnd As Long ' hWnd of the window the tooltip attached to
+Private mTTHwnd As LongPtr ' hWnd of the tooltip
+Private mParentHwnd As LongPtr ' hWnd of the window the tooltip attached to
 Private mTi As TOOLINFOW
-Private mOldOwner As Long
+Private mOldOwner As LongPtr
 Private mTTShown As Boolean
 Private mAttached As Boolean
 Private mShowTime As Single
@@ -279,7 +288,7 @@ Public Property Get Style() As vbExBalloonTooltipStyleConstants
    Style = mStyle
 End Property
 
-Public Function Create(ByVal nParentHwnd As Long) As Boolean
+Public Function Create(ByVal nParentHwnd As LongPtr) As Boolean
     Dim lWinStyle As Long
     Dim iAbsolutePosition As Boolean
     Dim iPt As POINTAPI
@@ -587,19 +596,19 @@ Public Property Let DelayTimeSeconds(ByVal nValue As Variant)
    mDelayTimeSeconds = nValue
 End Property
 
-Public Property Get ToolTipHwnd() As Long
+Public Property Get ToolTipHwnd() As LongPtr
     ToolTipHwnd = mTTHwnd
 End Property
 
-Public Property Get ParentHwnd() As Long
+Public Property Get ParentHwnd() As LongPtr
     ParentHwnd = mParentHwnd
 End Property
 
-Private Function SetOwner(ByVal HwndWindow As Long, ByVal HwndofOwner As Long) As Long
-    SetOwner = SetWindowLong(HwndWindow, GWL_HWNDPARENT, HwndofOwner)
+Private Function SetOwner(ByVal HwndWindow As LongPtr, ByVal HwndofOwner As LongPtr) As LongPtr
+    SetOwner = SetWindowLongPtr(HwndWindow, GWL_HWNDPARENT, HwndofOwner)
 End Function
 
-Private Function IBSSubclass_MsgResponse(ByVal hWnd As Long, ByVal iMsg As Long) As EMsgResponse
+Private Function IBSSubclass_MsgResponse(ByVal hWnd As LongPtr, ByVal iMsg As Long) As EMsgResponse
     IBSSubclass_MsgResponse = emrPreprocess
 End Function
 
@@ -607,7 +616,7 @@ Private Sub IBSSubclass_UnsubclassIt()
 
 End Sub
 
-Private Function IBSSubclass_WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, ByRef wParam As Long, ByRef lParam As Long, ByRef bConsume As Boolean) As Long
+Private Function IBSSubclass_WindowProc(ByVal hWnd As LongPtr, ByVal iMsg As Long, ByRef wParam As LongPtr, ByRef lParam As LongPtr, ByRef bConsume As Boolean) As LongPtr
     Dim iRect As RECT
     
     Select Case iMsg
@@ -769,7 +778,7 @@ End Function
 Private Function LogFontToStdFont(LF As LOGFONTW, Optional nPrinterFont As Boolean) As iFont
     Dim iFontName As String
     Dim iDPIY As Single
-    Dim iDC As Long
+    Dim iDC As LongPtr
     Const LOGPIXELSY As Long = 90
     
     Set LogFontToStdFont = New StdFont

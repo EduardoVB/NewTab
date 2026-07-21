@@ -14,7 +14,7 @@ Attribute VB_Exposed = True
 Attribute VB_Description = "A Theme is a set of property settings stored together."
 Option Explicit
 
-Private Declare Function HashData Lib "shlwapi" (ByVal pbData As Long, ByVal cbData As Long, ByRef pbHash As Any, ByVal cbHash As Long) As Long
+Private Declare Function HashData Lib "shlwapi" (ByVal pbData As LongPtr, ByVal cbData As Long, ByRef pbHash As Any, ByVal cbHash As Long) As Long
 
 Private mName As String
 Private mHash As String

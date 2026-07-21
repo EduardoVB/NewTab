@@ -821,8 +821,8 @@ Implements IBSSubclass
 Private Const WM_MOUSEWHEEL As Long = &H20A
 Private Const WM_DESTROY As Long = &H2&
 
-Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As Long, lpRect As RECT) As Long
-Private Declare Function SendMessage Lib "user32" Alias "SendMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As LongPtr, lpRect As RECT) As Long
+Private Declare Function SendMessage Lib "user32" Alias "SendMessageW" (ByVal hWnd As LongPtr, ByVal wMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
 
 Private Enum NTMouseButtonsConstants
     ntMBLeft = 1
@@ -857,9 +857,9 @@ Private Type TEXTMETRICW
     tmCharSet As Byte
 End Type
 
-Private Declare Function GetTextMetricsW Lib "gdi32" (ByVal hDC As Long, ByRef TEXTMETRICW As TEXTMETRICW) As Long
+Private Declare Function GetTextMetricsW Lib "gdi32" (ByVal hDC As LongPtr, ByRef TEXTMETRICW As TEXTMETRICW) As Long
 Private Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
-Private Declare Function WindowFromPoint Lib "user32" (ByVal xPoint As Long, ByVal yPoint As Long) As Long
+Private Declare Function WindowFromPoint Lib "user32" (ByVal xPoint As Long, ByVal yPoint As Long) As LongPtr
 
 Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
 Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
@@ -880,9 +880,9 @@ Private Type GLYPHSET
     ranges() As WCRANGE
 End Type
 
-Private Declare Function GetFontUnicodeRanges Lib "gdi32.dll" (ByVal hDC As Long, lpGS As Any) As Long
+Private Declare Function GetFontUnicodeRanges Lib "gdi32.dll" (ByVal hDC As LongPtr, lpGS As Any) As Long
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
-Private Declare Function GetGlyphIndicesW Lib "gdi32.dll" (ByVal hDC As Long, ByVal lpStr As Long, ByVal lpStrLen As Long, ByVal pGI As Long, ByVal Flags As Long) As Long
+Private Declare Function GetGlyphIndicesW Lib "gdi32.dll" (ByVal hDC As LongPtr, ByVal lpStr As LongPtr, ByVal lpStrLen As Long, ByVal pGI As LongPtr, ByVal Flags As Long) As Long
 
 Private Type RECT
     Left As Long
@@ -891,7 +891,7 @@ Private Type RECT
     Bottom As Long
 End Type
 
-Private Declare Function DrawTextW Lib "user32" (ByVal hDC As Long, ByVal lpStr As Long, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
+Private Declare Function DrawTextW Lib "user32" (ByVal hDC As LongPtr, ByVal lpStr As LongPtr, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
 
 'Draw Text Constants
 Private Const DT_CALCRECT = &H400&
@@ -955,7 +955,7 @@ Private mEnableVerticalDragging As Boolean
 Private mTDIMode As Boolean
 Private mFontListLoaded As Boolean
 Private mSubclassed As Boolean
-Private mPPHwnd As Long
+Private mPPHwnd As LongPtr
 Private mDraggingSample As Boolean
 Private mMouseDown As Boolean
 
@@ -1193,7 +1193,7 @@ Private Sub cmdTabPrev_MouseUp(Button As Integer, Shift As Integer, X As Single,
     tmrClick.Enabled = False
 End Sub
 
-Private Function IBSSubclass_MsgResponse(ByVal hWnd As Long, ByVal iMsg As Long) As Long
+Private Function IBSSubclass_MsgResponse(ByVal hWnd As LongPtr, ByVal iMsg As Long) As Long
     IBSSubclass_MsgResponse = emrPostProcess
 End Function
 
@@ -1201,8 +1201,9 @@ Private Sub IBSSubclass_UnsubclassIt()
     Unsubclass
 End Sub
 
-Private Function IBSSubclass_WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, wParam As Long, lParam As Long, bConsume As Boolean) As Long
+Private Function IBSSubclass_WindowProc(ByVal hWnd As LongPtr, ByVal iMsg As Long, wParam As LongPtr, lParam As LongPtr, bConsume As Boolean) As LongPtr
     Dim iDelta As Long
+    Dim iLoDWord As Long
     'Dim iDirection As Long
     Dim iHandled As Boolean
     
@@ -1215,7 +1216,8 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, 
                     If iHandled Then
                         wParam = wParam Or 128
                     Else
-                        iDelta = WordHi(wParam)
+                        CopyMemory iLoDWord, wParam, 4 ' low DWORD of wParam as a signed Long (the wheel delta lives in its high word; direct use of wParam would mangle negative deltas on 64-bit)
+                        iDelta = WordHi(iLoDWord)
                         If iDelta > 1 Then
                             'iDirection = -1
                             If scrChars.Value > scrChars.Min Then scrChars.Value = scrChars.Value - scrChars.SmallChange
@@ -1307,6 +1309,10 @@ Private Sub NewTab1_Click(PreviousTab As Integer)
         tmrTabChanged.Enabled = True
         NewTab1.Left = 120 - NewTab1.GetTabLeft(mTab)
     End If
+End Sub
+
+Private Sub NewTab1_CloseButtonClick(ByVal nTab As Long, Cancel As Boolean)
+    Cancel = True
 End Sub
 
 Private Sub NewTab1_MouseDown(Button As Integer, Shift As Integer, X As Single, Y As Single)
@@ -1514,6 +1520,8 @@ Private Sub PropertyPage_SelectionChanged()
     iSC.StoreVisibleControlsInSelectedTab
     ReDim mTabData(mTabs - 1)
     NewTab1.RightToLeft = iSC.RightToLeft
+    NewTab1.CloseButton = iSC.CloseButton
+    NewTab1.CaptionAlignment = iSC.CaptionAlignment
     NewTab1.Tabs = iSC.Tabs
     For t = 0 To mTabs - 1
         mTabData(t).Caption = iSC.TabCaption(t)
@@ -1711,7 +1719,7 @@ Private Sub PropertyPage_Terminate()
 End Sub
 
 Private Sub tmrAutoClick_Timer()
-    Dim iHwnd As Long
+    Dim iHwnd As LongPtr
     
     If Not MouseIsPressingAButton Then
         tmrAutoClick.Enabled = False
@@ -1777,11 +1785,11 @@ Private Sub txtIconTopOffset_Change()
 End Sub
 
 Private Sub txtTab_Change()
-    NewTab1.TabSel = Val(txtTab.Text)
+    If NewTab1.TabVisible(Val(txtTab.Text)) Then NewTab1.TabSel = Val(txtTab.Text)
     If Not mLoading Then Changed = True
 End Sub
 
-Private Function WindowsUnderMouse() As Long
+Private Function WindowsUnderMouse() As LongPtr
     Dim iPt As POINTAPI
     
     GetCursorPos iPt
@@ -1803,7 +1811,7 @@ Private Function IsMouseButtonPressed(nButton As NTMouseButtonsConstants) As Boo
 End Function
 
 Private Function MouseIsPressingAButton() As Boolean
-    Dim iHwnd As Long
+    Dim iHwnd As LongPtr
     
     If IsMouseButtonPressed(ntMBLeft) Then
         iHwnd = WindowsUnderMouse
@@ -2120,7 +2128,7 @@ Private Sub PrepareIconFontData()
     ReDim Preserve mChars(mCharCount - 1)
 End Sub
 
-Private Function GetGlyphSet(ByVal nHdc As Long) As GLYPHSET
+Private Function GetGlyphSet(ByVal nHdc As LongPtr) As GLYPHSET
     Dim Data() As Byte, i As Long, j As Long
     Dim Result As Long, Count As Long
     Dim GS As GLYPHSET
@@ -2277,7 +2285,7 @@ Private Function ChrU(ByVal nCharCodeU As Long) As String
     End If
 End Function
 
-Private Function IsGlyphValid(nCharCode As Long, nHdc As Long) As Boolean
+Private Function IsGlyphValid(nCharCode As Long, nHdc As LongPtr) As Boolean
     Const GGI_MARK_NONEXISTING_GLYPHS As Long = &H1
     Dim iStr As String
     Dim iGlyph As Integer

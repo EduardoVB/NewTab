@@ -18,6 +18,24 @@ Begin VB.PropertyPage pagNewTabTabs
    PaletteMode     =   0  'Halftone
    ScaleHeight     =   8508
    ScaleWidth      =   6804
+   Begin VB.CheckBox chkTabCloseButtonEnabled 
+      Caption         =   "TabCloseButtonEnabled"
+      Height          =   204
+      Left            =   2770
+      TabIndex        =   27
+      Top             =   2683
+      Width           =   2000
+   End
+   Begin VB.ComboBox cboTabCloseButton 
+      Height          =   300
+      ItemData        =   "pagNewTabTabs.pgx":0000
+      Left            =   1400
+      List            =   "pagNewTabTabs.pgx":0002
+      Style           =   2  'Dropdown List
+      TabIndex        =   25
+      Top             =   2653
+      Width           =   1150
+   End
    Begin VB.Timer tmrStartDraggingSample 
       Enabled         =   0   'False
       Interval        =   500
@@ -36,13 +54,13 @@ Begin VB.PropertyPage pagNewTabTabs
       Left            =   120
       ScaleHeight     =   972
       ScaleWidth      =   6612
-      TabIndex        =   44
+      TabIndex        =   48
       Top             =   7440
       Width           =   6612
       Begin NewTabCtl.NewTab NewTab1 
          Height          =   804
          Left            =   0
-         TabIndex        =   45
+         TabIndex        =   26
          Top             =   0
          Width           =   6540
          _ExtentX        =   11536
@@ -76,12 +94,12 @@ Begin VB.PropertyPage pagNewTabTabs
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   310
-      Left            =   2000
+      Left            =   1400
       ScaleHeight     =   312
-      ScaleWidth      =   996
-      TabIndex        =   43
+      ScaleWidth      =   1152
+      TabIndex        =   20
       Top             =   1945
-      Width           =   1000
+      Width           =   1150
    End
    Begin VB.CommandButton cmdRemoveCustomColor 
       Caption         =   "û"
@@ -97,7 +115,7 @@ Begin VB.PropertyPage pagNewTabTabs
       EndProperty
       Height          =   300
       Left            =   2070
-      TabIndex        =   39
+      TabIndex        =   46
       Tag             =   "E"
       ToolTipText     =   "Remove custom color"
       Top             =   6520
@@ -106,7 +124,7 @@ Begin VB.PropertyPage pagNewTabTabs
    Begin VB.TextBox txtCustomColor 
       Height          =   310
       Left            =   5448
-      TabIndex        =   38
+      TabIndex        =   45
       Top             =   5920
       Width           =   1000
    End
@@ -118,7 +136,7 @@ Begin VB.PropertyPage pagNewTabTabs
       Left            =   3696
       ScaleHeight     =   588
       ScaleWidth      =   588
-      TabIndex        =   36
+      TabIndex        =   43
       Top             =   6400
       Width           =   612
    End
@@ -126,7 +144,7 @@ Begin VB.PropertyPage pagNewTabTabs
       Caption         =   "Change"
       Height          =   300
       Left            =   960
-      TabIndex        =   35
+      TabIndex        =   42
       Top             =   6520
       Width           =   1050
    End
@@ -140,7 +158,7 @@ Begin VB.PropertyPage pagNewTabTabs
       Left            =   240
       ScaleHeight     =   588
       ScaleWidth      =   588
-      TabIndex        =   33
+      TabIndex        =   40
       Top             =   6400
       Width           =   612
    End
@@ -148,23 +166,23 @@ Begin VB.PropertyPage pagNewTabTabs
       Height          =   300
       Left            =   840
       Style           =   2  'Dropdown List
-      TabIndex        =   32
+      TabIndex        =   39
       Top             =   5920
       Width           =   3500
    End
    Begin VB.TextBox txtTabFixedWidth 
       Height          =   310
-      Left            =   2000
-      TabIndex        =   25
+      Left            =   1400
+      TabIndex        =   23
       Top             =   2305
-      Width           =   1000
+      Width           =   1150
    End
    Begin VB.TextBox txtTabData 
       Height          =   310
-      Left            =   2000
-      TabIndex        =   23
+      Left            =   1400
+      TabIndex        =   17
       Top             =   1585
-      Width           =   1000
+      Width           =   1150
    End
    Begin VB.PictureBox picTabTagHolder 
       Appearance      =   0  'Flat
@@ -172,10 +190,10 @@ Begin VB.PropertyPage pagNewTabTabs
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   310
-      Left            =   2000
+      Left            =   1400
       ScaleHeight     =   312
       ScaleWidth      =   3216
-      TabIndex        =   21
+      TabIndex        =   14
       Top             =   1225
       Width           =   3217
    End
@@ -185,10 +203,10 @@ Begin VB.PropertyPage pagNewTabTabs
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   310
-      Left            =   2000
+      Left            =   1400
       ScaleHeight     =   312
       ScaleWidth      =   3216
-      TabIndex        =   13
+      TabIndex        =   12
       Top             =   865
       Width           =   3217
    End
@@ -198,7 +216,7 @@ Begin VB.PropertyPage pagNewTabTabs
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
       Height          =   310
-      Left            =   2000
+      Left            =   1400
       ScaleHeight     =   312
       ScaleWidth      =   3216
       TabIndex        =   10
@@ -212,7 +230,7 @@ Begin VB.PropertyPage pagNewTabTabs
       Left            =   15400
       ScaleHeight     =   2388
       ScaleWidth      =   1332
-      TabIndex        =   19
+      TabIndex        =   34
       Top             =   480
       Visible         =   0   'False
       Width           =   1330
@@ -224,7 +242,7 @@ Begin VB.PropertyPage pagNewTabTabs
       Left            =   12520
       ScaleHeight     =   492
       ScaleWidth      =   4092
-      TabIndex        =   18
+      TabIndex        =   33
       Top             =   0
       Visible         =   0   'False
       Width           =   4090
@@ -238,17 +256,17 @@ Begin VB.PropertyPage pagNewTabTabs
    Begin VB.CheckBox chkTabVisible 
       Caption         =   "TabVisible"
       Height          =   204
-      Left            =   2000
-      TabIndex        =   14
-      Top             =   3036
-      Width           =   1330
+      Left            =   1400
+      TabIndex        =   28
+      Top             =   3049
+      Width           =   1092
    End
    Begin VB.CheckBox chkTabEnabled 
       Caption         =   "TabEnabled"
       Height          =   204
-      Left            =   2000
-      TabIndex        =   11
-      Top             =   2740
+      Left            =   2770
+      TabIndex        =   29
+      Top             =   3049
       Width           =   1330
    End
    Begin VB.CommandButton cmdMoveNext 
@@ -295,7 +313,7 @@ Begin VB.PropertyPage pagNewTabTabs
       Caption         =   "Move a control to this tab"
       Height          =   315
       Left            =   3800
-      TabIndex        =   17
+      TabIndex        =   32
       ToolTipText     =   "Add Tab at this position"
       Top             =   4076
       Width           =   2700
@@ -305,7 +323,7 @@ Begin VB.PropertyPage pagNewTabTabs
       Enabled         =   0   'False
       Height          =   315
       Left            =   1020
-      TabIndex        =   16
+      TabIndex        =   31
       ToolTipText     =   "Add Tab at this position"
       Top             =   4076
       Width           =   2700
@@ -313,13 +331,13 @@ Begin VB.PropertyPage pagNewTabTabs
    Begin VB.Timer tmrClick 
       Enabled         =   0   'False
       Interval        =   800
-      Left            =   5535
+      Left            =   4935
       Top             =   815
    End
    Begin VB.Timer tmrAutoClick 
       Enabled         =   0   'False
       Interval        =   200
-      Left            =   5535
+      Left            =   4935
       Top             =   445
    End
    Begin VB.CommandButton cmdTabPrev 
@@ -401,6 +419,15 @@ Begin VB.PropertyPage pagNewTabTabs
       Top             =   70
       Width           =   588
    End
+   Begin VB.Label Label19 
+      Alignment       =   1  'Right Justify
+      Caption         =   "TabCloseButton:"
+      Height          =   228
+      Left            =   -160
+      TabIndex        =   24
+      Top             =   2701
+      Width           =   1488
+   End
    Begin VB.Line Line3 
       BorderColor     =   &H80000006&
       BorderStyle     =   3  'Dot
@@ -430,15 +457,15 @@ Begin VB.PropertyPage pagNewTabTabs
       Caption         =   "Color:"
       Height          =   264
       Left            =   4680
-      TabIndex        =   42
+      TabIndex        =   47
       Top             =   5950
       Width           =   660
    End
    Begin VB.Label Label17 
       Caption         =   "(Can be used to set the active tab in the 'Tab' property. Or to store a custom String data)"
       Height          =   492
-      Left            =   3120
-      TabIndex        =   41
+      Left            =   2670
+      TabIndex        =   21
       Top             =   1884
       Width           =   3720
    End
@@ -446,8 +473,8 @@ Begin VB.PropertyPage pagNewTabTabs
       Alignment       =   1  'Right Justify
       Caption         =   "TabKey:"
       Height          =   228
-      Left            =   440
-      TabIndex        =   40
+      Left            =   -160
+      TabIndex        =   19
       Top             =   1981
       Width           =   1488
    End
@@ -455,7 +482,7 @@ Begin VB.PropertyPage pagNewTabTabs
       Caption         =   "Tip: to remove a custom color in code, set it to the exact general color or to -1."
       Height          =   612
       Left            =   4440
-      TabIndex        =   37
+      TabIndex        =   44
       Top             =   6400
       Width           =   2172
    End
@@ -464,7 +491,7 @@ Begin VB.PropertyPage pagNewTabTabs
       Caption         =   "The general color is:"
       Height          =   576
       Left            =   2712
-      TabIndex        =   34
+      TabIndex        =   41
       Top             =   6496
       Width           =   900
    End
@@ -472,32 +499,32 @@ Begin VB.PropertyPage pagNewTabTabs
       Caption         =   "ColorID:"
       Height          =   260
       Left            =   144
-      TabIndex        =   31
+      TabIndex        =   38
       Top             =   5950
       Width           =   660
    End
    Begin VB.Label Label6 
       Caption         =   "(A custom data type Long for the tab)"
       Height          =   372
-      Left            =   3120
-      TabIndex        =   30
+      Left            =   2670
+      TabIndex        =   18
       Top             =   1630
       Width           =   3000
    End
    Begin VB.Label Label5 
       Caption         =   "(A custom String stored for the tab)"
       Height          =   450
-      Left            =   5400
-      TabIndex        =   29
+      Left            =   4800
+      TabIndex        =   15
       Top             =   1170
       Width           =   1370
    End
    Begin VB.Label Label4 
-      Caption         =   $"pagNewTabTabs.pgx":0000
+      Caption         =   $"pagNewTabTabs.pgx":0004
       ForeColor       =   &H00C00000&
       Height          =   900
       Left            =   2240
-      TabIndex        =   28
+      TabIndex        =   37
       Top             =   4960
       Width           =   4400
    End
@@ -514,7 +541,7 @@ Begin VB.PropertyPage pagNewTabTabs
       EndProperty
       Height          =   252
       Left            =   144
-      TabIndex        =   27
+      TabIndex        =   36
       Top             =   3724
       Width           =   6492
    End
@@ -522,8 +549,8 @@ Begin VB.PropertyPage pagNewTabTabs
       Alignment       =   1  'Right Justify
       Caption         =   "TabFixedWidth:"
       Height          =   228
-      Left            =   440
-      TabIndex        =   26
+      Left            =   -160
+      TabIndex        =   22
       Top             =   2341
       Width           =   1488
    End
@@ -531,8 +558,8 @@ Begin VB.PropertyPage pagNewTabTabs
       Alignment       =   1  'Right Justify
       Caption         =   "TabData:"
       Height          =   228
-      Left            =   440
-      TabIndex        =   24
+      Left            =   -160
+      TabIndex        =   16
       Top             =   1621
       Width           =   1488
    End
@@ -540,8 +567,8 @@ Begin VB.PropertyPage pagNewTabTabs
       Alignment       =   1  'Right Justify
       Caption         =   "TabTag:"
       Height          =   228
-      Left            =   440
-      TabIndex        =   22
+      Left            =   -160
+      TabIndex        =   13
       Top             =   1261
       Width           =   1488
    End
@@ -549,7 +576,7 @@ Begin VB.PropertyPage pagNewTabTabs
       Caption         =   "TabCustomColor property:"
       Height          =   204
       Left            =   144
-      TabIndex        =   20
+      TabIndex        =   35
       Top             =   4960
       Width           =   1992
    End
@@ -559,7 +586,7 @@ Begin VB.PropertyPage pagNewTabTabs
       ForeColor       =   &H00C00000&
       Height          =   490
       Left            =   144
-      TabIndex        =   15
+      TabIndex        =   30
       Top             =   4036
       Width           =   800
    End
@@ -567,8 +594,8 @@ Begin VB.PropertyPage pagNewTabTabs
       Alignment       =   1  'Right Justify
       Caption         =   "TabToolTipText:"
       Height          =   225
-      Left            =   440
-      TabIndex        =   12
+      Left            =   -160
+      TabIndex        =   11
       Top             =   905
       Width           =   1485
    End
@@ -576,7 +603,7 @@ Begin VB.PropertyPage pagNewTabTabs
       Alignment       =   1  'Right Justify
       Caption         =   "TabCaption:"
       Height          =   225
-      Left            =   440
+      Left            =   -160
       TabIndex        =   9
       Top             =   545
       Width           =   1485
@@ -607,9 +634,9 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
 Option Explicit
 
-Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
-Private Declare Function SendMessage Lib "user32" Alias "SendMessageW" (ByVal hWnd As Long, ByVal wMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As LongPtr, ByVal nIndex As Long) As Long
+Private Declare Function SendMessage Lib "user32" Alias "SendMessageW" (ByVal hWnd As LongPtr, ByVal wMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
 
 Private Enum NTMouseButtonsConstants
     ntMBLeft = 1
@@ -622,7 +649,7 @@ Private Type POINTAPI
 End Type
 
 Private Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
-Private Declare Function WindowFromPoint Lib "user32" (ByVal xPoint As Long, ByVal yPoint As Long) As Long
+Private Declare Function WindowFromPoint Lib "user32" (ByVal xPoint As Long, ByVal yPoint As Long) As LongPtr
 
 Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
 Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
@@ -651,6 +678,8 @@ Private Type T_TabDataP
     FixedWidth As Long
     CustomColor(16) As Long
     Key As String
+    CloseButton As NTAutoYesNoConstants
+    CloseButtonEnabled As Boolean
 End Type
 
 Private mTabData() As T_TabDataP
@@ -666,7 +695,6 @@ Private mYMouseDown As Long
 Private mEnableHorizontalDragging As Boolean
 Private mEnableVerticalDragging As Boolean
 Private mTDIMode As Boolean
-Private mPPHwnd As Long
 
 Private WithEvents mUniTextTabCaption As cUniTextBox
 Attribute mUniTextTabCaption.VB_VarHelpID = -1
@@ -701,6 +729,22 @@ Private Sub chkTabVisible_Click()
     If Not mLoading And Not mShowingTabData Then
         Changed = True
         mTabData(mTab).Visible = (chkTabVisible.Value = 1)
+    End If
+End Sub
+
+Private Sub cboTabCloseButton_Click()
+    If Not mLoading And Not mShowingTabData Then
+        Changed = True
+        mTabData(mTab).CloseButton = cboTabCloseButton.ItemData(cboTabCloseButton.ListIndex)
+        ShowTabData
+    End If
+End Sub
+
+Private Sub chkTabCloseButtonEnabled_Click()
+    If Not mLoading And Not mShowingTabData Then
+        Changed = True
+        mTabData(mTab).CloseButtonEnabled = (chkTabCloseButtonEnabled.Value = 1)
+        ShowTabData
     End If
 End Sub
 
@@ -743,6 +787,8 @@ Private Sub cmdInsertTab_Click()
     Set mTabData(mTab).IconFont = CloneFont(mLastIconFont)
     mTabData(mTab).Enabled = True
     mTabData(mTab).Visible = True
+    mTabData(mTab).CloseButton = ntYNAuto
+    mTabData(mTab).CloseButtonEnabled = True
     For c = 0 To 16
         mTabData(mTab).CustomColor(c) = GetGeneralColor(c)
     Next
@@ -1027,6 +1073,10 @@ Private Sub NewTab1_BeforeClick(ByVal CurrentSelectedTab As Long, NewSelectedTab
     If mDraggingSample Then Cancel = True
 End Sub
 
+Private Sub NewTab1_CloseButtonClick(ByVal nTab As Long, Cancel As Boolean)
+    Cancel = True
+End Sub
+
 Private Sub NewTab1_MouseUp(Button As Integer, Shift As Integer, X As Single, Y As Single)
     If mDraggingSample Then
         tmrRestoreSampleContainer.Enabled = False
@@ -1099,6 +1149,8 @@ Private Sub PropertyPage_ApplyChanges()
         iSC.TabFixedWidth(t) = mTabData(t).FixedWidth
         iSC.TabEnabled(t) = mTabData(t).Enabled
         iSC.TabVisible(t) = mTabData(t).Visible
+        iSC.TabCloseButton(t) = mTabData(t).CloseButton
+        iSC.TabCloseButtonEnabled(t) = mTabData(t).CloseButtonEnabled
         Set iSC.TabPicture(t) = mTabData(t).Picture
         Set iSC.TabPic16(t) = mTabData(t).Pic16
         Set iSC.TabPic20(t) = mTabData(t).Pic20
@@ -1123,7 +1175,7 @@ Private Sub PropertyPage_ApplyChanges()
             Set iSC.TabControlsNames(t) = New Collection
         Next
         iSC.Tabs = mTabs
-        If Not iSC.Subclassed Then iSC.TabSel = Val(txtTab.Text)
+        If Not iSC.Subclassed Then If iSC.TabVisible(Val(txtTab.Text)) Then iSC.TabSel = Val(txtTab.Text)
     End If
     iSC.MakeContainedControlsInSelTabVisible
     gPagTabsApplyTime = Timer
@@ -1196,6 +1248,8 @@ Private Sub PropertyPage_SelectionChanged()
     mSC.StoreVisibleControlsInSelectedTab
     ReDim mTabData(mTabs - 1)
     NewTab1.RightToLeft = mSC.RightToLeft
+    NewTab1.CloseButton = mSC.CloseButton
+    NewTab1.CaptionAlignment = mSC.CaptionAlignment
     NewTab1.Tabs = mSC.Tabs
     For t = 0 To mTabs - 1
         mTabData(t).Caption = mSC.TabCaption(t)
@@ -1206,6 +1260,8 @@ Private Sub PropertyPage_SelectionChanged()
         mTabData(t).FixedWidth = mSC.TabFixedWidth(t)
         mTabData(t).Enabled = mSC.TabEnabled(t)
         mTabData(t).Visible = mSC.TabVisible(t)
+        mTabData(t).CloseButton = mSC.TabCloseButton(t)
+        mTabData(t).CloseButtonEnabled = mSC.TabCloseButtonEnabled(t)
         Set mTabData(t).IconFont = CloneFont(mSC.TabIconFont(t))
         mTabData(t).IconChar = Val(mSC.TabIconCharHex(t) & "&")
         mTabData(t).IconLeftOffset = mSC.TabIconLeftOffset(t)
@@ -1275,11 +1331,27 @@ Private Sub PropertyPage_SelectionChanged()
     cboColorID.AddItem ntCCIconColorTabHighlighted & " - ntCCIconColorTabHighlighted": cboColorID.ItemData(cboColorID.NewIndex) = ntCCIconColorTabHighlighted
     cboColorID.ListIndex = 0
     
+    cboTabCloseButton.Clear
+    cboTabCloseButton.AddItem "ntYNAuto": cboTabCloseButton.ItemData(cboTabCloseButton.NewIndex) = ntYNAuto
+    cboTabCloseButton.AddItem "ntYes": cboTabCloseButton.ItemData(cboTabCloseButton.NewIndex) = ntYes
+    cboTabCloseButton.AddItem "ntNo": cboTabCloseButton.ItemData(cboTabCloseButton.NewIndex) = ntNo
+    
     ShowTabData
     
     'Debug.Print PropertyPage.Name & " End: " & Round(Timer, 2)
     mLoading = False
 End Sub
+Private Sub SelectInComboByItemData(nCombo As Control, nItemData As Long)
+    Dim c As Long
+    
+    For c = 0 To nCombo.ListCount - 1
+        If nCombo.ItemData(c) = nItemData Then
+            nCombo.ListIndex = c
+            Exit Sub
+        End If
+    Next c
+End Sub
+
 Private Sub ShowTabData()
     tmrShowTabData.Enabled = False
     tmrShowTabData.Enabled = True
@@ -1311,6 +1383,8 @@ Private Sub DoShowTabData()
     txtTabFixedWidth.Text = mTabData(t).FixedWidth
     chkTabEnabled.Value = CLng(mTabData(t).Enabled) * -1
     chkTabVisible.Value = CLng(mTabData(t).Visible) * -1
+    SelectInComboByItemData cboTabCloseButton, mTabData(t).CloseButton
+    chkTabCloseButtonEnabled.Value = CLng(mTabData(t).CloseButtonEnabled) * -1
     
     cmdTabPrev.Enabled = t > 0
     cmdTabNext.Enabled = t < (mTabs - 1)
@@ -1322,6 +1396,8 @@ Private Sub DoShowTabData()
     
     NewTab1.TabCaption(t) = mTabData(t).Caption
     NewTab1.TabEnabled(t) = mTabData(t).Enabled
+    NewTab1.TabCloseButton(t) = mTabData(t).CloseButton
+    NewTab1.TabCloseButtonEnabled(t) = mTabData(t).CloseButtonEnabled
     Set NewTab1.TabPic16(t) = mTabData(t).Pic16
     Set NewTab1.TabPic20(t) = mTabData(t).Pic20
     Set NewTab1.TabPic24(t) = mTabData(t).Pic24
@@ -1372,7 +1448,7 @@ Private Sub PropertyPage_Terminate()
 End Sub
 
 Private Sub tmrAutoClick_Timer()
-    Dim iHwnd As Long
+    Dim iHwnd As LongPtr
     
     If Not MouseIsPressingAButton Then
         tmrAutoClick.Enabled = False
@@ -1434,7 +1510,7 @@ Private Sub mUniTextTabKey_Change()
     End If
 End Sub
 
-Private Function WindowsUnderMouse() As Long
+Private Function WindowsUnderMouse() As LongPtr
     Dim iPt As POINTAPI
     
     GetCursorPos iPt
@@ -1456,7 +1532,7 @@ Private Function IsMouseButtonPressed(nButton As NTMouseButtonsConstants) As Boo
 End Function
 
 Private Function MouseIsPressingAButton() As Boolean
-    Dim iHwnd As Long
+    Dim iHwnd As LongPtr
     
     If IsMouseButtonPressed(ntMBLeft) Then
         iHwnd = WindowsUnderMouse
@@ -1731,6 +1807,6 @@ Private Sub NewTab1_MouseMove(Button As Integer, Shift As Integer, X As Single, 
 End Sub
 
 Private Sub txtTab_Change()
-    NewTab1.TabSel = Val(txtTab.Text)
+    If NewTab1.TabVisible(Val(txtTab.Text)) Then NewTab1.TabSel = Val(txtTab.Text)
     If Not mSC.Subclassed And Not mLoading Then Changed = True
 End Sub

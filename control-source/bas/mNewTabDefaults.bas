@@ -13,6 +13,7 @@ Public Const cPropDef_ChangeControlsBackColor As Boolean = True
 Public Const cPropDef_ChangeControlsForeColor As Boolean = True
 Public Const cPropDef_HighlightEffect As Boolean = True
 Public Const cPropDef_TabWidthStyle As Long = ntTWAuto
+Public Const cPropDef_HorizontalTabHeightStyle As Long = ntTHFill
 Public Const cPropDef_ShowRowsInPerspective As Long = ntYNAuto
 Public Const cPropDef_TabSeparation As Integer = 0
 Public Const cPropDef_TabAppearance As Long = ntTAAuto

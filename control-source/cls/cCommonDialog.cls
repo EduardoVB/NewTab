@@ -17,13 +17,13 @@ Const DC_PAPERS = 2
 'Const DC_PAPERNAMES = 16
 Const DC_PAPERSIZE = 3
 
-Private Declare Function GetForegroundWindow Lib "user32" () As Long
-Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As Long, ByRef lpdwProcessId As Long) As Long
+Private Declare Function GetForegroundWindow Lib "user32" () As LongPtr
+Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As LongPtr, ByRef lpdwProcessId As Long) As Long
 
 'Private Declare Function ResetDC Lib "gdi32" Alias "ResetDCA" (ByVal hDC As Long, lpInitData As Any) As Long
 Private Declare Function DeviceCapabilities Lib "winspool.drv" Alias "DeviceCapabilitiesA" (ByVal lpDeviceName As String, ByVal lpPort As String, ByVal iIndex As Long, lpOutput As Any, lpDevMode As Any) As Long
 
-Private Declare Function OleTranslateColor Lib "olepro32.dll" (ByVal OLE_COLOR As Long, ByVal hPalette As Long, pccolorref As Long) As Long
+Private Declare Function OleTranslateColor Lib "olepro32.dll" (ByVal OLE_COLOR As Long, ByVal hPalette As LongPtr, pccolorref As Long) As Long
 Private Const CLR_INVALID = -1
 
 'API function called by ChooseColor method
@@ -33,7 +33,7 @@ Private Declare Function ChooseColor Lib "comdlg32.dll" Alias "ChooseColorA" (pC
 Private Declare Function CHOOSEFONT Lib "comdlg32.dll" Alias "ChooseFontA" (pChoosefont As T_CHOOSEFONT) As Long
 
 'API function inside ShowHelp method
-Private Declare Function WinHelp Lib "user32" Alias "WinHelpA" (ByVal hWnd As Long, ByVal lpHelpFile As String, ByVal wCommand As Long, ByVal dwData As Long) As Long
+Private Declare Function WinHelp Lib "user32" Alias "WinHelpA" (ByVal hWnd As LongPtr, ByVal lpHelpFile As String, ByVal wCommand As Long, ByVal dwData As Long) As Long
 
 'API function called by ShowOpen method
 Private Declare Function GetOpenFileName Lib "comdlg32.dll" Alias "GetOpenFileNameA" (pOpenfilename As T_OpenFilename) As Long
@@ -53,13 +53,13 @@ Private Const LOCALE_USER_DEFAULT As Long = &H400&
 Private Const LOCALE_IMEASURE As Long = &HD&
 
 'API memory functions
-Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As Long) As Long
-Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As Long) As Long
-Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As Long) As Long
+Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As LongPtr) As LongPtr
+Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As LongPtr) As LongPtr
+Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As LongPtr) As LongPtr
+Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As LongPtr) As Long
 
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (hpvDest As Any, hpvSource As Any, ByVal cbCopy As Long)
-Private Declare Function lstrlenPtr Lib "kernel32" Alias "lstrlenA" (ByVal lpString As Long) As Long
+Private Declare Function lstrlenPtr Lib "kernel32" Alias "lstrlenA" (ByVal lpString As LongPtr) As Long
 
 Private Type SHITEMID
     cb As Long
@@ -74,13 +74,13 @@ Private Const GHND = (GMEM_MOVEABLE Or GMEM_ZEROINIT)
 'data buffer for the ChooseColor function
 Private Type T_ChooseColor
         lStructSize As Long
-        hwndOwner As Long
-        hInstance As Long
+        hwndOwner As LongPtr
+        hInstance As LongPtr
         RGBResult As Long
-        lpCustColors As Long
+        lpCustColors As LongPtr
         Flags As Long
-        lCustData As Long
-        lpfnHook As Long
+        lCustData As LongPtr
+        lpfnHook As LongPtr
         lpTemplateName As String
 End Type
 
@@ -120,16 +120,16 @@ End Type
 'data buffer for the ChooseFont function
 Private Type T_CHOOSEFONT
         lStructSize As Long
-        hwndOwner As Long
-        hDC As Long
-        lpLogFont As Long
+        hwndOwner As LongPtr
+        hDC As LongPtr
+        lpLogFont As LongPtr
         iPointSize As Long
         Flags As Long
         rgbColors As Long
-        lCustData As Long
-        lpfnHook As Long
+        lCustData As LongPtr
+        lpfnHook As LongPtr
         lpTemplateName As String
-        hInstance As Long
+        hInstance As LongPtr
         lpszStyle As String
         nFontType As Integer
         MISSING_ALIGNMENT As Integer
@@ -151,19 +151,19 @@ End Type
 
 Private Type T_PAGESETUPDLG
     lStructSize                 As Long
-    hwndOwner                   As Long
-    hDevMode                    As Long
-    hDevNames                   As Long
+    hwndOwner                   As LongPtr
+    hDevMode                    As LongPtr
+    hDevNames                   As LongPtr
     Flags                       As Long
     ptPaperSize                 As POINTAPI
     rtMinMargin                 As RECT
     rtMargin                    As RECT
-    hInstance                   As Long
-    lCustData                   As Long
-    lpfnPageSetupHook           As Long
-    lpfnPagePaintHook           As Long
-    lpPageSetupTemplateName     As Long
-    hPageSetupTemplate          As Long
+    hInstance                   As LongPtr
+    lCustData                   As LongPtr
+    lpfnPageSetupHook           As LongPtr
+    lpfnPagePaintHook           As LongPtr
+    lpPageSetupTemplateName     As LongPtr
+    hPageSetupTemplate          As LongPtr
 End Type
 
 Private Declare Function PageSetupDlg Lib "COMDLG32" Alias "PageSetupDlgA" (lppage As T_PAGESETUPDLG) As Boolean
@@ -195,8 +195,8 @@ Private Const PSD_ENABLEPAGESETUPTEMPLATE As Long = &H8000&
 'data buffer for the GetOpenFileName and GetSaveFileName functions
 Private Type T_OpenFilename
         lStructSize As Long
-        hwndOwner As Long
-        hInstance As Long
+        hwndOwner As LongPtr
+        hInstance As LongPtr
         lpstrFilter As String
         lpstrCustomFilter As String
         nMaxCustFilter As Long
@@ -211,8 +211,8 @@ Private Type T_OpenFilename
         nFileOffset As Integer
         nFileExtension As Integer
         lpstrDefExt As String
-        lCustData As Long
-        lpfnHook As Long
+        lCustData As LongPtr
+        lpfnHook As LongPtr
         lpTemplateName As String
 End Type
 
@@ -220,24 +220,24 @@ End Type
 'data buffer for the PrintDlg function
 Private Type T_PrintDlg
         lStructSize As Long
-        hwndOwner As Long
-        hDevMode As Long
-        hDevNames As Long
-        hDC As Long
+        hwndOwner As LongPtr
+        hDevMode As LongPtr
+        hDevNames As LongPtr
+        hDC As LongPtr
         Flags As Long
         nFromPage As Integer
         nToPage As Integer
         nMinPage As Integer
         nMaxPage As Integer
         nCopies As Integer
-        hInstance As Long
-        lCustData As Long
-        lpfnPrintHook As Long
-        lpfnSetupHook As Long
+        hInstance As LongPtr
+        lCustData As LongPtr
+        lpfnPrintHook As LongPtr
+        lpfnSetupHook As LongPtr
         lpPrintTemplateName As String
         lpSetupTemplateName As String
-        hPrintTemplate As Long
-        hSetupTemplate As Long
+        hPrintTemplate As LongPtr
+        hSetupTemplate As LongPtr
 End Type
 
 'constants for color dialog
@@ -617,7 +617,7 @@ Private mFont As StdFont
 'Private mFont.Strikethrough As Boolean
 'Private mFont.Underline As Boolean
 Private mFromPage As Long
-Private mhDc As Long
+Private mhDc As LongPtr
 Private mHelpCommand As Long
 Private mHelpContext As Long
 Private mHelpFile As String
@@ -677,10 +677,10 @@ Private mDialogHeader As String
 ' auxiliary variables
 Private mDevMode As DEVMODE
 Private mDevNames As DEVNAMES
-Private mDevModePtr As Long
-Private mDevNamesPtr As Long
-Private mhDevNames As Long
-Private mhDevMode As Long
+Private mDevModePtr As LongPtr
+Private mDevNamesPtr As LongPtr
+Private mhDevNames As LongPtr
+Private mhDevMode As LongPtr
 Private mPageSet As Boolean
 
 Private mAmbientUserMode As Boolean
@@ -690,9 +690,9 @@ Public Sub ShowColor(Optional ByVal nFlags As cdeCommonDialogExColorFlagsConstan
     
     Dim tChooseColor As T_ChooseColor
     Dim lCustomColorSize As Long
-    Dim lCustomColorAddress As Long
-    Dim lMemHandle As Long
-    Dim iHwndOwner As Long
+    Dim lCustomColorAddress As LongPtr
+    Dim lMemHandle As LongPtr
+    Dim iHwndOwner As LongPtr
     Dim iFlags As Long
     
     On Error GoTo ShowColorError
@@ -779,10 +779,10 @@ Public Sub ShowFont(Optional ByVal nFlags As cdeCommonDialogExFontFlagsConstants
     Dim tLogFont As LOGFONT
     Dim tChooseFont As T_CHOOSEFONT
     Dim lLogFontSize As Long
-    Dim lLogFontAddress As Long
-    Dim lMemHandle As Long
+    Dim lLogFontAddress As LongPtr
+    Dim lMemHandle As LongPtr
     Dim i As Long
-    Dim iHwndOwner As Long
+    Dim iHwndOwner As LongPtr
     Dim iFlags As Long
     
     On Error GoTo ShowFontError
@@ -1032,7 +1032,7 @@ End Sub
 
 
 Public Sub ShowOpen(Optional ByVal nFlags As cdeCommonDialogExFileFlagsConstants = -1)
-    Dim iHwndOwner As Long
+    Dim iHwndOwner As LongPtr
     Dim iFlags As Long
     
     'display the file open dialog box
@@ -1046,7 +1046,7 @@ Public Sub ShowOpen(Optional ByVal nFlags As cdeCommonDialogExFileFlagsConstants
 End Sub
 
 Public Sub ShowPrinter(Optional ByVal nFlags As cdeCommonDialogExPrinterFlagsConstants = -1)
-    Dim iHwndOwner As Long
+    Dim iHwndOwner As LongPtr
     Dim iFlags As Long
     
     'display the print dialog
@@ -1230,7 +1230,7 @@ End Sub
 
 
 Public Sub ShowSave(Optional ByVal nFlags As cdeCommonDialogExFileFlagsConstants = -1)
-    Dim iHwndOwner As Long
+    Dim iHwndOwner As LongPtr
     Dim iFlags As Long
     
     'display the file save dialog box
@@ -1454,12 +1454,12 @@ Public Property Let FromPage(nValue As Long)
     mFromPage = nValue
 End Property
 
-Public Property Get hDC() As Long
+Public Property Get hDC() As LongPtr
     EnsurePageSet
     hDC = mhDc
 End Property
 
-Public Property Let hDC(nValue As Long)
+Public Property Let hDC(nValue As LongPtr)
     mhDc = nValue
 End Property
 
@@ -1601,7 +1601,7 @@ Private Function sByteArrayToString(abBytes() As Byte) As String
     sByteArrayToString = sOut
     
 End Function
-Private Sub ShowFileDialog(ByVal mAction As Integer, nFlags As Long, Optional ByVal nHwndOwner As Long)
+Private Sub ShowFileDialog(ByVal mAction As Integer, nFlags As Long, Optional ByVal nHwndOwner As LongPtr)
     
     'display the file dialog for ShowOpen or ShowSave
     
@@ -1798,7 +1798,7 @@ Public Property Get Canceled() As Boolean
 End Property
 
 Private Function TranslateAColor(ByVal clr As OLE_COLOR, _
-                        Optional hPal As Long = 0) As Long
+                        Optional hPal As LongPtr = 0) As Long
    If OleTranslateColor(clr, hPal, TranslateAColor) Then
       TranslateAColor = CLR_INVALID
    End If
@@ -2096,7 +2096,7 @@ End Property
 
 
 Public Sub ShowPageSetup(Optional ByVal nFlags As cdeCommonDialogExPageSetupFlagsConstants = -1)
-    Dim iHwndOwner As Long
+    Dim iHwndOwner As LongPtr
     Dim iPsd As T_PAGESETUPDLG
     Dim iUnitsMultiplier As Single
     Dim iFlags As Long
@@ -2283,10 +2283,10 @@ ShowPageSetupError:
 End Sub
 
 Private Function GetDevNameString( _
-      ByVal ptrDevNames As Long, _
+      ByVal ptrDevNames As LongPtr, _
       ByVal ptrOffset As Long _
    ) As String
-   Dim Ptr As Long
+   Dim Ptr As LongPtr
    Dim lSize As Long
    Dim B() As Byte
       
@@ -2299,9 +2299,13 @@ Private Function GetDevNameString( _
    End If
 End Function
 
-Private Function UnsignedAdd(Start As Long, Incr As Long) As Long
+Private Function UnsignedAdd(Start As LongPtr, Incr As Long) As LongPtr
 ' This function is useful when doing pointer arithmetic,
 ' but note it only works for positive values of Incr
+' NOTE: the wraparound logic below assumes 32-bit pointers.
+' On a 64-bit build (twinBASIC) real pointer values fit comfortably in a
+' signed LongPtr, so this workaround probably won't be needed anymore and
+' should be revisited then.
 
    If Start And &H80000000 Then 'Start < 0
       UnsignedAdd = Start + Incr
@@ -2502,7 +2506,7 @@ Public Property Let PrinterDefault(ByVal vNewValue As Variant)
     '
 End Property
 
-Private Function GetActiveWindowHwnd() As Long
+Private Function GetActiveWindowHwnd() As LongPtr
     GetActiveWindowHwnd = GetForegroundWindow
     If GetWindowThreadProcessId(GetActiveWindowHwnd, 0&) <> App.ThreadID Then
         GetActiveWindowHwnd = 0

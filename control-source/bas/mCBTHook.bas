@@ -1,17 +1,17 @@
 Attribute VB_Name = "mCBTHook"
 Option Explicit
 
-Private Declare Function SetWindowsHookEx Lib "user32" Alias "SetWindowsHookExA" (ByVal idHook As Long, ByVal lpfn As Long, ByVal hmod As Long, ByVal dwThreadId As Long) As Long
-Private Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As Long) As Long
-Private Declare Function SetWindowSubclass Lib "comctl32" (ByVal hWnd As Long, ByVal pfnSubclass As Long, ByVal uIdSubclass As Long, ByVal dwRefData As Long) As Long
-Private Declare Function DefSubclassProc Lib "comctl32" (ByVal hWnd As Long, ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
-Private Declare Function RemoveWindowSubclass Lib "comctl32" (ByVal hWnd As Long, ByVal pfnSubclass As Long, ByVal uIdSubclass As Long) As Long
-Private Declare Function GetClassName Lib "user32" Alias "GetClassNameA" (ByVal hWnd As Long, ByVal lpClassName As String, ByVal nMaxCount As Long) As Long
-Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongW" (ByVal hWnd As Long, ByVal nIndex As Long) As Long
+Private Declare Function SetWindowsHookEx Lib "user32" Alias "SetWindowsHookExW" (ByVal idHook As Long, ByVal lpfn As LongPtr, ByVal hmod As LongPtr, ByVal dwThreadId As Long) As LongPtr
+Private Declare Function UnhookWindowsHookEx Lib "user32" (ByVal hHook As LongPtr) As Long
+Private Declare Function SetWindowSubclass Lib "comctl32" (ByVal hWnd As LongPtr, ByVal pfnSubclass As LongPtr, ByVal uIdSubclass As LongPtr, ByVal dwRefData As LongPtr) As Long
+Private Declare Function DefSubclassProc Lib "comctl32" (ByVal hWnd As LongPtr, ByVal uMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
+Private Declare Function RemoveWindowSubclass Lib "comctl32" (ByVal hWnd As LongPtr, ByVal pfnSubclass As LongPtr, ByVal uIdSubclass As LongPtr) As Long
+Private Declare Function GetClassName Lib "user32" Alias "GetClassNameW" (ByVal hWnd As LongPtr, ByVal lpClassName As LongPtr, ByVal nMaxCount As Long) As Long
+Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongW" (ByVal hWnd As LongPtr, ByVal nIndex As Long) As Long
 
-Private mCBTHook As Long
-Private mAddressOfWindowProc As Long
-Private mHwndSubclassed As Long
+Private mCBTHook As LongPtr
+Private mAddressOfWindowProc As LongPtr
+Private mHwndSubclassed As LongPtr
 Private mNewTabControl As NewTab
 
 Public Sub InstallCBTHook(nNewTabControl As NewTab)
@@ -31,7 +31,7 @@ Public Sub UninstallCBTHook()
     End If
 End Sub
 
-Private Function FormCreationHookProc(ByVal uMsg As Long, ByVal wParam As Long, ByVal lParam As Long) As Long
+Private Function FormCreationHookProc(ByVal uMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
     Const HCBT_CREATEWND = 3
     Const HCBT_DESTROYWND = 4
     Const HCBT_ACTIVATE = 5
@@ -63,7 +63,7 @@ Private Function FormCreationHookProc(ByVal uMsg As Long, ByVal wParam As Long, 
     End If
 End Function
 
-Private Function WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam As Long, ByVal lParam As Long, ByVal uIdSubclass As Long, ByVal dwRefData As Long) As Long
+Private Function WindowProc(ByVal hWnd As LongPtr, ByVal iMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr, ByVal uIdSubclass As LongPtr, ByVal dwRefData As LongPtr) As LongPtr
     Const WM_DESTROY As Long = &H2
     Const WM_NCDESTROY As Long = &H82&
     Const WM_SHOWWINDOW As Long = &H18&
@@ -90,25 +90,24 @@ Private Function WindowProc(ByVal hWnd As Long, ByVal iMsg As Long, ByVal wParam
     WindowProc = DefSubclassProc(hWnd, iMsg, wParam, ByVal lParam)
 End Function
 
-Private Function GetAddresOfProc(nProcAddress As Long) As Long
+Private Function GetAddresOfProc(nProcAddress As LongPtr) As LongPtr
     GetAddresOfProc = nProcAddress
 End Function
 
-Private Function GetWindowClassName(nHwnd As Long) As String
+Private Function GetWindowClassName(nHwnd As LongPtr) As String
     Dim iClassName As String
     Dim iSize As Long
     
     If nHwnd = 0 Then Exit Function
     
     iClassName = Space$(64)
-    iSize = GetClassName(nHwnd, iClassName, Len(iClassName))
+    iSize = GetClassName(nHwnd, StrPtr(iClassName), Len(iClassName))
     GetWindowClassName = Left$(iClassName, iSize)
 End Function
 
-Private Function WindowHasCaption(nHwnd As Long) As Boolean
+Private Function WindowHasCaption(nHwnd As LongPtr) As Boolean
     Const WS_CAPTION = &HC00000
     Const GWL_STYLE = (-16)
     
     WindowHasCaption = (GetWindowLong(nHwnd, GWL_STYLE) And WS_CAPTION) <> 0
 End Function
-

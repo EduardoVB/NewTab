@@ -3,7 +3,7 @@ Option Explicit
 
 Public gWinPropsDB As New Collection
        
-Public Function MySetProp(nHwnd As Long, nPropertyName As String, nData As Long) As Long
+Public Function MySetProp(nHwnd As LongPtr, nPropertyName As String, nData As LongPtr) As Long
     
     On Error Resume Next
     Err.Clear
@@ -22,7 +22,7 @@ ErrorExit:
     Err.Clear
 End Function
 
-Public Function MyGetProp(nHwnd As Long, nPropertyName As String) As Long
+Public Function MyGetProp(nHwnd As LongPtr, nPropertyName As String) As LongPtr
     
     On Error GoTo ErrorExit:
     MyGetProp = gWinPropsDB(CStr(nHwnd) & "|" & nPropertyName)
@@ -34,7 +34,7 @@ ErrorExit:
     Err.Clear
 End Function
 
-Public Function MyRemoveProp(nHwnd As Long, nPropertyName As String) As Long
+Public Function MyRemoveProp(nHwnd As LongPtr, nPropertyName As String) As LongPtr
     
     On Error Resume Next
     MyRemoveProp = gWinPropsDB(CStr(nHwnd) & "|" & nPropertyName)

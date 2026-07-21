@@ -2,10 +2,10 @@ Attribute VB_Name = "mNewTabThemes"
 Option Explicit
 
 Private Declare Function PathGetCharType Lib "shlwapi.dll" Alias "PathGetCharTypeW" (ByVal ch As Long) As Long
-Private Declare Function TranslateColor Lib "olepro32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As Long, Col As Long) As Long
+Private Declare Function TranslateColor Lib "olepro32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As LongPtr, Col As Long) As Long
 Private Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
-Private Declare Function FindWindow Lib "user32.dll" Alias "FindWindowA" (ByVal lpClassName As String, ByVal lpWindowName As String) As Long
-Private Declare Function GetProp Lib "user32.dll" Alias "GetPropA" (ByVal hWnd As Long, ByVal lpString As String) As Long
+Private Declare Function FindWindow Lib "user32.dll" Alias "FindWindowW" (ByVal lpClassName As LongPtr, ByVal lpWindowName As LongPtr) As LongPtr
+Private Declare Function GetProp Lib "user32.dll" Alias "GetPropW" (ByVal hWnd As LongPtr, ByVal lpString As LongPtr) As LongPtr
 
 Public gPagTabsApplyTime As Double
 Public gPagTabsLastSelectedTab As Double
@@ -70,16 +70,16 @@ Private Function ClientProjectFolder() As String
 End Function
 
 Private Function GetClientProjectFolder() As String
-    Dim hwndMain As Long
-    Dim hProp As Long
+    Dim hwndMain As LongPtr
+    Dim hProp As LongPtr
     Dim iObjIDE As Object
     Dim iObjVBE As Object
     
-    hwndMain = FindWindow("wndclass_desked_gsk", vbNullString)
+    hwndMain = FindWindow(StrPtr("wndclass_desked_gsk"), StrPtr(vbNullString))
     If hwndMain <> 0 Then
-        hProp = GetProp(hwndMain, "VBAutomation")
+        hProp = GetProp(hwndMain, StrPtr("VBAutomation"))
         If hProp <> 0 Then
-            CopyMemory iObjIDE, hProp, 4&    '= VBIDE.Window
+            CopyMemory iObjIDE, hProp, LenB(hProp)    '= VBIDE.Window
             On Error Resume Next
             Set iObjVBE = iObjIDE.VBE
             GetClientProjectFolder = iObjVBE.ActiveVBProject.FileName
@@ -103,7 +103,7 @@ Private Function ConfigFilePathInProjectFolder() As String
     If sValue = "" Then
         sValue = ClientProjectFolder & ConfigFileName
     End If
-    Debug.Print sValue
+    'Debug.Print sValue
     ConfigFilePathInProjectFolder = sValue
 End Function
 
@@ -341,6 +341,7 @@ Public Sub CopyControlProperties(nCtlSrc As NewTab, nCtlDest As NewTab, Optional
     nCtlDest.SoftEdges = nCtlSrc.SoftEdges
     nCtlDest.TabMousePointerHand = nCtlSrc.TabMousePointerHand
     nCtlDest.MaskColor = nCtlSrc.MaskColor
+    nCtlDest.CaptionAlignment = nCtlSrc.CaptionAlignment
     If FontsAreEqual(nCtlSrc.AmbientFont, nCtlSrc.Font) Then
         Set nCtlDest.Font = nCtlDest.AmbientFont
     Else
