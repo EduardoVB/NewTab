@@ -6929,6 +6929,8 @@ Private Sub Draw()
     Dim iAccumHC As Long
     Dim iShareHC As Long
     Dim iPrevVisibleTabHC As Long
+    Dim iPrevVisibleTabFillRows As Long
+    Dim iRowPosBase As Long
     Dim iLogicalRowHC As Long
     Dim iTabLeftHC As Long
     Dim iColumnTabCount As Long
@@ -7276,7 +7278,9 @@ Private Sub Draw()
                 iMaxTabsPerColumn = 1
                 Exit Do
             End If
-            iNumberOfColumnsForHorizontalCaptions = Int(mTabs / iMaxTabsPerColumn) + IIf(Int(mTabs / iMaxTabsPerColumn) < (mTabs / iMaxTabsPerColumn), 1, 0)
+            ' Count only visible tabs: hidden entries (e.g. closed TDI forms) must not
+            ' inflate the column count / tabs-per-column math
+            iNumberOfColumnsForHorizontalCaptions = Int(mVisibleTabs / iMaxTabsPerColumn) + IIf(Int(mVisibleTabs / iMaxTabsPerColumn) < (mVisibleTabs / iMaxTabsPerColumn), 1, 0)
             
             iAvailableSpaceForTabsPrev = iAvailableSpaceForTabs
             iAvailableSpaceForTabs = (iScaleWidthForTabs - IIf(mAppearanceIsPP, 4, 0)) - iRowPerspectiveSpace * (iNumberOfColumnsForHorizontalCaptions - 1) ' - mTabSeparation2 * iMaxTabsPerColumn
@@ -7286,12 +7290,13 @@ Private Sub Draw()
             End If
         Loop
         If iNumberOfColumnsForHorizontalCaptions = 0 Then iNumberOfColumnsForHorizontalCaptions = 1
-        iTabsPerColumn = Int(mTabs / iNumberOfColumnsForHorizontalCaptions) + IIf(mTabs / iNumberOfColumnsForHorizontalCaptions > Int(mTabs / iNumberOfColumnsForHorizontalCaptions), 1, 0)
+        iTabsPerColumn = Int(mVisibleTabs / iNumberOfColumnsForHorizontalCaptions) + IIf(mVisibleTabs / iNumberOfColumnsForHorizontalCaptions > Int(mVisibleTabs / iNumberOfColumnsForHorizontalCaptions), 1, 0)
         mRows = iNumberOfColumnsForHorizontalCaptions
         
         iRow = 0
         iPosH = 0
         ctv = 0
+        iPrevVisibleTabHC = -1
         For t = 0 To mTabs - 1
             If mTabData(t).Visible Then
                 ctv = ctv + 1
@@ -7303,7 +7308,8 @@ Private Sub Draw()
                 If iPosH > iTabsPerColumn Then
                     iPosH = 1
                     iRow = iRow + 1
-                    mTabData(t - 1).RightTab = True
+                    ' Previous VISIBLE tab, not previous array index (hidden tabs in between)
+                    mTabData(iPrevVisibleTabHC).RightTab = True
                 End If
                 mTabData(t).PosH = iPosH
                 mTabData(t).Row = iRow
@@ -7313,6 +7319,7 @@ Private Sub Draw()
                 If (ctv = mVisibleTabs) Then
                     mTabData(t).RightTab = True
                 End If
+                iPrevVisibleTabHC = t
             Else
                 mTabData(t).Row = -1
             End If
@@ -7334,6 +7341,7 @@ Private Sub Draw()
                 ctv = 0
                 iAccumulatedTabWith = 0
                 iAccumulatedAdditionalFixedTabSpace = 0
+                iPrevVisibleTabFillRows = -1
                 For t = 0 To mTabs - 1
                     If mTabData(t).Visible Then
                         'iRowTotalTabWidth(0) = iRowTotalTabWidth(0) + mTabData(t).IconAndCaptionWidth
@@ -7354,7 +7362,11 @@ Private Sub Draw()
                                 iRow = iRow + 1
                                 iAccumulatedTabWith = 0
                                 iAccumulatedAdditionalFixedTabSpace = 0
-                                mTabData(t - 1).RightTab = True
+                                ' The tab that closes the previous row is the previous VISIBLE tab, not
+                                ' the previous array index: with hidden tabs in between (e.g. a closed
+                                ' TDI form whose entry stays in the array with Visible = False), t - 1
+                                ' can be a hidden tab, leaving the real row-ending tab without RightTab.
+                                mTabData(iPrevVisibleTabFillRows).RightTab = True
                             End If
                         End If
                         iAccumulatedTabWith = iAccumulatedTabWith + mTabData(t).IconAndCaptionWidth
@@ -7367,6 +7379,7 @@ Private Sub Draw()
                             mTabData(t).RightTab = True
                         End If
                         mTabData(t).Row = iRow
+                        iPrevVisibleTabFillRows = t
                     Else
                         mTabData(t).Row = -1
                     End If
@@ -7655,12 +7668,24 @@ Private Sub Draw()
     
     iTabExtraHeightIsNeeded = mHighlightAddExtraHeight Or mHighlightAddExtraHeightSelectedTab And (mRows = 1)
 
-    ' Rows positions
+    ' Rows positions (RowPos = the DISPLAY row, rows rotate so that the selected tab's
+    ' row ends up next to the body). The base of the rotation is the selected tab's row,
+    ' but the selected tab can be hidden at this point (a TDI form that was just closed
+    ' hides its tab and requests a draw before the selection is moved elsewhere), and a
+    ' hidden tab's Row is -1, which can't be used as the base. In that case fall back to
+    ' row 0: what must NOT happen is skipping the loop, because then every tab keeps the
+    ' RowPos of the previous draw, and if that draw had more rows those stale values
+    ' index out of bounds into the per-row arrays below (mRightMostTabsRightPos, etc).
+    If mTabData(mTab).Visible Then
+        iRowPosBase = mTabData(mTab).Row
+    Else
+        iRowPosBase = 0
+    End If
+    If iRowPosBase < 0 Then iRowPosBase = 0
+    If iRowPosBase > (mRows - 1) Then iRowPosBase = mRows - 1
     For t = 0 To mTabs - 1
-        If mTabData(mTab).Visible Then
-            mTabData(t).RowPos = (mRows - mTabData(t).Row - 1) + mTabData(mTab).Row
-            If mTabData(t).RowPos > (mRows - 1) Then mTabData(t).RowPos = mTabData(t).RowPos - mRows
-        End If
+        mTabData(t).RowPos = (mRows - mTabData(t).Row - 1) + iRowPosBase
+        If mTabData(t).RowPos > (mRows - 1) Then mTabData(t).RowPos = mTabData(t).RowPos - mRows
     Next t
     
     If mTabsAreRotatedButCaptionsAreHorizontal Then
@@ -15416,10 +15441,7 @@ Private Sub SetAutoTabHeight()
     Dim iOrigHeight As Long
     Dim iVerticalSpaceFromIconToCaption As Long
     
-    If Not mAutoTabHeight Then
-        mSetAutoTabHeightPending = False
-        Exit Sub
-    End If
+    If Not mAutoTabHeight Then Exit Sub
     
     If Not picAux2.Font Is mFont Then
         Set picAux2.Font = mFont
@@ -17814,7 +17836,6 @@ Private Function CloneRegion(nRegion As LongPtr) As LongPtr
 End Function
 
 Public Function GetClientRgn() As LongPtr
-Attribute GetClientRgn.VB_Description = "Returns a handle that is a region object containing the client area (intended to be used by Windows APIs)."
     Static sClientSpaceDataPrev_Binary() As Byte
     Static sClientSpaceDataPrev_Init As Boolean
     Dim iBytes() As Byte

@@ -1,3 +1,4 @@
+2025-07-20 Fix en TDI mode forms regarding closing tabs and reopening them when they start a new row of tabs.
 2025-07-20 Changed to OLE version 15.
 2026-07-20 Fixed BackStyle bug with RightToLeft.
 2026-07-20 Removed TabOrientation restrictions with RightToLeft. RightToLeft now can work with any TabOrientation setting.
