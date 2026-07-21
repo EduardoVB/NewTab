@@ -1647,15 +1647,19 @@ Public Property Let Caption(ByVal nValue As String)
     TabCaption(mTab) = nValue
 End Property
 
-
 ' Returns the Windows handle of the control.
+#If VBA7 Then
+Public Property Get hWnd() As LongPtr
+    hWnd = mUserControlHwnd
+End Property
+#Else
 Public Property Get hWnd() As Long
 Attribute hWnd.VB_Description = "Returns the Windows handle of the control."
 Attribute hWnd.VB_UserMemId = -515
 Attribute hWnd.VB_MemberFlags = "400"
     hWnd = mUserControlHwnd
 End Property
-
+#End If
 
 ' Returns/sets the number of tabs to appear on each row.
 Public Property Get TabsPerRow() As Long

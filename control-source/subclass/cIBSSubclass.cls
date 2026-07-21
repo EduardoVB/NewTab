@@ -17,8 +17,9 @@ Option Explicit
 ' Has to live in a public class (not a standard module), otherwise VB6 throws
 ' "Only public objects and types can be used as parameters... for public procedures of public classes"
 ' when it's used in this interface's parameters.
-' TODO: double-check the conditional constant's name (tB64 is a placeholder).
-#If Not tB64 Then
+#Const VBA7 = 0
+
+#If VBA7 = 0 Then
     Public Enum LongPtr
         [_]
     End Enum
