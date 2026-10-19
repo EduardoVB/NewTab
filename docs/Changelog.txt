@@ -1,3 +1,4 @@
+2026-10-19 Changed to OLE version 16.
 2026-10-19 Updted the documentation.
 2026-10-13 Added FlatTabBodyGap property.
 2026-10-13 Added HighlightGradientColor and HighlightGradientColorSelectedTab properties.
