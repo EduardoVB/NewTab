@@ -29858,7 +29858,7 @@ End Function
 
 ' Tab is a reserved keyword in VB6, but you can remove that restriction.
 
-#Const COMPILE_WITH_TAB_PROPERTY = 1
+#Const COMPILE_WITH_TAB_PROPERTY = 0
 #If COMPILE_WITH_TAB_PROPERTY Then
 Public Property Get Tab() As Variant
 Attribute Tab.VB_Description = "Returns/sets the selected tab by its index, TabKey or TabCaption."
