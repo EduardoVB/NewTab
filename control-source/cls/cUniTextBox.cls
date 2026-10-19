@@ -39,21 +39,18 @@ Option Explicit
 '        Public Function UniTextBoxWindowProc(ByVal hWnd As LongPtr, ByVal uMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
 '
 '            Dim refObject As Object, unRefObj As Object
-'            Dim lProc As LongPtr, bUnicode As Boolean
+'            Dim lProc As LongPtr
+'            Dim iObjPtr As LongPtr
 '
-'            CopyMemory unRefObj, GetProp(hWnd, "cUniTextBox"), LenB(lProc)
+'            iObjPtr = GetPropW(hWnd, StrPtr("cUniTextBox"))
+'            CopyMemory unRefObj, iObjPtr, LenB(iObjPtr)
 '            Set refObject = unRefObj
-'            CopyMemory unRefObj, 0&, LenB(lProc)
+'            iObjPtr = 0
+'            CopyMemory unRefObj, iObjPtr, LenB(iObjPtr)
 '
-'            UniTextBoxWindowProc = refObject.DoWindowMsg(hWnd, uMsg, wParam, lParam, bUnicode, lProc)
+'            UniTextBoxWindowProc = refObject.DoWindowMsg(hWnd, uMsg, wParam, lParam, lProc)
 '            Set refObject = Nothing
-'            If lProc Then
-'                If bUnicode Then
-'                    UniTextBoxWindowProc = CallUniTextBoxWindowProcW(lProc, hWnd, uMsg, wParam, lParam)
-'                Else
-'                    UniTextBoxWindowProc = CallUniTextBoxWindowProc(lProc, hWnd, uMsg, wParam, lParam)
-'                End If
-'            End If
+'            If lProc Then UniTextBoxWindowProc = CallWindowProcW(lProc, hWnd, uMsg, wParam, lParam)
 '
 '        End Function
 ' 9) Use one class instance per textbox
@@ -63,23 +60,12 @@ Public Event Change()
 Public Event GotFocus()
 Public Event LostFocus()
 
-Private Declare Function SetProp Lib "user32.dll" Alias "SetPropA" (ByVal hWnd As LongPtr, ByVal lpString As String, ByVal hData As LongPtr) As Long
-'Private Declare Function GetProp Lib "user32.dll" Alias "GetPropA" (ByVal hWnd As Long, ByVal lpString As String) As Long
-Private Declare Function CreateWindowEx Lib "user32.dll" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As LongPtr, ByVal hMenu As LongPtr, ByVal hInstance As LongPtr, ByRef lpParam As Any) As LongPtr
-Private Declare Function SendMessage Lib "user32.dll" Alias "SendMessageA" (ByVal hWnd As LongPtr, ByVal wMsg As Long, ByVal wParam As LongPtr, ByRef lParam As Any) As LongPtr
+Private Declare Function SetPropW Lib "user32.dll" (ByVal hWnd As LongPtr, ByVal lpString As LongPtr, ByVal hData As LongPtr) As Long
 ' GWL_WNDPROC holds a function address (LRESULT/LONG_PTR): SetWindowLong/GetWindowLong
 ' truncate to 32 bits even on 64-bit Windows, so the ...LongPtr variants must be used.
 ' NOTE: SetWindowLongPtrA/W only exist as real DLL symbols on 64-bit Windows;
 ' on 32-bit those names don't exist (they're C-side macros pointing at SetWindowLongA/W),
 ' so the Alias has to be conditioned on bitness.
-#If Win64 Then
-    Private Declare Function SetWindowLongPtr Lib "user32.dll" Alias "SetWindowLongPtrA" (ByVal hWnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As LongPtr) As LongPtr
-    Private Declare Function GetWindowLongPtr Lib "user32.dll" Alias "GetWindowLongPtrA" (ByVal hWnd As LongPtr, ByVal nIndex As Long) As LongPtr
-#Else
-    Private Declare Function SetWindowLongPtr Lib "user32.dll" Alias "SetWindowLongA" (ByVal hWnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As LongPtr) As LongPtr
-    Private Declare Function GetWindowLongPtr Lib "user32.dll" Alias "GetWindowLongA" (ByVal hWnd As LongPtr, ByVal nIndex As Long) As LongPtr
-#End If
-
 #If Win64 Then
     Private Declare Function SetWindowLongPtrW Lib "user32.dll" Alias "SetWindowLongPtrW" (ByVal hWnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As LongPtr) As LongPtr
     Private Declare Function GetWindowLongPtrW Lib "user32.dll" Alias "GetWindowLongPtrW" (ByVal hWnd As LongPtr, ByVal nIndex As Long) As LongPtr
@@ -98,8 +84,6 @@ Private Const WM_GETTEXT As Long = &HD
 Private Const WM_SETTEXT As Long = &HC
 
 Private Declare Function DestroyWindow Lib "user32.dll" (ByVal hWnd As LongPtr) As Long
-Private Declare Function GetDesktopWindow Lib "user32.dll" () As LongPtr
-Private Declare Function IsWindowUnicode Lib "user32.dll" (ByVal hWnd As LongPtr) As Long
 Private Declare Function SetFocusAPI Lib "user32.dll" Alias "SetFocus" (ByVal hWnd As LongPtr) As LongPtr
 
 Private Const WM_KILLFOCUS As Long = &H8
@@ -144,7 +128,6 @@ End Enum
 
 Private m_Hwnd As LongPtr
 Private m_Parent As LongPtr
-Private m_Unicode As Boolean
 Private m_WinProc As LongPtr
 Private m_WinProcParent As LongPtr
 
@@ -155,27 +138,18 @@ Public Function CreateTextBox(ByVal ContainerHwnd As LongPtr, ByVal X As Long, B
                         Optional ByVal Text As String = vbNullString) As LongPtr
                         
     pvUnSubclass True
-    If m_Unicode Then
-        m_Hwnd = CreateWindowExW(ExtendedStyle, StrPtr("Edit"), StrPtr(Text), Style Or WS_CHILD, X, Y, Width, Height, ContainerHwnd, 0&, App.hInstance, ByVal 0&)
-    Else
-        m_Hwnd = CreateWindowEx(ExtendedStyle, "Edit", Text, Style Or WS_CHILD, X, Y, Width, Height, ContainerHwnd, 0&, App.hInstance, ByVal 0&)
-    End If
+    m_Hwnd = CreateWindowExW(ExtendedStyle, StrPtr("Edit"), StrPtr(Text), Style Or WS_CHILD, X, Y, Width, Height, ContainerHwnd, 0&, App.hInstance, ByVal 0&)
     If m_Hwnd Then
         m_Parent = ContainerHwnd
-        SetProp m_Hwnd, "cUniTextBox", ObjPtr(Me)
-        If m_Unicode Then
-            SendMessageW m_Hwnd, WM_SETFONT, SendMessage(m_Parent, WM_GETFONT, 0&, ByVal 0&), ByVal 0&
-            m_WinProc = GetWindowLongPtrW(m_Hwnd, GWL_WNDPROC)
-            SetWindowLongPtrW m_Hwnd, GWL_WNDPROC, AddressOf UniTextBoxWindowProc
-        Else
-            SendMessage m_Hwnd, WM_SETFONT, SendMessage(m_Parent, WM_GETFONT, 0&, ByVal 0&), ByVal 0&
-            m_WinProc = GetWindowLongPtr(m_Hwnd, GWL_WNDPROC)
-            SetWindowLongPtr m_Hwnd, GWL_WNDPROC, AddressOf UniTextBoxWindowProc
-        End If
+        SetPropW m_Hwnd, StrPtr("cUniTextBox"), ObjPtr(Me)
+        SendMessageW m_Hwnd, WM_SETFONT, SendMessageW(m_Parent, WM_GETFONT, 0&, ByVal 0&), ByVal 0&
+        m_WinProc = GetWindowLongPtrW(m_Hwnd, GWL_WNDPROC)
+        SetWindowLongPtrW m_Hwnd, GWL_WNDPROC, AddressOf UniTextBoxWindowProc
         
-        SetProp m_Parent, "cUniTextBox", ObjPtr(Me)
-        m_WinProcParent = GetWindowLongPtr(m_Parent, GWL_WNDPROC)
-        SetWindowLongPtr m_Parent, GWL_WNDPROC, AddressOf UniTextBoxWindowProc
+        SetPropW m_Parent, StrPtr("cUniTextBox"), ObjPtr(Me)
+        m_WinProcParent = GetWindowLongPtrW(m_Parent, GWL_WNDPROC)
+        SetWindowLongPtrW m_Parent, GWL_WNDPROC, AddressOf UniTextBoxWindowProc
+        UniTextBoxKeysHookAdd
         
         CreateTextBox = m_Hwnd
     End If
@@ -184,19 +158,16 @@ End Function
 
 Private Sub pvUnSubclass(bDestroy As Boolean)
     If m_Hwnd Then
-        If m_Unicode Then
-            SetWindowLongPtrW m_Hwnd, GWL_WNDPROC, m_WinProc
-        Else
-            SetWindowLongPtr m_Hwnd, GWL_WNDPROC, m_WinProc
-        End If
+        SetWindowLongPtrW m_Hwnd, GWL_WNDPROC, m_WinProc
         If bDestroy Then DestroyWindow m_Hwnd
         m_Hwnd = 0&
-        SetWindowLongPtr m_Parent, GWL_WNDPROC, m_WinProcParent
+        SetWindowLongPtrW m_Parent, GWL_WNDPROC, m_WinProcParent
+        UniTextBoxKeysHookRemove
     End If
 
 End Sub
 
-Public Function DoWindowMsg(hWnd As LongPtr, uMsg As Long, wParam As LongPtr, lParam As LongPtr, Unicode As Boolean, wndProc As LongPtr) As LongPtr
+Public Function DoWindowMsg(hWnd As LongPtr, uMsg As Long, wParam As LongPtr, lParam As LongPtr, wndProc As LongPtr) As LongPtr
 
     
     Select Case uMsg
@@ -215,10 +186,8 @@ Public Function DoWindowMsg(hWnd As LongPtr, uMsg As Long, wParam As LongPtr, lP
     End Select
     
     If hWnd = m_Hwnd Then
-        Unicode = m_Unicode
         wndProc = m_WinProc         ' set to zero if eating the message & set return value appropriately
     Else
-        Unicode = False
         wndProc = m_WinProcParent
     End If
 
@@ -227,41 +196,23 @@ End Function
 Public Property Get Text() As String
     If m_Hwnd Then
         Dim lLength As Long
-        If m_Unicode Then
-            lLength = SendMessageW(m_Hwnd, WM_GETTEXTLENGTH, 0&, ByVal 0&)
-            If lLength Then
-                Text = String$(lLength, 0)
-                SendMessageW m_Hwnd, WM_GETTEXT, lLength + 1&, ByVal StrPtr(Text)
-            End If
-        Else
-            lLength = SendMessage(m_Hwnd, WM_GETTEXTLENGTH, 0&, ByVal 0&)
-            If lLength Then
-                Text = String$(lLength, 0)
-                SendMessage m_Hwnd, WM_GETTEXT, lLength + 1&, ByVal StrPtr(Text)
-            End If
+        lLength = SendMessageW(m_Hwnd, WM_GETTEXTLENGTH, 0&, ByVal 0&)
+        If lLength Then
+            Text = String$(lLength, 0)
+            SendMessageW m_Hwnd, WM_GETTEXT, lLength + 1&, ByVal StrPtr(Text)
         End If
     End If
 End Property
 
 Public Property Let Text(newVal As String)
 
-    If m_Hwnd Then
-        If m_Unicode Then
-            SendMessageW m_Hwnd, WM_SETTEXT, 0&, ByVal StrPtr(newVal)
-        Else
-            SendMessage m_Hwnd, WM_SETTEXT, 0&, ByVal newVal
-        End If
-    End If
+    If m_Hwnd Then SendMessageW m_Hwnd, WM_SETTEXT, 0&, ByVal StrPtr(newVal)
     
 End Property
 
 
 Public Sub SetFocus()
     If m_Hwnd Then SetFocusAPI m_Hwnd
-End Sub
-
-Private Sub Class_Initialize()
-    m_Unicode = Not (IsWindowUnicode(GetDesktopWindow) = 0&)
 End Sub
 
 Private Sub Class_Terminate()

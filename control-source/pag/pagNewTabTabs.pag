@@ -18,6 +18,14 @@ Begin VB.PropertyPage pagNewTabTabs
    PaletteMode     =   0  'Halftone
    ScaleHeight     =   8508
    ScaleWidth      =   6804
+   Begin VB.CheckBox chkTabMovable 
+      Caption         =   "TabMovable"
+      Height          =   204
+      Left            =   4280
+      TabIndex        =   30
+      Top             =   3049
+      Width           =   1330
+   End
    Begin VB.CheckBox chkTabCloseButtonEnabled 
       Caption         =   "TabCloseButtonEnabled"
       Height          =   204
@@ -65,18 +73,9 @@ Begin VB.PropertyPage pagNewTabTabs
          Width           =   6540
          _ExtentX        =   11536
          _ExtentY        =   1397
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.4
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         TabHeight       =   579
+         ControlsBackColorApplied=   -2147483633
          AutoTabHeight   =   -1  'True
-         ControlVersion  =   13
+         ControlVersion  =   18
          TabCaption(0)   =   ""
          TabCaption(1)   =   ""
          TabCaption(2)   =   ""
@@ -101,52 +100,24 @@ Begin VB.PropertyPage pagNewTabTabs
       Top             =   1945
       Width           =   1150
    End
-   Begin VB.CommandButton cmdRemoveCustomColor 
-      Caption         =   "û"
-      Enabled         =   0   'False
-      BeginProperty Font 
-         Name            =   "Wingdings"
-         Size            =   12
-         Charset         =   2
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      Height          =   300
-      Left            =   2070
-      TabIndex        =   46
-      Tag             =   "E"
-      ToolTipText     =   "Remove custom color"
-      Top             =   6520
-      Width           =   300
-   End
    Begin VB.TextBox txtCustomColor 
       Height          =   310
-      Left            =   5448
+      Left            =   5130
       TabIndex        =   45
-      Top             =   5920
-      Width           =   1000
+      Top             =   6250
+      Width           =   1040
    End
-   Begin VB.PictureBox picGeneralColor 
+   Begin VB.PictureBox picAutomaticColor 
       Appearance      =   0  'Flat
       BackColor       =   &H80000005&
       ForeColor       =   &H80000008&
       Height          =   612
-      Left            =   3696
+      Left            =   3750
       ScaleHeight     =   588
       ScaleWidth      =   588
       TabIndex        =   43
-      Top             =   6400
+      Top             =   6610
       Width           =   612
-   End
-   Begin VB.CommandButton cmdChangeCustomColor 
-      Caption         =   "Change"
-      Height          =   300
-      Left            =   960
-      TabIndex        =   42
-      Top             =   6520
-      Width           =   1050
    End
    Begin VB.PictureBox picCustomColor 
       Appearance      =   0  'Flat
@@ -155,11 +126,11 @@ Begin VB.PropertyPage pagNewTabTabs
       FillStyle       =   0  'Solid
       ForeColor       =   &H80000008&
       Height          =   612
-      Left            =   240
+      Left            =   210
       ScaleHeight     =   588
       ScaleWidth      =   588
       TabIndex        =   40
-      Top             =   6400
+      Top             =   6610
       Width           =   612
    End
    Begin VB.ComboBox cboColorID 
@@ -167,8 +138,8 @@ Begin VB.PropertyPage pagNewTabTabs
       Left            =   840
       Style           =   2  'Dropdown List
       TabIndex        =   39
-      Top             =   5920
-      Width           =   3500
+      Top             =   6250
+      Width           =   3570
    End
    Begin VB.TextBox txtTabFixedWidth 
       Height          =   310
@@ -223,29 +194,24 @@ Begin VB.PropertyPage pagNewTabTabs
       Top             =   505
       Width           =   3217
    End
-   Begin VB.PictureBox picTDICover1 
+   Begin VB.PictureBox picTDICover 
       BorderStyle     =   0  'None
       Height          =   2390
-      Index           =   2
-      Left            =   15400
+      Left            =   10116
       ScaleHeight     =   2388
-      ScaleWidth      =   1332
+      ScaleWidth      =   6612
       TabIndex        =   34
       Top             =   480
       Visible         =   0   'False
-      Width           =   1330
-   End
-   Begin VB.PictureBox picTDICover1 
-      BorderStyle     =   0  'None
-      Height          =   490
-      Index           =   1
-      Left            =   12520
-      ScaleHeight     =   492
-      ScaleWidth      =   4092
-      TabIndex        =   33
-      Top             =   0
-      Visible         =   0   'False
-      Width           =   4090
+      Width           =   6612
+      Begin VB.Label lblTDIModeNote 
+         Caption         =   "These settings do no apply in TDI modes."
+         Height          =   612
+         Left            =   935
+         TabIndex        =   49
+         Top             =   700
+         Width           =   4572
+      End
    End
    Begin VB.Timer tmrShowTabData 
       Enabled         =   0   'False
@@ -282,7 +248,7 @@ Begin VB.PropertyPage pagNewTabTabs
          Strikethrough   =   0   'False
       EndProperty
       Height          =   300
-      Left            =   5922
+      Left            =   5932
       TabIndex        =   8
       Tag             =   "E"
       ToolTipText     =   "Go to next tab"
@@ -302,7 +268,7 @@ Begin VB.PropertyPage pagNewTabTabs
          Strikethrough   =   0   'False
       EndProperty
       Height          =   300
-      Left            =   5610
+      Left            =   5620
       TabIndex        =   7
       Tag             =   "E"
       ToolTipText     =   "Go to previous tab"
@@ -313,7 +279,7 @@ Begin VB.PropertyPage pagNewTabTabs
       Caption         =   "Move a control to this tab"
       Height          =   315
       Left            =   3800
-      TabIndex        =   32
+      TabIndex        =   33
       ToolTipText     =   "Add Tab at this position"
       Top             =   4076
       Width           =   2700
@@ -323,7 +289,7 @@ Begin VB.PropertyPage pagNewTabTabs
       Enabled         =   0   'False
       Height          =   315
       Left            =   1020
-      TabIndex        =   31
+      TabIndex        =   32
       ToolTipText     =   "Add Tab at this position"
       Top             =   4076
       Width           =   2700
@@ -353,7 +319,7 @@ Begin VB.PropertyPage pagNewTabTabs
          Strikethrough   =   0   'False
       EndProperty
       Height          =   300
-      Left            =   1815
+      Left            =   2340
       TabIndex        =   2
       Tag             =   "E"
       ToolTipText     =   "Go to previous tab"
@@ -373,7 +339,7 @@ Begin VB.PropertyPage pagNewTabTabs
          Strikethrough   =   0   'False
       EndProperty
       Height          =   300
-      Left            =   2130
+      Left            =   2655
       TabIndex        =   3
       Tag             =   "E"
       ToolTipText     =   "Go to next tab"
@@ -383,14 +349,13 @@ Begin VB.PropertyPage pagNewTabTabs
    Begin VB.CommandButton cmdInsertTab 
       Caption         =   "Insert tab"
       Height          =   300
-      Left            =   2640
+      Left            =   3030
       TabIndex        =   4
       ToolTipText     =   "Add Tab at this position"
       Top             =   70
-      Width           =   1050
+      Width           =   960
    End
    Begin VB.CommandButton cmdRemoveTab 
-      Caption         =   "û"
       BeginProperty Font 
          Name            =   "Wingdings"
          Size            =   12
@@ -401,23 +366,31 @@ Begin VB.PropertyPage pagNewTabTabs
          Strikethrough   =   0   'False
       EndProperty
       Height          =   300
-      Left            =   3750
+      Left            =   4005
       TabIndex        =   5
       Tag             =   "E"
       ToolTipText     =   "Remove tab"
       Top             =   70
       Width           =   300
    End
+   Begin VB.TextBox txtTabs 
+      Height          =   300
+      Left            =   500
+      MaxLength       =   4
+      TabIndex        =   42
+      Top             =   70
+      Width           =   440
+   End
    Begin VB.TextBox txtTab 
       BackColor       =   &H8000000F&
       Height          =   300
-      Left            =   1140
+      Left            =   1780
       Locked          =   -1  'True
       MaxLength       =   3
       TabIndex        =   1
       TabStop         =   0   'False
       Top             =   70
-      Width           =   588
+      Width           =   500
    End
    Begin VB.Label Label19 
       Alignment       =   1  'Right Justify
@@ -455,11 +428,11 @@ Begin VB.PropertyPage pagNewTabTabs
    Begin VB.Label Label18 
       Alignment       =   1  'Right Justify
       Caption         =   "Color:"
-      Height          =   264
-      Left            =   4680
+      Height          =   230
+      Left            =   4470
       TabIndex        =   47
-      Top             =   5950
-      Width           =   660
+      Top             =   6290
+      Width           =   600
    End
    Begin VB.Label Label17 
       Caption         =   "(Can be used to set the active tab in the 'Tab' property. Or to store a custom String data)"
@@ -478,29 +451,47 @@ Begin VB.PropertyPage pagNewTabTabs
       Top             =   1981
       Width           =   1488
    End
+   Begin VB.Label lblCustomColorState 
+      Caption         =   "(Automatic)"
+      Height          =   230
+      Left            =   890
+      TabIndex        =   50
+      Top             =   6810
+      Width           =   1300
+   End
    Begin VB.Label Label15 
-      Caption         =   "Tip: to remove a custom color in code, set it to the exact general color or to -1."
+      Caption         =   "Tip: to remove a custom color in code, set it to -1."
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   7.2
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00C00000&
       Height          =   612
-      Left            =   4440
+      Left            =   4470
       TabIndex        =   44
-      Top             =   6400
-      Width           =   2172
+      Top             =   6650
+      Width           =   2140
    End
    Begin VB.Label Label14 
       Alignment       =   1  'Right Justify
-      Caption         =   "The general color is:"
-      Height          =   576
-      Left            =   2712
+      Caption         =   "The automatic color is:"
+      Height          =   480
+      Left            =   2370
       TabIndex        =   41
-      Top             =   6496
-      Width           =   900
+      Top             =   6660
+      Width           =   1300
    End
    Begin VB.Label Label12 
       Caption         =   "ColorID:"
       Height          =   260
       Left            =   144
       TabIndex        =   38
-      Top             =   5950
+      Top             =   6280
       Width           =   660
    End
    Begin VB.Label Label6 
@@ -586,7 +577,7 @@ Begin VB.PropertyPage pagNewTabTabs
       ForeColor       =   &H00C00000&
       Height          =   490
       Left            =   144
-      TabIndex        =   30
+      TabIndex        =   31
       Top             =   4036
       Width           =   800
    End
@@ -610,21 +601,30 @@ Begin VB.PropertyPage pagNewTabTabs
    End
    Begin VB.Label Label2 
       Alignment       =   1  'Right Justify
-      Caption         =   "Change tab order:"
+      Caption         =   "Change order:"
       Height          =   270
-      Left            =   4140
+      Left            =   4380
       TabIndex        =   6
       Top             =   105
-      Width           =   1400
+      Width           =   1180
+   End
+   Begin VB.Label lblTabs 
+      Alignment       =   1  'Right Justify
+      Caption         =   "Tabs:"
+      Height          =   225
+      Left            =   0
+      TabIndex        =   46
+      Top             =   105
+      Width           =   440
    End
    Begin VB.Label Label1 
       Alignment       =   1  'Right Justify
-      Caption         =   "Current tab:"
+      Caption         =   "Current:"
       Height          =   225
-      Left            =   60
+      Left            =   1000
       TabIndex        =   0
       Top             =   105
-      Width           =   975
+      Width           =   720
    End
 End
 Attribute VB_Name = "pagNewTabTabs"
@@ -634,8 +634,8 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
 Option Explicit
 
-Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
-Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongA" (ByVal hWnd As LongPtr, ByVal nIndex As Long) As Long
+Private Declare Function SetWindowLong Lib "user32" Alias "SetWindowLongW" (ByVal hWnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As Long) As Long
+Private Declare Function GetWindowLong Lib "user32" Alias "GetWindowLongW" (ByVal hWnd As LongPtr, ByVal nIndex As Long) As Long
 Private Declare Function SendMessage Lib "user32" Alias "SendMessageW" (ByVal hWnd As LongPtr, ByVal wMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
 
 Private Enum NTMouseButtonsConstants
@@ -673,18 +673,26 @@ Private Type T_TabDataP
     IconChar As Long
     IconLeftOffset As Long
     IconTopOffset As Long
+    IconInColor As Boolean
     Tag As String
     Data As Long
-    FixedWidth As Long
-    CustomColor(16) As Long
+    ' In the units of the container, like the control's property: the page never converts, it only
+    ' carries what TabFixedWidth answers and hands the same number back
+    FixedWidth As Single
+    ' Bound by the last member of NTTabCustomColorIDConstants so that a new color reaches this page
+    ' on its own. Variant because Empty is how the mirror says "this tab sets no color of its own"
+    CustomColor(ntCCFlatTabBorderColorInactive) As Variant
     Key As String
     CloseButton As NTAutoYesNoConstants
     CloseButtonEnabled As Boolean
+    Movable As Boolean
 End Type
 
 Private mTabData() As T_TabDataP
 Private mTab As Long
 Private mTabs As Long
+Private mStashedTabData() As T_TabDataP
+Private mStashedTabs As Long
 Private mStrImagesDifferences As String
 
 Private mShowingTabData As Boolean
@@ -748,12 +756,28 @@ Private Sub chkTabCloseButtonEnabled_Click()
     End If
 End Sub
 
-Private Sub cmdChangeCustomColor_Click()
-    Dim iDlg As New cCommonDialog
+Private Sub chkTabMovable_Click()
+    If Not mLoading And Not mShowingTabData Then
+        Changed = True
+        mTabData(mTab).Movable = (chkTabMovable.Value = 1)
+        ShowTabData
+    End If
+End Sub
+
+Private Sub ChooseCustomColor()
+    Dim iSelector As New cColorSelector
+    Dim iColorID As Long
+    Dim iCurrent As Long
+    Dim iPicked As Long
     
-    iDlg.ShowColor
-    If Not iDlg.Canceled Then
-        mTabData(mTab).CustomColor(cboColorID.ItemData(cboColorID.ListIndex)) = iDlg.Color
+    iColorID = cboColorID.ItemData(cboColorID.ListIndex)
+    iCurrent = CustomColorForControl(mTabData(mTab).CustomColor(iColorID))
+    If Not iSelector.PickColor(PropertyPage.hWnd, picCustomColor.hWnd, iCurrent, picAutomaticColor.BackColor, iPicked) Then Exit Sub
+    If iPicked = iCurrent Then Exit Sub
+    If iPicked = -1 Then
+        RemoveCustomColor
+    Else
+        mTabData(mTab).CustomColor(iColorID) = iPicked
         Changed = True
         ShowCustomColor
     End If
@@ -789,12 +813,13 @@ Private Sub cmdInsertTab_Click()
     mTabData(mTab).Visible = True
     mTabData(mTab).CloseButton = ntYNAuto
     mTabData(mTab).CloseButtonEnabled = True
-    For c = 0 To 16
-        mTabData(mTab).CustomColor(c) = GetGeneralColor(c)
+    mTabData(mTab).Movable = True
+    For c = 0 To ntCCFlatTabBorderColorInactive
+        mTabData(mTab).CustomColor(c) = Empty
     Next
     Changed = True
     
-    NewTab1.Tabs = mTabs
+    RefreshPreviewFromMirror
     ShowTabData
 
 End Sub
@@ -923,8 +948,9 @@ Private Sub cmdMovePrevious_MouseUp(Button As Integer, Shift As Integer, X As Si
     tmrClick.Enabled = False
 End Sub
 
-Private Sub cmdRemoveCustomColor_Click()
-    mTabData(mTab).CustomColor(cboColorID.ItemData(cboColorID.ListIndex)) = GetGeneralColor(cboColorID.ItemData(cboColorID.ListIndex))
+Private Sub RemoveCustomColor()
+    ' Empty and not the general color: the control no longer collapses the two
+    mTabData(mTab).CustomColor(cboColorID.ItemData(cboColorID.ListIndex)) = Empty
     Changed = True
     ShowCustomColor
 End Sub
@@ -965,13 +991,21 @@ Private Sub cmdRemoveTab_Click()
     
     Changed = True
     
+    ' The preview has to shrink with the mirror: a removed tab left on screen hands back a TabSel
+    ' that mTabData no longer has
+    RefreshPreviewFromMirror
+    
     ShowTabData
 End Sub
 
 Private Sub cmdTabNext_Click()
     mLoading = True
-    mTab = mTab + 1
-    ShowTabData
+    If mTab < UBound(mTabData) Then
+        mTab = mTab + 1
+        ShowTabData
+    Else
+        cmdTabNext.Enabled = False
+    End If
     mLoading = False
 End Sub
 
@@ -986,8 +1020,12 @@ End Sub
 
 Private Sub cmdTabPrev_Click()
     mLoading = True
-    mTab = mTab - 1
-    ShowTabData
+    If mTab > 0 Then
+        mTab = mTab - 1
+        ShowTabData
+    Else
+        cmdTabPrev.Enabled = False
+    End If
     mLoading = False
 End Sub
 
@@ -1086,8 +1124,12 @@ Private Sub NewTab1_MouseUp(Button As Integer, Shift As Integer, X As Single, Y 
     mMouseDown = False
 End Sub
 
-Private Sub picCustomColor_DblClick()
-    cmdChangeCustomColor_Click
+Private Sub picCustomColor_Click()
+    ChooseCustomColor
+End Sub
+
+Private Sub picCustomColor_KeyDown(KeyCode As Integer, Shift As Integer)
+    If (KeyCode = vbKeySpace) Or (KeyCode = vbKeyF4) Then ChooseCustomColor
 End Sub
 
 Private Sub picTabCaptionHolder_GotFocus()
@@ -1129,6 +1171,7 @@ Private Sub PropertyPage_ApplyChanges()
     iDefaultIconFont.Name = cPropDef_IconFontName
     iDefaultIconFont.Size = cPropDef_IconFontSize
     
+    FinishTabCountEdit
     Set iSC = SelectedControls(0)
     iSC.HideAllContainedControls
     iTabsPrev = iSC.Tabs
@@ -1151,6 +1194,7 @@ Private Sub PropertyPage_ApplyChanges()
         iSC.TabVisible(t) = mTabData(t).Visible
         iSC.TabCloseButton(t) = mTabData(t).CloseButton
         iSC.TabCloseButtonEnabled(t) = mTabData(t).CloseButtonEnabled
+        iSC.TabMovable(t) = mTabData(t).Movable
         Set iSC.TabPicture(t) = mTabData(t).Picture
         Set iSC.TabPic16(t) = mTabData(t).Pic16
         Set iSC.TabPic20(t) = mTabData(t).Pic20
@@ -1166,8 +1210,9 @@ Private Sub PropertyPage_ApplyChanges()
         iSC.TabIconCharHex(t) = "&H" & Hex$(mTabData(t).IconChar) & "&"
         iSC.TabIconLeftOffset(t) = mTabData(t).IconLeftOffset
         iSC.TabIconTopOffset(t) = mTabData(t).IconTopOffset
-        For c = 0 To 16
-            iSC.TabCustomColor(t, c) = mTabData(t).CustomColor(c)
+        iSC.TabIconInColor(t) = mTabData(t).IconInColor
+        For c = 0 To ntCCFlatTabBorderColorInactive
+            iSC.TabCustomColor(t, c) = CustomColorForControl(mTabData(t).CustomColor(c))
         Next
     Next t
     If Not mTDIMode Then
@@ -1202,6 +1247,9 @@ Private Sub PropertyPage_Initialize()
     Set mUniTextTabKey = New cUniTextBox
     mUniTextTabKey.CreateTextBox picTabKeyHolder.hWnd, 0, 0, picTabKeyHolder.ScaleWidth, picTabKeyHolder.ScaleHeight, ES_AUTOHSCROLL Or ES_LEFT Or WS_VISIBLE, WS_EX_CLIENTEDGE, ""
     
+    ' Seeded here and not written in the .pag so that the file stays pure ASCII: as a literal the
+    ' glyph is the byte &HFB, which a UTF-8 round trip corrupts
+    cmdRemoveTab.Caption = Chr$(&HFB)
 End Sub
 
 Private Sub PropertyPage_Paint()
@@ -1212,24 +1260,20 @@ Private Sub PropertyPage_SelectionChanged()
     Dim t As Integer
     Dim iVar As Variant
     Dim c As Long
-    Dim iAuxNT As NewTab
     
     SetTextBoxNumeric txtTabFixedWidth
-    'Debug.Print PropertyPage.Name & " Start: " & Round(Timer, 2)
+    SetTextBoxNumeric txtTabs
     mLoading = True
     Set mSC = SelectedControls(0)
     
     mTDIMode = (mSC.TDIMode <> ntTDIModeNone)
     
     If mTDIMode Then
-        picTDICover1(1).Left = 2520
-        picTDICover1(2).Left = 5400
+        picTDICover.Move 0, 0, PropertyPage.ScaleWidth, PropertyPage.ScaleHeight
+        picTDICover.Visible = True
+        picTDICover.ZOrder
     End If
     
-    For c = picTDICover1.LBound To picTDICover1.UBound
-        picTDICover1(c).Visible = mTDIMode
-    Next
-    'chkTabEnabled.Enabled = False
     chkTabVisible.Enabled = Not mTDIMode
     cmdMovePrevious.Enabled = Not mTDIMode
     cmdMoveNext.Enabled = Not mTDIMode
@@ -1245,12 +1289,16 @@ Private Sub PropertyPage_SelectionChanged()
     mDefaultIconFont.Size = cPropDef_IconFontSize
     
     mTabs = mSC.Tabs
+    mStashedTabs = 0
+    txtTabs.Text = mTabs
+    lblTabs.Enabled = Not mTDIMode
+    txtTabs.Enabled = Not mTDIMode
     mSC.StoreVisibleControlsInSelectedTab
     ReDim mTabData(mTabs - 1)
     NewTab1.RightToLeft = mSC.RightToLeft
     NewTab1.CloseButton = mSC.CloseButton
+    NewTab1.CloseButtonPosition = mSC.CloseButtonPosition
     NewTab1.CaptionAlignment = mSC.CaptionAlignment
-    NewTab1.Tabs = mSC.Tabs
     For t = 0 To mTabs - 1
         mTabData(t).Caption = mSC.TabCaption(t)
         mTabData(t).ToolTipText = mSC.TabToolTipText(t)
@@ -1262,10 +1310,12 @@ Private Sub PropertyPage_SelectionChanged()
         mTabData(t).Visible = mSC.TabVisible(t)
         mTabData(t).CloseButton = mSC.TabCloseButton(t)
         mTabData(t).CloseButtonEnabled = mSC.TabCloseButtonEnabled(t)
+        mTabData(t).Movable = mSC.TabMovable(t)
         Set mTabData(t).IconFont = CloneFont(mSC.TabIconFont(t))
         mTabData(t).IconChar = Val(mSC.TabIconCharHex(t) & "&")
         mTabData(t).IconLeftOffset = mSC.TabIconLeftOffset(t)
         mTabData(t).IconTopOffset = mSC.TabIconTopOffset(t)
+        mTabData(t).IconInColor = mSC.TabIconInColor(t)
         Set mTabData(t).Picture = mSC.TabPicture(t)
         Set mTabData(t).Pic16 = mSC.TabPic16(t)
         Set mTabData(t).Pic20 = mSC.TabPic20(t)
@@ -1274,32 +1324,31 @@ Private Sub PropertyPage_SelectionChanged()
         For Each iVar In mSC.TabControlsNames(t)
             mTabData(t).Controls.Add iVar
         Next
-        For c = 0 To 16
-            mTabData(t).CustomColor(c) = mSC.TabCustomColor(t, c)
-            NewTab1.TabCustomColor(t, c) = mTabData(t).CustomColor(c)
+        For c = 0 To ntCCFlatTabBorderColorInactive
+            ' the state first and only then the value: the public Get resolves an inherited slot
+            If mSC.TabCustomColorIsSet(t, c) Then
+                mTabData(t).CustomColor(c) = mSC.TabCustomColor(t, c)
+            Else
+                mTabData(t).CustomColor(c) = Empty
+            End If
         Next
-        NewTab1.TabCaption(t) = mSC.TabCaption(t)
-        NewTab1.TabEnabled(t) = mSC.TabEnabled(t)
-        Set NewTab1.TabPic16(t) = mSC.TabPic16(t)
-        Set NewTab1.TabPic20(t) = mSC.TabPic20(t)
-        Set NewTab1.TabPic24(t) = mSC.TabPic24(t)
-        Set NewTab1.TabPicture(t) = mSC.TabPicture(t)
-        Set NewTab1.TabIconFont(t) = CloneFont(mSC.TabIconFont(t))
-        NewTab1.TabIconCharHex(t) = mSC.TabIconCharHex(t)
-        NewTab1.TabIconLeftOffset(t) = mSC.TabIconLeftOffset(t)
-        NewTab1.TabIconTopOffset(t) = mSC.TabIconTopOffset(t)
     Next t
+    ' Seeded from the mirror so that CloseButton, CloseButtonEnabled and Movable reach every tab
+    RefreshPreviewFromMirror
     If mTabs > 0 Then
         Set mLastIconFont = CloneFont(mSC.TabIconFont(mTabs - 1))
     Else
         Set mLastIconFont = CloneFont(mDefaultIconFont)
     End If
     
-    Set iAuxNT = NewTab1
-    iAuxNT.IsTDIFormsSampleInPropertyPage = (mSC.TDIMode = ntTDIModeForms)
-    
-    NewTab1.Width = mSC.Width
-    NewTab1.Height = mSC.Height
+    Select Case mSC.TabOrientation
+        Case ssTabOrientationRight, ssTabOrientationLeft, ntTabOrientationRightBottom, ntTabOrientationLeftTop
+            NewTab1.Width = mSC.Height
+            NewTab1.Height = mSC.Width
+        Case Else
+            NewTab1.Width = mSC.Width
+            NewTab1.Height = mSC.Height
+    End Select
     NewTab1.Left = (PropertyPage.ScaleWidth - NewTab1.Width) / 2
     
     If ((Timer - gPagTabsApplyTime) < 3) And (gPagTabsApplyTime <> 0) Then
@@ -1316,11 +1365,14 @@ Private Sub PropertyPage_SelectionChanged()
     cboColorID.AddItem ntCCBackColorSelectedTab & " - ntCCBackColorSelectedTab": cboColorID.ItemData(cboColorID.NewIndex) = ntCCBackColorSelectedTab
     cboColorID.AddItem ntCCHighlightColor & " - ntCCHighlightColor": cboColorID.ItemData(cboColorID.NewIndex) = ntCCHighlightColor
     cboColorID.AddItem ntCCHighlightColorSelectedTab & " - ntCCHighlightColorSelectedTab": cboColorID.ItemData(cboColorID.NewIndex) = ntCCHighlightColorSelectedTab
+    cboColorID.AddItem ntCCHighlightGradientColor & " - ntCCHighlightGradientColor": cboColorID.ItemData(cboColorID.NewIndex) = ntCCHighlightGradientColor
+    cboColorID.AddItem ntCCHighlightGradientColorSelectedTab & " - ntCCHighlightGradientColorSelectedTab": cboColorID.ItemData(cboColorID.NewIndex) = ntCCHighlightGradientColorSelectedTab
     cboColorID.AddItem ntCCFlatBarColorInactive & " - ntCCFlatBarColorInactive": cboColorID.ItemData(cboColorID.NewIndex) = ntCCFlatBarColorInactive
-    cboColorID.AddItem ntCCFlatBarColorHighlight & " - ntCCFlatBarColorHighlight": cboColorID.ItemData(cboColorID.NewIndex) = ntCCFlatBarColorHighlight
+    cboColorID.AddItem ntCCFlatBarColorHighlighted & " - ntCCFlatBarColorHighlighted": cboColorID.ItemData(cboColorID.NewIndex) = ntCCFlatBarColorHighlighted
     cboColorID.AddItem ntCCFlatBarColorSelectedTab & " - ntCCFlatBarColorSelectedTab": cboColorID.ItemData(cboColorID.NewIndex) = ntCCFlatBarColorSelectedTab
-    cboColorID.AddItem ntCCFlatTabBorderColorHighlight & " - ntCCFlatTabBorderColorHighlight": cboColorID.ItemData(cboColorID.NewIndex) = ntCCFlatTabBorderColorHighlight
+    cboColorID.AddItem ntCCFlatTabBorderColorHighlighted & " - ntCCFlatTabBorderColorHighlighted": cboColorID.ItemData(cboColorID.NewIndex) = ntCCFlatTabBorderColorHighlighted
     cboColorID.AddItem ntCCFlatTabBorderColorSelectedTab & " - ntCCFlatTabBorderColorSelectedTab": cboColorID.ItemData(cboColorID.NewIndex) = ntCCFlatTabBorderColorSelectedTab
+    cboColorID.AddItem ntCCFlatTabBorderColorInactive & " - ntCCFlatTabBorderColorInactive": cboColorID.ItemData(cboColorID.NewIndex) = ntCCFlatTabBorderColorInactive
     cboColorID.AddItem ntCCForeColor & " - ntCCForeColor": cboColorID.ItemData(cboColorID.NewIndex) = ntCCForeColor
     cboColorID.AddItem ntCCForeColorHighlighted & " - ntCCForeColorHighlighted": cboColorID.ItemData(cboColorID.NewIndex) = ntCCForeColorHighlighted
     cboColorID.AddItem ntCCForeColorSelectedTab & " - ntCCForeColorSelectedTab": cboColorID.ItemData(cboColorID.NewIndex) = ntCCForeColorSelectedTab
@@ -1329,6 +1381,11 @@ Private Sub PropertyPage_SelectionChanged()
     cboColorID.AddItem ntCCIconColorMouseHover & " - ntCCIconColorMouseHover": cboColorID.ItemData(cboColorID.NewIndex) = ntCCIconColorMouseHover
     cboColorID.AddItem ntCCIconColorMouseHoverSelectedTab & " - ntCCIconColorMouseHoverSelectedTab": cboColorID.ItemData(cboColorID.NewIndex) = ntCCIconColorMouseHoverSelectedTab
     cboColorID.AddItem ntCCIconColorTabHighlighted & " - ntCCIconColorTabHighlighted": cboColorID.ItemData(cboColorID.NewIndex) = ntCCIconColorTabHighlighted
+    cboColorID.AddItem ntCCCloseButtonColor & " - ntCCCloseButtonColor": cboColorID.ItemData(cboColorID.NewIndex) = ntCCCloseButtonColor
+    cboColorID.AddItem ntCCCloseButtonColorSelectedTab & " - ntCCCloseButtonColorSelectedTab": cboColorID.ItemData(cboColorID.NewIndex) = ntCCCloseButtonColorSelectedTab
+    cboColorID.AddItem ntCCCloseButtonColorMouseHover & " - ntCCCloseButtonColorMouseHover": cboColorID.ItemData(cboColorID.NewIndex) = ntCCCloseButtonColorMouseHover
+    cboColorID.AddItem ntCCCloseButtonColorMouseHoverSelectedTab & " - ntCCCloseButtonColorMouseHoverSelectedTab": cboColorID.ItemData(cboColorID.NewIndex) = ntCCCloseButtonColorMouseHoverSelectedTab
+    cboColorID.AddItem ntCCCloseButtonColorTabHighlighted & " - ntCCCloseButtonColorTabHighlighted": cboColorID.ItemData(cboColorID.NewIndex) = ntCCCloseButtonColorTabHighlighted
     cboColorID.ListIndex = 0
     
     cboTabCloseButton.Clear
@@ -1338,7 +1395,6 @@ Private Sub PropertyPage_SelectionChanged()
     
     ShowTabData
     
-    'Debug.Print PropertyPage.Name & " End: " & Round(Timer, 2)
     mLoading = False
 End Sub
 Private Sub SelectInComboByItemData(nCombo As Control, nItemData As Long)
@@ -1359,7 +1415,6 @@ End Sub
 
 Private Sub DoShowTabData()
     Dim t As Long
-    Dim iTop As Long
     
     If mShowingTabData Then Exit Sub
     If tmrRestoreSampleContainer.Enabled Then tmrRestoreSampleContainer_Timer
@@ -1367,6 +1422,9 @@ Private Sub DoShowTabData()
     t = mTab
     txtTab.Text = t
     txtTab.Refresh
+    If Not (ActiveControl Is txtTabs) Then
+        If txtTabs.Text <> CStr(mTabs) Then txtTabs.Text = mTabs
+    End If
     If mUniTextTabCaption.Text <> mTabData(t).Caption Then
         mUniTextTabCaption.Text = mTabData(t).Caption
     End If
@@ -1379,12 +1437,18 @@ Private Sub DoShowTabData()
     If mUniTextTabKey.Text <> mTabData(t).Key Then
         mUniTextTabKey.Text = mTabData(t).Key
     End If
-    txtTabData.Text = mTabData(t).Data
-    txtTabFixedWidth.Text = mTabData(t).FixedWidth
+    ' Compared before assigning: assigning .Text sends the caret back to position 0
+    If txtTabData.Text <> CStr(mTabData(t).Data) Then
+        txtTabData.Text = mTabData(t).Data
+    End If
+    If txtTabFixedWidth.Text <> CStr(mTabData(t).FixedWidth) Then
+        txtTabFixedWidth.Text = mTabData(t).FixedWidth
+    End If
     chkTabEnabled.Value = CLng(mTabData(t).Enabled) * -1
     chkTabVisible.Value = CLng(mTabData(t).Visible) * -1
     SelectInComboByItemData cboTabCloseButton, mTabData(t).CloseButton
     chkTabCloseButtonEnabled.Value = CLng(mTabData(t).CloseButtonEnabled) * -1
+    chkTabMovable.Value = CLng(mTabData(t).Movable) * -1
     
     cmdTabPrev.Enabled = t > 0
     cmdTabNext.Enabled = t < (mTabs - 1)
@@ -1394,18 +1458,7 @@ Private Sub DoShowTabData()
     lblContainedControls.Caption = "Controls in tab: " & mTabData(t).Controls.Count
     cmdMoveContainedControls.Enabled = (mTabData(t).Controls.Count > 0)
     
-    NewTab1.TabCaption(t) = mTabData(t).Caption
-    NewTab1.TabEnabled(t) = mTabData(t).Enabled
-    NewTab1.TabCloseButton(t) = mTabData(t).CloseButton
-    NewTab1.TabCloseButtonEnabled(t) = mTabData(t).CloseButtonEnabled
-    Set NewTab1.TabPic16(t) = mTabData(t).Pic16
-    Set NewTab1.TabPic20(t) = mTabData(t).Pic20
-    Set NewTab1.TabPic24(t) = mTabData(t).Pic24
-    Set NewTab1.TabPicture(t) = mTabData(t).Picture
-    Set NewTab1.TabIconFont(t) = mTabData(t).IconFont
-    NewTab1.TabIconCharHex(t) = "&H" & Hex$(mTabData(t).IconChar) & "&"
-    NewTab1.TabIconLeftOffset(t) = mTabData(t).IconLeftOffset
-    NewTab1.TabIconTopOffset(t) = mTabData(t).IconTopOffset
+    PushTabToPreview t
     
     ShowCustomColor
     
@@ -1422,22 +1475,63 @@ Private Sub DoShowTabData()
         mEnableHorizontalDragging = True
         NewTab1.ToolTipText = "Drag to move the tab control and see other tabs"
     End If
-    If (NewTab1.Height - NewTab1.ClientHeight) > 800 Then
+    If PreviewNeedsVerticalDrag(NewTab1, picSampleContainer.ScaleHeight) Then
         mEnableVerticalDragging = True
         NewTab1.ToolTipText = "Drag to move the tab control and see other tabs"
     End If
     
-    If NewTab1.Rows = 1 Then
-        NewTab1.Top = 0
-    Else
-        iTop = picSampleContainer.ScaleHeight - (NewTab1.GetTabTop(NewTab1.TabSel) + NewTab1.GetTabHeight(NewTab1.TabSel))
-        If iTop > 0 Then iTop = 0
-        NewTab1.Top = iTop
-    End If
+    NewTab1.Top = PreviewTop(NewTab1, picSampleContainer.ScaleHeight)
     
-    'Label13.Caption = NewTab1.TabSel & " " & NewTab1.GetTabLeft(NewTab1.TabSel) & " " & NewTab1.GetTabTop(NewTab1.TabSel)
 
     mShowingTabData = False
+End Sub
+
+' Everything the preview can show about one tab, taken from the mirror: mSC is an editing session
+' behind until ApplyChanges runs. Visible is left out so that a hidden tab can still be looked at.
+' The icon font travels as the same object: the control compares by identity, so a repeated push is
+' free; no path on this page mutates a font in place and ApplyChanges clones on the way out
+Private Sub PushTabToPreview(ByVal nTab As Long)
+    Dim c As Long
+    
+    NewTab1.TabCaption(nTab) = mTabData(nTab).Caption
+    NewTab1.TabToolTipText(nTab) = mTabData(nTab).ToolTipText
+    NewTab1.TabFixedWidth(nTab) = mTabData(nTab).FixedWidth
+    NewTab1.TabEnabled(nTab) = mTabData(nTab).Enabled
+    NewTab1.TabCloseButton(nTab) = mTabData(nTab).CloseButton
+    NewTab1.TabCloseButtonEnabled(nTab) = mTabData(nTab).CloseButtonEnabled
+    NewTab1.TabMovable(nTab) = mTabData(nTab).Movable
+    Set NewTab1.TabPic16(nTab) = mTabData(nTab).Pic16
+    Set NewTab1.TabPic20(nTab) = mTabData(nTab).Pic20
+    Set NewTab1.TabPic24(nTab) = mTabData(nTab).Pic24
+    Set NewTab1.TabPicture(nTab) = mTabData(nTab).Picture
+    Set NewTab1.TabIconFont(nTab) = mTabData(nTab).IconFont
+    NewTab1.TabIconCharHex(nTab) = "&H" & Hex$(mTabData(nTab).IconChar) & "&"
+    NewTab1.TabIconLeftOffset(nTab) = mTabData(nTab).IconLeftOffset
+    NewTab1.TabIconTopOffset(nTab) = mTabData(nTab).IconTopOffset
+    NewTab1.TabIconInColor(nTab) = mTabData(nTab).IconInColor
+    For c = 0 To ntCCFlatTabBorderColorInactive
+        NewTab1.TabCustomColor(nTab, c) = CustomColorForControl(mTabData(nTab).CustomColor(c))
+    Next c
+End Sub
+
+' Inserting or removing shifts every tab from that point up, so the whole preview is re-seeded.
+' mLoading is raised because changing the count can move TabSel and re-enter NewTab1_Click, and it
+' is restored and not dropped: PropertyPage_SelectionChanged calls this with it already raised
+Private Sub RefreshPreviewFromMirror()
+    Dim t As Long
+    Dim iLoadingPrev As Boolean
+    Dim iRedrawPrev As Boolean
+    
+    iLoadingPrev = mLoading
+    iRedrawPrev = NewTab1.Redraw
+    mLoading = True
+    NewTab1.Redraw = False
+    NewTab1.Tabs = mTabs
+    For t = 0 To mTabs - 1
+        PushTabToPreview t
+    Next t
+    NewTab1.Redraw = iRedrawPrev
+    mLoading = iLoadingPrev
 End Sub
 
 Private Sub PropertyPage_Terminate()
@@ -1610,19 +1704,23 @@ End Sub
 
 Private Sub txtCustomColor_Change()
     Dim iColor As Long
+    Dim iColorID As Long
     
     iColor = -1
+    iColorID = cboColorID.ItemData(cboColorID.ListIndex)
     On Error Resume Next
     iColor = CLng(txtCustomColor.Text)
     On Error GoTo 0
     If IsValidOLE_COLOR(iColor) Then
-        If iColor <> mTabData(mTab).CustomColor(cboColorID.ItemData(cboColorID.ListIndex)) Then
-            mTabData(mTab).CustomColor(cboColorID.ItemData(cboColorID.ListIndex)) = iColor
+        ' the IsEmpty half is not redundant with the comparison: an unset slot compares equal
+        ' to black, so without it typing &H0 into a slot nobody set reads as "no change"
+        If IsEmpty(mTabData(mTab).CustomColor(iColorID)) Or (iColor <> mTabData(mTab).CustomColor(iColorID)) Then
+            mTabData(mTab).CustomColor(iColorID) = iColor
             ShowCustomColor
             Changed = True
         End If
     ElseIf Trim$(txtCustomColor.Text) = "" Then
-        cmdRemoveCustomColor_Click
+        RemoveCustomColor
     End If
 End Sub
 
@@ -1631,6 +1729,14 @@ Private Sub txtTabData_Change()
     Dim iVal As String
     
     If Not mLoading And Not mShowingTabData Then
+        ' An emptied box is zero and not a typing error. Nothing is written back to .Text, so the caret
+        ' stays put and the box can be left empty while typing
+        If Trim$(txtTabData.Text) = "" Then
+            sPrevValue = txtTabData.Text
+            Changed = True
+            mTabData(mTab).Data = 0
+            Exit Sub
+        End If
         If Not IsNumeric(txtTabData.Text) Then
             MsgBox "This data can hold only numeric Long values", vbExclamation
             txtTabData.Text = sPrevValue
@@ -1661,6 +1767,14 @@ Private Sub txtTabFixedWidth_Change()
     Dim iVal As String
     
     If Not mLoading And Not mShowingTabData Then
+        ' An emptied box is zero, which here means no fixed width
+        If Trim$(txtTabFixedWidth.Text) = "" Then
+            sPrevValue = txtTabFixedWidth.Text
+            Changed = True
+            mTabData(mTab).FixedWidth = 0
+            PushTabToPreview mTab
+            Exit Sub
+        End If
         iVal = "a"
         On Error Resume Next
         iVal = CStr(CLng(txtTabFixedWidth.Text))
@@ -1674,7 +1788,9 @@ Private Sub txtTabFixedWidth_Change()
         sPrevValue = txtTabFixedWidth.Text
     
         Changed = True
-        mTabData(mTab).Data = Val(txtTabFixedWidth.Text)
+        mTabData(mTab).FixedWidth = Val(txtTabFixedWidth.Text)
+        ' Pushed straight and not through ShowTabData, which would reassign the box and move the caret
+        PushTabToPreview mTab
     End If
 End Sub
 
@@ -1687,78 +1803,43 @@ End Sub
 
 Private Sub ShowCustomColor()
     Dim iColorID As NTTabCustomColorIDConstants
-    Dim iGeneralColor As Long
-    Dim X As Long
-    Dim Y As Long
+    Dim iSlots(ntCCFlatTabBorderColorInactive) As Variant
+    Dim iAutomaticColor As Long
+    Dim iSelector As New cColorSelector
+    Dim c As Long
     
     iColorID = cboColorID.ItemData(cboColorID.ListIndex)
-    iGeneralColor = GetGeneralColor(iColorID)
-    picCustomColor.Cls
-    If (mTabData(mTab).CustomColor(iColorID) = iGeneralColor) Then
-        ' custom color not set
-        picCustomColor.BackColor = vbButtonFace
-        For Y = 0 To 5
-            For X = 0 To 5
-                If IIf(Y Mod 2 = 0, X Mod 2 = 0, X Mod 2 <> 0) Then
-                    picCustomColor.Line (picCustomColor.ScaleWidth / 6 * X, picCustomColor.ScaleHeight / 6 * Y)-(picCustomColor.ScaleWidth / 6 * X + picCustomColor.ScaleWidth / 6, picCustomColor.ScaleHeight / 6 * Y + picCustomColor.ScaleHeight / 6), vb3DLight, BF
-                End If
-            Next
-        Next
-        picCustomColor.CurrentY = picCustomColor.ScaleHeight / 7
-        picCustomColor.CurrentX = (picCustomColor.ScaleWidth - picCustomColor.TextWidth("Not")) / 2
-        picCustomColor.Print "Not"
-        picCustomColor.CurrentX = (picCustomColor.ScaleWidth - picCustomColor.TextWidth("set")) / 2
-        picCustomColor.Print "set"
-        cmdRemoveCustomColor.Enabled = False
+    ' What an unset slot would show: the tab inherits from its own colours first, so the resolver is
+    ' asked with the mirror's slots
+    For c = 0 To ntCCFlatTabBorderColorInactive
+        iSlots(c) = mTabData(mTab).CustomColor(c)
+    Next c
+    iAutomaticColor = mSC.TabAutomaticCustomColor(iSlots, iColorID)
+    If IsEmpty(mTabData(mTab).CustomColor(iColorID)) Then
+        picCustomColor.BackColor = iAutomaticColor
+        lblCustomColorState.Caption = "(Automatic)"
         txtCustomColor.Text = ""
     Else
         picCustomColor.BackColor = mTabData(mTab).CustomColor(iColorID)
-        cmdRemoveCustomColor.Enabled = True
+        lblCustomColorState.Caption = ""
         txtCustomColor.Text = "&H" & Hex(mTabData(mTab).CustomColor(iColorID))
         txtCustomColor.SelStart = Len(txtCustomColor.Text)
     End If
-    picGeneralColor.BackColor = iGeneralColor
-    picGeneralColor.ToolTipText = "&H" & Hex(iGeneralColor)
-    NewTab1.TabCustomColor(mTab, iColorID) = mTabData(mTab).CustomColor(iColorID)
+    picAutomaticColor.BackColor = iAutomaticColor
+    picAutomaticColor.ToolTipText = "&H" & Hex(iAutomaticColor)
+    picCustomColor.ToolTipText = iSelector.ColorDisplayName(CustomColorForControl(mTabData(mTab).CustomColor(iColorID))) & " - click to change"
+    NewTab1.TabCustomColor(mTab, iColorID) = CustomColorForControl(mTabData(mTab).CustomColor(iColorID))
 End Sub
 
-Private Function GetGeneralColor(nColorID As NTTabCustomColorIDConstants) As Long
-    Select Case nColorID
-        Case ntCCBackColorTab
-            GetGeneralColor = mSC.BackColorTabs
-        Case ntCCBackColorSelectedTab
-            GetGeneralColor = mSC.BackColorSelectedTab
-        Case ntCCHighlightColor
-            GetGeneralColor = mSC.HighlightColor
-        Case ntCCHighlightColorSelectedTab
-            GetGeneralColor = mSC.HighlightColorSelectedTab
-        Case ntCCFlatBarColorInactive
-            GetGeneralColor = mSC.FlatBarColorInactive
-        Case ntCCFlatBarColorHighlight
-            GetGeneralColor = mSC.FlatBarColorHighlight
-        Case ntCCFlatBarColorSelectedTab
-            GetGeneralColor = mSC.FlatBarColorSelectedTab
-        Case ntCCFlatTabBorderColorHighlight
-            GetGeneralColor = mSC.FlatTabBorderColorHighlight
-        Case ntCCFlatTabBorderColorSelectedTab
-            GetGeneralColor = mSC.FlatTabBorderColorSelectedTab
-        Case ntCCForeColor
-            GetGeneralColor = mSC.ForeColor
-        Case ntCCForeColorHighlighted
-            GetGeneralColor = mSC.ForeColorHighlighted
-        Case ntCCForeColorSelectedTab
-            GetGeneralColor = mSC.ForeColorSelectedTab
-        Case ntCCIconColor
-            GetGeneralColor = mSC.IconColor
-        Case ntCCIconColorSelectedTab
-            GetGeneralColor = mSC.IconColorSelectedTab
-        Case ntCCIconColorMouseHover
-            GetGeneralColor = mSC.IconColorMouseHover
-        Case ntCCIconColorMouseHoverSelectedTab
-            GetGeneralColor = mSC.IconColorMouseHoverSelectedTab
-        Case ntCCIconColorTabHighlighted
-            GetGeneralColor = mSC.IconColorTabHighlighted
-    End Select
+' The mirror says "nobody set this" with Empty and the control says it with -1. Assigning the
+' Variant straight through would hand an Empty to an OLE_COLOR parameter, which arrives as
+' black and reads as a decision, which is exactly what this page must never write
+Private Function CustomColorForControl(ByRef nValue As Variant) As Long
+    If IsEmpty(nValue) Then
+        CustomColorForControl = -1
+    Else
+        CustomColorForControl = CLng(nValue)
+    End If
 End Function
 
 Private Sub tmrTabChanged_Timer()
@@ -1806,7 +1887,101 @@ Private Sub NewTab1_MouseMove(Button As Integer, Shift As Integer, X As Single, 
     End If
 End Sub
 
+Private Sub txtTabs_Change()
+    Dim iCount As Long
+    
+    If mLoading Or mShowingTabData Then Exit Sub
+    If Not ReadTabCount(iCount) Then Exit Sub
+    If iCount = mTabs Then Exit Sub
+    If FirstTabWithControlsFrom(iCount) > -1 Then Exit Sub
+    SetMirrorTabCount iCount
+End Sub
+
+Private Sub txtTabs_LostFocus()
+    FinishTabCountEdit
+End Sub
+
+Private Function ReadTabCount(ByRef nCount As Long) As Boolean
+    Dim iText As String
+    
+    iText = Trim$(txtTabs.Text)
+    If (Len(iText) = 0) Or (Len(iText) > 4) Or (iText Like "*[!0-9]*") Then Exit Function
+    If (CLng(iText) < 1) Or (CLng(iText) > 1000) Then Exit Function
+    nCount = CLng(iText)
+    ReadTabCount = True
+End Function
+
+Private Function FirstTabWithControlsFrom(ByVal nCount As Long) As Long
+    Dim t As Long
+    
+    FirstTabWithControlsFrom = -1
+    For t = nCount To mTabs - 1
+        If mTabData(t).Controls.Count > 0 Then
+            FirstTabWithControlsFrom = t
+            Exit Function
+        End If
+    Next t
+End Function
+
+' Applied on each keystroke. The tabs cut away are kept aside until the box is left, so that
+' typing 20 over 3 goes through 2 without losing the data of tab 2
+Private Sub SetMirrorTabCount(ByVal nCount As Long)
+    Dim t As Long
+    
+    If nCount < mTabs Then
+        If mStashedTabs < mTabs Then
+            ReDim Preserve mStashedTabData(mTabs - 1)
+            For t = mStashedTabs To mTabs - 1
+                mStashedTabData(t) = mTabData(t)
+            Next t
+            mStashedTabs = mTabs
+        End If
+        For t = nCount To mTabs - 1
+            mStashedTabData(t) = mTabData(t)
+        Next t
+        ReDim Preserve mTabData(nCount - 1)
+        If mTab > (nCount - 1) Then mTab = nCount - 1
+    Else
+        ReDim Preserve mTabData(nCount - 1)
+        For t = mTabs To nCount - 1
+            If t < mStashedTabs Then
+                mTabData(t) = mStashedTabData(t)
+            Else
+                mTabData(t).Caption = "Tab " & CStr(t)
+                Set mTabData(t).Controls = New Collection
+                Set mTabData(t).IconFont = CloneFont(mLastIconFont)
+                mTabData(t).Enabled = True
+                mTabData(t).Visible = True
+                mTabData(t).CloseButton = ntYNAuto
+                mTabData(t).CloseButtonEnabled = True
+                mTabData(t).Movable = True
+            End If
+        Next t
+    End If
+    mTabs = nCount
+    Changed = True
+    RefreshPreviewFromMirror
+    ShowTabData
+End Sub
+
+' A count that could not be applied while typing is explained here, once, and the box shows the
+' count in use again
+Private Sub FinishTabCountEdit()
+    Dim iCount As Long
+    Dim iTab As Long
+    
+    mStashedTabs = 0
+    Erase mStashedTabData
+    If ReadTabCount(iCount) Then
+        If iCount <> mTabs Then
+            iTab = FirstTabWithControlsFrom(iCount)
+            If iTab > -1 Then MsgBox "Tab " & CStr(iTab) & " has controls, can't remove tabs with controls. Remove the contained controls first.", vbCritical
+        End If
+    End If
+    If txtTabs.Text <> CStr(mTabs) Then txtTabs.Text = mTabs
+End Sub
+
 Private Sub txtTab_Change()
     If NewTab1.TabVisible(Val(txtTab.Text)) Then NewTab1.TabSel = Val(txtTab.Text)
-    If Not mSC.Subclassed And Not mLoading Then Changed = True
+    If Not mLoading And Not mShowingTabData Then Changed = True
 End Sub

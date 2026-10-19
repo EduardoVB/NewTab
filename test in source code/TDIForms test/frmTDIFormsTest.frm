@@ -1,10 +1,10 @@
 VERSION 5.00
-Object = "*\A..\..\control-source\NewTabCtl.vbp"
+Object = "{66E63055-5A66-4C79-9327-4BC077858695}#16.0#0"; "NewTab01.ocx"
 Begin VB.Form frmTDIFormsTest 
    Caption         =   "TDI forms test"
    ClientHeight    =   8112
-   ClientLeft      =   4308
-   ClientTop       =   2520
+   ClientLeft      =   2352
+   ClientTop       =   1848
    ClientWidth     =   13632
    BeginProperty Font 
       Name            =   "Segoe UI"
@@ -37,14 +37,12 @@ Begin VB.Form frmTDIFormsTest
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
-      TabHeight       =   783
-      IconAlignment   =   5
-      AutoTabHeight   =   -1  'True
+      ControlsBackColorApplied=   -2147483633
       IconColorMouseHover=   255
       IconColorMouseHoverSelectedTab=   255
       CanReorderTabs  =   -1  'True
       TDIMode         =   2
-      ControlVersion  =   12
+      ControlVersion  =   19
       TabCaption(0)   =   "Home"
       Tab(0).ControlCount=   6
       Tab(0).Control(0)=   "Command6"

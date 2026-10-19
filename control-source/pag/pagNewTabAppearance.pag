@@ -1,0 +1,1129 @@
+VERSION 5.00
+Begin VB.PropertyPage pagNewTabAppearance 
+   Caption         =   "Appearance"
+   ClientHeight    =   8508
+   ClientLeft      =   0
+   ClientTop       =   0
+   ClientWidth     =   6804
+   BeginProperty Font 
+      Name            =   "Tahoma"
+      Size            =   8.4
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
+   LockControls    =   -1  'True
+   PaletteMode     =   0  'Halftone
+   ScaleHeight     =   8508
+   ScaleWidth      =   6804
+   Begin VB.Frame fraDrawing 
+      Caption         =   "Drawing"
+      Height          =   2880
+      Left            =   90
+      TabIndex        =   0
+      Top             =   30
+      Width           =   6624
+      Begin VB.ComboBox cboStyle 
+         Height          =   300
+         Left            =   2400
+         Style           =   2  'Dropdown List
+         TabIndex        =   2
+         Top             =   270
+         Width           =   1900
+      End
+      Begin VB.ComboBox cboTabAppearance 
+         Height          =   300
+         Left            =   2400
+         Style           =   2  'Dropdown List
+         TabIndex        =   5
+         Top             =   630
+         Width           =   1900
+      End
+      Begin VB.ComboBox cboBackStyle 
+         Height          =   300
+         Left            =   2400
+         Style           =   2  'Dropdown List
+         TabIndex        =   8
+         Top             =   990
+         Width           =   1900
+      End
+      Begin VB.ComboBox cboCaptionAlignment 
+         Height          =   300
+         Left            =   2400
+         Style           =   2  'Dropdown List
+         TabIndex        =   11
+         Top             =   1350
+         Width           =   1900
+      End
+      Begin VB.CheckBox chkRightToLeft 
+         Height          =   255
+         Left            =   2400
+         TabIndex        =   14
+         Top             =   1732
+         Width           =   255
+      End
+      Begin VB.CheckBox chkSoftEdges 
+         Height          =   255
+         Left            =   2400
+         TabIndex        =   17
+         Top             =   2092
+         Width           =   255
+      End
+      Begin VB.CheckBox chkShowDisabledState 
+         Height          =   255
+         Left            =   2400
+         TabIndex        =   20
+         Top             =   2452
+         Width           =   255
+      End
+      Begin VB.Label lblStyle 
+         Alignment       =   1  'Right Justify
+         Caption         =   "Style:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   1
+         Top             =   310
+         Width           =   2280
+      End
+      Begin VB.Label lblStyleInfo 
+         Caption         =   "the Auto values follow it"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   4360
+         TabIndex        =   3
+         ToolTipText     =   "the Auto values follow it"
+         Top             =   310
+         Width           =   2200
+      End
+      Begin VB.Label lblTabAppearance 
+         Alignment       =   1  'Right Justify
+         Caption         =   "TabAppearance:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   4
+         Top             =   670
+         Width           =   2280
+      End
+      Begin VB.Label lblTabAppearanceInfo 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   350
+         Left            =   4360
+         TabIndex        =   6
+         Top             =   670
+         Width           =   2200
+      End
+      Begin VB.Label lblBackStyle 
+         Alignment       =   1  'Right Justify
+         Caption         =   "BackStyle:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   7
+         Top             =   1030
+         Width           =   2280
+      End
+      Begin VB.Label lblBackStyleInfo 
+         Caption         =   "Transparent: no ntTAWindows"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   350
+         Left            =   4360
+         TabIndex        =   9
+         ToolTipText     =   "Transparent: no ntTAWindows"
+         Top             =   1030
+         Width           =   2200
+      End
+      Begin VB.Label lblCaptionAlignment 
+         Alignment       =   1  'Right Justify
+         Caption         =   "CaptionAlignment:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   10
+         Top             =   1390
+         Width           =   2280
+      End
+      Begin VB.Label lblCaptionAlignmentInfo 
+         Caption         =   "inside the tab"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   4360
+         TabIndex        =   12
+         ToolTipText     =   "inside the tab"
+         Top             =   1390
+         Width           =   2200
+      End
+      Begin VB.Label lblRightToLeft 
+         Alignment       =   1  'Right Justify
+         Caption         =   "RightToLeft:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   13
+         Top             =   1750
+         Width           =   2280
+      End
+      Begin VB.Label lblRightToLeftInfo 
+         Caption         =   "mirrors the whole control"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   2760
+         TabIndex        =   15
+         ToolTipText     =   "mirrors the whole control"
+         Top             =   1750
+         Width           =   3800
+      End
+      Begin VB.Label lblSoftEdges 
+         Alignment       =   1  'Right Justify
+         Caption         =   "SoftEdges:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   16
+         Top             =   2110
+         Width           =   2280
+      End
+      Begin VB.Label lblSoftEdgesInfo 
+         Caption         =   "edges with less contrast; not in flat or Windows"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   2760
+         TabIndex        =   18
+         ToolTipText     =   "edges with less contrast; not in flat or Windows"
+         Top             =   2110
+         Width           =   3800
+      End
+      Begin VB.Label lblShowDisabledState 
+         Alignment       =   1  'Right Justify
+         Caption         =   "ShowDisabledState:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   19
+         Top             =   2470
+         Width           =   2280
+      End
+      Begin VB.Label lblShowDisabledStateInfo 
+         Caption         =   "tabs grayed when disabled; not in Windows"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   2760
+         TabIndex        =   21
+         ToolTipText     =   "tabs grayed when disabled; not in Windows"
+         Top             =   2470
+         Width           =   3800
+      End
+   End
+   Begin VB.Frame fraFlat 
+      Caption         =   "Flat (only when the appearance is flat)"
+      Height          =   3600
+      Left            =   90
+      TabIndex        =   22
+      Top             =   3130
+      Width           =   6624
+      Begin VB.ComboBox cboFlatBorderMode 
+         Height          =   300
+         Left            =   2400
+         Style           =   2  'Dropdown List
+         TabIndex        =   24
+         Top             =   270
+         Width           =   1900
+      End
+      Begin VB.ComboBox cboFlatBarPosition 
+         Height          =   300
+         Left            =   2400
+         Style           =   2  'Dropdown List
+         TabIndex        =   27
+         Top             =   630
+         Width           =   1900
+      End
+      Begin VB.TextBox txtFlatBarHeight 
+         Height          =   310
+         Left            =   2400
+         TabIndex        =   30
+         Top             =   990
+         Width           =   700
+      End
+      Begin VB.TextBox txtFlatBarGripHeight 
+         Height          =   310
+         Left            =   2400
+         TabIndex        =   33
+         Top             =   1350
+         Width           =   700
+      End
+      Begin VB.TextBox txtFlatBodySeparationLineHeight 
+         Height          =   310
+         Left            =   2400
+         TabIndex        =   36
+         Top             =   1710
+         Width           =   700
+      End
+      Begin VB.TextBox txtFlatTabBodyGap 
+         Height          =   310
+         Left            =   2400
+         TabIndex        =   39
+         Top             =   2070
+         Width           =   700
+      End
+      Begin VB.TextBox txtFlatRoundnessTop 
+         Height          =   310
+         Left            =   2400
+         TabIndex        =   42
+         Top             =   2430
+         Width           =   700
+      End
+      Begin VB.TextBox txtFlatRoundnessBottom 
+         Height          =   310
+         Left            =   2400
+         TabIndex        =   45
+         Top             =   2790
+         Width           =   700
+      End
+      Begin VB.TextBox txtFlatRoundnessTabs 
+         Height          =   310
+         Left            =   2400
+         TabIndex        =   48
+         Top             =   3150
+         Width           =   700
+      End
+      Begin VB.Label lblFlatBorderMode 
+         Alignment       =   1  'Right Justify
+         Caption         =   "FlatBorderMode:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   23
+         Top             =   310
+         Width           =   2280
+      End
+      Begin VB.Label lblFlatBorderModeInfo 
+         Caption         =   "all the tabs or the active one"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   4360
+         TabIndex        =   25
+         ToolTipText     =   "all the tabs or the active one"
+         Top             =   310
+         Width           =   2200
+      End
+      Begin VB.Label lblFlatBarPosition 
+         Alignment       =   1  'Right Justify
+         Caption         =   "FlatBarPosition:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   26
+         Top             =   670
+         Width           =   2280
+      End
+      Begin VB.Label lblFlatBarPositionInfo 
+         Caption         =   "side of the tab with the bar"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   4360
+         TabIndex        =   28
+         ToolTipText     =   "side of the tab with the bar"
+         Top             =   670
+         Width           =   2200
+      End
+      Begin VB.Label lblFlatBarHeight 
+         Alignment       =   1  'Right Justify
+         Caption         =   "FlatBarHeight:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   29
+         Top             =   1030
+         Width           =   2280
+      End
+      Begin VB.Label lblFlatBarHeightInfo 
+         Caption         =   "0 to 15 pixels (*)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   3160
+         TabIndex        =   31
+         ToolTipText     =   "0 to 15 pixels (*)"
+         Top             =   1030
+         Width           =   3400
+      End
+      Begin VB.Label lblFlatBarGripHeight 
+         Alignment       =   1  'Right Justify
+         Caption         =   "FlatBarGripHeight:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   32
+         Top             =   1390
+         Width           =   2280
+      End
+      Begin VB.Label lblFlatBarGripHeightInfo 
+         Caption         =   "-50 to 50 pixels; negative is a notch (*)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   3160
+         TabIndex        =   34
+         ToolTipText     =   "-50 to 50 pixels; negative is a notch (*)"
+         Top             =   1390
+         Width           =   3400
+      End
+      Begin VB.Label lblFlatBodySeparationLineHeight 
+         Alignment       =   1  'Right Justify
+         Caption         =   "FlatBodySepLineHeight:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   35
+         ToolTipText     =   "FlatBodySeparationLineHeight"
+         Top             =   1750
+         Width           =   2280
+      End
+      Begin VB.Label lblFlatBodySeparationLineHeightInfo 
+         Caption         =   "line under the tabs, 0 to 50 pixels (*)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   3160
+         TabIndex        =   37
+         ToolTipText     =   "line under the tabs, 0 to 50 pixels (*)"
+         Top             =   1750
+         Width           =   3400
+      End
+      Begin VB.Label lblFlatTabBodyGap 
+         Alignment       =   1  'Right Justify
+         Caption         =   "FlatTabBodyGap:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   38
+         Top             =   2110
+         Width           =   2280
+      End
+      Begin VB.Label lblFlatTabBodyGapInfo 
+         Caption         =   "space on the body side of the tabs, 0 to 50 px. (*)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   3160
+         TabIndex        =   40
+         ToolTipText     =   "space on the body side of the tabs, 0 to 50 pixels (*)"
+         Top             =   2110
+         Width           =   3450
+      End
+      Begin VB.Label lblFlatRoundnessTop 
+         Alignment       =   1  'Right Justify
+         Caption         =   "FlatRoundnessTop:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   41
+         Top             =   2470
+         Width           =   2280
+      End
+      Begin VB.Label lblFlatRoundnessTopInfo 
+         Caption         =   "top corners, 0 to 100 pixels (*)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   3160
+         TabIndex        =   43
+         ToolTipText     =   "top corners, 0 to 100 pixels (*)"
+         Top             =   2470
+         Width           =   3400
+      End
+      Begin VB.Label lblFlatRoundnessBottom 
+         Alignment       =   1  'Right Justify
+         Caption         =   "FlatRoundnessBottom:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   44
+         Top             =   2830
+         Width           =   2280
+      End
+      Begin VB.Label lblFlatRoundnessBottomInfo 
+         Caption         =   "bottom corners, 0 to 100 pixels (*)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   3160
+         TabIndex        =   46
+         ToolTipText     =   "bottom corners, 0 to 100 pixels (*)"
+         Top             =   2830
+         Width           =   3400
+      End
+      Begin VB.Label lblFlatRoundnessTabs 
+         Alignment       =   1  'Right Justify
+         Caption         =   "FlatRoundnessTabs:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   47
+         Top             =   3190
+         Width           =   2280
+      End
+      Begin VB.Label lblFlatRoundnessTabsInfo 
+         Caption         =   "tab corners, 0 to 100 pixels (*)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   3160
+         TabIndex        =   49
+         ToolTipText     =   "tab corners, 0 to 100 pixels (*)"
+         Top             =   3190
+         Width           =   3400
+      End
+   End
+   Begin VB.PictureBox picSampleContainer 
+      BorderStyle     =   0  'None
+      Height          =   972
+      Left            =   120
+      ScaleHeight     =   972
+      ScaleWidth      =   6612
+      TabIndex        =   51
+      Top             =   7440
+      Width           =   6612
+      Begin NewTabCtl.NewTab NewTab1 
+         Height          =   972
+         Left            =   0
+         TabIndex        =   52
+         Top             =   0
+         Width           =   6612
+         _ExtentX        =   11663
+         _ExtentY        =   1715
+         ControlsBackColorApplied=   -2147483633
+         AutoTabHeight   =   -1  'True
+         ControlVersion  =   18
+         TabCaption(0)   =   ""
+         TabCaption(1)   =   ""
+         TabCaption(2)   =   ""
+      End
+   End
+   Begin VB.Label lblNotes 
+      Caption         =   " Note: (*) Pixels are scaled by DPI"
+      ForeColor       =   &H00C00000&
+      Height          =   372
+      Left            =   240
+      TabIndex        =   50
+      Top             =   6850
+      Width           =   6372
+   End
+End
+Attribute VB_Name = "pagNewTabAppearance"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = True
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = True
+Option Explicit
+
+Private Declare Function SendMessageW Lib "user32" (ByVal hWnd As LongPtr, ByVal wMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
+
+Private Const CB_SETDROPPEDWIDTH As Long = &H160&
+
+Private mPreview As NewTab
+Private mLoading As Boolean
+Private mSettingText As Boolean
+Private mFlatBarHeight As Long
+Private mFlatBarGripHeight As Long
+Private mFlatBodySeparationLineHeight As Long
+Private mFlatTabBodyGap As Long
+Private mFlatRoundnessTop As Long
+Private mFlatRoundnessBottom As Long
+Private mFlatRoundnessTabs As Long
+
+Private Sub PropertyPage_SelectionChanged()
+    Dim iSC As NewTab
+    Dim t As Long
+
+    If TypeName(SelectedControls(0)) <> "NewTab" Then Exit Sub
+    mLoading = True
+    Set iSC = SelectedControls(0)
+    Set mPreview = NewTab1
+
+    LoadCombos
+    SelectInComboByItemData cboStyle, iSC.Style
+    SelectInComboByItemData cboTabAppearance, iSC.TabAppearance
+    SelectInComboByItemData cboBackStyle, iSC.BackStyle
+    SelectInComboByItemData cboCaptionAlignment, iSC.CaptionAlignment
+    chkRightToLeft.Value = IIf(iSC.RightToLeft, vbChecked, vbUnchecked)
+    chkSoftEdges.Value = IIf(iSC.SoftEdges, vbChecked, vbUnchecked)
+    chkShowDisabledState.Value = IIf(iSC.ShowDisabledState, vbChecked, vbUnchecked)
+    SelectInComboByItemData cboFlatBorderMode, iSC.FlatBorderMode
+    SelectInComboByItemData cboFlatBarPosition, iSC.FlatBarPosition
+    mFlatBarHeight = iSC.FlatBarHeight
+    mFlatBarGripHeight = iSC.FlatBarGripHeight
+    mFlatBodySeparationLineHeight = iSC.FlatBodySeparationLineHeight
+    mFlatTabBodyGap = iSC.FlatTabBodyGap
+    mFlatRoundnessTop = iSC.FlatRoundnessTop
+    mFlatRoundnessBottom = iSC.FlatRoundnessBottom
+    mFlatRoundnessTabs = iSC.FlatRoundnessTabs
+    ShowAllValues
+
+    ' The sample is the developer's control, as in the other pages
+    mPreview.Redraw = False
+    mPreview.RightToLeft = iSC.RightToLeft
+    mPreview.CloseButton = iSC.CloseButton
+    mPreview.CloseButtonPosition = iSC.CloseButtonPosition
+    mPreview.CaptionAlignment = iSC.CaptionAlignment
+    mPreview.Tabs = iSC.Tabs
+    For t = 0 To iSC.Tabs - 1
+        SeedPreviewTab iSC, t
+    Next t
+    Select Case iSC.TabOrientation
+        Case ssTabOrientationRight, ssTabOrientationLeft, ntTabOrientationRightBottom, ntTabOrientationLeftTop
+            mPreview.Width = iSC.Height
+            mPreview.Height = iSC.Width
+        Case Else
+            mPreview.Width = iSC.Width
+            mPreview.Height = iSC.Height
+    End Select
+    CopyControlProperties iSC, mPreview
+    If iSC.TabSel > -1 Then
+        If mPreview.TabVisible(iSC.TabSel) Then mPreview.TabSel = iSC.TabSel
+    End If
+    UpdatePreview
+
+    SetComboDropWidth cboStyle
+    SetComboDropWidth cboTabAppearance
+    SetComboDropWidth cboBackStyle
+    SetComboDropWidth cboCaptionAlignment
+    SetComboDropWidth cboFlatBorderMode
+    SetComboDropWidth cboFlatBarPosition
+    SetEnabledStates
+    ShowAppearanceInfo
+    Changed = False
+    mLoading = False
+End Sub
+
+Private Sub PropertyPage_EditProperty(PropertyName As String)
+    On Error Resume Next
+    Select Case PropertyName
+        Case "TabAppearance": cboTabAppearance.SetFocus
+        Case "BackStyle": cboBackStyle.SetFocus
+        Case "CaptionAlignment": cboCaptionAlignment.SetFocus
+        Case "RightToLeft": chkRightToLeft.SetFocus
+        Case "SoftEdges": chkSoftEdges.SetFocus
+        Case "ShowDisabledState": chkShowDisabledState.SetFocus
+        Case "FlatBorderMode": cboFlatBorderMode.SetFocus
+        Case "FlatBarPosition": cboFlatBarPosition.SetFocus
+        Case "FlatBarHeight": txtFlatBarHeight.SetFocus
+        Case "FlatBarGripHeight": txtFlatBarGripHeight.SetFocus
+        Case "FlatBodySeparationLineHeight": txtFlatBodySeparationLineHeight.SetFocus
+        Case "FlatTabBodyGap": txtFlatTabBodyGap.SetFocus
+        Case "FlatRoundnessTop": txtFlatRoundnessTop.SetFocus
+        Case "FlatRoundnessBottom": txtFlatRoundnessBottom.SetFocus
+        Case "FlatRoundnessTabs": txtFlatRoundnessTabs.SetFocus
+        Case Else: cboStyle.SetFocus
+    End Select
+End Sub
+
+Private Sub PropertyPage_ApplyChanges()
+    Dim iSC As NewTab
+
+    If mPreview Is Nothing Then Exit Sub
+    Set iSC = SelectedControls(0)
+    On Error Resume Next
+    iSC.Redraw = False
+    If iSC.Style <> ComboValue(cboStyle) Then iSC.Style = ComboValue(cboStyle)
+    If iSC.TabAppearance <> ComboValue(cboTabAppearance) Then iSC.TabAppearance = ComboValue(cboTabAppearance)
+    If iSC.BackStyle <> ComboValue(cboBackStyle) Then iSC.BackStyle = ComboValue(cboBackStyle)
+    If iSC.CaptionAlignment <> ComboValue(cboCaptionAlignment) Then iSC.CaptionAlignment = ComboValue(cboCaptionAlignment)
+    If iSC.RightToLeft <> CheckValue(chkRightToLeft) Then iSC.RightToLeft = CheckValue(chkRightToLeft)
+    If iSC.SoftEdges <> CheckValue(chkSoftEdges) Then iSC.SoftEdges = CheckValue(chkSoftEdges)
+    If iSC.ShowDisabledState <> CheckValue(chkShowDisabledState) Then iSC.ShowDisabledState = CheckValue(chkShowDisabledState)
+    If iSC.FlatBorderMode <> ComboValue(cboFlatBorderMode) Then iSC.FlatBorderMode = ComboValue(cboFlatBorderMode)
+    If iSC.FlatBarPosition <> ComboValue(cboFlatBarPosition) Then iSC.FlatBarPosition = ComboValue(cboFlatBarPosition)
+    If iSC.FlatBarHeight <> mFlatBarHeight Then iSC.FlatBarHeight = mFlatBarHeight
+    If iSC.FlatBarGripHeight <> mFlatBarGripHeight Then iSC.FlatBarGripHeight = mFlatBarGripHeight
+    If iSC.FlatBodySeparationLineHeight <> mFlatBodySeparationLineHeight Then iSC.FlatBodySeparationLineHeight = mFlatBodySeparationLineHeight
+    If iSC.FlatTabBodyGap <> mFlatTabBodyGap Then iSC.FlatTabBodyGap = mFlatTabBodyGap
+    If iSC.FlatRoundnessTop <> mFlatRoundnessTop Then iSC.FlatRoundnessTop = mFlatRoundnessTop
+    If iSC.FlatRoundnessBottom <> mFlatRoundnessBottom Then iSC.FlatRoundnessBottom = mFlatRoundnessBottom
+    If iSC.FlatRoundnessTabs <> mFlatRoundnessTabs Then iSC.FlatRoundnessTabs = mFlatRoundnessTabs
+    iSC.Redraw = True
+    On Error GoTo 0
+End Sub
+
+Private Function CheckValue(nCheck As CheckBox) As Boolean
+    CheckValue = (nCheck.Value = vbChecked)
+End Function
+
+Private Function ComboValue(nCombo As ComboBox) As Long
+    If nCombo.ListIndex > -1 Then ComboValue = nCombo.ItemData(nCombo.ListIndex)
+End Function
+
+Private Sub LoadCombos()
+    cboStyle.Clear
+    cboStyle.AddItem ssStyleTabbedDialog & " - ssStyleTabbedDialog": cboStyle.ItemData(cboStyle.NewIndex) = ssStyleTabbedDialog
+    cboStyle.AddItem ssStylePropertyPage & " - ssStylePropertyPage": cboStyle.ItemData(cboStyle.NewIndex) = ssStylePropertyPage
+    cboStyle.AddItem ntStyleTabStrip & " - ntStyleTabStrip": cboStyle.ItemData(cboStyle.NewIndex) = ntStyleTabStrip
+    cboStyle.AddItem ntStyleFlat & " - ntStyleFlat": cboStyle.ItemData(cboStyle.NewIndex) = ntStyleFlat
+    cboStyle.AddItem ntStyleWindows & " - ntStyleWindows": cboStyle.ItemData(cboStyle.NewIndex) = ntStyleWindows
+
+    cboTabAppearance.Clear
+    cboTabAppearance.AddItem ntTAAuto & " - ntTAAuto": cboTabAppearance.ItemData(cboTabAppearance.NewIndex) = ntTAAuto
+    cboTabAppearance.AddItem ntTATabbedDialog & " - ntTATabbedDialog": cboTabAppearance.ItemData(cboTabAppearance.NewIndex) = ntTATabbedDialog
+    cboTabAppearance.AddItem ntTATabbedDialogRounded & " - ntTATabbedDialogRounded": cboTabAppearance.ItemData(cboTabAppearance.NewIndex) = ntTATabbedDialogRounded
+    cboTabAppearance.AddItem ntTAPropertyPage & " - ntTAPropertyPage": cboTabAppearance.ItemData(cboTabAppearance.NewIndex) = ntTAPropertyPage
+    cboTabAppearance.AddItem ntTAPropertyPageRounded & " - ntTAPropertyPageRounded": cboTabAppearance.ItemData(cboTabAppearance.NewIndex) = ntTAPropertyPageRounded
+    cboTabAppearance.AddItem ntTAFlat & " - ntTAFlat": cboTabAppearance.ItemData(cboTabAppearance.NewIndex) = ntTAFlat
+    cboTabAppearance.AddItem ntTATabStrip & " - ntTATabStrip": cboTabAppearance.ItemData(cboTabAppearance.NewIndex) = ntTATabStrip
+    cboTabAppearance.AddItem ntTAWindows & " - ntTAWindows": cboTabAppearance.ItemData(cboTabAppearance.NewIndex) = ntTAWindows
+
+    cboBackStyle.Clear
+    cboBackStyle.AddItem ntTransparent & " - ntTransparent": cboBackStyle.ItemData(cboBackStyle.NewIndex) = ntTransparent
+    cboBackStyle.AddItem ntOpaque & " - ntOpaque": cboBackStyle.ItemData(cboBackStyle.NewIndex) = ntOpaque
+    cboBackStyle.AddItem ntTransparentBackOnly & " - ntTransparentBackOnly": cboBackStyle.ItemData(cboBackStyle.NewIndex) = ntTransparentBackOnly
+
+    cboCaptionAlignment.Clear
+    cboCaptionAlignment.AddItem ntAlignmentLeft & " - ntAlignmentLeft": cboCaptionAlignment.ItemData(cboCaptionAlignment.NewIndex) = ntAlignmentLeft
+    cboCaptionAlignment.AddItem ntAlignmentRight & " - ntAlignmentRight": cboCaptionAlignment.ItemData(cboCaptionAlignment.NewIndex) = ntAlignmentRight
+    cboCaptionAlignment.AddItem ntAlignmentCenter & " - ntAlignmentCenter": cboCaptionAlignment.ItemData(cboCaptionAlignment.NewIndex) = ntAlignmentCenter
+
+    cboFlatBorderMode.Clear
+    cboFlatBorderMode.AddItem ntBorderTabs & " - ntBorderTabs": cboFlatBorderMode.ItemData(cboFlatBorderMode.NewIndex) = ntBorderTabs
+    cboFlatBorderMode.AddItem ntBorderSelectedTab & " - ntBorderSelectedTab": cboFlatBorderMode.ItemData(cboFlatBorderMode.NewIndex) = ntBorderSelectedTab
+
+    cboFlatBarPosition.Clear
+    cboFlatBarPosition.AddItem ntBarPositionTop & " - ntBarPositionTop": cboFlatBarPosition.ItemData(cboFlatBarPosition.NewIndex) = ntBarPositionTop
+    cboFlatBarPosition.AddItem ntBarPositionBottom & " - ntBarPositionBottom": cboFlatBarPosition.ItemData(cboFlatBarPosition.NewIndex) = ntBarPositionBottom
+End Sub
+
+' Values
+
+Private Sub ShowAllValues()
+    mSettingText = True
+    txtFlatBarHeight.Text = CStr(mFlatBarHeight)
+    txtFlatBarGripHeight.Text = CStr(mFlatBarGripHeight)
+    txtFlatBodySeparationLineHeight.Text = CStr(mFlatBodySeparationLineHeight)
+    txtFlatTabBodyGap.Text = CStr(mFlatTabBodyGap)
+    txtFlatRoundnessTop.Text = CStr(mFlatRoundnessTop)
+    txtFlatRoundnessBottom.Text = CStr(mFlatRoundnessBottom)
+    txtFlatRoundnessTabs.Text = CStr(mFlatRoundnessTabs)
+    mSettingText = False
+End Sub
+
+' A text that is not a valid value yet leaves the last valid one in place; leaving the box shows it
+Private Function ReadInteger(ByVal nText As String, ByVal nMin As Long, ByVal nMax As Long, ByRef nValue As Long) As Boolean
+    Dim iDigits As String
+
+    nText = Trim$(nText)
+    iDigits = nText
+    If Left$(iDigits, 1) = "-" Then iDigits = Mid$(iDigits, 2)
+    If (Len(iDigits) = 0) Or (Len(iDigits) > 4) Then Exit Function
+    If iDigits Like "*[!0-9]*" Then Exit Function
+    If (CLng(nText) < nMin) Or (CLng(nText) > nMax) Then Exit Function
+    nValue = CLng(nText)
+    ReadInteger = True
+End Function
+
+Private Sub ValueEdited()
+    If mLoading Or mSettingText Then Exit Sub
+    UpdatePreview
+    Changed = True
+End Sub
+
+Private Sub txtFlatBarHeight_Change()
+    If mLoading Or mSettingText Then Exit Sub
+    If ReadInteger(txtFlatBarHeight.Text, 0, 15, mFlatBarHeight) Then ValueEdited
+End Sub
+
+Private Sub txtFlatBarGripHeight_Change()
+    If mLoading Or mSettingText Then Exit Sub
+    If ReadInteger(txtFlatBarGripHeight.Text, -50, 50, mFlatBarGripHeight) Then ValueEdited
+End Sub
+
+Private Sub txtFlatBodySeparationLineHeight_Change()
+    If mLoading Or mSettingText Then Exit Sub
+    If ReadInteger(txtFlatBodySeparationLineHeight.Text, 0, 50, mFlatBodySeparationLineHeight) Then ValueEdited
+End Sub
+
+Private Sub txtFlatTabBodyGap_Change()
+    If mLoading Or mSettingText Then Exit Sub
+    If ReadInteger(txtFlatTabBodyGap.Text, 0, 50, mFlatTabBodyGap) Then ValueEdited
+End Sub
+
+Private Sub txtFlatRoundnessTop_Change()
+    If mLoading Or mSettingText Then Exit Sub
+    If ReadInteger(txtFlatRoundnessTop.Text, 0, 100, mFlatRoundnessTop) Then ValueEdited
+End Sub
+
+Private Sub txtFlatRoundnessBottom_Change()
+    If mLoading Or mSettingText Then Exit Sub
+    If ReadInteger(txtFlatRoundnessBottom.Text, 0, 100, mFlatRoundnessBottom) Then ValueEdited
+End Sub
+
+Private Sub txtFlatRoundnessTabs_Change()
+    If mLoading Or mSettingText Then Exit Sub
+    If ReadInteger(txtFlatRoundnessTabs.Text, 0, 100, mFlatRoundnessTabs) Then ValueEdited
+End Sub
+
+Private Sub txtFlatBarHeight_LostFocus()
+    ShowAllValues
+End Sub
+
+Private Sub txtFlatBarGripHeight_LostFocus()
+    ShowAllValues
+End Sub
+
+Private Sub txtFlatBodySeparationLineHeight_LostFocus()
+    ShowAllValues
+End Sub
+
+Private Sub txtFlatTabBodyGap_LostFocus()
+    ShowAllValues
+End Sub
+
+Private Sub txtFlatRoundnessTop_LostFocus()
+    ShowAllValues
+End Sub
+
+Private Sub txtFlatRoundnessBottom_LostFocus()
+    ShowAllValues
+End Sub
+
+Private Sub txtFlatRoundnessTabs_LostFocus()
+    ShowAllValues
+End Sub
+
+Private Sub ComboOrCheckEdited()
+    If mLoading Then Exit Sub
+    SetEnabledStates
+    ShowAppearanceInfo
+    UpdatePreview
+    Changed = True
+End Sub
+
+Private Sub cboStyle_Click()
+    ComboOrCheckEdited
+End Sub
+
+Private Sub cboTabAppearance_Click()
+    ComboOrCheckEdited
+End Sub
+
+Private Sub cboBackStyle_Click()
+    ComboOrCheckEdited
+End Sub
+
+Private Sub cboCaptionAlignment_Click()
+    ComboOrCheckEdited
+End Sub
+
+Private Sub chkRightToLeft_Click()
+    ComboOrCheckEdited
+End Sub
+
+Private Sub chkSoftEdges_Click()
+    ComboOrCheckEdited
+End Sub
+
+Private Sub chkShowDisabledState_Click()
+    ComboOrCheckEdited
+End Sub
+
+Private Sub cboFlatBorderMode_Click()
+    ComboOrCheckEdited
+End Sub
+
+Private Sub cboFlatBarPosition_Click()
+    ComboOrCheckEdited
+End Sub
+
+' What applies and when
+
+' The same resolution the control does at the start of Draw
+Private Function EffectiveAppearance() As Long
+    EffectiveAppearance = ComboValue(cboTabAppearance)
+    If EffectiveAppearance <> ntTAAuto Then Exit Function
+    Select Case ComboValue(cboStyle)
+        Case ntStyleWindows: EffectiveAppearance = ntTAWindows
+        Case ntStyleTabStrip: EffectiveAppearance = ntTATabStrip
+        Case ssStylePropertyPage: EffectiveAppearance = ntTAPropertyPage
+        Case ntStyleFlat: EffectiveAppearance = ntTAFlat
+        Case Else: EffectiveAppearance = ntTATabbedDialog
+    End Select
+End Function
+
+Private Function AppearanceName(ByVal nAppearance As Long) As String
+    Select Case nAppearance
+        Case ntTATabbedDialog: AppearanceName = "ntTATabbedDialog"
+        Case ntTATabbedDialogRounded: AppearanceName = "ntTATabbedDialogRounded"
+        Case ntTAPropertyPage: AppearanceName = "ntTAPropertyPage"
+        Case ntTAPropertyPageRounded: AppearanceName = "ntTAPropertyPageRounded"
+        Case ntTAFlat: AppearanceName = "ntTAFlat"
+        Case ntTATabStrip: AppearanceName = "ntTATabStrip"
+        Case ntTAWindows: AppearanceName = "ntTAWindows"
+    End Select
+End Function
+
+Private Sub ShowAppearanceInfo()
+    Dim iText As String
+
+    If ComboValue(cboTabAppearance) = ntTAAuto Then iText = "Auto = " & AppearanceName(EffectiveAppearance) & ", by Style"
+    lblTabAppearanceInfo.Caption = iText
+    lblTabAppearanceInfo.ToolTipText = iText
+
+    Select Case ComboValue(cboBackStyle)
+        Case ntTransparent: iText = "back, body and selected tab; no ntTAWindows"
+        Case ntTransparentBackOnly: iText = "only the BackColor area"
+        Case Else: iText = ""
+    End Select
+    lblBackStyleInfo.Caption = iText
+    lblBackStyleInfo.ToolTipText = iText
+End Sub
+
+Private Sub SetRowEnabled(nLabel As Label, nField As Control, nInfo As Label, ByVal nEnabled As Boolean)
+    nLabel.Enabled = nEnabled
+    nField.Enabled = nEnabled
+    nInfo.Enabled = nEnabled
+End Sub
+
+' The frame is not disabled: its children would keep looking enabled
+Private Sub SetEnabledStates()
+    Dim iAppearance As Long
+    Dim iFlat As Boolean
+
+    iAppearance = EffectiveAppearance
+    iFlat = (iAppearance = ntTAFlat)
+    SetRowEnabled lblSoftEdges, chkSoftEdges, lblSoftEdgesInfo, (iAppearance <> ntTAFlat) And (iAppearance <> ntTAWindows)
+    SetRowEnabled lblShowDisabledState, chkShowDisabledState, lblShowDisabledStateInfo, (iAppearance <> ntTAWindows)
+    SetRowEnabled lblFlatBorderMode, cboFlatBorderMode, lblFlatBorderModeInfo, iFlat
+    SetRowEnabled lblFlatBarPosition, cboFlatBarPosition, lblFlatBarPositionInfo, iFlat
+    SetRowEnabled lblFlatBarHeight, txtFlatBarHeight, lblFlatBarHeightInfo, iFlat
+    SetRowEnabled lblFlatBarGripHeight, txtFlatBarGripHeight, lblFlatBarGripHeightInfo, iFlat
+    SetRowEnabled lblFlatBodySeparationLineHeight, txtFlatBodySeparationLineHeight, lblFlatBodySeparationLineHeightInfo, iFlat
+    SetRowEnabled lblFlatTabBodyGap, txtFlatTabBodyGap, lblFlatTabBodyGapInfo, iFlat
+    SetRowEnabled lblFlatRoundnessTop, txtFlatRoundnessTop, lblFlatRoundnessTopInfo, iFlat
+    SetRowEnabled lblFlatRoundnessBottom, txtFlatRoundnessBottom, lblFlatRoundnessBottomInfo, iFlat
+    SetRowEnabled lblFlatRoundnessTabs, txtFlatRoundnessTabs, lblFlatRoundnessTabsInfo, iFlat
+End Sub
+
+' Preview
+
+' Same order as ApplyChanges. A value the preview refuses is simply not shown
+Private Sub UpdatePreview()
+    On Error Resume Next
+    mPreview.Redraw = False
+    mPreview.Style = ComboValue(cboStyle)
+    mPreview.TabAppearance = ComboValue(cboTabAppearance)
+    mPreview.BackStyle = ComboValue(cboBackStyle)
+    mPreview.CaptionAlignment = ComboValue(cboCaptionAlignment)
+    mPreview.RightToLeft = CheckValue(chkRightToLeft)
+    mPreview.SoftEdges = CheckValue(chkSoftEdges)
+    mPreview.ShowDisabledState = CheckValue(chkShowDisabledState)
+    mPreview.FlatBorderMode = ComboValue(cboFlatBorderMode)
+    mPreview.FlatBarPosition = ComboValue(cboFlatBarPosition)
+    mPreview.FlatBarHeight = mFlatBarHeight
+    mPreview.FlatBarGripHeight = mFlatBarGripHeight
+    mPreview.FlatBodySeparationLineHeight = mFlatBodySeparationLineHeight
+    mPreview.FlatTabBodyGap = mFlatTabBodyGap
+    mPreview.FlatRoundnessTop = mFlatRoundnessTop
+    mPreview.FlatRoundnessBottom = mFlatRoundnessBottom
+    mPreview.FlatRoundnessTabs = mFlatRoundnessTabs
+    mPreview.Redraw = True
+    On Error GoTo 0
+    PlacePreview
+End Sub
+
+Private Sub SeedPreviewTab(ByVal nSC As NewTab, ByVal nTab As Long)
+    Dim c As Long
+    
+    For c = 0 To ntCCFlatTabBorderColorInactive
+        If nSC.TabCustomColorIsSet(nTab, c) Then
+            mPreview.TabCustomColor(nTab, c) = nSC.TabCustomColor(nTab, c)
+        Else
+            mPreview.TabCustomColor(nTab, c) = -1
+        End If
+    Next c
+    mPreview.TabCaption(nTab) = nSC.TabCaption(nTab)
+    mPreview.TabEnabled(nTab) = nSC.TabEnabled(nTab)
+    mPreview.TabVisible(nTab) = nSC.TabVisible(nTab)
+    mPreview.TabCloseButton(nTab) = nSC.TabCloseButton(nTab)
+    mPreview.TabCloseButtonEnabled(nTab) = nSC.TabCloseButtonEnabled(nTab)
+    Set mPreview.TabPic16(nTab) = nSC.TabPic16(nTab)
+    Set mPreview.TabPic20(nTab) = nSC.TabPic20(nTab)
+    Set mPreview.TabPic24(nTab) = nSC.TabPic24(nTab)
+    Set mPreview.TabPicture(nTab) = nSC.TabPicture(nTab)
+    Set mPreview.TabIconFont(nTab) = CloneFont(nSC.TabIconFont(nTab))
+    mPreview.TabIconCharHex(nTab) = nSC.TabIconCharHex(nTab)
+    mPreview.TabIconLeftOffset(nTab) = nSC.TabIconLeftOffset(nTab)
+    mPreview.TabIconTopOffset(nTab) = nSC.TabIconTopOffset(nTab)
+End Sub
+
+' Placed the way Tabs places its sample: centred against the page, then moved so that the selected
+' tab is in sight
+Private Sub PlacePreview()
+    mPreview.Left = (PropertyPage.ScaleWidth - mPreview.Width) / 2
+    If mPreview.TabSel > -1 Then
+        If (mPreview.Left + mPreview.GetTabLeft(mPreview.TabSel) + mPreview.GetTabWidth(mPreview.TabSel)) > PropertyPage.ScaleWidth Then
+            mPreview.Left = PropertyPage.ScaleWidth - (mPreview.GetTabLeft(mPreview.TabSel) + mPreview.GetTabWidth(mPreview.TabSel)) - 120
+        ElseIf (mPreview.Left + mPreview.GetTabLeft(mPreview.TabSel)) < 0 Then
+            mPreview.Left = 120 - mPreview.GetTabLeft(mPreview.TabSel)
+        End If
+    End If
+    mPreview.Top = PreviewTop(mPreview, picSampleContainer.ScaleHeight)
+End Sub
+
+Private Sub NewTab1_CloseButtonClick(ByVal nTab As Long, Cancel As Boolean)
+    Cancel = True
+End Sub
+
+Private Function CloneFont(nOrigFont As iFont) As StdFont
+    If nOrigFont Is Nothing Then Exit Function
+    nOrigFont.Clone CloneFont
+End Function
+
+' The list opens as wide as its longest item. picSampleContainer measures because it has the page
+' font, the same as the combos
+Private Sub SetComboDropWidth(nCombo As ComboBox)
+    Dim c As Long
+    Dim iWidth As Single
+    Dim iMaxWidth As Single
+    
+    For c = 0 To nCombo.ListCount - 1
+        iWidth = picSampleContainer.TextWidth(nCombo.List(c))
+        If iWidth > iMaxWidth Then iMaxWidth = iWidth
+    Next c
+    ' room for the item margins and a vertical scroll bar
+    iMaxWidth = mPreview.pScaleX(iMaxWidth, vbTwips, vbPixels) + mPreview.pScaleX(360, vbTwips, vbPixels)
+    If iMaxWidth > mPreview.pScaleX(nCombo.Width, vbTwips, vbPixels) Then SendMessageW nCombo.hWnd, CB_SETDROPPEDWIDTH, CLng(iMaxWidth), 0
+End Sub
+
+Private Function SelectInComboByItemData(nCombo As Control, nItemData As Long) As Boolean
+    Dim c As Long
+    
+    For c = 0 To nCombo.ListCount - 1
+        If nCombo.ItemData(c) = nItemData Then
+            nCombo.ListIndex = c
+            SelectInComboByItemData = True
+            Exit Function
+        End If
+    Next c
+End Function
+

@@ -14,41 +14,47 @@ Attribute VB_Exposed = False
 Option Explicit
 
 Const DC_PAPERS = 2
-'Const DC_PAPERNAMES = 16
 Const DC_PAPERSIZE = 3
 
 Private Declare Function GetForegroundWindow Lib "user32" () As LongPtr
 Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As LongPtr, ByRef lpdwProcessId As Long) As Long
+Private Declare Function GetDC Lib "user32" (ByVal hWnd As LongPtr) As LongPtr
+Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As LongPtr, ByVal hDC As LongPtr) As Long
+Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As LongPtr, ByVal nIndex As Long) As Long
+Private Const LOGPIXELSY As Long = 90
 
-'Private Declare Function ResetDC Lib "gdi32" Alias "ResetDCA" (ByVal hDC As Long, lpInitData As Any) As Long
-Private Declare Function DeviceCapabilities Lib "winspool.drv" Alias "DeviceCapabilitiesA" (ByVal lpDeviceName As String, ByVal lpPort As String, ByVal iIndex As Long, lpOutput As Any, lpDevMode As Any) As Long
+' NOTE: lpDeviceName/lpPort changed from As String to As LongPtr. VB6 always marshals
+' ByVal String parameters through the ANSI codepage regardless of which alias (A/W) is
+' declared, so real Unicode support requires bypassing that and passing StrPtr() directly
+' (same pattern as GetClassNameW in mCBTHook.bas).
+Private Declare Function DeviceCapabilities Lib "winspool.drv" Alias "DeviceCapabilitiesW" (ByVal lpDeviceName As LongPtr, ByVal lpPort As LongPtr, ByVal iIndex As Long, lpOutput As Any, lpDevMode As Any) As Long
 
 Private Declare Function OleTranslateColor Lib "olepro32.dll" (ByVal OLE_COLOR As Long, ByVal hPalette As LongPtr, pccolorref As Long) As Long
 Private Const CLR_INVALID = -1
 
 'API function called by ChooseColor method
-Private Declare Function ChooseColor Lib "comdlg32.dll" Alias "ChooseColorA" (pChoosecolor As T_ChooseColor) As Long
+Private Declare Function ChooseColor Lib "comdlg32.dll" Alias "ChooseColorW" (pChoosecolor As T_ChooseColor) As Long
 
 'API function called by ChooseFont method
-Private Declare Function CHOOSEFONT Lib "comdlg32.dll" Alias "ChooseFontA" (pChoosefont As T_CHOOSEFONT) As Long
+Private Declare Function CHOOSEFONT Lib "comdlg32.dll" Alias "ChooseFontW" (pChoosefont As T_CHOOSEFONT) As Long
 
 'API function inside ShowHelp method
-Private Declare Function WinHelp Lib "user32" Alias "WinHelpA" (ByVal hWnd As LongPtr, ByVal lpHelpFile As String, ByVal wCommand As Long, ByVal dwData As Long) As Long
+Private Declare Function WinHelp Lib "user32" Alias "WinHelpW" (ByVal hWnd As LongPtr, ByVal lpHelpFile As LongPtr, ByVal wCommand As Long, ByVal dwData As Long) As Long
 
 'API function called by ShowOpen method
-Private Declare Function GetOpenFileName Lib "comdlg32.dll" Alias "GetOpenFileNameA" (pOpenfilename As T_OpenFilename) As Long
+Private Declare Function GetOpenFileName Lib "comdlg32.dll" Alias "GetOpenFileNameW" (pOpenfilename As T_OpenFilename) As Long
 
 'API function called by ShowSave method
-Private Declare Function GetSaveFileName Lib "comdlg32.dll" Alias "GetSaveFileNameA" (pOpenfilename As T_OpenFilename) As Long
+Private Declare Function GetSaveFileName Lib "comdlg32.dll" Alias "GetSaveFileNameW" (pOpenfilename As T_OpenFilename) As Long
 
 'API function called by ShowPrint method
-Private Declare Function PrintDlg Lib "comdlg32.dll" Alias "PrintDlgA" (pPrintdlg As T_PrintDlg) As Long
+Private Declare Function PrintDlg Lib "comdlg32.dll" Alias "PrintDlgW" (pPrintdlg As T_PrintDlg) As Long
 
 
 'API function to retrieve extended error information
 Private Declare Function CommDlgExtendedError Lib "comdlg32.dll" () As Long
 
-Private Declare Function GetLocaleInfo Lib "kernel32" Alias "GetLocaleInfoA" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As String, ByVal cchData As Long) As Long
+Private Declare Function GetLocaleInfo Lib "kernel32" Alias "GetLocaleInfoW" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As LongPtr, ByVal cchData As Long) As Long
 Private Const LOCALE_USER_DEFAULT As Long = &H400&
 Private Const LOCALE_IMEASURE As Long = &HD&
 
@@ -59,7 +65,8 @@ Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As LongPtr) As Lo
 Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As LongPtr) As Long
 
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (hpvDest As Any, hpvSource As Any, ByVal cbCopy As Long)
-Private Declare Function lstrlenPtr Lib "kernel32" Alias "lstrlenA" (ByVal lpString As LongPtr) As Long
+' lstrlenW counts UTF-16 code units (not bytes) - see GetDevNameString
+Private Declare Function lstrlenPtr Lib "kernel32" Alias "lstrlenW" (ByVal lpString As LongPtr) As Long
 
 Private Type SHITEMID
     cb As Long
@@ -81,22 +88,14 @@ Private Type T_ChooseColor
         Flags As Long
         lCustData As LongPtr
         lpfnHook As LongPtr
-        lpTemplateName As String
+        lpTemplateName As LongPtr  ' unused (CC_ENABLETEMPLATE is always stripped)
 End Type
 
 'constants for LOGFONT
 Private Const LF_FACESIZE As Long = 32
-'Private Const LF_FULLFACESIZE As Long = 64
 
-'Private Const FW_THIN As Long = 100
-'Private Const FW_EXTRALIGHT As Long = 200
-'Private Const FW_LIGHT As Long = 300
 Private Const FW_NORMAL As Long = 400
-'Private Const FW_MEDIUM As Long = 500
-'Private Const FW_SEMIBOLD As Long = 600
 Private Const FW_BOLD As Long = 700
-'Private Const FW_EXTRABOLD As Long = 800
-'Private Const FW_HEAVY As Long = 900
 
 
 'data buffer for the ChooseFont function
@@ -114,7 +113,9 @@ Private Type LOGFONT
     LFClipPrecision As Byte
     LFQuality As Byte
     LFPitchAndFamily As Byte
-    LFFaceName(0 To LF_FACESIZE - 1) As Byte
+    ' LOGFONTW's lfFaceName is WCHAR[32] (UTF-16), so the byte buffer needs double
+    ' the character count. See sByteArrayToString / the face-name copy in ShowFont.
+    LFFaceName(0 To (LF_FACESIZE * 2) - 1) As Byte
 End Type
 
 'data buffer for the ChooseFont function
@@ -128,9 +129,9 @@ Private Type T_CHOOSEFONT
         rgbColors As Long
         lCustData As LongPtr
         lpfnHook As LongPtr
-        lpTemplateName As String
+        lpTemplateName As LongPtr  ' unused (CF_ENABLETEMPLATE is always stripped)
         hInstance As LongPtr
-        lpszStyle As String
+        lpszStyle As LongPtr  ' unused
         nFontType As Integer
         MISSING_ALIGNMENT As Integer
         nSizeMin As Long
@@ -166,7 +167,7 @@ Private Type T_PAGESETUPDLG
     hPageSetupTemplate          As LongPtr
 End Type
 
-Private Declare Function PageSetupDlg Lib "COMDLG32" Alias "PageSetupDlgA" (lppage As T_PAGESETUPDLG) As Boolean
+Private Declare Function PageSetupDlg Lib "COMDLG32" Alias "PageSetupDlgW" (lppage As T_PAGESETUPDLG) As Boolean
     
 Private Const CC_ENABLEHOOK = &H10&
 Private Const CC_ENABLETEMPLATE = &H20&
@@ -175,7 +176,6 @@ Private Const CC_RGBINIT = &H1&
 Private Const CF_PRINTERFONTS As Long = &H2
 Private Const CF_SCREENFONTS As Long = &H1
 Private Const CF_INITTOLOGFONTSTRUCT As Long = &H40&
-'Private Const CF_BOTH As Long = (CF_SCREENFONTS Or CF_PRINTERFONTS)
 Private Const CF_EFFECTS As Long = &H100
 Private Const CF_APPLY As Long = &H200
 Private Const CF_ENABLEHOOK As Long = &H8
@@ -193,27 +193,31 @@ Private Const PSD_ENABLEPAGESETUPTEMPLATE As Long = &H8000&
 
 
 'data buffer for the GetOpenFileName and GetSaveFileName functions
+' All LPSTR/LPWSTR members below are LongPtr (not String): VB6 always marshals a
+' ByVal/UDT String member through the ANSI codepage no matter which Declare alias is
+' used, so real Unicode requires passing StrPtr() of a buffer we own directly - see
+' the call sites in ShowFileDialog.
 Private Type T_OpenFilename
         lStructSize As Long
         hwndOwner As LongPtr
         hInstance As LongPtr
-        lpstrFilter As String
-        lpstrCustomFilter As String
+        lpstrFilter As LongPtr
+        lpstrCustomFilter As LongPtr  ' unused
         nMaxCustFilter As Long
         mFilterIndex As Long
-        lpstrFile As String
+        lpstrFile As LongPtr
         nMaxFile As Long
-        lpstrFileTitle As String
+        lpstrFileTitle As LongPtr
         nMaxFileTitle As Long
-        lpstrInitialDir As String
-        lpstrTitle As String
+        lpstrInitialDir As LongPtr
+        lpstrTitle As LongPtr
         Flags As Long
         nFileOffset As Integer
         nFileExtension As Integer
-        lpstrDefExt As String
+        lpstrDefExt As LongPtr
         lCustData As LongPtr
         lpfnHook As LongPtr
-        lpTemplateName As String
+        lpTemplateName As LongPtr  ' unused
 End Type
 
 
@@ -234,38 +238,12 @@ Private Type T_PrintDlg
         lCustData As LongPtr
         lpfnPrintHook As LongPtr
         lpfnSetupHook As LongPtr
-        lpPrintTemplateName As String
-        lpSetupTemplateName As String
+        lpPrintTemplateName As LongPtr  ' unused (PD_ENABLE*TEMPLATE is always stripped)
+        lpSetupTemplateName As LongPtr  ' unused
         hPrintTemplate As LongPtr
         hSetupTemplate As LongPtr
 End Type
 
-'constants for color dialog
-
-'Private Const CDERR_DIALOGFAILURE = &HFFFF
-'Private Const CDERR_FINDRESFAILURE = &H6
-'Private Const CDERR_GENERALCODES = &H0
-'Private Const CDERR_INITIALIZATION = &H2
-'Private Const CDERR_LOADRESFAILURE = &H7
-'Private Const CDERR_LOADSTRFAILURE = &H5
-'Private Const CDERR_LOCKRESFAILURE = &H8
-'Private Const CDERR_MEMALLOCFAILURE = &H9
-'Private Const CDERR_MEMLOCKFAILURE = &HA
-'Private Const CDERR_NOHINSTANCE = &H4
-'Private Const CDERR_NOHOOK = &HB
-'Private Const CDERR_NOTEMPLATE = &H3
-'Private Const CDERR_REGISTERMSGFAIL = &HC
-'Private Const CDERR_STRUCTSIZE = &H1
-
-
-'constants for file dialog
-
-'Private Const FNERR_BUFFERTOOSMALL As Long = &H3003
-'Private Const FNERR_FILENAMECODES As Long = &H3000
-'Private Const FNERR_INVALIDFILENAME As Long = &H3002
-'Private Const FNERR_SUBCLASSFAILURE As Long = &H3001
-
-' other constants
 Private Const CLEARTYPE_QUALITY As Byte = 6
 Private Const DEFAULT_CHARSET As Byte = 1
 
@@ -277,7 +255,11 @@ Private Const PSD_INHUNDREDTHSOFMILLIMETERS = &H8&
 Private Const PSD_INTHOUSANDTHSOFINCHES = &H4&
 
 Private Type DEVMODE
-    dmDeviceName As String * CCHDEVICENAME
+    ' dmDeviceName/dmFormName are WCHAR[] in DEVMODEW, so each needs double the byte
+    ' count of the ANSI version. A VB fixed-length String stores 1 byte/char, which
+    ' would shrink the struct and misalign every field that follows - use Byte buffers
+    ' instead. Content isn't read from these two fields anywhere in this class.
+    dmDeviceName(0 To (CCHDEVICENAME * 2) - 1) As Byte
     dmSpecVersion As Integer
     dmDriverVersion As Integer
     dmSize As Integer
@@ -296,7 +278,7 @@ Private Type DEVMODE
     dmYResolution As Integer
     dmTTOption As Integer
     dmCollate As Integer
-    dmFormName As String * CCHFORMNAME
+    dmFormName(0 To (CCHFORMNAME * 2) - 1) As Byte
     dmUnusedPadding As Integer
     dmBitsPerPel As Integer
     dmPelsWidth As Long
@@ -385,7 +367,6 @@ Public Enum CommonDialogsFlags
     cdlbPSDisablePagePainting = &H80000
     cdlbPSDisablePaper = &H200&
     cdlbPSDisablePrinter = &H20&
-    'cdlbPSMargins = &H2&
     cdlbPSMinMargins = &H1&
     cdlbPSNoNetworkButton = &H200000
     cdlbPSNoWarning = &H80&
@@ -455,7 +436,6 @@ Public Enum cdeCommonDialogExColorFlagsConstants
     cdeCCFullOpen = CommonDialogsFlags.cdlbCCFullOpen
     cdeCCShowHelpButton = CommonDialogsFlags.cdlbCCShowHelpButton
     cdeCCPreventFullOpen = CommonDialogsFlags.cdlbCCPreventFullOpen
-'    cdeCCRGBInit = CommonDialogsFlags.cdlbCCRGBInit
 End Enum
 
 Public Enum cdeCommonDialogExFontFlagsConstants
@@ -486,7 +466,6 @@ Public Enum cdeCommonDialogExPageSetupFlagsConstants
     cdePSDisablePagePainting = CommonDialogsFlags.cdlbPSDisablePagePainting
     cdePSDisablePaper = CommonDialogsFlags.cdlbPSDisablePaper
     cdePSDisablePrinter = CommonDialogsFlags.cdlbPSDisablePrinter
-'    cdePSMargins = CommonDialogsFlags.cdlbPSMargins
     cdePSMinMargins = CommonDialogsFlags.cdlbPSMinMargins
     cdePSNoNetworkButton = CommonDialogsFlags.cdlbPSNoNetworkButton
     cdePSNoWarning = CommonDialogsFlags.cdlbPSNoWarning
@@ -610,12 +589,6 @@ Private mFilter As String
 Private mFilterIndex As Integer
 Private mFlags As Long
 Private mFont As StdFont
-'Private mFont.Bold As Boolean
-'Private mFont.Italic As Boolean
-'Private mFont.Name As String
-'Private mFont.Size As Long
-'Private mFont.Strikethrough As Boolean
-'Private mFont.Underline As Boolean
 Private mFromPage As Long
 Private mhDc As LongPtr
 Private mHelpCommand As Long
@@ -626,11 +599,9 @@ Private mInitDir As String
 Private mMax As Long
 Private mMaxFileSize As Long
 Private mMin As Long
-'Private mPrinterDefault As Integer
 Private mToPage As Long
 Private mOrientation As Long
 Private mCustomColors(0 To 15) As Long
-Private mAutoSaveCustomColors As Boolean
 
 Private mApiReturn As Long
 Private mExtendedError As Long
@@ -660,7 +631,6 @@ Private mMinLeftMargin As Single
 Private mMinRightMargin As Single
 Private mMinTopMargin As Single
 Private mMinBottomMargin As Single
-'Private mMarginSet As Boolean
 Private mUnits As Long
 Private mUnitsForUser As Long
 
@@ -754,11 +724,6 @@ Public Sub ShowColor(Optional ByVal nFlags As cdeCommonDialogExColorFlagsConstan
             'update property buffer
             mColor = tChooseColor.RGBResult
         
-'            CopyMemory mCustomColors(0), ByVal lCustomColorAddress, lCustomColorSize
-'            If mAutoSaveCustomColors Then
-'                SaveCustomColors
-'            End If
-        
         Case Else   'an error occured
             'call CommDlgExtendedError
             mExtendedError = CommDlgExtendedError
@@ -784,6 +749,8 @@ Public Sub ShowFont(Optional ByVal nFlags As cdeCommonDialogExFontFlagsConstants
     Dim i As Long
     Dim iHwndOwner As LongPtr
     Dim iFlags As Long
+    Dim sFaceName As String
+    Dim iScreenDC As LongPtr
     
     On Error GoTo ShowFontError
     
@@ -803,10 +770,10 @@ Public Sub ShowFont(Optional ByVal nFlags As cdeCommonDialogExFontFlagsConstants
     '***    prepare tChooseFont data
         
     
-    tLogFont.LFHeight = mFont.Size * 20 / Screen.TwipsPerPixelY * -1 ' PointsPerTwip = 1440 / 72 = 20
-    'tLogFont.lfWidth As Long
-    'tLogFont.lfEscapement As Long
-    'tLogFont.lfOrientation As Long
+    ' Not Screen.TwipsPerPixelY: it is truncated to an integer, wrong at 175% and other scales
+    iScreenDC = GetDC(0)
+    tLogFont.LFHeight = -Round(mFont.Size * GetDeviceCaps(iScreenDC, LOGPIXELSY) / 72)
+    ReleaseDC 0, iScreenDC
     
     'tLogFont.lfWeight As Long - init from FontBold property
     If mFont.Bold Then
@@ -832,15 +799,15 @@ Public Sub ShowFont(Optional ByVal nFlags As cdeCommonDialogExFontFlagsConstants
 
 
     tLogFont.LFCharset = DEFAULT_CHARSET
-    'tLogFont.lfOutPrecision As Byte
-    'tLogFont.lfClipPrecision As Byte
     tLogFont.LFQuality = CLEARTYPE_QUALITY
-    'tLogFont.lfPitchAndFamily As Byte
     
-    For i = 0 To Len(mFont.Name) - 1
-        If i > 31 Then Exit For
-        tLogFont.LFFaceName(i) = Asc(Mid$(mFont.Name, i + 1, 1))
-    Next
+    sFaceName = mFont.Name
+    If Len(sFaceName) > LF_FACESIZE - 1 Then sFaceName = Left$(sFaceName, LF_FACESIZE - 1)
+    ' Copy the raw UTF-16 bytes of the VB String directly into the WCHAR[32] buffer -
+    ' VB Strings are already UTF-16LE internally, so no per-character conversion needed.
+    If Len(sFaceName) > 0 Then
+        CopyMemory tLogFont.LFFaceName(0), ByVal StrPtr(sFaceName), LenB(sFaceName)
+    End If
     
     lLogFontSize = Len(tLogFont)
     
@@ -848,22 +815,13 @@ Public Sub ShowFont(Optional ByVal nFlags As cdeCommonDialogExFontFlagsConstants
     tChooseFont.lStructSize = Len(tChooseFont)
     tChooseFont.hwndOwner = iHwndOwner
     tChooseFont.rgbColors = mColor
-'    tChooseFont.lCustData = 0
-'    tChooseFont.lpfnHook = 0
-    tChooseFont.lpTemplateName = Space$(2048)
-    'tChooseFont.hInstance As Long
+    tChooseFont.lpTemplateName = 0  ' unused - CF_ENABLETEMPLATE is always stripped below
     
-    'tChooseFont.lpszStyle As String
-    'sFont = Chr$(0) & Space$(20) & Chr$(0)
-    'tChooseFont.lpszStyle = sFont
     
- '   tChooseFont.nFontType = Screen.FontCount
-    'tChooseFont.MISSING_ALIGNMENT As Integer
     tChooseFont.nSizeMin = mMin
     tChooseFont.nSizeMax = mMax
                     
     
-    'tChooseFont.lpLogFont As Long
     
     ' Get a global memory block to hold a copy of tLogFont - exit on failure
     lMemHandle = GlobalAlloc(GHND, lLogFontSize)
@@ -905,7 +863,6 @@ Public Sub ShowFont(Optional ByVal nFlags As cdeCommonDialogExFontFlagsConstants
     ' MaxSize can be maximum size accepted
     If (mMax <> 0) Then tChooseFont.Flags = tChooseFont.Flags Or CF_LIMITSIZE
     
-    'tChooseFont.Flags = tChooseFont.Flags And Not CF_LIMITSIZE
     
     '***    call the CHOOSEFONT API function
     mApiReturn = CHOOSEFONT(tChooseFont)    'store to APIReturn property
@@ -968,10 +925,12 @@ Public Sub ShowFont(Optional ByVal nFlags As cdeCommonDialogExFontFlagsConstants
             mExtendedError = CommDlgExtendedError   'store to ExtendedError property
         
     End Select
-Exit Sub
 
 ShowFontError:
-    Exit Sub
+    If lMemHandle <> 0 Then
+        GlobalUnlock lMemHandle
+        GlobalFree lMemHandle
+    End If
 End Sub
 
 
@@ -1010,7 +969,7 @@ Public Sub ShowHelp()
     End Select
     
     '***    call the API function
-    mApiReturn = WinHelp(0&, mHelpFile, mHelpCommand, lData)     ' - Store to APIReturn property
+    mApiReturn = WinHelp(0&, StrPtr(mHelpFile), mHelpCommand, lData)     ' - Store to APIReturn property
     
     Select Case mApiReturn
         
@@ -1098,9 +1057,7 @@ Public Sub ShowPrinter(Optional ByVal nFlags As cdeCommonDialogExPrinterFlagsCon
         End If
     End If
     
-    'hDevMode As Long
     
-    'hDevNames As Long
     
     'flags As Long - init from Flags property
     tPrintDlg.Flags = iFlags Or cdlbPDUseDevModeCopies Or cdlbPDReturnDC ' it requires these two flags to return the number of copies properly
@@ -1120,9 +1077,7 @@ Public Sub ShowPrinter(Optional ByVal nFlags As cdeCommonDialogExPrinterFlagsCon
     'nCopies As Integer - init from Copies property
     tPrintDlg.nCopies = mCopies
     
-    'hInstance As Long
     
-    'lCustData As Long
     
     
     '***    Call the PrintDlg API function
@@ -1130,9 +1085,6 @@ Public Sub ShowPrinter(Optional ByVal nFlags As cdeCommonDialogExPrinterFlagsCon
     
     '***    handle return from PrintDlg API function
     mCancelled = False
-'    If (tPrintDlg.flags And cdlbPDReturnDefault) <> 0 Then
-'        mApiReturn = 1
-'    End If
     Select Case mApiReturn
         
         Case 0  'user canceled
@@ -1209,7 +1161,6 @@ Public Sub ShowPrinter(Optional ByVal nFlags As cdeCommonDialogExPrinterFlagsCon
             mDeviceName = GetDevNameString(mDevNamesPtr, mDevNames.wDeviceOffset)
             mPort = GetDevNameString(mDevNamesPtr, mDevNames.wOutputOffset)
             
-'            Debug.Print mDevMode.dmDeviceName
             
             PutPaperSize
             mPageSet = True
@@ -1538,14 +1489,6 @@ Public Property Get Object() As Object
     Set Object = Me
 End Property
 
-'Public Property Get PrinterDefault() As Integer
-'    PrinterDefault = mPrinterDefault
-'End Property
-'
-'Public Property Let PrinterDefault(nValue As Integer)
-'    mPrinterDefault = nValue
-'End Property
-
 Public Property Get ToPage() As Long
     ToPage = mToPage
 End Property
@@ -1562,43 +1505,27 @@ Public Property Let FileTitle(nValue As String)
     mFileTitle = nValue
 End Property
 
-'Private Property Get APIReturn() As Long
-'    APIReturn = mApiReturn
-'End Property
-'
-'Private Property Get ExtendedError() As Long
-'    ExtendedError = mExtendedError
-'End Property
-
 
 Private Function sByteArrayToString(abBytes() As Byte) As String
-    'return a string from a byte array
-    Dim lBytePoint As Long
-    Dim lByteVal As Long
+    'return a string from a buffer holding a null-terminated UTF-16LE (WCHAR) string,
+    'e.g. LOGFONTW.lfFaceName. Each pair of bytes is one UTF-16 code unit.
+    Dim lChars As Long
     Dim sOut As String
+    Dim lNulPos As Long
     
-    'init array pointer
-    lBytePoint = LBound(abBytes)
+    lChars = (UBound(abBytes) - LBound(abBytes) + 1) \ 2
+    If lChars = 0 Then Exit Function
     
-    'fill sOut with characters in array
-    While lBytePoint <= UBound(abBytes)
-        
-        lByteVal = abBytes(lBytePoint)
-        
-        'return sOut and stop if Chr$(0) is encountered
-        If lByteVal = 0 Then
-            sByteArrayToString = sOut
-            Exit Function
-        Else
-            sOut = sOut & Chr$(lByteVal)
-        End If
-        
-        lBytePoint = lBytePoint + 1
+    sOut = String$(lChars, vbNullChar)
+    CopyMemory ByVal StrPtr(sOut), abBytes(LBound(abBytes)), lChars * 2
     
-    Wend
-    
-    'return sOut if Chr$(0) wasn't encountered
-    sByteArrayToString = sOut
+    'trim at the first embedded null character, if any
+    lNulPos = InStr(sOut, vbNullChar)
+    If lNulPos > 0 Then
+        sByteArrayToString = Left$(sOut, lNulPos - 1)
+    Else
+        sByteArrayToString = sOut
+    End If
     
 End Function
 Private Sub ShowFileDialog(ByVal mAction As Integer, nFlags As Long, Optional ByVal nHwndOwner As LongPtr)
@@ -1609,6 +1536,7 @@ Private Sub ShowFileDialog(ByVal mAction As Integer, nFlags As Long, Optional By
     Dim lMaxSize As Long
     Dim sFileNameBuff As String
     Dim sFileTitleBuff As String
+    Dim sFilterBuff As String
     Dim iPos As Long
     
     On Error GoTo ShowFileDialogError
@@ -1631,7 +1559,10 @@ Private Sub ShowFileDialog(ByVal mAction As Integer, nFlags As Long, Optional By
     tOpenFile.hwndOwner = nHwndOwner
     
     'tOpenFile.lpstrFilter As String - init from Filter property
-    tOpenFile.lpstrFilter = sAPIFilter(mFilter)
+    ' sFilterBuff must be a named variable (not the function call inline) because
+    ' StrPtr() needs a variable whose buffer stays alive through the API call.
+    sFilterBuff = sAPIFilter(mFilter)
+    tOpenFile.lpstrFilter = StrPtr(sFilterBuff)
         
     'tOpenFile.mFilterIndex As Long - init from FilterIndex property
     tOpenFile.mFilterIndex = mFilterIndex
@@ -1705,16 +1636,17 @@ Private Sub ShowFileDialog(ByVal mAction As Integer, nFlags As Long, Optional By
         End If
         'null terminate
         sFileNameBuff = sFileNameBuff & Chr$(0)
-    tOpenFile.lpstrFile = sFileNameBuff
+    ' sFileNameBuff is both input and output buffer: the API writes the chosen
+    ' filename(s) directly into this memory, so we read sFileNameBuff back after
+    ' the call rather than tOpenFile.lpstrFile (now just an address, not text).
+    tOpenFile.lpstrFile = StrPtr(sFileNameBuff)
     
     'nMaxFile As Long - init from MaxFileSize property
-    'If mMaxFileSize <> 255 Then  'default is 255
     If (nFlags And cdlbOFNAllowMultiselect) <> 0 Then
         tOpenFile.nMaxFile = 100000
     Else
         tOpenFile.nMaxFile = lMaxSize
     End If
-    'End If
             
     'lpstrFileTitle As String - init from FileTitle property
         'prepare sFileTitleBuff
@@ -1727,19 +1659,21 @@ Private Sub ShowFileDialog(ByVal mAction As Integer, nFlags As Long, Optional By
         sFileTitleBuff = Mid$(sFileTitleBuff, 1, lMaxSize - 1)
         'null terminate
         sFileTitleBuff = sFileTitleBuff & Chr$(0)
-    tOpenFile.lpstrFileTitle = sFileTitleBuff
+    tOpenFile.lpstrFileTitle = StrPtr(sFileTitleBuff)
         
     'tOpenFile.lpstrInitialDir As String - init from InitDir property
-    tOpenFile.lpstrInitialDir = mInitDir
+    ' mInitDir/mDialogTitle/mDefaultExt are member variables that aren't reassigned
+    ' during this call, so it's safe to take their StrPtr() directly.
+    tOpenFile.lpstrInitialDir = StrPtr(mInitDir)
     
     'tOpenFile.lpstrTitle As String - init from DialogTitle property
-    tOpenFile.lpstrTitle = mDialogTitle
+    tOpenFile.lpstrTitle = StrPtr(mDialogTitle)
     
     'tOpenFile.flags As Long - init from Flags property
     tOpenFile.Flags = nFlags Or cdlbOFNNoChangeDir
         
     'tOpenFile.lpstrDefExt As String - init from DefaultExt property
-    tOpenFile.lpstrDefExt = mDefaultExt
+    tOpenFile.lpstrDefExt = StrPtr(mDefaultExt)
     
     
     '***    call the GetOpenFileName API function
@@ -1769,13 +1703,13 @@ Private Sub ShowFileDialog(ByVal mAction As Integer, nFlags As Long, Optional By
             End If
         
         Case 1  'user selected or entered a file
-            'mFileName gets part of tOpenFile.lpstrFile to the Left of first Chr$(0)
+            'mFileName gets part of sFileNameBuff to the Left of first Chr$(0)
             If (tOpenFile.Flags And cdlbOFNAllowMultiselect) <> 0 Then
-                mFileName = sLeftOfLastNull(tOpenFile.lpstrFile)
+                mFileName = sLeftOfLastNull(sFileNameBuff)
             Else
-                mFileName = sLeftOfNull(tOpenFile.lpstrFile)
+                mFileName = sLeftOfNull(sFileNameBuff)
             End If
-            mFileTitle = sLeftOfNull(tOpenFile.lpstrFileTitle)
+            mFileTitle = sLeftOfNull(sFileTitleBuff)
         
         Case Else   'an error occured
             'call CommDlgExtendedError
@@ -1814,7 +1748,6 @@ Private Sub Class_Initialize()
     mRightMargin = cRightMarginDefault
     mTopMargin = cTopMarginDefault
     mBottomMargin = cBottomMarginDefault
-    mAutoSaveCustomColors = True
     InitCustomColors
     
     Set mFont = New StdFont
@@ -1846,7 +1779,7 @@ Public Property Get Orientation() As cdePageOrientationConstants
 End Property
 
 Public Property Let Orientation(nValue As cdePageOrientationConstants)
-    If (nValue = 0) And mAmbientUserMode Then Exit Property 'If (nValue = 0) And mAmbientUserMode Then Err.Raise 1769, , "At run time this property must have a value other than 0."
+    If (nValue = 0) And mAmbientUserMode Then Exit Property
     EnsurePageSet
     mOrientation = nValue
 End Property
@@ -1858,7 +1791,7 @@ Public Property Get PaperSize() As cdePaperSizeConstants
 End Property
 
 Public Property Let PaperSize(nValue As cdePaperSizeConstants)
-    If (nValue = 0) And mAmbientUserMode Then Exit Property 'If (nValue = 0) And mAmbientUserMode Then Err.Raise 1769, , "At run time this property must have a value other than 0."
+    If (nValue = 0) And mAmbientUserMode Then Exit Property
     EnsurePageSet
     mPaperSize = nValue
 End Property
@@ -1870,7 +1803,7 @@ Public Property Get PrintQuality() As cdePrintQualityConstants
 End Property
 
 Public Property Let PrintQuality(nValue As cdePrintQualityConstants)
-    If (nValue = 0) And mAmbientUserMode Then Exit Property 'If (nValue = 0) And mAmbientUserMode Then Err.Raise 1769, , "At run time this property must have a value other than 0."
+    If (nValue = 0) And mAmbientUserMode Then Exit Property
     EnsurePageSet
     mPrintQuality = nValue
 End Property
@@ -1882,7 +1815,7 @@ Public Property Get ColorMode() As cdeColorModeConstants
 End Property
 
 Public Property Let ColorMode(nValue As cdeColorModeConstants)
-    If (nValue = 0) And mAmbientUserMode Then Exit Property 'If (nValue = 0) And mAmbientUserMode Then Err.Raise 1769, , "At run time this property must have a value other than 0."
+    If (nValue = 0) And mAmbientUserMode Then Exit Property
     EnsurePageSet
     mColorMode = nValue
 End Property
@@ -1900,7 +1833,7 @@ Public Property Get Duplex() As cdeDuplexConstants
 End Property
 
 Public Property Let Duplex(nValue As cdeDuplexConstants)
-    If (nValue = 0) And mAmbientUserMode Then Exit Property 'If (nValue = 0) And mAmbientUserMode Then Err.Raise 1769, , "At run time this property must have a value other than 0."
+    If (nValue = 0) And mAmbientUserMode Then Exit Property
     EnsurePageSet
     mDuplex = nValue
 End Property
@@ -1912,7 +1845,7 @@ Public Property Get PaperBin() As cdePaperBinConstants
 End Property
 
 Public Property Let PaperBin(nValue As cdePaperBinConstants)
-    If (nValue = 0) And mAmbientUserMode Then Exit Property 'If (nValue = 0) And mAmbientUserMode Then Err.Raise 1769, , "At run time this property must have a value other than 0."
+    If (nValue = 0) And mAmbientUserMode Then Exit Property
     EnsurePageSet
     mPaperBin = nValue
 End Property
@@ -1958,7 +1891,6 @@ End Property
 Public Property Let LeftMargin(nValue As Single)
     EnsurePageSet
     mLeftMargin = nValue
-'    'mMarginSet = True
     If mLeftMargin < mMinLeftMargin Then
         mLeftMargin = mMinLeftMargin
     End If
@@ -1973,7 +1905,6 @@ End Property
 Public Property Let MinLeftMargin(nValue As Single)
     EnsurePageSet
     mMinLeftMargin = nValue
-    'mMarginSet = True
     If mLeftMargin < mMinLeftMargin Then
         mLeftMargin = mMinLeftMargin
     End If
@@ -1988,7 +1919,6 @@ End Property
 Public Property Let RightMargin(nValue As Single)
     EnsurePageSet
     mRightMargin = nValue
-    'mMarginSet = True
     If mRightMargin < mMinRightMargin Then
         mRightMargin = mMinRightMargin
     End If
@@ -2003,7 +1933,6 @@ End Property
 Public Property Let MinRightMargin(nValue As Single)
     EnsurePageSet
     mMinRightMargin = nValue
-    'mMarginSet = True
     If mRightMargin < mMinRightMargin Then
         mRightMargin = mMinRightMargin
     End If
@@ -2018,7 +1947,6 @@ End Property
 Public Property Let TopMargin(nValue As Single)
     EnsurePageSet
     mTopMargin = nValue
-    'mMarginSet = True
     If mTopMargin < mMinTopMargin Then
         mTopMargin = mMinTopMargin
     End If
@@ -2033,7 +1961,6 @@ End Property
 Public Property Let MinTopMargin(nValue As Single)
     EnsurePageSet
     mMinTopMargin = nValue
-    'mMarginSet = True
     If mTopMargin < mMinTopMargin Then
         mTopMargin = mMinTopMargin
     End If
@@ -2048,7 +1975,6 @@ End Property
 Public Property Let BottomMargin(nValue As Single)
     EnsurePageSet
     mBottomMargin = nValue
-    'mMarginSet = True
     If mBottomMargin < mMinBottomMargin Then
         mBottomMargin = mMinBottomMargin
     End If
@@ -2063,7 +1989,6 @@ End Property
 Public Property Let MinBottomMargin(nValue As Single)
     EnsurePageSet
     mMinBottomMargin = nValue
-    'mMarginSet = True
     If mBottomMargin < mMinBottomMargin Then
         mBottomMargin = mMinBottomMargin
     End If
@@ -2149,9 +2074,7 @@ Public Sub ShowPageSetup(Optional ByVal nFlags As cdeCommonDialogExPageSetupFlag
     End Select
     
     
-'    If mMarginSet Then
     iPsd.Flags = iPsd.Flags Or PSD_MARGINS
-'    End If
     If (mMinTopMargin <> 0) Or (mMinLeftMargin <> 0) Or (mMinBottomMargin <> 0) Or (mMinRightMargin <> 0) Then
         iPsd.Flags = iPsd.Flags Or cdlbPSMinMargins
     End If
@@ -2259,26 +2182,6 @@ Public Sub ShowPageSetup(Optional ByVal nFlags As cdeCommonDialogExPageSetupFlag
         Units = iUnits_Ant
     End If
     
-'    If Not mCancelled Then
-'        If mhDc <> 0 Then
-'            Dim iDevMode As DEVMODE
-'
-'            CopyMemory iDevMode, ByVal mDevModePtr, Len(iDevMode)
-'            ShowPrinter cdlbPDReturnDefault Or cdePDReturnDC
-'            ResetDC mhDc, iDevMode
-'            mPaperSize = iDevMode.dmPaperSize
-'            mPaperBin = iDevMode.dmDefaultSource
-'            mDuplex = iDevMode.dmDuplex
-'            mOrientation = iDevMode.dmOrientation
-'            mPrintQuality = iDevMode.dmPrintQuality
-'            mColorMode = iDevMode.dmColor
-'            mDefaultPaperWidth = iDevMode.dmPaperWidth
-'            mDefaultPaperHeight = iDevMode.dmPaperLength
-'            PutPaperSize
-'            UpdateDevModeWithCurrentSettings
-'        End If
-'    End If
-    
 ShowPageSetupError:
 End Sub
 
@@ -2286,16 +2189,19 @@ Private Function GetDevNameString( _
       ByVal ptrDevNames As LongPtr, _
       ByVal ptrOffset As Long _
    ) As String
+   ' DEVNAMESW offsets point at null-terminated WCHAR strings. lstrlenPtr is now
+   ' aliased to lstrlenW, so lSize is a character count - copy lSize*2 bytes and
+   ' read them straight into a VB String (already UTF-16LE), no StrConv needed.
    Dim Ptr As LongPtr
    Dim lSize As Long
-   Dim B() As Byte
+   Dim sOut As String
       
    Ptr = UnsignedAdd(ptrDevNames, ptrOffset)
    lSize = lstrlenPtr(Ptr)
    If (lSize > 0) Then
-      ReDim B(0 To lSize - 1) As Byte
-      CopyMemory B(0), ByVal Ptr, lSize
-      GetDevNameString = StrConv(B, vbUnicode)
+      sOut = String$(lSize, vbNullChar)
+      CopyMemory ByVal StrPtr(sOut), ByVal Ptr, lSize * 2
+      GetDevNameString = sOut
    End If
 End Function
 
@@ -2325,11 +2231,14 @@ Private Sub Class_Terminate()
 End Sub
 
 Private Function GetLocaleMeasureSystem() As Long
-    Dim Buffer As String * 100
+    ' A fixed-length String (String * N) stores 1 byte/char, which isn't wide enough
+    ' for GetLocaleInfoW's WCHAR buffer - use a normal (UTF-16) String and StrPtr().
+    Dim Buffer As String
     Dim nullpos&
     Dim dl&
     
-    dl& = GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_IMEASURE, Buffer, 99)
+    Buffer = String$(100, vbNullChar)
+    dl& = GetLocaleInfo(LOCALE_USER_DEFAULT, LOCALE_IMEASURE, StrPtr(Buffer), 99)
     nullpos& = InStr(Buffer, Chr$(0))
     GetLocaleMeasureSystem = Val(Left$(Buffer, nullpos - 1))
 End Function
@@ -2386,7 +2295,6 @@ End Property
 
 Private Sub UpdateDevModeWithCurrentSettings()
     
-'    Debug.Print mDevMode.dmDeviceName, mDeviceName & Chr(0)
     mDevMode.dmPaperSize = mPaperSize
     mDevMode.dmDefaultSource = mPaperBin
     mDevMode.dmDuplex = mDuplex
@@ -2442,13 +2350,13 @@ Private Function GetPaperSize(nPaperSizeNumber As Long) As POINTAPI
     Dim c As Long
     Dim iLng As Long
     
-    ret = DeviceCapabilities(mDeviceName, mPort, DC_PAPERS, ByVal 0&, ByVal 0&)
+    ret = DeviceCapabilities(StrPtr(mDeviceName), StrPtr(mPort), DC_PAPERS, ByVal 0&, ByVal 0&)
     
     ReDim iPaperSizesNumbers(1 To ret)
     ReDim iPaperSizes(1 To ret)
     
-    Call DeviceCapabilities(mDeviceName, mPort, DC_PAPERS, iPaperSizesNumbers(1), ByVal 0&)
-    Call DeviceCapabilities(mDeviceName, mPort, DC_PAPERSIZE, iPaperSizes(1), ByVal 0&)
+    Call DeviceCapabilities(StrPtr(mDeviceName), StrPtr(mPort), DC_PAPERS, iPaperSizesNumbers(1), ByVal 0&)
+    Call DeviceCapabilities(StrPtr(mDeviceName), StrPtr(mPort), DC_PAPERSIZE, iPaperSizes(1), ByVal 0&)
     
     For c = 1 To UBound(iPaperSizesNumbers)
         If iPaperSizesNumbers(c) = nPaperSizeNumber Then
@@ -2464,7 +2372,7 @@ Private Function GetPaperSize(nPaperSizeNumber As Long) As POINTAPI
     Next c
 End Function
 
-Public Property Get DevModePtr() As Long
+Public Property Get DevModePtr() As LongPtr
     DevModePtr = mDevModePtr
 End Property
 
@@ -2478,14 +2386,6 @@ Public Property Get CustomColors(Index As Integer) As Long
     CustomColors = mCustomColors(Index)
 End Property
 
-
-Public Property Let AutoSaveCustomColors(nValue As Boolean)
-    mAutoSaveCustomColors = nValue
-End Property
-
-Public Property Get AutoSaveCustomColors() As Boolean
-    AutoSaveCustomColors = mAutoSaveCustomColors
-End Property
 
 Private Sub InitCustomColors()
     Dim c As Long

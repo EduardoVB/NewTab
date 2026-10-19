@@ -1,10 +1,10 @@
 VERSION 5.00
-Object = "*\A..\control-source\NewTabCtl.vbp"
+Object = "{66E63055-5A66-4C79-9327-4BC077858695}#16.0#0"; "NewTab01.ocx"
 Begin VB.Form frmTDIControlsTest 
    Caption         =   "TDI"
    ClientHeight    =   5748
-   ClientLeft      =   2964
-   ClientTop       =   2568
+   ClientLeft      =   2376
+   ClientTop       =   1872
    ClientWidth     =   7680
    BeginProperty Font 
       Name            =   "Tahoma"
@@ -18,7 +18,6 @@ Begin VB.Form frmTDIControlsTest
    LinkTopic       =   "Form2"
    ScaleHeight     =   5748
    ScaleWidth      =   7680
-   StartUpPosition =   2  'CenterScreen
    Begin NewTabCtl.NewTab NewTab1 
       Height          =   2530
       Left            =   0
@@ -31,35 +30,24 @@ Begin VB.Form frmTDIControlsTest
       Tabs            =   2
       ForeColorSelectedTab=   10184001
       ForeColorHighlighted=   16777215
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
       Style           =   3
-      TabHeight       =   631
       BackColorSelectedTab=   16250871
+      ControlsBackColorApplied=   16250871
       FlatBarColorInactive=   14211288
       FlatBorderColor =   10184001
       HighlightColor  =   16477710
-      IconAlignment   =   5
-      AutoTabHeight   =   -1  'True
       FlatRoundnessTabs=   8
       TabMousePointerHand=   -1  'True
+      IconColorTabHighlighted=   16777215
       IconColorMouseHover=   255
       IconColorMouseHoverSelectedTab=   255
-      IconColorTabHighlighted=   16777215
       HighlightMode   =   12
       HighlightModeSelectedTab=   10
       FlatBorderMode  =   1
       FlatBarHeight   =   0
       CanReorderTabs  =   -1  'True
       TDIMode         =   1
-      ControlVersion  =   11
+      ControlVersion  =   19
       TabIconChar(0)  =   57606
       TabIconLeftOffset(0)=   -3
       TabIconTopOffset(0)=   1
@@ -153,23 +141,25 @@ Attribute VB_PredeclaredId = True
 Attribute VB_Exposed = False
 Option Explicit
 
+' Room for the search bar of the tab template, above the document
+Private Const cDocumentTop As Single = 700
+
 Private Sub Form_Resize()
-    Dim c As Long
+    Dim iTxt As TextBox
     
+    If Me.WindowState = vbMinimized Then Exit Sub
     NewTab1.Move 0, 0, Me.ScaleWidth, Me.ScaleHeight
-    
-    For c = 0 To NewTab1.Tabs - 2
-        If NewTab1.TabVisible(c) Then
-            PositionAndResizeControlsInTab c
-        End If
+    For Each iTxt In txtDoc
+        PositionDocument iTxt
     Next
 End Sub
 
-Private Sub NewTab1_TDINewTabAdded(ByVal TabNumber As Long)
-    PositionAndResizeControlsInTab TabNumber
+' ControlMove and not Move: a control in a tab that is not selected is kept out of view, and
+' ControlMove keeps it there
+Private Sub PositionDocument(nTxt As TextBox)
+    NewTab1.ControlMove nTxt, NewTab1.ClientLeft, NewTab1.ClientTop + cDocumentTop, NewTab1.ClientWidth, NewTab1.ClientHeight - cDocumentTop
 End Sub
 
-Private Sub PositionAndResizeControlsInTab(TabNumber As Long)
-    NewTab1.ControlMove "txtDoc(" & TabNumber & ")", Screen.TwipsPerPixelX, NewTab1.ClientTop + 700, NewTab1.ClientWidth, NewTab1.ClientHeight - 700 - Screen.TwipsPerPixelY
+Private Sub NewTab1_TDINewTabAdded(ByVal TabNumber As Long, ByVal nTab As Long)
+    PositionDocument txtDoc(TabNumber)
 End Sub
-

@@ -2,7 +2,7 @@ VERSION 5.00
 Begin VB.PropertyPage pagNewTabThemes 
    AutoRedraw      =   -1  'True
    Caption         =   "Themes"
-   ClientHeight    =   8160
+   ClientHeight    =   8508
    ClientLeft      =   0
    ClientTop       =   0
    ClientWidth     =   6804
@@ -17,7 +17,7 @@ Begin VB.PropertyPage pagNewTabThemes
    EndProperty
    LockControls    =   -1  'True
    PaletteMode     =   0  'Halftone
-   ScaleHeight     =   8160
+   ScaleHeight     =   8508
    ScaleWidth      =   6804
    Begin VB.Timer tmrTT 
       Enabled         =   0   'False
@@ -35,18 +35,9 @@ Begin VB.PropertyPage pagNewTabThemes
       Width           =   3130
       _ExtentX        =   5546
       _ExtentY        =   1630
-      BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-         Name            =   "Tahoma"
-         Size            =   9
-         Charset         =   0
-         Weight          =   400
-         Underline       =   0   'False
-         Italic          =   0   'False
-         Strikethrough   =   0   'False
-      EndProperty
-      TabHeight       =   600
+      ControlsBackColorApplied=   -2147483633
       AutoTabHeight   =   -1  'True
-      ControlVersion  =   13
+      ControlVersion  =   18
    End
    Begin VB.CommandButton cmdCompare 
       Caption         =   "Compare"
@@ -231,18 +222,9 @@ Begin VB.PropertyPage pagNewTabThemes
          Width           =   5950
          _ExtentX        =   10499
          _ExtentY        =   3408
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         TabHeight       =   600
+         ControlsBackColorApplied=   -2147483633
          AutoTabHeight   =   -1  'True
-         ControlVersion  =   13
+         ControlVersion  =   18
       End
       Begin NewTabCtl.NewTab NewTab2 
          Height          =   2172
@@ -253,18 +235,9 @@ Begin VB.PropertyPage pagNewTabThemes
          _ExtentX        =   10499
          _ExtentY        =   3831
          Tabs            =   6
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   9
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         TabHeight       =   600
+         ControlsBackColorApplied=   -2147483633
          AutoTabHeight   =   -1  'True
-         ControlVersion  =   13
+         ControlVersion  =   18
          TabCaption(3)   =   "Tab 3 wider caption"
          TabCaption(4)   =   "Tab 4 wider caption"
       End
@@ -354,7 +327,26 @@ Begin VB.PropertyPage pagNewTabThemes
       Style           =   2  'Dropdown List
       TabIndex        =   1
       Top             =   680
-      Width           =   5850
+      Width           =   5250
+   End
+   Begin VB.CheckBox chkSortByName 
+      Caption         =   "A-Z"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   8.4
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      Height          =   300
+      Left            =   5780
+      Style           =   1  'Graphical
+      TabIndex        =   22
+      ToolTipText     =   "Sort the themes by name"
+      Top             =   680
+      Width           =   540
    End
    Begin VB.Label Label2 
       Caption         =   "Samples:"
@@ -375,6 +367,7 @@ Begin VB.PropertyPage pagNewTabThemes
          Italic          =   0   'False
          Strikethrough   =   0   'False
       EndProperty
+      ForeColor       =   &H00C00000&
       Height          =   370
       Left            =   470
       TabIndex        =   0
@@ -388,6 +381,11 @@ Attribute VB_Creatable = True
 Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = True
 Option Explicit
+
+' The theme round trip sweep: applies every predefined theme to a control, reads the string back
+' and reports the ones that do not come back identical. Set to 1 before any change that touches
+' the themed set and expect "0 theme(s) with differences" before and after
+#Const THEMEROUNDTRIPDIAG = 0
 
 Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 Private Declare Function TranslateColor Lib "olepro32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As LongPtr, Col As Long) As Long
@@ -428,6 +426,10 @@ Private mSelectedSettingsHash As String
 Private mThemesLookupData() As T_ThemeLookupData
 Private mColorsSelectedTheme As Collection
 Private mLoadTimeThemeHash As String
+Private mRegistryAppName As String
+
+' Default, the four SSTab and the two TabStrip ones stay first when sorting by name
+Private Const cThemesFixedAtTop As Long = 7
 
 Private Sub cboThemes_Click()
     Static sLastListIndex As Long
@@ -436,11 +438,12 @@ Private Sub cboThemes_Click()
     mSelectingTheme = True
     If (cboThemes.ItemData(cboThemes.ListIndex) = -2) Then
         If sLastListIndex < cboThemes.ListIndex Then
+            mSelectingTheme = False
             cboThemes.ListIndex = cboThemes.ListIndex + 1
         Else
+            mSelectingTheme = False
             cboThemes.ListIndex = cboThemes.ListIndex - 1
         End If
-        mSelectingTheme = False
         Exit Sub
     End If
     mSelectedThemeLookupDataIndex = cboThemes.ItemData(cboThemes.ListIndex)
@@ -517,11 +520,11 @@ Private Sub chkSaveInControl_Click()
             iName = cboThemes.Text
         End If
         Set iTheme = New NewTabTheme
-        iTheme.ThemeString = GetThemeStringFromControl(NewTab1, mAmbientBackColor, mAmbientForeColor)
+        iTheme.ThemeString = GetThemeStringFromControl(NewTab1)
         iTheme.Custom = True
         iTheme.Name = iName
         mThemesControl.Add iTheme
-        Set mCurrentSettings = iTheme
+        mSelectedSettingsHash = iTheme.Hash
         LoadThemes
     Else
         If (chkSaveInFile.Value = vbUnchecked) And (chkSaveInRegistry.Value = vbUnchecked) Then
@@ -570,22 +573,27 @@ Private Sub chkSaveInFile_Click()
             iName = cboThemes.Text
         End If
         Set iTheme = New NewTabTheme
-        iTheme.ThemeString = GetThemeStringFromControl(NewTab1, mAmbientBackColor, mAmbientForeColor)
+        iTheme.ThemeString = GetThemeStringFromControl(NewTab1)
         iTheme.Custom = True
         iTheme.Name = iName
         mThemesFile.Add iTheme
-        Set mCurrentSettings = iTheme
+        mSelectedSettingsHash = iTheme.Hash
         LoadThemes
     Else
         If (chkSaveInControl.Value = vbUnchecked) And (chkSaveInRegistry.Value = vbUnchecked) Then
-            MsgBox "Since this Theme is not currently saved anywhere else, it will be deleted permanently." & vbCrLf & "The changes will be applied when you accept the property page changes."
+            If MsgBox("Since this Theme is not currently saved anywhere else, it will be deleted permanently.", vbOKCancel Or vbExclamation) = vbCancel Then
+                chkSaveInFile.Value = vbChecked
+                sInside = False
+                Exit Sub
+            End If
             mSelectedSettingsHash = mLoadTimeThemeHash
         End If
         mThemesFile.Remove GetSelectedTheme.Name
         LoadThemes
     End If
-    Changed = True
-    mThemesFile_Changed = True
+    ' Saved now and not on Apply: the file and the registry are not the control, and a theme kept there
+    ' is not a request to put it on the control
+    SaveThemesInFile mThemesFile
     sInside = False
 End Sub
 
@@ -609,22 +617,27 @@ Private Sub chkSaveInRegistry_Click()
             iName = cboThemes.Text
         End If
         Set iTheme = New NewTabTheme
-        iTheme.ThemeString = GetThemeStringFromControl(NewTab1, mAmbientBackColor, mAmbientForeColor)
+        iTheme.ThemeString = GetThemeStringFromControl(NewTab1)
         iTheme.Custom = True
         iTheme.Name = iName
         mThemesRegistry.Add iTheme
-        Set mCurrentSettings = iTheme
+        mSelectedSettingsHash = iTheme.Hash
         LoadThemes
     Else
         If (chkSaveInControl.Value = vbUnchecked) And (chkSaveInFile.Value = vbUnchecked) Then
-            MsgBox "Since this Theme is not currently saved anywhere else, it will be deleted permanently." & vbCrLf & "The changes will be applied when you accept the property page changes."
+            If MsgBox("Since this Theme is not currently saved anywhere else, it will be deleted permanently.", vbOKCancel Or vbExclamation) = vbCancel Then
+                chkSaveInRegistry.Value = vbChecked
+                sInside = False
+                Exit Sub
+            End If
             mSelectedSettingsHash = mLoadTimeThemeHash
         End If
         mThemesRegistry.Remove GetSelectedTheme.Name
         LoadThemes
     End If
-    Changed = True
-    mThemesRegistry_Changed = True
+    ' Saved now and not on Apply: the file and the registry are not the control, and a theme kept there
+    ' is not a request to put it on the control
+    SaveThemesInRegistry mThemesRegistry
     sInside = False
 End Sub
 
@@ -736,7 +749,7 @@ Private Sub cmdRename_Click()
         iTheme2.Custom = True
         iTheme2.Name = iName
         mThemesFile.Add iTheme2
-        mThemesFile_Changed = True
+        SaveThemesInFile mThemesFile
     End If
     
     Set iTheme = iTheme.Clone
@@ -746,7 +759,7 @@ Private Sub cmdRename_Click()
         iTheme2.Custom = True
         iTheme2.Name = iName
         mThemesRegistry.Add iTheme2
-        mThemesRegistry_Changed = True
+        SaveThemesInRegistry mThemesRegistry
     End If
     Changed = True
     LoadThemes
@@ -781,7 +794,7 @@ End Sub
 Private Sub mnuCopy_Click()
     Dim iStr As String
     
-    iStr = GetThemeStringFromControl(NewTab1, mAmbientBackColor, mAmbientForeColor)
+    iStr = GetThemeStringFromControl(NewTab1)
     On Error Resume Next
     Clipboard.Clear
     Clipboard.SetText iStr
@@ -815,7 +828,7 @@ Private Sub mnuPaste_Click()
         ApplyThemeToControl iTheme.Data, NewTab1, mAmbientBackColor, mAmbientForeColor
         CopyControlProperties NewTab1, NewTab2
         Set mCurrentSettings = New NewTabTheme
-        mCurrentSettings.ThemeString = GetThemeStringFromControl(NewTab1, mAmbientBackColor, mAmbientForeColor)
+        mCurrentSettings.ThemeString = GetThemeStringFromControl(NewTab1)
         Set mSelectedSettings = mCurrentSettings.Clone
         mSelectedSettingsHash = mSelectedSettings.Hash
         LoadThemes
@@ -827,7 +840,9 @@ Private Sub PropertyPage_ApplyChanges()
     Dim iSC As NewTab
     
     Set iSC = SelectedControls(0)
-    CopyControlProperties NewTab1, iSC
+    ' Themed only. This is the one place that writes onto the developer's real
+    ' control, so nothing this page did not edit is allowed to travel
+    CopyControlProperties NewTab1, iSC, True
     iSC.ControlJustAdded = True
     If mThemesControl_Changed Then
         Set iSC.Themes = mThemesControl
@@ -846,11 +861,14 @@ Private Sub PropertyPage_SelectionChanged()
     Dim iCtl As NewTab
     Dim iTheme As NewTabTheme
     Dim iTheme2 As NewTabTheme
+    Dim iAuxNT As NewTab
     
     mLoading = True
     If TypeName(SelectedControls(0)) <> "NewTab" Then Exit Sub
     Set iCtl = SelectedControls(0)
     SetControlTypeName TypeName(iCtl) 'for Themes module
+    mRegistryAppName = TypeName(iCtl)
+    chkSortByName.Value = IIf(GetSetting(mRegistryAppName, "Themes", "SortByName", "0") = "1", vbChecked, vbUnchecked)
     Set PropertyPage.Font = CloneFont(iCtl.AmbientFont)
     Set f = CloneFont(iCtl.Font)
     Set NewTab1.Font = f
@@ -860,12 +878,32 @@ Private Sub PropertyPage_SelectionChanged()
     NewTab1.RightToLeft = iCtl.RightToLeft
     NewTab2.RightToLeft = iCtl.RightToLeft
     AuxNewTab(0).RightToLeft = iCtl.RightToLeft
+    ' Before any theme is applied to it; NewTab2 takes it from NewTab1 in CopyControlProperties
+    NewTab1.TabOrientation = PreviewTabOrientation(iCtl.TabOrientation)
+    
+    ' Not themed, so seeded here for the preview to predict the developer's control.
+    ' The hook and not the colour: assigning a resolved colour would unhook NewTab1 from its container
+    If iCtl.BackColor_IsFromAmbient Then NewTab1.BackColor = -1 Else NewTab1.BackColor = iCtl.BackColor
+    NewTab1.BackStyle = iCtl.BackStyle
+    NewTab1.WordWrap = iCtl.WordWrap
+    NewTab1.ShowDisabledState = iCtl.ShowDisabledState
+    NewTab1.AutoRelocateControls = iCtl.AutoRelocateControls
+    NewTab1.CaptionAlignment = iCtl.CaptionAlignment
+    NewTab2.CaptionAlignment = iCtl.CaptionAlignment
+    
+    ' This page does not seed its sample with CopyControlProperties, so the buttons and their glyphs
+    ' are named here; NewTab2 gets them from NewTab1 further down
+    NewTab1.CloseButton = iCtl.CloseButton
+    NewTab1.CloseButtonPosition = iCtl.CloseButtonPosition
+    NewTab1.NewTabButton = IIf(iCtl.NewTabButtonEffective, ntYes, ntNo)
+    Set iAuxNT = NewTab1
+    iAuxNT.CopyGlyphSettingsFrom iCtl
     
     mAmbientBackColor = iCtl.AmbientBackColor
     mAmbientForeColor = iCtl.AmbientForeColor
     SetPropertyPageColors mAmbientBackColor, mAmbientForeColor
     Set mCurrentSettings = New NewTabTheme
-    mCurrentSettings.ThemeString = GetThemeStringFromControl(SelectedControls(0), mAmbientBackColor, mAmbientForeColor)
+    mCurrentSettings.ThemeString = GetThemeStringFromControl(SelectedControls(0))
     Set mSelectedSettings = mCurrentSettings.Clone
     mSelectedSettingsHash = mSelectedSettings.Hash
     mLoadTimeThemeHash = mSelectedSettingsHash
@@ -878,7 +916,7 @@ Private Sub PropertyPage_SelectionChanged()
         Load AuxNewTab(1)
         ApplyThemeToControl iTheme.Data, AuxNewTab(1), mAmbientBackColor, mAmbientForeColor
         Set iTheme2 = New NewTabTheme
-        iTheme2.ThemeString = GetThemeStringFromControl(AuxNewTab(1), mAmbientBackColor, mAmbientForeColor)
+        iTheme2.ThemeString = GetThemeStringFromControl(AuxNewTab(1))
         Unload AuxNewTab(1)
 #Else
         Set iTheme2 = iTheme.Clone
@@ -902,7 +940,7 @@ Private Sub PropertyPage_SelectionChanged()
         Load AuxNewTab(1)
         ApplyThemeToControl iTheme.Data, AuxNewTab(1), mAmbientBackColor, mAmbientForeColor
         Set iTheme2 = New NewTabTheme
-        iTheme2.ThemeString = GetThemeStringFromControl(AuxNewTab(1), mAmbientBackColor, mAmbientForeColor)
+        iTheme2.ThemeString = GetThemeStringFromControl(AuxNewTab(1))
         Unload AuxNewTab(1)
         iTheme2.Custom = True
         If Not IsDefaultTheme(iTheme) Then
@@ -918,7 +956,7 @@ Private Sub PropertyPage_SelectionChanged()
         Load AuxNewTab(1)
         ApplyThemeToControl iTheme.Data, AuxNewTab(1), mAmbientBackColor, mAmbientForeColor
         Set iTheme2 = New NewTabTheme
-        iTheme2.ThemeString = GetThemeStringFromControl(AuxNewTab(1), mAmbientBackColor, mAmbientForeColor)
+        iTheme2.ThemeString = GetThemeStringFromControl(AuxNewTab(1))
         Unload AuxNewTab(1)
         iTheme2.Custom = True
         If Not IsDefaultTheme(iTheme) Then
@@ -936,26 +974,51 @@ Private Sub PropertyPage_SelectionChanged()
     mThemesFile_Changed = False
     mThemesRegistry_Changed = False
     
+#If THEMEROUNDTRIPDIAG Then
+    ThemeRoundTripDiagnostic
+#End If
     mLoading = False
 End Sub
 
+Private Sub chkSortByName_Click()
+    If mLoading Then Exit Sub
+    SaveSetting mRegistryAppName, "Themes", "SortByName", IIf(chkSortByName.Value = vbChecked, "1", "0")
+    ' The lookup indexes do not depend on the order of the list, so the selection stays valid and the
+    ' preview does not need to be applied again
+    mSelectingTheme = True
+    LoadThemes
+    mSelectingTheme = False
+End Sub
+
+' The entries are gathered first and added to the list afterwards, so that they can be sorted. The
+' order of mThemesLookupData does not change with the sorting
 Private Sub LoadThemes()
     Dim iTheme As NewTabTheme
-    Dim iCustomLabelEntryAlreadyAdded As Boolean
     Dim iLdi As Long
     Dim c As Long
+    Dim iBuiltInNames() As String
+    Dim iBuiltInLdi() As Long
+    Dim iBuiltInCount As Long
+    Dim iCustomNames() As String
+    Dim iCustomLdi() As Long
+    Dim iCustomCount As Long
     
     cboThemes.Clear
     ReDim mThemesLookupData(0)
     iLdi = 0
+    ReDim iBuiltInNames(mThemesControl.Count)
+    ReDim iBuiltInLdi(mThemesControl.Count)
+    ReDim iCustomNames(mThemesControl.Count + mThemesFile.Count + mThemesRegistry.Count)
+    ReDim iCustomLdi(mThemesControl.Count + mThemesFile.Count + mThemesRegistry.Count)
     
     ' built-in, got from the control
     For c = 1 To mThemesControl.Count
         Set iTheme = mThemesControl(c)
         If iTheme.Custom = False Then
             iLdi = iLdi + 1
-            cboThemes.AddItem iTheme.Name
-            cboThemes.ItemData(cboThemes.NewIndex) = iLdi
+            iBuiltInNames(iBuiltInCount) = iTheme.Name
+            iBuiltInLdi(iBuiltInCount) = iLdi
+            iBuiltInCount = iBuiltInCount + 1
             If iLdi > UBound(mThemesLookupData) Then
                 ReDim Preserve mThemesLookupData(iLdi + 10)
             End If
@@ -965,19 +1028,14 @@ Private Sub LoadThemes()
     Next
     
     ' custom stored in the control
-    iCustomLabelEntryAlreadyAdded = False
     For c = 1 To mThemesControl.Count
         Set iTheme = mThemesControl(c)
         If iTheme.Custom = True Then
             If Not IsThemeInList(iTheme.Hash) Then
-                If Not iCustomLabelEntryAlreadyAdded Then
-                    cboThemes.AddItem "-------------Custom-------------"
-                    cboThemes.ItemData(cboThemes.NewIndex) = -2
-                    iCustomLabelEntryAlreadyAdded = True
-                End If
                 iLdi = iLdi + 1
-                cboThemes.AddItem iTheme.Name
-                cboThemes.ItemData(cboThemes.NewIndex) = iLdi
+                iCustomNames(iCustomCount) = iTheme.Name
+                iCustomLdi(iCustomCount) = iLdi
+                iCustomCount = iCustomCount + 1
                 If iLdi > UBound(mThemesLookupData) Then
                     ReDim Preserve mThemesLookupData(iLdi + 10)
                 End If
@@ -991,14 +1049,10 @@ Private Sub LoadThemes()
     For c = 1 To mThemesFile.Count
         Set iTheme = mThemesFile(c)
         If Not IsThemeInList(iTheme.Hash) Then
-            If Not iCustomLabelEntryAlreadyAdded Then
-                cboThemes.AddItem "-------------Custom-------------"
-                cboThemes.ItemData(cboThemes.NewIndex) = -2
-                iCustomLabelEntryAlreadyAdded = True
-            End If
             iLdi = iLdi + 1
-            cboThemes.AddItem iTheme.Name
-            cboThemes.ItemData(cboThemes.NewIndex) = iLdi
+            iCustomNames(iCustomCount) = iTheme.Name
+            iCustomLdi(iCustomCount) = iLdi
+            iCustomCount = iCustomCount + 1
             If iLdi > UBound(mThemesLookupData) Then
                 ReDim Preserve mThemesLookupData(iLdi + 10)
             End If
@@ -1011,20 +1065,33 @@ Private Sub LoadThemes()
     For c = 1 To mThemesRegistry.Count
         Set iTheme = mThemesRegistry(c)
         If Not IsThemeInList(iTheme.Hash) Then
-            If Not iCustomLabelEntryAlreadyAdded Then
-                cboThemes.AddItem "-------------Custom-------------"
-                cboThemes.ItemData(cboThemes.NewIndex) = -2
-                iCustomLabelEntryAlreadyAdded = True
-            End If
             iLdi = iLdi + 1
-            cboThemes.AddItem iTheme.Name
-            cboThemes.ItemData(cboThemes.NewIndex) = iLdi
+            iCustomNames(iCustomCount) = iTheme.Name
+            iCustomLdi(iCustomCount) = iLdi
+            iCustomCount = iCustomCount + 1
             If iLdi > UBound(mThemesLookupData) Then
                 ReDim Preserve mThemesLookupData(iLdi + 10)
             End If
             mThemesLookupData(iLdi).Source = ntTSRegistry
             mThemesLookupData(iLdi).Hash = iTheme.Hash
         End If
+    Next
+    
+    If chkSortByName.Value = vbChecked Then
+        SortThemeEntries iBuiltInNames, iBuiltInLdi, cThemesFixedAtTop, iBuiltInCount - 1
+        SortThemeEntries iCustomNames, iCustomLdi, 0, iCustomCount - 1
+    End If
+    For c = 0 To iBuiltInCount - 1
+        cboThemes.AddItem iBuiltInNames(c)
+        cboThemes.ItemData(cboThemes.NewIndex) = iBuiltInLdi(c)
+    Next
+    If iCustomCount > 0 Then
+        cboThemes.AddItem "-------------Custom-------------"
+        cboThemes.ItemData(cboThemes.NewIndex) = -2
+    End If
+    For c = 0 To iCustomCount - 1
+        cboThemes.AddItem iCustomNames(c)
+        cboThemes.ItemData(cboThemes.NewIndex) = iCustomLdi(c)
     Next
     
     ' not currently saved as a theme, but a custom configuration
@@ -1050,6 +1117,28 @@ Private Sub LoadThemes()
     Next
     
     cboThemes.ListIndex = 0
+End Sub
+
+' Insertion sort by name, case insensitive, of the entries nFirst to nLast. The lists are short
+Private Sub SortThemeEntries(ByRef nNames() As String, ByRef nLdi() As Long, ByVal nFirst As Long, ByVal nLast As Long)
+    Dim iName As String
+    Dim iLdi As Long
+    Dim c As Long
+    Dim c2 As Long
+    
+    For c = nFirst + 1 To nLast
+        iName = nNames(c)
+        iLdi = nLdi(c)
+        c2 = c - 1
+        Do While c2 >= nFirst
+            If StrComp(nNames(c2), iName, vbTextCompare) <= 0 Then Exit Do
+            nNames(c2 + 1) = nNames(c2)
+            nLdi(c2 + 1) = nLdi(c2)
+            c2 = c2 - 1
+        Loop
+        nNames(c2 + 1) = iName
+        nLdi(c2 + 1) = iLdi
+    Next c
 End Sub
 
 Private Function IsThemeInList(nHash As String) As Boolean
@@ -1144,8 +1233,7 @@ Private Sub ModifyColors()
                             If iLum < 0 Then iLum = 0
                         End If
                     End If
-                    If iSat = 0 Then iSat = 1
-                    iCol = ColorHLSToRGB(iHue, iLum, iSat)
+                    iCol = ColorFromHLS(iHue, iLum, iSat)
                     iProp.Value = iCol
                 End If
             End If
@@ -1158,24 +1246,28 @@ Private Sub ModifyColors()
         mThemeIsModified = False
     End If
     
+    ' An inherited colour is not assigned back: that would make it explicit, or unhook it from the
+    ' container. Shifting the parent and letting it follow gives the same colours
     Set nt = NewTab1
     For Each iProp In iColors
         If IsNumeric(iProp.Value) Then
             Select Case iProp.Name
                 Case "BackColor"
-                    nt.BackColor = iProp.Value
+                    If Not nt.BackColor_IsFromAmbient Then nt.BackColor = iProp.Value
                 Case "ForeColor"
-                    nt.ForeColor = iProp.Value
+                    If Not nt.ForeColor_IsFromAmbient Then nt.ForeColor = iProp.Value
                 Case "ForeColorSelectedTab"
-                    nt.ForeColorSelectedTab = iProp.Value
+                    If Not nt.ForeColorSelectedTab_IsAutomatic Then nt.ForeColorSelectedTab = iProp.Value
                 Case "ForeColorHighlighted"
-                    nt.ForeColorHighlighted = iProp.Value
-                Case "FlatTabBorderColorHighlight"
-                    nt.FlatTabBorderColorHighlight = iProp.Value
+                    If Not nt.ForeColorHighlighted_IsAutomatic Then nt.ForeColorHighlighted = iProp.Value
+                Case "FlatTabBorderColorHighlighted"
+                    If Not nt.FlatTabBorderColorHighlighted_IsAutomatic Then nt.FlatTabBorderColorHighlighted = iProp.Value
                 Case "FlatTabBorderColorSelectedTab"
-                    nt.FlatTabBorderColorSelectedTab = iProp.Value
+                    If Not nt.FlatTabBorderColorSelectedTab_IsAutomatic Then nt.FlatTabBorderColorSelectedTab = iProp.Value
+                Case "FlatTabBorderColorInactive"
+                    If Not nt.FlatTabBorderColorInactive_IsAutomatic Then nt.FlatTabBorderColorInactive = iProp.Value
                 Case "BackColorTabs"
-                    nt.BackColorTabs = iProp.Value
+                    If Not nt.BackColorTabs_IsFromAmbient Then nt.BackColorTabs = iProp.Value
                 Case "BackColorSelectedTab"
                     If Not nt.BackColorSelectedTab_IsAutomatic Then nt.BackColorSelectedTab = iProp.Value
                 Case "FlatBarColorInactive"
@@ -1186,32 +1278,49 @@ Private Sub ModifyColors()
                     If Not nt.FlatBodySeparationLineColor_IsAutomatic Then nt.FlatBodySeparationLineColor = iProp.Value
                 Case "FlatBorderColor"
                     If Not nt.FlatBorderColor_IsAutomatic Then nt.FlatBorderColor = iProp.Value
-                Case "FlatBarColorHighlight"
-                    If Not nt.FlatBarColorHighlight_IsAutomatic Then nt.FlatBarColorHighlight = iProp.Value
+                Case "FlatBarColorHighlighted"
+                    If Not nt.FlatBarColorHighlighted_IsAutomatic Then nt.FlatBarColorHighlighted = iProp.Value
                 Case "FlatBarColorSelectedTab"
                     nt.FlatBarColorSelectedTab = iProp.Value
                 Case "IconColor"
-                    nt.IconColor = iProp.Value
+                    If Not nt.IconColor_IsAutomatic Then nt.IconColor = iProp.Value
                 Case "IconColorSelectedTab"
-                    nt.IconColorSelectedTab = iProp.Value
+                    If Not nt.IconColorSelectedTab_IsAutomatic Then nt.IconColorSelectedTab = iProp.Value
                 Case "IconColorTabHighlighted"
-                    nt.IconColorTabHighlighted = iProp.Value
+                    If Not nt.IconColorTabHighlighted_IsAutomatic Then nt.IconColorTabHighlighted = iProp.Value
                 Case "HighlightColor"
                     If Not nt.HighlightColor_IsAutomatic Then nt.HighlightColor = iProp.Value
                 Case "HighlightColorSelectedTab"
                     If Not nt.HighlightColorSelectedTab_IsAutomatic Then nt.HighlightColorSelectedTab = iProp.Value
+                Case "HighlightGradientColor"
+                    If Not nt.HighlightGradientColor_IsAutomatic Then nt.HighlightGradientColor = iProp.Value
+                Case "HighlightGradientColorSelectedTab"
+                    If Not nt.HighlightGradientColorSelectedTab_IsAutomatic Then nt.HighlightGradientColorSelectedTab = iProp.Value
             End Select
         End If
     Next
     CopyControlProperties NewTab1, NewTab2
     Set iCurrSettings = New NewTabTheme
-    iCurrSettings.ThemeString = GetThemeStringFromControl(NewTab1, mAmbientBackColor, mAmbientForeColor)
+    iCurrSettings.ThemeString = GetThemeStringFromControl(NewTab1)
     chkSaveInControl.Value = CLng(IsThemeInColection(mThemesControl, iCurrSettings)) * -1
     chkSaveInFile.Value = CLng(IsThemeInColection(mThemesFile, iCurrSettings)) * -1
     chkSaveInRegistry.Value = CLng(IsThemeInColection(mThemesRegistry, iCurrSettings)) * -1
     Changed = True
     mModifyingColors = False
 End Sub
+
+' Same as the control's ColorFromHLS: ColorHLSToRGB answers black for a defined hue with
+' saturation 0, so the achromatic case is built here with the API's own arithmetic
+Private Function ColorFromHLS(ByVal nHue As Integer, ByVal nLightness As Integer, ByVal nSaturation As Integer) As Long
+    Dim iGreyLevel As Long
+    
+    If nSaturation = 0 Then
+        iGreyLevel = CLng(nLightness) * 255 \ 240
+        ColorFromHLS = RGB(iGreyLevel, iGreyLevel, iGreyLevel)
+    Else
+        ColorFromHLS = ColorHLSToRGB(nHue, nLightness, nSaturation)
+    End If
+End Function
 
 Private Function ThemeUsesAmbientColors(ByVal nAmbientBackColor As Long, ByVal nAmbientForeColor As Long) As Boolean
     If NewTab1.ForeColor = nAmbientForeColor Then
@@ -1396,7 +1505,7 @@ Private Function CloneFont(nOrigFont As iFont) As StdFont
 End Function
 
 Private Function GetCurrentColors() As Collection
-    Const cPropertyList As String = "|BackColor|ForeColor|ForeColorSelectedTab|ForeColorHighlighted|FlatTabBorderColorHighlight|FlatTabBorderColorSelectedTab|BackColorTabs|BackColorSelectedTab|FlatBarColorInactive|FlatTabsSeparationLineColor|FlatBodySeparationLineColor|FlatBorderColor|FlatBarColorHighlight|FlatBarColorSelectedTab|IconColor|IconColorSelectedTab|IconColorTabHighlighted|HighlightColor|HighlightColorSelectedTab|"
+    Const cPropertyList As String = "|BackColor|ForeColor|ForeColorSelectedTab|ForeColorHighlighted|FlatTabBorderColorHighlighted|FlatTabBorderColorSelectedTab|FlatTabBorderColorInactive|BackColorTabs|BackColorSelectedTab|FlatBarColorInactive|FlatTabsSeparationLineColor|FlatBodySeparationLineColor|FlatBorderColor|FlatBarColorHighlighted|FlatBarColorSelectedTab|IconColor|IconColorSelectedTab|IconColorTabHighlighted|HighlightColor|HighlightColorSelectedTab|HighlightGradientColor|HighlightGradientColorSelectedTab|"
     Dim iPropNames() As String
     Dim c As Long
     Dim nt As NewTab
@@ -1418,10 +1527,12 @@ Private Function GetCurrentColors() As Collection
                     iProp.Value = nt.ForeColorSelectedTab
                 Case "ForeColorHighlighted"
                     iProp.Value = nt.ForeColorHighlighted
-                Case "FlatTabBorderColorHighlight"
-                    iProp.Value = nt.FlatTabBorderColorHighlight
+                Case "FlatTabBorderColorHighlighted"
+                    iProp.Value = nt.FlatTabBorderColorHighlighted
                 Case "FlatTabBorderColorSelectedTab"
                     iProp.Value = nt.FlatTabBorderColorSelectedTab
+                Case "FlatTabBorderColorInactive"
+                    iProp.Value = nt.FlatTabBorderColorInactive
                 Case "BackColorTabs"
                     iProp.Value = nt.BackColorTabs
                 Case "BackColorSelectedTab"
@@ -1434,8 +1545,8 @@ Private Function GetCurrentColors() As Collection
                     iProp.Value = nt.FlatBodySeparationLineColor
                 Case "FlatBorderColor"
                     iProp.Value = nt.FlatBorderColor
-                Case "FlatBarColorHighlight"
-                    iProp.Value = nt.FlatBarColorHighlight
+                Case "FlatBarColorHighlighted"
+                    iProp.Value = nt.FlatBarColorHighlighted
                 Case "FlatBarColorSelectedTab"
                     iProp.Value = nt.FlatBarColorSelectedTab
                 Case "IconColor"
@@ -1448,6 +1559,10 @@ Private Function GetCurrentColors() As Collection
                     iProp.Value = nt.HighlightColor
                 Case "HighlightColorSelectedTab"
                     iProp.Value = nt.HighlightColorSelectedTab
+                Case "HighlightGradientColor"
+                    iProp.Value = nt.HighlightGradientColor
+                Case "HighlightGradientColorSelectedTab"
+                    iProp.Value = nt.HighlightGradientColorSelectedTab
             End Select
             GetCurrentColors.Add iProp, iProp.Name
         End If
@@ -1458,3 +1573,118 @@ Private Sub tmrTT_Timer()
     tmrTT.Enabled = False
     picTT.Visible = False
 End Sub
+
+#If THEMEROUNDTRIPDIAG Then
+
+' TEMP diagnostic - applies every built-in theme to an auxiliary control, reads the theme
+' string back out of it, and reports every entry that does not survive the round trip.
+' The second pass is what tells the two possible causes apart: if pass 2 is clean, the round
+' trip is a fixed point and what pass 1 reports is a stored string that went stale when a
+' fallback changed - the cure is to migrate the string. If pass 2 is not clean, Apply and
+' Write disagree about that property and the cure is in the code
+Private Sub ThemeRoundTripDiagnostic()
+    Dim iThemes As NewTabThemes
+    Dim iTheme As NewTabTheme
+    Dim iAuxTheme As NewTabTheme
+    Dim iPass1 As String
+    Dim iPass2 As String
+    Dim iDiff1 As String
+    Dim iDiff2 As String
+    Dim iWithDifferences As Long
+    Dim c As Long
+    
+    Set iThemes = GetDefaultThemes
+    Debug.Print "--- theme round trip over " & iThemes.Count & " built-in themes, ambient back " & mAmbientBackColor & ", ambient fore " & mAmbientForeColor
+    For c = 1 To iThemes.Count
+        Set iTheme = iThemes(c)
+        
+        Load AuxNewTab(1)
+        ApplyThemeToControl iTheme.Data, AuxNewTab(1), mAmbientBackColor, mAmbientForeColor
+        iPass1 = GetThemeStringFromControl(AuxNewTab(1))
+        Unload AuxNewTab(1)
+        
+        Set iAuxTheme = New NewTabTheme
+        iAuxTheme.ThemeString = iPass1
+        Load AuxNewTab(1)
+        ApplyThemeToControl iAuxTheme.Data, AuxNewTab(1), mAmbientBackColor, mAmbientForeColor
+        iPass2 = GetThemeStringFromControl(AuxNewTab(1))
+        Unload AuxNewTab(1)
+        
+        iDiff1 = DiagThemeStringDiff(iTheme.ThemeString, iPass1)
+        iDiff2 = DiagThemeStringDiff(iPass1, iPass2)
+        If (iDiff1 <> "") Or (iDiff2 <> "") Then
+            iWithDifferences = iWithDifferences + 1
+            Debug.Print iTheme.Name
+            If iDiff1 <> "" Then Debug.Print "    pass 1:" & iDiff1
+            If iDiff2 <> "" Then Debug.Print "    pass 2:" & iDiff2 & "   <-- NOT a fixed point"
+        End If
+    Next c
+    Debug.Print "--- " & iWithDifferences & " theme(s) with differences"
+End Sub
+
+' TEMP diagnostic - entry by entry comparison of two theme strings, in both directions, so
+' that a value that merely changed is reported once and not as a loss plus an appearance
+Private Function DiagThemeStringDiff(nBefore As String, nAfter As String) As String
+    Dim iBefore() As String
+    Dim iAfter() As String
+    Dim iName As String
+    Dim iOtherValue As String
+    Dim iRes As String
+    Dim c As Long
+    
+    iBefore = Split(nBefore, "|")
+    iAfter = Split(nAfter, "|")
+    For c = 0 To UBound(iBefore)
+        iName = DiagEntryName(iBefore(c))
+        If iName <> "" Then
+            If DiagEntryFound(iAfter, iName, iOtherValue) Then
+                If iOtherValue <> DiagEntryValue(iBefore(c)) Then
+                    iRes = iRes & " " & iName & "(" & DiagEntryValue(iBefore(c)) & " -> " & iOtherValue & ")"
+                End If
+            Else
+                iRes = iRes & " " & iName & "(dropped, was " & DiagEntryValue(iBefore(c)) & ")"
+            End If
+        End If
+    Next c
+    For c = 0 To UBound(iAfter)
+        iName = DiagEntryName(iAfter(c))
+        If iName <> "" Then
+            If Not DiagEntryFound(iBefore, iName, iOtherValue) Then
+                iRes = iRes & " " & iName & "(appeared, " & DiagEntryValue(iAfter(c)) & ")"
+            End If
+        End If
+    Next c
+    DiagThemeStringDiff = iRes
+End Function
+
+' TEMP diagnostic
+Private Function DiagEntryFound(ByRef nEntries() As String, ByVal nName As String, ByRef nValue As String) As Boolean
+    Dim c As Long
+    
+    nValue = ""
+    For c = 0 To UBound(nEntries)
+        If DiagEntryName(nEntries(c)) = nName Then
+            nValue = DiagEntryValue(nEntries(c))
+            DiagEntryFound = True
+            Exit Function
+        End If
+    Next c
+End Function
+
+' TEMP diagnostic
+Private Function DiagEntryName(ByVal nEntry As String) As String
+    Dim iPos As Long
+    
+    iPos = InStr(nEntry, "=")
+    If iPos > 1 Then DiagEntryName = Left$(nEntry, iPos - 1)
+End Function
+
+' TEMP diagnostic
+Private Function DiagEntryValue(ByVal nEntry As String) As String
+    Dim iPos As Long
+    
+    iPos = InStr(nEntry, "=")
+    If iPos > 0 Then DiagEntryValue = Mid$(nEntry, iPos + 1)
+End Function
+
+#End If

@@ -18,6 +18,14 @@ Begin VB.PropertyPage pagNewTabIcons
    PaletteMode     =   0  'Halftone
    ScaleHeight     =   8508
    ScaleWidth      =   6804
+   Begin VB.ComboBox cboScalePicturesForDPI 
+      Height          =   300
+      Left            =   1960
+      Style           =   2  'Dropdown List
+      TabIndex        =   5
+      Top             =   2340
+      Width           =   1250
+   End
    Begin VB.Timer tmrStartDraggingSample 
       Enabled         =   0   'False
       Interval        =   500
@@ -36,106 +44,61 @@ Begin VB.PropertyPage pagNewTabIcons
       Left            =   120
       ScaleHeight     =   972
       ScaleWidth      =   6612
-      TabIndex        =   52
+      TabIndex        =   51
       Top             =   7440
       Width           =   6612
       Begin NewTabCtl.NewTab NewTab1 
          Height          =   804
          Left            =   0
-         TabIndex        =   53
+         TabIndex        =   52
          Top             =   0
          Width           =   6540
          _ExtentX        =   11536
          _ExtentY        =   1397
-         BeginProperty Font {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
-            Name            =   "Tahoma"
-            Size            =   8.4
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         TabHeight       =   579
+         ControlsBackColorApplied=   -2147483633
          AutoTabHeight   =   -1  'True
-         ControlVersion  =   13
+         ControlVersion  =   18
          TabCaption(0)   =   ""
          TabCaption(1)   =   ""
          TabCaption(2)   =   ""
       End
    End
-   Begin VB.PictureBox picIconFontNote 
-      BorderStyle     =   0  'None
-      Height          =   372
-      Left            =   2000
-      ScaleHeight     =   372
-      ScaleWidth      =   4812
-      TabIndex        =   46
-      Top             =   2360
-      Visible         =   0   'False
-      Width           =   4812
-      Begin VB.Label lblIconFontNote 
-         Caption         =   "The Icon Font is per tab. Each tab has its own icon font (you can have different fonts for each tab icon)"
-         BeginProperty Font 
-            Name            =   "Tahoma"
-            Size            =   7.2
-            Charset         =   0
-            Weight          =   400
-            Underline       =   0   'False
-            Italic          =   0   'False
-            Strikethrough   =   0   'False
-         EndProperty
-         ForeColor       =   &H000000FF&
-         Height          =   410
-         Left            =   0
-         TabIndex        =   47
-         Top             =   0
-         Width           =   3840
-      End
-   End
-   Begin VB.PictureBox picTDICover1 
-      BorderStyle     =   0  'None
-      Height          =   2260
-      Index           =   2
-      Left            =   15400
-      ScaleHeight     =   2256
-      ScaleWidth      =   1332
-      TabIndex        =   45
-      Top             =   480
-      Visible         =   0   'False
-      Width           =   1330
-   End
-   Begin VB.PictureBox picTDICover1 
-      BorderStyle     =   0  'None
-      Height          =   490
-      Index           =   1
-      Left            =   12520
-      ScaleHeight     =   492
-      ScaleWidth      =   4092
-      TabIndex        =   44
-      Top             =   0
-      Visible         =   0   'False
-      Width           =   4090
-   End
-   Begin VB.PictureBox picTDICover1 
+   Begin VB.PictureBox picTDICover 
       BorderStyle     =   0  'None
       Height          =   2740
-      Index           =   0
       Left            =   10000
       ScaleHeight     =   2736
-      ScaleWidth      =   5412
-      TabIndex        =   43
+      ScaleWidth      =   6816
+      TabIndex        =   44
       Top             =   500
       Visible         =   0   'False
-      Width           =   5410
+      Width           =   6816
+      Begin VB.ComboBox cboTDIFormsIconSize 
+         Height          =   300
+         Left            =   2400
+         Style           =   2  'Dropdown List
+         TabIndex        =   53
+         Top             =   1520
+         Visible         =   0   'False
+         Width           =   3217
+      End
+      Begin VB.Label lblTDIFormsIconSize 
+         Alignment       =   1  'Right Justify
+         Caption         =   "TDIFormsIconSize:"
+         Height          =   228
+         Left            =   700
+         TabIndex        =   54
+         Top             =   1550
+         Visible         =   0   'False
+         Width           =   1616
+      End
       Begin VB.Label lblNoteTDI 
-         Caption         =   "Hiding properties that are irrelevant for TDI mode."
-         ForeColor       =   &H80000011&
+         Caption         =   "In TDI modes the tab pictures come from the hosted forms. Only the setting below applies."
          Height          =   612
          Left            =   935
-         TabIndex        =   51
+         TabIndex        =   50
          Top             =   700
-         Width           =   3772
+         Width           =   5772
       End
    End
    Begin VB.Timer tmrTabChanged 
@@ -148,25 +111,25 @@ Begin VB.PropertyPage pagNewTabIcons
       Enabled         =   0   'False
       Interval        =   1
       Left            =   240
-      Top             =   2750
+      Top             =   2990
    End
    Begin VB.Timer tmrDrawCharMapFromScrollPosition 
       Enabled         =   0   'False
       Interval        =   1
       Left            =   240
-      Top             =   2480
+      Top             =   2720
    End
    Begin VB.Timer tmrShowTabData 
       Enabled         =   0   'False
       Interval        =   1
       Left            =   0
-      Top             =   2480
+      Top             =   2720
    End
    Begin VB.CommandButton cmdChangeIconFont 
       Caption         =   "..."
       Height          =   270
       Left            =   5280
-      TabIndex        =   27
+      TabIndex        =   28
       ToolTipText     =   "Change font"
       Top             =   3050
       Width           =   330
@@ -175,15 +138,24 @@ Begin VB.PropertyPage pagNewTabIcons
       Height          =   300
       Left            =   2000
       Style           =   2  'Dropdown List
-      TabIndex        =   23
+      TabIndex        =   24
       Top             =   2720
       Width           =   3217
+   End
+   Begin VB.CheckBox chkIconInColor 
+      Caption         =   "IconInColor"
+      Height          =   270
+      Left            =   4500
+      TabIndex        =   55
+      ToolTipText     =   "Draw the glyph with the colors of the font (emoji, color icon fonts). Needs Windows 8.1 or later"
+      Top             =   3800
+      Width           =   1800
    End
    Begin VB.TextBox txtIconTopOffset 
       Height          =   310
       Left            =   3890
       MaxLength       =   4
-      TabIndex        =   34
+      TabIndex        =   35
       Top             =   3780
       Width           =   488
    End
@@ -191,7 +163,7 @@ Begin VB.PropertyPage pagNewTabIcons
       Height          =   310
       Left            =   2000
       MaxLength       =   4
-      TabIndex        =   32
+      TabIndex        =   33
       Top             =   3780
       Width           =   488
    End
@@ -208,7 +180,7 @@ Begin VB.PropertyPage pagNewTabIcons
       EndProperty
       Height          =   300
       Left            =   6380
-      TabIndex        =   29
+      TabIndex        =   30
       Tag             =   "E"
       ToolTipText     =   "Increase IconFont size"
       Top             =   3050
@@ -227,7 +199,7 @@ Begin VB.PropertyPage pagNewTabIcons
       EndProperty
       Height          =   300
       Left            =   6020
-      TabIndex        =   28
+      TabIndex        =   29
       Tag             =   "E"
       ToolTipText     =   "Decrease IconFont size"
       Top             =   3050
@@ -238,7 +210,7 @@ Begin VB.PropertyPage pagNewTabIcons
       Left            =   2000
       Sorted          =   -1  'True
       Style           =   2  'Dropdown List
-      TabIndex        =   26
+      TabIndex        =   27
       ToolTipText     =   "Each tab has its own icon font (you can have different fonts for each tab icon)"
       Top             =   3050
       Width           =   3217
@@ -254,7 +226,7 @@ Begin VB.PropertyPage pagNewTabIcons
       ScaleHeight     =   52
       ScaleMode       =   3  'Pixel
       ScaleWidth      =   52
-      TabIndex        =   30
+      TabIndex        =   31
       TabStop         =   0   'False
       Top             =   3770
       Width           =   620
@@ -263,11 +235,11 @@ Begin VB.PropertyPage pagNewTabIcons
       Appearance      =   0  'Flat
       BorderStyle     =   0  'None
       ForeColor       =   &H80000008&
-      Height          =   2930
+      Height          =   2730
       Left            =   70
-      ScaleHeight     =   2928
+      ScaleHeight     =   2736
       ScaleWidth      =   6636
-      TabIndex        =   40
+      TabIndex        =   41
       TabStop         =   0   'False
       Top             =   4555
       Width           =   6640
@@ -284,16 +256,16 @@ Begin VB.PropertyPage pagNewTabIcons
          ScaleHeight     =   32
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   32
-         TabIndex        =   41
+         TabIndex        =   42
          TabStop         =   0   'False
          Top             =   60
          Visible         =   0   'False
          Width           =   380
       End
       Begin VB.VScrollBar scrChars 
-         Height          =   2990
+         Height          =   2790
          Left            =   6370
-         TabIndex        =   42
+         TabIndex        =   43
          TabStop         =   0   'False
          Top             =   0
          Width           =   250
@@ -313,17 +285,20 @@ Begin VB.PropertyPage pagNewTabIcons
       EndProperty
       Height          =   300
       Left            =   3100
-      TabIndex        =   38
+      TabIndex        =   39
       Tag             =   "E"
       ToolTipText     =   "Remove icon"
       Top             =   4145
       Width           =   300
    End
-   Begin VB.TextBox txtIconCharHex 
+   Begin VB.PictureBox picIconCharHexHolder 
+      BackColor       =   &H80000005&
+      BorderStyle     =   0  'None
       Height          =   310
       Left            =   2000
-      MaxLength       =   11
-      TabIndex        =   37
+      ScaleHeight     =   312
+      ScaleWidth      =   1044
+      TabIndex        =   38
       Top             =   4135
       Width           =   1040
    End
@@ -333,23 +308,8 @@ Begin VB.PropertyPage pagNewTabIcons
       Left            =   70
       TabIndex        =   4
       Tag             =   "E"
-      Top             =   1395
+      Top             =   920
       Width           =   1250
-      Begin VB.PictureBox picImgPicture 
-         AutoRedraw      =   -1  'True
-         AutoSize        =   -1  'True
-         BackColor       =   &H00C0C0C0&
-         BorderStyle     =   0  'None
-         Height          =   600
-         Left            =   120
-         ScaleHeight     =   50
-         ScaleMode       =   3  'Pixel
-         ScaleWidth      =   50
-         TabIndex        =   5
-         TabStop         =   0   'False
-         Top             =   270
-         Width           =   600
-      End
       Begin VB.CommandButton cmdBrowsePicture 
          Caption         =   "1"
          BeginProperty Font 
@@ -363,7 +323,7 @@ Begin VB.PropertyPage pagNewTabIcons
          EndProperty
          Height          =   300
          Left            =   830
-         TabIndex        =   6
+         TabIndex        =   7
          Tag             =   "E"
          ToolTipText     =   "Browse picture"
          Top             =   270
@@ -383,20 +343,35 @@ Begin VB.PropertyPage pagNewTabIcons
          EndProperty
          Height          =   300
          Left            =   830
-         TabIndex        =   7
+         TabIndex        =   8
          Tag             =   "E"
          ToolTipText     =   "Clear picture"
          Top             =   579
          Width           =   300
+      End
+      Begin VB.PictureBox picImgPicture 
+         AutoRedraw      =   -1  'True
+         AutoSize        =   -1  'True
+         BackColor       =   &H00C0C0C0&
+         BorderStyle     =   0  'None
+         Height          =   600
+         Left            =   120
+         ScaleHeight     =   50
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   50
+         TabIndex        =   6
+         TabStop         =   0   'False
+         Top             =   270
+         Width           =   600
       End
    End
    Begin VB.Frame fraPic16 
       Caption         =   "Pic16 (96 DPI):"
       Height          =   960
       Left            =   2800
-      TabIndex        =   9
+      TabIndex        =   10
       Tag             =   "E"
-      Top             =   1375
+      Top             =   920
       Width           =   1250
       Begin VB.CommandButton cmdDeletePic16 
          Caption         =   " "
@@ -412,7 +387,7 @@ Begin VB.PropertyPage pagNewTabIcons
          EndProperty
          Height          =   300
          Left            =   836
-         TabIndex        =   12
+         TabIndex        =   13
          Tag             =   "E"
          ToolTipText     =   "Clear picture"
          Top             =   579
@@ -431,7 +406,7 @@ Begin VB.PropertyPage pagNewTabIcons
          EndProperty
          Height          =   300
          Left            =   836
-         TabIndex        =   11
+         TabIndex        =   12
          Tag             =   "E"
          ToolTipText     =   "Browse picture"
          Top             =   270
@@ -447,7 +422,7 @@ Begin VB.PropertyPage pagNewTabIcons
          ScaleHeight     =   50
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   50
-         TabIndex        =   10
+         TabIndex        =   11
          TabStop         =   0   'False
          Top             =   270
          Width           =   600
@@ -457,9 +432,9 @@ Begin VB.PropertyPage pagNewTabIcons
       Caption         =   "Pic20 (120 DPI):"
       Height          =   960
       Left            =   4100
-      TabIndex        =   13
+      TabIndex        =   14
       Tag             =   "E"
-      Top             =   1375
+      Top             =   920
       Width           =   1250
       Begin VB.CommandButton cmdDeletePic20 
          Caption         =   " "
@@ -475,7 +450,7 @@ Begin VB.PropertyPage pagNewTabIcons
          EndProperty
          Height          =   300
          Left            =   830
-         TabIndex        =   16
+         TabIndex        =   17
          Tag             =   "E"
          ToolTipText     =   "Clear picture"
          Top             =   579
@@ -494,7 +469,7 @@ Begin VB.PropertyPage pagNewTabIcons
          EndProperty
          Height          =   300
          Left            =   830
-         TabIndex        =   15
+         TabIndex        =   16
          Tag             =   "E"
          ToolTipText     =   "Browse picture"
          Top             =   270
@@ -510,7 +485,7 @@ Begin VB.PropertyPage pagNewTabIcons
          ScaleHeight     =   50
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   50
-         TabIndex        =   14
+         TabIndex        =   15
          TabStop         =   0   'False
          Top             =   270
          Width           =   600
@@ -520,10 +495,10 @@ Begin VB.PropertyPage pagNewTabIcons
       Caption         =   "Pic24 (144 DPI):"
       Height          =   960
       Left            =   5400
-      TabIndex        =   17
+      TabIndex        =   18
       Tag             =   "E"
-      Top             =   1375
-      Width           =   1250
+      Top             =   920
+      Width           =   1290
       Begin VB.CommandButton cmdDeletePic24 
          Caption         =   " "
          Enabled         =   0   'False
@@ -538,7 +513,7 @@ Begin VB.PropertyPage pagNewTabIcons
          EndProperty
          Height          =   300
          Left            =   830
-         TabIndex        =   20
+         TabIndex        =   21
          Tag             =   "E"
          ToolTipText     =   "Clear picture"
          Top             =   579
@@ -557,7 +532,7 @@ Begin VB.PropertyPage pagNewTabIcons
          EndProperty
          Height          =   300
          Left            =   830
-         TabIndex        =   19
+         TabIndex        =   20
          Tag             =   "E"
          ToolTipText     =   "Browse picture"
          Top             =   270
@@ -573,7 +548,7 @@ Begin VB.PropertyPage pagNewTabIcons
          ScaleHeight     =   50
          ScaleMode       =   3  'Pixel
          ScaleWidth      =   50
-         TabIndex        =   18
+         TabIndex        =   19
          TabStop         =   0   'False
          Top             =   270
          Width           =   600
@@ -642,10 +617,32 @@ Begin VB.PropertyPage pagNewTabIcons
       Top             =   70
       Width           =   588
    End
+   Begin VB.PictureBox picMaskColor 
+      Appearance      =   0  'Flat
+      BackColor       =   &H80000005&
+      ForeColor       =   &H80000008&
+      Height          =   270
+      Left            =   5908
+      ScaleHeight     =   252
+      ScaleWidth      =   576
+      TabIndex        =   45
+      ToolTipText     =   "MaskColor: applied to the pictures of all tabs - click to change"
+      Top             =   2345
+      Width           =   600
+   End
+   Begin VB.CheckBox chkUseMaskColor 
+      Caption         =   "UseMaskColor"
+      Height          =   270
+      Left            =   3400
+      TabIndex        =   59
+      ToolTipText     =   "UseMaskColor: applied to the pictures of all tabs"
+      Top             =   2345
+      Width           =   1500
+   End
    Begin VB.Label lblTabCaption 
       Height          =   252
       Left            =   4680
-      TabIndex        =   50
+      TabIndex        =   49
       Top             =   105
       Width           =   2452
    End
@@ -663,17 +660,26 @@ Begin VB.PropertyPage pagNewTabIcons
       EndProperty
       Height          =   252
       Left            =   3480
-      TabIndex        =   49
+      TabIndex        =   48
       Top             =   105
       Width           =   1092
    End
-   Begin VB.Label Label2 
+   Begin VB.Label lblHeadNote 
       Caption         =   $"pagNewTabIcons.pgx":0000
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   7.2
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
       ForeColor       =   &H00C00000&
-      Height          =   612
+      Height          =   400
       Left            =   144
-      TabIndex        =   48
-      Top             =   600
+      TabIndex        =   47
+      Top             =   470
       Width           =   6468
       WordWrap        =   -1  'True
    End
@@ -691,7 +697,7 @@ Begin VB.PropertyPage pagNewTabIcons
       ForeColor       =   &H000000FF&
       Height          =   336
       Left            =   2000
-      TabIndex        =   35
+      TabIndex        =   36
       Top             =   3440
       Width           =   4200
    End
@@ -700,7 +706,7 @@ Begin VB.PropertyPage pagNewTabIcons
       Caption         =   "IconAlignment:"
       Height          =   230
       Left            =   375
-      TabIndex        =   22
+      TabIndex        =   23
       Top             =   2750
       Width           =   1570
    End
@@ -709,7 +715,7 @@ Begin VB.PropertyPage pagNewTabIcons
       Caption         =   "IconTopOffset:"
       Height          =   230
       Left            =   2720
-      TabIndex        =   33
+      TabIndex        =   34
       Top             =   3820
       Width           =   1110
    End
@@ -718,7 +724,7 @@ Begin VB.PropertyPage pagNewTabIcons
       Caption         =   "IconLeftOffset:"
       Height          =   230
       Left            =   845
-      TabIndex        =   31
+      TabIndex        =   32
       Top             =   3820
       Width           =   1120
    End
@@ -728,7 +734,7 @@ Begin VB.PropertyPage pagNewTabIcons
       Caption         =   "Font size:"
       Height          =   190
       Left            =   5980
-      TabIndex        =   24
+      TabIndex        =   25
       Top             =   2750
       Width           =   680
    End
@@ -737,7 +743,7 @@ Begin VB.PropertyPage pagNewTabIcons
       Caption         =   "TabIconFont:"
       Height          =   230
       Left            =   935
-      TabIndex        =   25
+      TabIndex        =   26
       ToolTipText     =   "Each tab has its own icon font (you can have different fonts for each tab icon)"
       Top             =   3080
       Width           =   1010
@@ -757,22 +763,12 @@ Begin VB.PropertyPage pagNewTabIcons
       ForeColor       =   &H00C00000&
       Height          =   310
       Left            =   3560
-      TabIndex        =   39
+      TabIndex        =   40
       Top             =   4260
       Visible         =   0   'False
       Width           =   3300
    End
-   Begin VB.Label Label9 
-      Alignment       =   1  'Right Justify
-      Caption         =   "IconCharHex:"
-      Height          =   230
-      Left            =   810
-      TabIndex        =   36
-      Top             =   4185
-      Width           =   1130
-   End
-   Begin VB.Label lblWarningImgSizes 
-      Caption         =   "Warning: images of different tabs but same DPI are not the same size. Click here to see details."
+   Begin VB.Label lblIconCharNote 
       BeginProperty Font 
          Name            =   "Tahoma"
          Size            =   7.2
@@ -783,21 +779,88 @@ Begin VB.PropertyPage pagNewTabIcons
          Strikethrough   =   0   'False
       EndProperty
       ForeColor       =   &H000000FF&
-      Height          =   410
-      Left            =   2800
-      TabIndex        =   21
-      Top             =   2340
+      Height          =   190
+      Left            =   3560
+      TabIndex        =   56
+      Top             =   4075
       Visible         =   0   'False
-      Width           =   3840
+      Width           =   3200
+   End
+   Begin VB.Label Label9 
+      Alignment       =   1  'Right Justify
+      Caption         =   "IconCharHex:"
+      Height          =   230
+      Left            =   810
+      TabIndex        =   37
+      Top             =   4185
+      Width           =   1130
+   End
+   Begin VB.Label lblWarningImgSizes 
+      Caption         =   "Warning: images of different tabs but same DPI are not the same size. Click to see details."
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   7.2
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H000000FF&
+      Height          =   380
+      Left            =   3650
+      TabIndex        =   22
+      Top             =   1890
+      Visible         =   0   'False
+      Width           =   3120
+   End
+   Begin VB.Label lblScalePicturesForDPI 
+      Alignment       =   1  'Right Justify
+      Caption         =   "ScalePicturesForDPI:"
+      Height          =   348
+      Left            =   288
+      TabIndex        =   57
+      Top             =   2376
+      Width           =   1620
+      WordWrap        =   -1  'True
    End
    Begin VB.Label lblDPIAwarePictures 
       Alignment       =   1  'Right Justify
-      Caption         =   "DPI aware pictures:"
-      Height          =   590
-      Left            =   1680
-      TabIndex        =   8
-      Top             =   1760
-      Width           =   760
+      Caption         =   "Images for each DPI setting:"
+      Height          =   400
+      Left            =   1380
+      TabIndex        =   9
+      Top             =   1260
+      Width           =   1360
+      WordWrap        =   -1  'True
+   End
+   Begin VB.Label lblMaskColor 
+      Alignment       =   1  'Right Justify
+      Caption         =   "MaskColor:"
+      Height          =   230
+      Left            =   4948
+      TabIndex        =   46
+      Top             =   2370
+      Width           =   900
+   End
+   Begin VB.Label lblAllTabs 
+      Caption         =   "Note: DPI scaling and mask color apply to all tabs"
+      BeginProperty Font 
+         Name            =   "Tahoma"
+         Size            =   7.8
+         Charset         =   0
+         Weight          =   400
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      ForeColor       =   &H00C00000&
+      Height          =   372
+      Left            =   120
+      TabIndex        =   58
+      Top             =   2040
+      Width           =   3400
+      WordWrap        =   -1  'True
    End
    Begin VB.Label Label1 
       Alignment       =   1  'Right Justify
@@ -883,6 +946,16 @@ End Type
 Private Declare Function GetFontUnicodeRanges Lib "gdi32.dll" (ByVal hDC As LongPtr, lpGS As Any) As Long
 Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
 Private Declare Function GetGlyphIndicesW Lib "gdi32.dll" (ByVal hDC As LongPtr, ByVal lpStr As LongPtr, ByVal lpStrLen As Long, ByVal pGI As LongPtr, ByVal Flags As Long) As Long
+Private Declare Function GetFontData Lib "gdi32" (ByVal hDC As LongPtr, ByVal dwTable As Long, ByVal dwOffset As Long, ByRef lpvBuffer As Any, ByVal cbData As Long) As Long
+Private Declare Function CreateFontW Lib "gdi32" (ByVal nHeight As Long, ByVal nWidth As Long, ByVal nEscapement As Long, ByVal nOrientation As Long, ByVal nWeight As Long, ByVal nItalic As Long, ByVal nUnderline As Long, ByVal nStrikeOut As Long, ByVal nCharSet As Long, ByVal nOutPrecision As Long, ByVal nClipPrecision As Long, ByVal nQuality As Long, ByVal nPitchAndFamily As Long, ByVal lpFaceName As LongPtr) As LongPtr
+Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As LongPtr) As LongPtr
+Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As LongPtr, ByVal hObject As LongPtr) As LongPtr
+Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As LongPtr) As Long
+Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As LongPtr) As Long
+Private Declare Function GetTextFaceW Lib "gdi32" (ByVal hDC As LongPtr, ByVal nCount As Long, ByVal lpFaceName As LongPtr) As Long
+
+Private Const cEmojiFontName As String = "Segoe UI Emoji"
+Private Const EM_SETSEL As Long = &HB1&
 
 Private Type RECT
     Left As Long
@@ -917,10 +990,10 @@ Private Type T_TabDataP
     IconChar As Long
     IconLeftOffset As Long
     IconTopOffset As Long
+    IconInColor As Boolean
     Tag As String
     Data As Long
     FixedWidth As Long
-    CustomColor(16) As Long
     Key As String
 End Type
 
@@ -952,16 +1025,96 @@ Private mXMouseDown As Long
 Private mYMouseDown As Long
 Private mEnableHorizontalDragging As Boolean
 Private mEnableVerticalDragging As Boolean
-Private mTDIMode As Boolean
+' the mode itself and not just whether there is one: the cover shows different
+' settings for forms and for controls
+Private mTDIMode As NTTDIModeConstants
 Private mFontListLoaded As Boolean
 Private mSubclassed As Boolean
 Private mPPHwnd As LongPtr
 Private mDraggingSample As Boolean
 Private mMouseDown As Boolean
+Private mIconInColor As Boolean
+Private WithEvents mUniTextIconCharHex As cUniTextBox
+Attribute mUniTextIconCharHex.VB_VarHelpID = -1
+Private mUniTextIconCharHexSync As Boolean
+Private mIconCharHexHwnd As LongPtr
+Private mKeepIconCharNote As Boolean
 
 Private Sub cboIconAlignment_Click()
     If Not mLoading And Not mShowingTabData Then Changed = True
     NewTab1.IconAlignment = cboIconAlignment.ItemData(cboIconAlignment.ListIndex)
+End Sub
+
+Private Sub cboTDIFormsIconSize_Click()
+    If Not mLoading And Not mShowingTabData Then Changed = True
+    ' no preview to update: the sample is covered in TDI modes, and it is not
+    ' hosting forms anyway
+End Sub
+
+Private Sub chkIconInColor_Click()
+    Dim t As Long
+    
+    mIconInColor = (chkIconInColor.Value = vbChecked)
+    ' DoShowTabData sets the box and redraws the map itself
+    If mLoading Or mShowingTabData Then Exit Sub
+    Changed = True
+    mTabData(mTab).IconInColor = mIconInColor
+    NewTab1.TabIconInColor(mTab) = mIconInColor
+    ' Tabs with no icon yet take it along, as they take the font in CheckOtherTabsFonts
+    For t = 0 To mTabs - 1
+        If t <> mTab Then
+            If mTabData(t).IconChar = 0 Then mTabData(t).IconInColor = mIconInColor
+        End If
+    Next
+    DrawCharMapFromScrollPosition
+    If mIconCharSelected > 0 Then DrawChar mIconCharSelected, picCharSelected
+End Sub
+
+Private Sub cboScalePicturesForDPI_Click()
+    If Not mLoading And Not mShowingTabData Then Changed = True
+    NewTab1.ScalePicturesForDPI = cboScalePicturesForDPI.ItemData(cboScalePicturesForDPI.ListIndex)
+End Sub
+
+Private Sub chkUseMaskColor_Click()
+    If Not mLoading Then Changed = True
+    NewTab1.UseMaskColor = (chkUseMaskColor.Value = vbChecked)
+    picMaskColor.Enabled = (chkUseMaskColor.Value = vbChecked)
+End Sub
+
+Private Sub picMaskColor_Click()
+    PickMaskColor
+End Sub
+
+Private Sub picMaskColor_KeyDown(KeyCode As Integer, Shift As Integer)
+    If (KeyCode = vbKeySpace) Or (KeyCode = vbKeyF4) Then PickMaskColor
+End Sub
+
+Private Sub PickMaskColor()
+    Dim iSelector As New cColorSelector
+    Dim iPicked As Long
+    
+    If Not iSelector.PickColor(PropertyPage.hWnd, picMaskColor.hWnd, NewTab1.MaskColor, NewTab1.MaskColor, iPicked, False) Then Exit Sub
+    If iPicked = NewTab1.MaskColor Then Exit Sub
+    NewTab1.MaskColor = iPicked
+    Changed = True
+    ShowMaskColor
+End Sub
+
+Private Sub PutMaskColorOnTDICover(ByVal nLabelLeft As Single, ByVal nLabelWidth As Single)
+    Set chkUseMaskColor.Container = picTDICover
+    Set lblMaskColor.Container = picTDICover
+    Set picMaskColor.Container = picTDICover
+    chkUseMaskColor.Move cboTDIFormsIconSize.Left, cboTDIFormsIconSize.Top + 450
+    lblMaskColor.Move nLabelLeft, cboTDIFormsIconSize.Top + 860, nLabelWidth
+    picMaskColor.Move cboTDIFormsIconSize.Left, cboTDIFormsIconSize.Top + 830
+End Sub
+
+Private Sub ShowMaskColor()
+    Dim iSelector As New cColorSelector
+    
+    picMaskColor.BackColor = NewTab1.MaskColor
+    picMaskColor.ToolTipText = "MaskColor: " & iSelector.ColorDisplayName(NewTab1.MaskColor) & ", applied to the pictures of all tabs - click to change"
+    picMaskColor.Enabled = (chkUseMaskColor.Value = vbChecked)
 End Sub
 
 Private Sub cboTabIconFont_Click()
@@ -975,14 +1128,9 @@ Private Sub cboTabIconFont_Click()
     End If
 End Sub
 
-Private Sub cboTabIconFont_DropDown()
-    picIconFontNote.Visible = True
-End Sub
-
 Private Sub cmdBrowsePicture_Click()
     Dim iDlg As New cCommonDialog
     
-    'iDlg.Filter = "Image files (*.bmp, *.ico)|*.bmp;*.ico"
     iDlg.Filter = "Bitmap files (*.bmp)|*.bmp"
     iDlg.ShowOpen
     If Not iDlg.Canceled Then
@@ -998,14 +1146,12 @@ Private Sub cmdBrowsePicture_Click()
         End If
         On Error GoTo 0
         ShowTabData
-'        CheckImageSizes
     End If
 End Sub
 
 Private Sub cmdChangeIconFont_Click()
     Dim cDlg As New cCommonDialog
     
-    picIconFontNote.Visible = True
     Set cDlg.Font = mTabData(mTab).IconFont
     cDlg.ShowFont
     If Not cDlg.Canceled Then
@@ -1163,8 +1309,12 @@ End Sub
 
 Private Sub cmdTabNext_Click()
     mLoading = True
-    mTab = mTab + 1
-    ShowTabData
+    If mTab < UBound(mTabData) Then
+        mTab = mTab + 1
+        ShowTabData
+    Else
+        cmdTabNext.Enabled = False
+    End If
     mLoading = False
 End Sub
 
@@ -1179,8 +1329,12 @@ End Sub
 
 Private Sub cmdTabPrev_Click()
     mLoading = True
-    mTab = mTab - 1
-    ShowTabData
+    If mTab > 0 Then
+        mTab = mTab - 1
+        ShowTabData
+    Else
+        cmdTabPrev.Enabled = False
+    End If
     mLoading = False
 End Sub
 
@@ -1204,7 +1358,6 @@ End Sub
 Private Function IBSSubclass_WindowProc(ByVal hWnd As LongPtr, ByVal iMsg As Long, wParam As LongPtr, lParam As LongPtr, bConsume As Boolean) As LongPtr
     Dim iDelta As Long
     Dim iLoDWord As Long
-    'Dim iDirection As Long
     Dim iHandled As Boolean
     
     Select Case iMsg
@@ -1212,20 +1365,16 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As LongPtr, ByVal iMsg As Lon
             If (wParam And 128) = 0 Then ' if not already handled
                 If IsMouseOverCharMap Then
                     iHandled = False
-                    'RaiseEvent Message(iMsg, wParam, lParam, iHandled)
                     If iHandled Then
                         wParam = wParam Or 128
                     Else
                         CopyMemory iLoDWord, wParam, 4 ' low DWORD of wParam as a signed Long (the wheel delta lives in its high word; direct use of wParam would mangle negative deltas on 64-bit)
                         iDelta = WordHi(iLoDWord)
                         If iDelta > 1 Then
-                            'iDirection = -1
                             If scrChars.Value > scrChars.Min Then scrChars.Value = scrChars.Value - scrChars.SmallChange
                         Else
-                            'iDirection = 1
                             If scrChars.Value < scrChars.Max Then scrChars.Value = scrChars.Value + scrChars.SmallChange
                         End If
-                        'RaiseEvent MouseWheelRotation(iDirection, iHandled)
                         If iHandled Then
                             wParam = wParam Or 128
                         End If
@@ -1264,14 +1413,12 @@ Private Sub Subclass()
     Dim iInIDE As Boolean
     
     Debug.Assert MakeTrue(iInIDE)
-'    If iInIDE Then
         mPPHwnd = PropertyPage.hWnd
         If (Not mSubclassed) And (mPPHwnd <> 0) Then
             AttachMessage Me, mPPHwnd, WM_MOUSEWHEEL
             AttachMessage Me, mPPHwnd, WM_DESTROY
             mSubclassed = True
         End If
- '   End If
 End Sub
 
 Private Sub Unsubclass()
@@ -1357,7 +1504,7 @@ Private Sub NewTab1_MouseUp(Button As Integer, Shift As Integer, X As Single, Y 
 End Sub
 
 Private Sub picChar_Click(Index As Integer)
-    txtIconCharHex.Text = "&H" & Hex$(Val(picChar(Index).Tag))
+    SetIconCharHexText "&H" & Hex$(Val(picChar(Index).Tag))
 End Sub
 
 Private Sub picImgPic16_DblClick()
@@ -1424,9 +1571,16 @@ Private Sub PropertyPage_ApplyChanges()
     
     Set iSC = SelectedControls(0)
     iSC.HideAllContainedControls
-    If Not mTDIMode Then iSC.IconAlignment = cboIconAlignment.ItemData(cboIconAlignment.ListIndex)
+    If mTDIMode = ntTDIModeNone Then iSC.IconAlignment = cboIconAlignment.ItemData(cboIconAlignment.ListIndex)
+    ' no TDI guard: a TDI strip shows the form icons and scales them the same way
+    If cboScalePicturesForDPI.ListIndex > -1 Then iSC.ScalePicturesForDPI = cboScalePicturesForDPI.ItemData(cboScalePicturesForDPI.ListIndex)
+    ' likewise unguarded: the combo is seeded from the control in every mode, so
+    ' writing it back where it is not shown puts the same value in again
+    If cboTDIFormsIconSize.ListIndex > -1 Then iSC.TDIFormsIconSize = cboTDIFormsIconSize.ItemData(cboTDIFormsIconSize.ListIndex)
+    iSC.MaskColor = NewTab1.MaskColor
+    iSC.UseMaskColor = (chkUseMaskColor.Value = vbChecked)
     iTabsPrev = iSC.Tabs
-    If Not mTDIMode Then
+    If mTDIMode = ntTDIModeNone Then
         If mTabs > iSC.Tabs Then
             iSC.Tabs = mTabs
         End If
@@ -1440,7 +1594,7 @@ Private Sub PropertyPage_ApplyChanges()
         Set iSC.TabPic16(t) = mTabData(t).Pic16
         Set iSC.TabPic20(t) = mTabData(t).Pic20
         Set iSC.TabPic24(t) = mTabData(t).Pic24
-        If Not mTDIMode Then Set iSC.TabControlsNames(t) = mTabData(t).Controls
+        If mTDIMode = ntTDIModeNone Then Set iSC.TabControlsNames(t) = mTabData(t).Controls
         If mTabData(t).IconFont Is Nothing Then
             Set iSC.TabIconFont(t) = Nothing
         ElseIf FontsAreEqual(mTabData(t).IconFont, iDefaultIconFont) Then
@@ -1451,8 +1605,9 @@ Private Sub PropertyPage_ApplyChanges()
         iSC.TabIconCharHex(t) = "&H" & Hex$(mTabData(t).IconChar) & "&"
         iSC.TabIconLeftOffset(t) = mTabData(t).IconLeftOffset
         iSC.TabIconTopOffset(t) = mTabData(t).IconTopOffset
+        iSC.TabIconInColor(t) = mTabData(t).IconInColor
     Next t
-    If Not mTDIMode Then
+    If mTDIMode = ntTDIModeNone Then
         For t = mTabs To iTabsPrev - 1
             Set iSC.TabControlsNames(t) = New Collection
         Next
@@ -1462,6 +1617,21 @@ Private Sub PropertyPage_ApplyChanges()
     gPagTabsApplyTime = Timer
     gPagTabsLastSelectedTab = mTab
     Unsubclass
+End Sub
+
+Private Sub PropertyPage_Initialize()
+    lblHeadNote.Caption = "If your program is DPI aware, the Picture can be automatically scaled with the ScalePicturesForDPI property or use a different image for each DPI setting. Font icons are already DPI aware."
+    cmdDeletePicture.Caption = Chr$(&HFB)
+    cmdDeletePic16.Caption = Chr$(&HFB)
+    cmdDeletePic20.Caption = Chr$(&HFB)
+    cmdDeletePic24.Caption = Chr$(&HFB)
+    
+    Set picIconCharHexHolder.Font = PropertyPage.Font
+    picIconCharHexHolder.ScaleMode = vbPixels
+    Set mUniTextIconCharHex = New cUniTextBox
+    mIconCharHexHwnd = mUniTextIconCharHex.CreateTextBox(picIconCharHexHolder.hWnd, 0, 0, picIconCharHexHolder.ScaleWidth, picIconCharHexHolder.ScaleHeight, ES_AUTOHSCROLL Or WS_VISIBLE, WS_EX_CLIENTEDGE, "")
+    cmdRemoveIconChar.Caption = Chr$(&HFB)
+    picIconCharHexHolder.BackColor = vbWindowBackground
 End Sub
 
 Private Sub PropertyPage_Paint()
@@ -1475,29 +1645,36 @@ Private Sub PropertyPage_SelectionChanged()
     Dim iSC As NewTab
     Dim iVar As Variant
     Dim c As Long
-    Dim iAuxNT As NewTab
     
-    'Debug.Print PropertyPage.Name & " Start: " & Round(Timer, 2)
     mLoading = True
     Set iSC = SelectedControls(0)
     
-    mTDIMode = (iSC.TDIMode <> ntTDIModeNone)
+    mTDIMode = iSC.TDIMode
     
-    If mTDIMode Then
-        picTDICover1(0).Left = 0
-        picTDICover1(1).Left = 2520
-        picTDICover1(2).Left = 5400
-        picTDICover1(0).Height = cboIconAlignment.Top - picTDICover1(0).Top + cboIconAlignment.Height '+ 30
+    If mTDIMode <> ntTDIModeNone Then
+        picTDICover.Move 0, 0, PropertyPage.ScaleWidth, PropertyPage.ScaleHeight
+        picTDICover.Visible = True
+        ' In forms mode the picture is the hosted form's icon: its size is a choice, and the mask reaches
+        ' only bitmaps handed in by TDIFormsShowTabIcon; in
+        ' controls mode the pictures are still TabPicture, so ScalePicturesForDPI is what applies
+        If mTDIMode = ntTDIModeForms Then
+            lblNoteTDI.Caption = "In TDI mode forms the tab pictures are the icons of the hosted forms. Only the settings below apply. TDIFormsShowTabIcon can override the icon for one tab; the mask only affects bitmaps given there."
+            lblTDIFormsIconSize.Visible = True
+            cboTDIFormsIconSize.Visible = True
+            PutMaskColorOnTDICover lblTDIFormsIconSize.Left, lblTDIFormsIconSize.Width
+        Else
+            lblNoteTDI.Caption = "In TDI mode controls the tab pictures still come from TabPicture, set at run time. Only the settings below apply."
+            Set lblScalePicturesForDPI.Container = picTDICover
+            Set cboScalePicturesForDPI.Container = picTDICover
+            ' the full name on the cover, where there is room for it
+            lblScalePicturesForDPI.Caption = "ScalePicturesForDPI:"
+            lblScalePicturesForDPI.Alignment = vbRightJustify
+            lblScalePicturesForDPI.Move lblTDIFormsIconSize.Left - 300, lblTDIFormsIconSize.Top, lblTDIFormsIconSize.Width + 300
+            cboScalePicturesForDPI.Move cboTDIFormsIconSize.Left, cboTDIFormsIconSize.Top, cboTDIFormsIconSize.Width
+            PutMaskColorOnTDICover lblScalePicturesForDPI.Left, lblScalePicturesForDPI.Width
+        End If
+        picTDICover.ZOrder
     End If
-    
-    For c = 0 To picTDICover1.Count - 1
-        picTDICover1(c).Visible = mTDIMode
-    Next
-    fraPicture.Enabled = Not mTDIMode
-    fraPic16.Enabled = Not mTDIMode
-    fraPic20.Enabled = Not mTDIMode
-    fraPic24.Enabled = Not mTDIMode
-    cmdRemoveIconChar.Visible = Not mTDIMode
     
     If TypeName(SelectedControls(0)) <> "NewTab" Then Exit Sub
     
@@ -1512,6 +1689,20 @@ Private Sub PropertyPage_SelectionChanged()
     cboIconAlignment.AddItem ntIconAlignAtTop & " - ntIconAlignAtTop": cboIconAlignment.ItemData(cboIconAlignment.NewIndex) = ntIconAlignAtTop
     cboIconAlignment.AddItem ntIconAlignAtBottom & " - ntIconAlignAtBottom": cboIconAlignment.ItemData(cboIconAlignment.NewIndex) = ntIconAlignAtBottom
     
+    cboTDIFormsIconSize.Clear
+    cboTDIFormsIconSize.AddItem ntTDIFormsIconNative & " - ntTDIFormsIconNative": cboTDIFormsIconSize.ItemData(cboTDIFormsIconSize.NewIndex) = ntTDIFormsIconNative
+    cboTDIFormsIconSize.AddItem ntTDIFormsIcon16 & " - ntTDIFormsIcon16": cboTDIFormsIconSize.ItemData(cboTDIFormsIconSize.NewIndex) = ntTDIFormsIcon16
+    cboTDIFormsIconSize.AddItem ntTDIFormsIcon20 & " - ntTDIFormsIcon20": cboTDIFormsIconSize.ItemData(cboTDIFormsIconSize.NewIndex) = ntTDIFormsIcon20
+    cboTDIFormsIconSize.AddItem ntTDIFormsIcon24 & " - ntTDIFormsIcon24": cboTDIFormsIconSize.ItemData(cboTDIFormsIconSize.NewIndex) = ntTDIFormsIcon24
+    cboTDIFormsIconSize.AddItem ntTDIFormsIcon32 & " - ntTDIFormsIcon32": cboTDIFormsIconSize.ItemData(cboTDIFormsIconSize.NewIndex) = ntTDIFormsIcon32
+    cboTDIFormsIconSize.AddItem ntTDIFormsIcon48 & " - ntTDIFormsIcon48": cboTDIFormsIconSize.ItemData(cboTDIFormsIconSize.NewIndex) = ntTDIFormsIcon48
+    
+    cboScalePicturesForDPI.Clear
+    cboScalePicturesForDPI.AddItem "Disabled": cboScalePicturesForDPI.ItemData(cboScalePicturesForDPI.NewIndex) = ntScalePicturesDisabled
+    cboScalePicturesForDPI.AddItem "Smooth": cboScalePicturesForDPI.ItemData(cboScalePicturesForDPI.NewIndex) = ntScalePicturesSmooth
+    cboScalePicturesForDPI.AddItem "Crisp": cboScalePicturesForDPI.ItemData(cboScalePicturesForDPI.NewIndex) = ntScalePicturesCrisp
+    cboScalePicturesForDPI.AddItem "Balanced": cboScalePicturesForDPI.ItemData(cboScalePicturesForDPI.NewIndex) = ntScalePicturesBalanced
+    
     Set mDefaultIconFont = New StdFont
     mDefaultIconFont.Name = cPropDef_IconFontName
     mDefaultIconFont.Size = cPropDef_IconFontSize
@@ -1521,6 +1712,7 @@ Private Sub PropertyPage_SelectionChanged()
     ReDim mTabData(mTabs - 1)
     NewTab1.RightToLeft = iSC.RightToLeft
     NewTab1.CloseButton = iSC.CloseButton
+    NewTab1.CloseButtonPosition = iSC.CloseButtonPosition
     NewTab1.CaptionAlignment = iSC.CaptionAlignment
     NewTab1.Tabs = iSC.Tabs
     For t = 0 To mTabs - 1
@@ -1532,6 +1724,7 @@ Private Sub PropertyPage_SelectionChanged()
         mTabData(t).IconChar = Val(iSC.TabIconCharHex(t) & "&")
         mTabData(t).IconLeftOffset = iSC.TabIconLeftOffset(t)
         mTabData(t).IconTopOffset = iSC.TabIconTopOffset(t)
+        mTabData(t).IconInColor = iSC.TabIconInColor(t)
         Set mTabData(t).Picture = iSC.TabPicture(t)
         Set mTabData(t).Pic16 = iSC.TabPic16(t)
         Set mTabData(t).Pic20 = iSC.TabPic20(t)
@@ -1540,9 +1733,13 @@ Private Sub PropertyPage_SelectionChanged()
         For Each iVar In iSC.TabControlsNames(t)
             mTabData(t).Controls.Add iVar
         Next
-        For c = 0 To 16
-            mTabData(t).CustomColor(c) = iSC.TabCustomColor(t, c)
-            NewTab1.TabCustomColor(t, c) = mTabData(t).CustomColor(c)
+        For c = 0 To ntCCFlatTabBorderColorInactive
+            ' straight into the preview: these colors are not edited here. The state travels with them
+            If iSC.TabCustomColorIsSet(t, c) Then
+                NewTab1.TabCustomColor(t, c) = iSC.TabCustomColor(t, c)
+            Else
+                NewTab1.TabCustomColor(t, c) = -1
+            End If
         Next
         NewTab1.TabCaption(t) = iSC.TabCaption(t)
         NewTab1.TabEnabled(t) = iSC.TabEnabled(t)
@@ -1554,6 +1751,7 @@ Private Sub PropertyPage_SelectionChanged()
         NewTab1.TabIconCharHex(t) = iSC.TabIconCharHex(t)
         NewTab1.TabIconLeftOffset(t) = iSC.TabIconLeftOffset(t)
         NewTab1.TabIconTopOffset(t) = iSC.TabIconTopOffset(t)
+        NewTab1.TabIconInColor(t) = iSC.TabIconInColor(t)
     Next t
     If mTabs > 0 Then
         Set mLastIconFont = CloneFont(iSC.TabIconFont(mTabs - 1))
@@ -1561,20 +1759,23 @@ Private Sub PropertyPage_SelectionChanged()
         Set mLastIconFont = CloneFont(mDefaultIconFont)
     End If
     
-    Set iAuxNT = NewTab1
-    
-    If iSC.TDIMode = ntTDIModeForms Then
-        iAuxNT.IsTDIFormsSampleInPropertyPage = True
-        picIconFontNote.Width = PropertyPage.ScaleWidth - picIconFontNote.Left
-        lblIconFontNote.Width = picIconFontNote.ScaleWidth
-        lblIconFontNote.Caption = "This icon setting is for the first tab only, for forms tabs use the TDIFormsShowTabIcon event, parameters UseIconFont, IconFont, etc."
-        picIconFontNote.Visible = True
-    End If
-    
     SelectInComboByItemData cboIconAlignment, iSC.IconAlignment
+    SelectInComboByItemData cboScalePicturesForDPI, iSC.ScalePicturesForDPI
+    NewTab1.MaskColor = iSC.MaskColor
+    NewTab1.UseMaskColor = iSC.UseMaskColor
+    chkUseMaskColor.Value = IIf(iSC.UseMaskColor, vbChecked, vbUnchecked)
+    ShowMaskColor
+    chkIconInColor.Enabled = ColorGlyphsSupported
+    SelectInComboByItemData cboTDIFormsIconSize, iSC.TDIFormsIconSize
     
-    NewTab1.Width = iSC.Width
-    NewTab1.Height = iSC.Height
+    Select Case iSC.TabOrientation
+        Case ssTabOrientationRight, ssTabOrientationLeft, ntTabOrientationRightBottom, ntTabOrientationLeftTop
+            NewTab1.Width = iSC.Height
+            NewTab1.Height = iSC.Width
+        Case Else
+            NewTab1.Width = iSC.Width
+            NewTab1.Height = iSC.Height
+    End Select
     NewTab1.Left = 0
     
     If ((Timer - gPagTabsApplyTime) < 3) And (gPagTabsApplyTime <> 0) Then
@@ -1584,13 +1785,11 @@ Private Sub PropertyPage_SelectionChanged()
     End If
     
     CopyControlProperties iSC, NewTab1
-    If mTDIMode Then NewTab1.TabWidthStyle = ntTWTabCaptionWidthFillRows
     ShowTabData
     CheckImageSizes
     CheckImageSizes
     scrChars.Move picCharMap.ScaleWidth - scrChars.Width, 0, scrChars.Width, picCharMap.ScaleHeight
     
-    'Debug.Print PropertyPage.Name & " End: " & Round(Timer, 2)
     Subclass
     mLoading = False
 End Sub
@@ -1601,8 +1800,7 @@ End Sub
 
 Private Sub DoShowTabData()
     Dim t As Long
-    Dim iSS As Long
-    Dim iTop As Long
+    Dim iHexText As String
     
     If mShowingTabData Then Exit Sub
     If tmrRestoreSampleContainer.Enabled Then tmrRestoreSampleContainer_Timer
@@ -1656,16 +1854,17 @@ Private Sub DoShowTabData()
         cboTabIconFont.ListIndex = 0
     End If
     mIconCharSelected = mTabData(mTab).IconChar
+    chkIconInColor.Value = IIf(mTabData(t).IconInColor, vbChecked, vbUnchecked)
+    mIconInColor = mTabData(t).IconInColor
     
     If mTabData(t).IconChar = 0 Then
-        txtIconCharHex.Text = "&H"
+        If mUniTextIconCharHex.Text <> "&H" Then SetIconCharHexText "&H"
         cmdRemoveIconChar.Enabled = False
         picCharSelected.Cls
         DrawCharMapFromScrollPosition
     Else
-        iSS = txtIconCharHex.SelStart
-        txtIconCharHex.Text = "&H" & Hex$(mTabData(t).IconChar)
-        txtIconCharHex.SelStart = iSS
+        iHexText = "&H" & Hex$(mTabData(t).IconChar)
+        If StrComp(mUniTextIconCharHex.Text, iHexText, vbTextCompare) <> 0 Then SetIconCharHexText iHexText
         cmdRemoveIconChar.Enabled = True
         If Not picCharSelected.Font Is mTabData(mTab).IconFont Then
             Set picCharSelected.Font = mTabData(mTab).IconFont
@@ -1689,32 +1888,28 @@ Private Sub DoShowTabData()
     NewTab1.TabIconCharHex(t) = "&H" & Hex$(mTabData(t).IconChar) & "&"
     NewTab1.TabIconLeftOffset(t) = mTabData(t).IconLeftOffset
     NewTab1.TabIconTopOffset(t) = mTabData(t).IconTopOffset
+    NewTab1.TabIconInColor(t) = mTabData(t).IconInColor
     
     If NewTab1.Width < picCharMap.Width Then
-        NewTab1.Left = (picCharMap.Width - NewTab1.Width) / 2
+        NewTab1.Left = (PropertyPage.ScaleWidth - NewTab1.Width) / 2
     End If
     NewTab1.ToolTipText = ""
     If NewTab1.Width > PropertyPage.ScaleWidth Then
         mEnableHorizontalDragging = True
         NewTab1.ToolTipText = "Drag to move the tab control and see other tabs"
     End If
-    If (NewTab1.Height - NewTab1.ClientHeight) > 800 Then
+    If PreviewNeedsVerticalDrag(NewTab1, picSampleContainer.ScaleHeight) Then
         mEnableVerticalDragging = True
         NewTab1.ToolTipText = "Drag to move the tab control and see other tabs"
     End If
     
-    If NewTab1.Rows = 1 Then
-        NewTab1.Top = 0
-    Else
-        iTop = picSampleContainer.ScaleHeight - (NewTab1.GetTabTop(NewTab1.TabSel) + NewTab1.GetTabHeight(NewTab1.TabSel))
-        If iTop > 0 Then iTop = 0
-        NewTab1.Top = iTop
-    End If
+    NewTab1.Top = PreviewTop(NewTab1, picSampleContainer.ScaleHeight)
     
     mShowingTabData = False
 End Sub
 
 Private Sub PropertyPage_Terminate()
+    Set mUniTextIconCharHex = Nothing
     Unsubclass
 End Sub
 
@@ -1786,7 +1981,7 @@ End Sub
 
 Private Sub txtTab_Change()
     If NewTab1.TabVisible(Val(txtTab.Text)) Then NewTab1.TabSel = Val(txtTab.Text)
-    If Not mLoading Then Changed = True
+    If Not mLoading And Not mShowingTabData Then Changed = True
 End Sub
 
 Private Function WindowsUnderMouse() As LongPtr
@@ -1826,13 +2021,17 @@ Private Sub CheckImageSizes()
     Dim iStrImgSize As String
     Dim iStrImgSize_Tab As Long
     Dim iStr As String
+    Dim iAuxNT As NewTab
     
+    ' Typed as NewTab and not used through NewTab1 directly, because the extender the container
+    ' wraps the control in does not publish Friend members, and pScaleX is one
+    Set iAuxNT = NewTab1
     mStrImagesDifferences = ""
     
     iStrImgSize = ""
     For t = 0 To mTabs - 1
         If Not mTabData(t).Pic16 Is Nothing Then
-            iStr = Round(PropertyPage.ScaleX(mTabData(t).Pic16.Width, vbHimetric, vbPixels)) & "x" & Round(PropertyPage.ScaleY(mTabData(t).Pic16.Height, vbHimetric, vbPixels))
+            iStr = Round(iAuxNT.pScaleX(mTabData(t).Pic16.Width, vbHimetric, vbPixels)) & "x" & Round(iAuxNT.pScaleY(mTabData(t).Pic16.Height, vbHimetric, vbPixels))
             If iStrImgSize = "" Then
                 iStrImgSize = iStr
                 iStrImgSize_Tab = t
@@ -1846,7 +2045,7 @@ Private Sub CheckImageSizes()
     iStrImgSize = ""
     For t = 0 To mTabs - 1
         If Not mTabData(t).Pic20 Is Nothing Then
-            iStr = Round(PropertyPage.ScaleX(mTabData(t).Pic20.Width, vbHimetric, vbPixels)) & "x" & Round(PropertyPage.ScaleY(mTabData(t).Pic20.Height, vbHimetric, vbPixels))
+            iStr = Round(iAuxNT.pScaleX(mTabData(t).Pic20.Width, vbHimetric, vbPixels)) & "x" & Round(iAuxNT.pScaleY(mTabData(t).Pic20.Height, vbHimetric, vbPixels))
             If iStrImgSize = "" Then
                 iStrImgSize = iStr
                 iStrImgSize_Tab = t
@@ -1860,7 +2059,7 @@ Private Sub CheckImageSizes()
     iStrImgSize = ""
     For t = 0 To mTabs - 1
         If Not mTabData(t).Pic24 Is Nothing Then
-            iStr = Round(PropertyPage.ScaleX(mTabData(t).Pic24.Width, vbHimetric, vbPixels)) & "x" & Round(PropertyPage.ScaleY(mTabData(t).Pic24.Height, vbHimetric, vbPixels))
+            iStr = Round(iAuxNT.pScaleX(mTabData(t).Pic24.Width, vbHimetric, vbPixels)) & "x" & Round(iAuxNT.pScaleY(mTabData(t).Pic24.Height, vbHimetric, vbPixels))
             If iStrImgSize = "" Then
                 iStrImgSize = iStr
                 iStrImgSize_Tab = t
@@ -1907,27 +2106,265 @@ Private Sub tmrShowTabData_Timer()
     DoShowTabData
 End Sub
 
-Private Sub txtIconCharHex_Change()
-    If Left$(txtIconCharHex.Text, 6) = "&HFFFF" Then
-        txtIconCharHex.Text = "&H" & Mid$(txtIconCharHex.Text, 7)
-    End If
-    If (Not mLoading) And (Not mShowingTabData) Then
-        Changed = True
-        mTabData(mTab).IconChar = Val(txtIconCharHex.Text & "&")
-        mIconCharSelected = mTabData(mTab).IconChar
-        If mTabData(mTab).IconChar > 0 Then
-            If Not picCharSelected.Font Is mTabData(mTab).IconFont Then
-                Set picCharSelected.Font = mTabData(mTab).IconFont
-            End If
-            DrawChar mTabData(mTab).IconChar, picCharSelected
-            cmdRemoveIconChar.Enabled = True
-        Else
-            picCharSelected.Cls
-            cmdRemoveIconChar.Enabled = False
-        End If
-        ShowTabData
+Private Sub picIconCharHexHolder_GotFocus()
+    If Not mUniTextIconCharHexSync Then
+        mUniTextIconCharHexSync = True
+        mUniTextIconCharHex.SetFocus
     End If
 End Sub
+
+Private Sub mUniTextIconCharHex_GotFocus()
+    If Not mUniTextIconCharHexSync Then picIconCharHexHolder.SetFocus
+End Sub
+
+Private Sub mUniTextIconCharHex_LostFocus()
+    mUniTextIconCharHexSync = False
+End Sub
+
+Private Sub SetIconCharHexText(ByVal nText As String)
+    mUniTextIconCharHex.Text = nText
+    SendMessage mIconCharHexHwnd, EM_SETSEL, Len(nText), Len(nText)
+End Sub
+
+' The box holds the hex code. Anything else in it (pasted, or typed with the emoji panel) is taken
+' as the character itself and replaced by its code.
+Private Sub mUniTextIconCharHex_Change()
+    Dim iText As String
+    Dim iRest As String
+    Dim iPos As Long
+    Dim iCode As Long
+    Dim iCharCode As Long
+    Dim iWantsEmoji As Boolean
+    Dim iDropped As Boolean
+    
+    iText = mUniTextIconCharHex.Text
+    If (Len(iText) = 10) And (Left$(iText, 6) = "&HFFFF") Then
+        SetIconCharHexText "&H" & Mid$(iText, 7)
+        Exit Sub
+    End If
+    If Not mKeepIconCharNote Then lblIconCharNote.Visible = False
+    If mLoading Or mShowingTabData Then Exit Sub
+    If Len(iText) > 0 Then
+        ' typed input delivers a surrogate pair as two changes: wait for the second half
+        iCode = AscW(Right$(iText, 1)) And &HFFFF&
+        If (iCode >= &HD800&) And (iCode <= &HDBFF&) Then Exit Sub
+    End If
+    
+    iRest = iText
+    If UCase$(Left$(iRest, 2)) = "&H" Then iRest = Mid$(iRest, 3)
+    If Right$(iRest, 1) = "&" Then iRest = Left$(iRest, Len(iRest) - 1)
+    If iRest Like "*[!0-9A-Fa-f]*" Then
+        iPos = 1
+        Do While iPos <= Len(iRest)
+            iCode = CodePointAt(iRest, iPos)
+            Select Case iCode
+                Case Is <= 32, 48 To 57, 65 To 70, 97 To 102, &HFE0E&
+                Case &HFE0F&
+                    ' variation selector: asks for the emoji drawing of the previous character
+                    iWantsEmoji = True
+                Case Else
+                    If iCharCode = 0 Then
+                        iCharCode = iCode
+                    Else
+                        iDropped = True
+                    End If
+            End Select
+        Loop
+        UseEnteredIconChar iCharCode, iWantsEmoji, iDropped
+        Exit Sub
+    End If
+    Changed = True
+    mTabData(mTab).IconChar = Val("&H" & Left$(iRest, 6) & "&")
+    mIconCharSelected = mTabData(mTab).IconChar
+    If mTabData(mTab).IconChar > 0 Then
+        If Not picCharSelected.Font Is mTabData(mTab).IconFont Then
+            Set picCharSelected.Font = mTabData(mTab).IconFont
+        End If
+        DrawChar mTabData(mTab).IconChar, picCharSelected
+        cmdRemoveIconChar.Enabled = True
+    Else
+        picCharSelected.Cls
+        cmdRemoveIconChar.Enabled = False
+    End If
+    ShowTabData
+End Sub
+
+Private Sub UseEnteredIconChar(ByVal nCharCode As Long, ByVal nWantsEmoji As Boolean, ByVal nDropped As Boolean)
+    Dim iFontName As String
+    Dim iNote As String
+    Dim t As Long
+    
+    If nCharCode = 0 Then
+        SetIconCharHexText "&H" & IIf(mTabData(mTab).IconChar = 0, "", Hex$(mTabData(mTab).IconChar))
+        Exit Sub
+    End If
+    If Not nWantsEmoji Then nWantsEmoji = IsEmojiPresentation(nCharCode)
+    iFontName = FindFontForChar(nCharCode, mTabData(mTab).IconFont.Name, nWantsEmoji)
+    If iFontName = "" Then
+        iNote = "No installed font was found for this character."
+    ElseIf StrComp(iFontName, mTabData(mTab).IconFont.Name, vbTextCompare) <> 0 Then
+        mTabData(mTab).IconFont.Name = iFontName
+        If (iFontName = cEmojiFontName) And ColorGlyphsSupported Then
+            mTabData(mTab).IconInColor = True
+            For t = 0 To mTabs - 1
+                If mTabData(t).IconChar = 0 Then mTabData(t).IconInColor = True
+            Next
+        End If
+        CheckOtherTabsFonts
+    End If
+    If nDropped Then iNote = Trim$("Only the first character was used. " & iNote)
+    lblIconCharNote.Caption = iNote
+    lblIconCharNote.Visible = (iNote <> "")
+    mKeepIconCharNote = True
+    SetIconCharHexText "&H" & Hex$(nCharCode)
+    mKeepIconCharNote = False
+End Sub
+
+' Returns the name of an installed font that has the character, or "" when none was found.
+' The place to ask DirectWrite (IDWriteFontFallback) when the list comes up empty.
+Private Function FindFontForChar(ByVal nCharCode As Long, ByVal nCurrentFontName As String, ByVal nWantsEmoji As Boolean) As String
+    Dim iCandidates As Variant
+    Dim c As Long
+    
+    If nWantsEmoji Then
+        If FontHasChar(cEmojiFontName, nCharCode) Then
+            FindFontForChar = cEmojiFontName
+            Exit Function
+        End If
+    End If
+    If FontHasChar(nCurrentFontName, nCharCode) Then
+        FindFontForChar = nCurrentFontName
+        Exit Function
+    End If
+    ' Private use area: the same code is a different drawing in every icon font, nothing to detect
+    If ((nCharCode >= &HE000&) And (nCharCode <= &HF8FF&)) Or (nCharCode >= &HF0000) Then Exit Function
+    
+    iCandidates = Array("Segoe UI Symbol", "Segoe UI", cEmojiFontName, "Cambria Math", "Yu Gothic UI", "Microsoft YaHei UI", "Malgun Gothic", "Microsoft JhengHei UI", "Nirmala UI", "Leelawadee UI", "Ebrima", "Gadugi")
+    For c = 0 To UBound(iCandidates)
+        If FontHasChar(iCandidates(c), nCharCode) Then
+            FindFontForChar = iCandidates(c)
+            Exit Function
+        End If
+    Next
+End Function
+
+Private Function FontHasChar(ByVal nFontName As String, ByVal nCharCode As Long) As Boolean
+    Const GGI_MARK_NONEXISTING_GLYPHS As Long = &H1
+    Const DEFAULT_CHARSET As Long = 1
+    Dim iDC As LongPtr
+    Dim iFont As LongPtr
+    Dim iFontPrev As LongPtr
+    Dim iFace As String
+    Dim iStr As String
+    Dim iGlyph As Integer
+    
+    If nFontName = "" Then Exit Function
+    iDC = CreateCompatibleDC(0)
+    If iDC = 0 Then Exit Function
+    iFont = CreateFontW(-16, 0, 0, 0, 400, 0, 0, 0, DEFAULT_CHARSET, 0, 0, 0, 0, StrPtr(nFontName))
+    If iFont <> 0 Then
+        iFontPrev = SelectObject(iDC, iFont)
+        ' a font that is not installed is silently replaced by another one
+        iFace = String$(64, vbNullChar)
+        GetTextFaceW iDC, 64, StrPtr(iFace)
+        iFace = Left$(iFace, InStr(iFace, vbNullChar) - 1)
+        If StrComp(iFace, nFontName, vbTextCompare) = 0 Then
+            If nCharCode <= &HFFFF& Then
+                iStr = ChrW$(nCharCode)
+                iGlyph = -1
+                GetGlyphIndicesW iDC, StrPtr(iStr), 1, VarPtr(iGlyph), GGI_MARK_NONEXISTING_GLYPHS
+                FontHasChar = (iGlyph <> -1)
+            Else
+                ' GetGlyphIndicesW does not handle surrogate pairs
+                FontHasChar = FontMapsCharCmap12(iDC, nCharCode)
+            End If
+        End If
+        SelectObject iDC, iFontPrev
+        DeleteObject iFont
+    End If
+    DeleteDC iDC
+End Function
+
+Private Function FontMapsCharCmap12(ByVal nHdc As LongPtr, ByVal nCharCode As Long) As Boolean
+    Const cTagCmap As Long = &H70616D63
+    Const GDI_ERROR As Long = &HFFFFFFFF
+    Dim iSize As Long
+    Dim iData() As Byte
+    Dim iNumTables As Long
+    Dim iRec As Long
+    Dim iPlatform As Long
+    Dim iEncoding As Long
+    Dim iSubOffset As Long
+    Dim iTableOffset As Long
+    Dim iNumGroups As Long
+    Dim iGroup As Long
+    Dim iPos As Long
+    Dim iStartChar As Long
+    
+    iSize = GetFontData(nHdc, cTagCmap, 0, ByVal 0&, 0)
+    If (iSize = GDI_ERROR) Or (iSize < 4) Then Exit Function
+    ReDim iData(iSize - 1)
+    If GetFontData(nHdc, cTagCmap, 0, iData(0), iSize) <> iSize Then Exit Function
+    
+    iNumTables = BEWord(iData, 2)
+    iTableOffset = -1
+    For iRec = 0 To iNumTables - 1
+        iPos = 4 + iRec * 8
+        If (iPos + 8) > iSize Then Exit Function
+        iPlatform = BEWord(iData, iPos)
+        iEncoding = BEWord(iData, iPos + 2)
+        iSubOffset = BEDWord(iData, iPos + 4)
+        If ((iPlatform = 3) And (iEncoding = 10)) Or ((iPlatform = 0) And ((iEncoding = 4) Or (iEncoding = 6))) Then
+            If (iSubOffset + 16) <= iSize Then
+                If BEWord(iData, iSubOffset) = 12 Then
+                    iTableOffset = iSubOffset
+                    Exit For
+                End If
+            End If
+        End If
+    Next
+    If iTableOffset = -1 Then Exit Function
+    
+    iNumGroups = BEDWord(iData, iTableOffset + 12)
+    If (iNumGroups <= 0) Or ((iTableOffset + 16 + iNumGroups * 12) > iSize) Then Exit Function
+    For iGroup = 0 To iNumGroups - 1
+        iPos = iTableOffset + 16 + iGroup * 12
+        iStartChar = BEDWord(iData, iPos)
+        If (nCharCode >= iStartChar) And (nCharCode <= BEDWord(iData, iPos + 4)) Then
+            FontMapsCharCmap12 = (BEDWord(iData, iPos + 8) + (nCharCode - iStartChar)) <> 0
+            Exit Function
+        End If
+    Next
+End Function
+
+' The characters Windows draws as emoji without being asked to (Unicode Emoji_Presentation)
+Private Function IsEmojiPresentation(ByVal nCharCode As Long) As Boolean
+    Select Case nCharCode
+        Case Is >= &H1F000
+            IsEmojiPresentation = True
+        Case &H231A& To &H231B&, &H23E9& To &H23EC&, &H23F0&, &H23F3&, &H25FD& To &H25FE&, &H2614& To &H2615&, &H2648& To &H2653&, &H267F&, &H2693&, &H26A1&, &H26AA& To &H26AB&, &H26BD& To &H26BE&, &H26C4& To &H26C5&, &H26CE&, &H26D4&, &H26EA&, &H26F2& To &H26F3&, &H26F5&, &H26FA&, &H26FD&
+            IsEmojiPresentation = True
+        Case &H2705&, &H270A& To &H270B&, &H2728&, &H274C&, &H274E&, &H2753& To &H2755&, &H2757&, &H2795& To &H2797&, &H27B0&, &H27BF&, &H2B1B& To &H2B1C&, &H2B50&, &H2B55&
+            IsEmojiPresentation = True
+    End Select
+End Function
+
+' Reads the code point at nPos and moves nPos past it
+Private Function CodePointAt(nText As String, nPos As Long) As Long
+    Dim iHigh As Long
+    Dim iLow As Long
+    
+    iHigh = AscW(Mid$(nText, nPos, 1)) And &HFFFF&
+    nPos = nPos + 1
+    CodePointAt = iHigh
+    If (iHigh >= &HD800&) And (iHigh <= &HDBFF&) And (nPos <= Len(nText)) Then
+        iLow = AscW(Mid$(nText, nPos, 1)) And &HFFFF&
+        If (iLow >= &HDC00&) And (iLow <= &HDFFF&) Then
+            CodePointAt = &H10000 + (iHigh - &HD800&) * &H400& + (iLow - &HDC00&)
+            nPos = nPos + 1
+        End If
+    End If
+End Function
 
 Private Function SelectInCombo(nCombo As Control, nListItem As String) As Boolean
     Dim c As Long
@@ -2065,6 +2502,10 @@ Private Sub EnsureCharPicsAndFontDataReady()
     If iStr <> mLastGetIconFontString Then
         PrepareIconFontData
         PrepareCharPics
+        ' the range of the last map drawn belongs to the previous font; left there, it can claim
+        ' the selected character is already in view and DoScrollCharMapToSelected does not scroll
+        mFirstCharInMap = -1
+        mLastCharInMap = -1
         mLastGetIconFontString = iStr
     End If
 End Sub
@@ -2097,36 +2538,126 @@ Private Sub PrepareIconFontData()
     iStr = ChrU(32)
     GetGlyphIndicesW picCharSelected.hDC, StrPtr(iStr), Len(iStr), VarPtr(mSpaceGlyph), 0
     
-    mGlyphSet = GetGlyphSet(picCharSelected.hDC)
     mCharCount = 0
-    ub = 2000
-    ReDim mChars(ub)
-    With mGlyphSet
-        'For r = -1 To .cRanges - 1
-        For r = 0 To .cRanges - 1
-            With .ranges(r)
-                If .wcLow < 0 Then
-                    iLow = .wcLow And &HFFFF&
-                Else
-                    iLow = .wcLow
-                End If
-                For g = iLow To iLow + .cGlyphs - 1
-                    If (g >= -1) Then
-                        If IsGlyphValid(g, picCharSelected.hDC) Then
-                            mChars(mCharCount) = g
-                            mCharCount = mCharCount + 1
-                            If mCharCount > ub Then
-                                ub = ub + 2000
-                                ReDim Preserve mChars(ub)
+    If Not LoadCharsFromCmap12(picCharSelected.hDC) Then
+        mGlyphSet = GetGlyphSet(picCharSelected.hDC)
+        ub = 2000
+        ReDim mChars(ub)
+        With mGlyphSet
+            For r = 0 To .cRanges - 1
+                With .ranges(r)
+                    If .wcLow < 0 Then
+                        iLow = .wcLow And &HFFFF&
+                    Else
+                        iLow = .wcLow
+                    End If
+                    For g = iLow To iLow + .cGlyphs - 1
+                        If (g >= -1) Then
+                            If IsGlyphValid(g, picCharSelected.hDC) Then
+                                mChars(mCharCount) = g
+                                mCharCount = mCharCount + 1
+                                If mCharCount > ub Then
+                                    ub = ub + 2000
+                                    ReDim Preserve mChars(ub)
+                                End If
                             End If
                         End If
-                    End If
-                Next
-            End With
-        Next
-    End With
+                    Next
+                End With
+            Next
+        End With
+    End If
     ReDim Preserve mChars(mCharCount - 1)
 End Sub
+
+' GetFontUnicodeRanges only knows 16-bit ranges, so characters above &HFFFF never reached the
+' map. The format 12 subtable of the font's cmap lists every code point the font maps, in 32
+' bits. Fonts without one - most of the classic ones - return False and take the old path
+Private Function LoadCharsFromCmap12(ByVal nHdc As LongPtr) As Boolean
+    Const cTagCmap As Long = &H70616D63
+    Const GDI_ERROR As Long = &HFFFFFFFF
+    Dim iSize As Long
+    Dim iData() As Byte
+    Dim iNumTables As Long
+    Dim iRec As Long
+    Dim iPlatform As Long
+    Dim iEncoding As Long
+    Dim iSubOffset As Long
+    Dim iTableOffset As Long
+    Dim iNumGroups As Long
+    Dim iGroup As Long
+    Dim iPos As Long
+    Dim iStartChar As Long
+    Dim iEndChar As Long
+    Dim iStartGlyph As Long
+    Dim iCharCode As Long
+    Dim iGlyph As Long
+    Dim iTotal As Long
+    
+    iSize = GetFontData(nHdc, cTagCmap, 0, ByVal 0&, 0)
+    If (iSize = GDI_ERROR) Or (iSize < 4) Then Exit Function
+    ReDim iData(iSize - 1)
+    If GetFontData(nHdc, cTagCmap, 0, iData(0), iSize) <> iSize Then Exit Function
+    
+    iNumTables = BEWord(iData, 2)
+    iTableOffset = -1
+    For iRec = 0 To iNumTables - 1
+        iPos = 4 + iRec * 8
+        If (iPos + 8) > iSize Then Exit Function
+        iPlatform = BEWord(iData, iPos)
+        iEncoding = BEWord(iData, iPos + 2)
+        iSubOffset = BEDWord(iData, iPos + 4)
+        If ((iPlatform = 3) And (iEncoding = 10)) Or ((iPlatform = 0) And ((iEncoding = 4) Or (iEncoding = 6))) Then
+            If (iSubOffset + 16) <= iSize Then
+                If BEWord(iData, iSubOffset) = 12 Then
+                    iTableOffset = iSubOffset
+                    Exit For
+                End If
+            End If
+        End If
+    Next
+    If iTableOffset = -1 Then Exit Function
+    
+    iNumGroups = BEDWord(iData, iTableOffset + 12)
+    If (iNumGroups <= 0) Or ((iTableOffset + 16 + iNumGroups * 12) > iSize) Then Exit Function
+    
+    ' sized once: a CJK font can map tens of thousands of characters
+    For iGroup = 0 To iNumGroups - 1
+        iPos = iTableOffset + 16 + iGroup * 12
+        iStartChar = BEDWord(iData, iPos)
+        iEndChar = BEDWord(iData, iPos + 4)
+        If (iEndChar < iStartChar) Or (iEndChar > &H10FFFF) Then Exit Function
+        iTotal = iTotal + (iEndChar - iStartChar + 1)
+    Next
+    ReDim mChars(iTotal - 1)
+    
+    mCharCount = 0
+    For iGroup = 0 To iNumGroups - 1
+        iPos = iTableOffset + 16 + iGroup * 12
+        iStartChar = BEDWord(iData, iPos)
+        iEndChar = BEDWord(iData, iPos + 4)
+        iStartGlyph = BEDWord(iData, iPos + 8)
+        For iCharCode = iStartChar To iEndChar
+            iGlyph = iStartGlyph + (iCharCode - iStartChar)
+            ' the same exclusions IsGlyphValid makes on the old path
+            If (iCharCode > 31) And (iGlyph <> 0) And (iGlyph <> (mDefaultGlyph And &HFFFF&)) And (iGlyph <> (mSpaceGlyph And &HFFFF&)) Then
+                mChars(mCharCount) = iCharCode
+                mCharCount = mCharCount + 1
+            End If
+        Next
+    Next
+    LoadCharsFromCmap12 = mCharCount > 0
+End Function
+
+' Font tables are big-endian
+Private Function BEWord(nData() As Byte, ByVal nPos As Long) As Long
+    BEWord = nData(nPos) * &H100& + nData(nPos + 1)
+End Function
+
+' The top bit is never set in the values read here; masking it keeps the result a positive Long
+Private Function BEDWord(nData() As Byte, ByVal nPos As Long) As Long
+    BEDWord = (nData(nPos) And &H7F) * &H1000000 + nData(nPos + 1) * &H10000 + nData(nPos + 2) * &H100& + nData(nPos + 3)
+End Function
 
 Private Function GetGlyphSet(ByVal nHdc As LongPtr) As GLYPHSET
     Dim Data() As Byte, i As Long, j As Long
@@ -2175,12 +2706,15 @@ Private Sub PrepareCharPics()
     Dim iVerSpacing As Long
     Dim iSng As Single
     Dim iLng As Long
+    Dim iAuxNT As NewTab
     
+    ' See the note in CheckImageSizes: pScaleX is Friend and the extender does not publish it
+    Set iAuxNT = NewTab1
     mPreparingCharPics = True
     mIconCharCurrentlySelectedInCharMap = -1
     iHorSpacing = 20 + mFontForCharMap.Size
     iVerSpacing = iHorSpacing
-    iWidth = PropertyPage.ScaleX(mCharWidth, vbPixels, PropertyPage.ScaleMode)
+    iWidth = iAuxNT.pScaleX(mCharWidth, vbPixels, PropertyPage.ScaleMode)
     
     ' put some limits to size
     If iWidth < 230 Then iWidth = 230
@@ -2246,28 +2780,32 @@ Private Sub DrawChar(nCharCode As Long, nPic As PictureBox)
     Dim iTop As Long
     Dim iWidth As Long
     Dim iHeight As Long
+    Dim iDrawnInColor As Boolean
     
     iIconCharRect.Right = nPic.ScaleWidth
     iIconCharRect.Bottom = 0
     iIconCharacter = ChrU(nCharCode)
     nPic.Cls
-    iFlags = DT_CALCRECT Or DT_SINGLELINE Or DT_CENTER
-    DrawTextW nPic.hDC, StrPtr(iIconCharacter), -1, iIconCharRect, iFlags
-    iWidth = (iIconCharRect.Right - iIconCharRect.Left)
-    iHeight = (iIconCharRect.Bottom - iIconCharRect.Top)
-    If (iWidth <= nPic.ScaleWidth) And (iHeight <= nPic.ScaleHeight) Then
-        iLeft = nPic.ScaleWidth / 2 - iWidth / 2
-        iTop = nPic.ScaleHeight / 2 - iHeight / 2
-    Else
-        iLeft = 0
-        iTop = 0
+    If mIconInColor Then iDrawnInColor = DrawColorGlyph(nPic.hDC, nCharCode, nPic.ForeColor, nPic.BackColor, 0, 0, CLng(nPic.ScaleWidth), CLng(nPic.ScaleHeight))
+    If Not iDrawnInColor Then
+        iFlags = DT_CALCRECT Or DT_SINGLELINE Or DT_CENTER
+        DrawTextW nPic.hDC, StrPtr(iIconCharacter), -1, iIconCharRect, iFlags
+        iWidth = (iIconCharRect.Right - iIconCharRect.Left)
+        iHeight = (iIconCharRect.Bottom - iIconCharRect.Top)
+        If (iWidth <= nPic.ScaleWidth) And (iHeight <= nPic.ScaleHeight) Then
+            iLeft = nPic.ScaleWidth / 2 - iWidth / 2
+            iTop = nPic.ScaleHeight / 2 - iHeight / 2
+        Else
+            iLeft = 0
+            iTop = 0
+        End If
+        iIconCharRect.Right = iIconCharRect.Right + iLeft
+        iIconCharRect.Left = iIconCharRect.Left + iLeft
+        iIconCharRect.Bottom = iIconCharRect.Bottom + iTop
+        iIconCharRect.Top = iIconCharRect.Top + iTop
+        iFlags = DT_SINGLELINE Or DT_CENTER
+        DrawTextW nPic.hDC, StrPtr(iIconCharacter), -1, iIconCharRect, iFlags
     End If
-    iIconCharRect.Right = iIconCharRect.Right + iLeft
-    iIconCharRect.Left = iIconCharRect.Left + iLeft
-    iIconCharRect.Bottom = iIconCharRect.Bottom + iTop
-    iIconCharRect.Top = iIconCharRect.Top + iTop
-    iFlags = DT_SINGLELINE Or DT_CENTER
-    DrawTextW nPic.hDC, StrPtr(iIconCharacter), -1, iIconCharRect, iFlags
     nPic.Tag = nCharCode
     nPic.ToolTipText = "&H" & Hex$(nCharCode) & " (" & nCharCode & ")"
 End Sub
@@ -2275,13 +2813,10 @@ End Sub
 Private Function ChrU(ByVal nCharCodeU As Long) As String
     Const cPOW10 As Long = 2 ^ 10
     
-'    If (nCharCodeU >= 0) And (nCharCodeU <= &HFF&) Then
-'        ChrU = Chr$(nCharCodeU)
-'    ElseIf nCharCodeU <= &HFFFF& Then
     If nCharCodeU <= &HFFFF& Then
         ChrU = ChrW$(nCharCodeU)
     Else
-        ChrU = ChrW$(&HD800& + (nCharCodeU And &HFFFF&) \ cPOW10) & ChrW$(&HDC00& + (nCharCodeU And (cPOW10 - 1)))
+        ChrU = ChrW$(&HD800& + (nCharCodeU - &H10000) \ cPOW10) & ChrW$(&HDC00& + (nCharCodeU And (cPOW10 - 1)))
     End If
 End Function
 

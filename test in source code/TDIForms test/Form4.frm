@@ -2,8 +2,8 @@ VERSION 5.00
 Begin VB.Form Form4 
    Caption         =   "Form4"
    ClientHeight    =   5868
-   ClientLeft      =   5640
-   ClientTop       =   3108
+   ClientLeft      =   2280
+   ClientTop       =   1824
    ClientWidth     =   7344
    BeginProperty Font 
       Name            =   "Segoe UI"

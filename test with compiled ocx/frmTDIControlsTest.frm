@@ -1,0 +1,165 @@
+VERSION 5.00
+Object = "{66E63055-5A66-4C79-9327-4BC077858695}#16.0#0"; "NewTab01.ocx"
+Begin VB.Form frmTDIControlsTest 
+   Caption         =   "TDI"
+   ClientHeight    =   5748
+   ClientLeft      =   2256
+   ClientTop       =   1824
+   ClientWidth     =   7680
+   BeginProperty Font 
+      Name            =   "Tahoma"
+      Size            =   9
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
+   LinkTopic       =   "Form2"
+   ScaleHeight     =   5748
+   ScaleWidth      =   7680
+   Begin NewTabCtl.NewTab NewTab1 
+      Height          =   2530
+      Left            =   0
+      TabIndex        =   0
+      Top             =   0
+      Width           =   5290
+      _ExtentX        =   9335
+      _ExtentY        =   4466
+      ControlJustAdded=   0   'False
+      Tabs            =   2
+      ForeColorSelectedTab=   10184001
+      ForeColorHighlighted=   16777215
+      Style           =   3
+      BackColorSelectedTab=   16250871
+      ControlsBackColorApplied=   16250871
+      FlatBarColorInactive=   14211288
+      FlatBorderColor =   10184001
+      HighlightColor  =   16477710
+      FlatRoundnessTabs=   8
+      TabMousePointerHand=   -1  'True
+      IconColorTabHighlighted=   16777215
+      IconColorMouseHover=   255
+      IconColorMouseHoverSelectedTab=   255
+      HighlightMode   =   12
+      HighlightModeSelectedTab=   10
+      FlatBorderMode  =   1
+      FlatBarHeight   =   0
+      CanReorderTabs  =   -1  'True
+      TDIMode         =   1
+      ControlVersion  =   19
+      TabIconChar(0)  =   57606
+      TabIconLeftOffset(0)=   -3
+      TabIconTopOffset(0)=   1
+      TabCaption(0)   =   "New tab template   "
+      Tab(0).ControlCount=   4
+      Tab(0).Control(0)=   "txtDoc(0)"
+      Tab(0).Control(1)=   "Command1(0)"
+      Tab(0).Control(2)=   "txtSearch(0)"
+      Tab(0).Control(3)=   "Label1(0)"
+      BeginProperty IconFont(0) {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Segoe MDL2 Assets"
+         Size            =   10.2
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      IconFontName(0) =   "Segoe MDL2 Assets"
+      TabIconChar(1)  =   63658
+      TabIconLeftOffset(1)=   -2
+      TabIconTopOffset(1)=   1
+      TabCaption(1)   =   ""
+      TabToolTipText(1)=   "Add a new tab"
+      BeginProperty IconFont(1) {0BE35203-8F91-11CE-9DE3-00AA004BB851} 
+         Name            =   "Segoe MDL2 Assets"
+         Size            =   13.8
+         Charset         =   0
+         Weight          =   700
+         Underline       =   0   'False
+         Italic          =   0   'False
+         Strikethrough   =   0   'False
+      EndProperty
+      IconFontName(1) =   "Segoe MDL2 Assets"
+      Begin VB.TextBox txtDoc 
+         Appearance      =   0  'Flat
+         Height          =   1210
+         Index           =   0
+         Left            =   120
+         MultiLine       =   -1  'True
+         TabIndex        =   4
+         Top             =   1140
+         Width           =   5050
+      End
+      Begin VB.CommandButton Command1 
+         BackColor       =   &H00F7F7F7&
+         Caption         =   "Do something"
+         Height          =   370
+         Index           =   0
+         Left            =   3840
+         TabIndex        =   3
+         Top             =   540
+         Width           =   1330
+      End
+      Begin VB.TextBox txtSearch 
+         Appearance      =   0  'Flat
+         Height          =   370
+         Index           =   0
+         Left            =   1320
+         TabIndex        =   2
+         Top             =   540
+         Width           =   2410
+      End
+      Begin VB.Label Label1 
+         Alignment       =   1  'Right Justify
+         BackColor       =   &H00F7F7F7&
+         Caption         =   "Search:"
+         ForeColor       =   &H009B6541&
+         Height          =   370
+         Index           =   0
+         Left            =   240
+         TabIndex        =   1
+         Top             =   590
+         Width           =   970
+      End
+   End
+   Begin VB.Label Label2 
+      Caption         =   "TDI: Tabbed Document Interface. To use the TDI Mode 'Controls', set the TDIMode property to 'ntTDIModeControls'."
+      Height          =   972
+      Left            =   600
+      TabIndex        =   5
+      Top             =   3000
+      Visible         =   0   'False
+      Width           =   4452
+   End
+End
+Attribute VB_Name = "frmTDIControlsTest"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = False
+Attribute VB_PredeclaredId = True
+Attribute VB_Exposed = False
+Option Explicit
+
+' Room for the search bar of the tab template, above the document
+Private Const cDocumentTop As Single = 700
+
+Private Sub Form_Resize()
+    Dim iTxt As TextBox
+    
+    If Me.WindowState = vbMinimized Then Exit Sub
+    NewTab1.Move 0, 0, Me.ScaleWidth, Me.ScaleHeight
+    For Each iTxt In txtDoc
+        PositionDocument iTxt
+    Next
+End Sub
+
+' ControlMove and not Move: a control in a tab that is not selected is kept out of view, and
+' ControlMove keeps it there
+Private Sub PositionDocument(nTxt As TextBox)
+    NewTab1.ControlMove nTxt, NewTab1.ClientLeft, NewTab1.ClientTop + cDocumentTop, NewTab1.ClientWidth, NewTab1.ClientHeight - cDocumentTop
+End Sub
+
+Private Sub NewTab1_TDINewTabAdded(ByVal TabNumber As Long, ByVal nTab As Long)
+    PositionDocument txtDoc(TabNumber)
+End Sub

@@ -1,142 +1,291 @@
 NEWTABCTL REFERENCE
 
 Introduction:
-This control is a further development of SSTabEx project.
-It still keeps backward compatibility with SSTab (fully), and mostly with SSTabEx, although some properties have been changed.
+NewTab is a tab control for VB6. It is a drop-in replacement for the Microsoft SSTab control: an SSTab placed on a form can be replaced with a NewTab and the form keeps its tabs, captions, pictures and contained controls, and the code that uses the SSTab members keeps working. It was formerly called SSTabEx.
 
-This new control introduces the "Flat" style and many related properties.
-It also introduces "Themes", that are a set of property settings stored together.
-Another thing new is the TDI mode. TDI stands for "Tabbed Document Interface", as an alternative to SDI and MDI.
+Beyond SSTab, it adds:
+- Five styles (Style): the two of SSTab (tabbed dialog and property page), TabStrip, Flat and Windows (drawn with the Windows visual styles).
+- Twelve tab orientations (TabOrientation), including tabs at the right or bottom end of a side, and side tabs with horizontal captions.
+- Themes (Theme): named sets of appearance settings. 83 are built in, and custom themes can be saved to a file, to the registry or to the form.
+- Two TDI modes (TDIMode), "Tabbed Document Interface": one where each tab is a copy of a set of controls, and one where each tab hosts a form, like a tabbed MDI.
+- Close buttons (CloseButton), a new tab button (NewTabButton), and a scrolling tab strip with a tab list (TabsOverflow).
+- Tab reordering by dragging (CanReorderTabs).
+- Icons from icon fonts (IconCharHex), also in color (IconInColor), besides pictures.
+- Hover highlighting with many options (HighlightMode), and animated effects.
+- Full RightToLeft support, in every orientation and style.
+- DPI awareness: sizes in pixels are scaled with the DPI, and tab pictures are scaled (ScalePicturesForDPI).
+- Adding and removing tabs at run time (AddTab, RemoveTab), and helpers for the contained controls (ControlSetTab, FitToClientArea).
 
-Other new features are:
-CanReorderTabs (property), for allowing tab dragging.
-Icons in tabs using icon fonts.
+Working with contained controls.
+Like with SSTab, each contained control belongs to one tab, and the controls of the tabs that are not selected are moved far to the left (LeftOffsetToHide) to hide them. So:
+- At run time, don't read the Left of a contained control to know where it is: use ControlLeft, and ControlMove instead of its Move method.
+- To put a control of the form into a tab by code, first set its Container to the NewTab and then call ControlSetTab:
+
+Set Text1.Container = NewTab1
+NewTab1.ControlSetTab Text1, 2
+
+- A control created with Controls.Add goes in the same way. To handle its events, declare a WithEvents variable of its type:
+
+Private WithEvents mButton As CommandButton
+
+Private Sub Form_Load()
+    Set mButton = Controls.Add("VB.CommandButton", "cmdNew")
+    Set mButton.Container = NewTab1
+    NewTab1.ControlSetTab mButton, 1
+    mButton.Move NewTab1.ClientLeft + 120, NewTab1.ClientTop + 120
+    mButton.Visible = True
+End Sub
+
+- The space inside the body is given by ClientLeft, ClientTop, ClientWidth and ClientHeight, in twips. FitToClientArea makes a control fill that space and keeps it fitted.
+
+Differences with SSTab that matter when porting code
+- Removing tabs that still hold controls raises error 1390, not 380.
+- At run time all the tabs can be removed or hidden. Then Tab is -1.
+- RemoveTab and AddTab exist; with SSTab the only way was changing Tabs.
+- TabHeight is calculated automatically while AutoTabHeight is True, the default for a new control. Setting TabHeight turns it off.
+- The default Style of a new control is Windows (ntStyleWindows), not tabbed dialog.
+- Many properties have an Auto value that follows Style. A theme sets fixed values instead.
+- Errors raised for invalid arguments follow VB's rules: error 5 from methods, error 381 for an invalid tab index in a property, error 380 for an invalid property value. The control's own errors are numbered from 1380.
 
 *NewTab control*
-- Tabbed control for VB6.
-Backward compatible with SSTab (fully), and with SSTabEx (mostly).
+- Tab control for VB6, compatible with SSTab.
+
+The control shows a strip of tabs and a body. Each tab has its own set of contained controls, and only the controls of the selected tab are visible.
+
+The current tab is set or read with the Tab property. Changing it raises the BeforeClick, Click and TabChange events, in that order.
+The properties that start with Tab and take an index, like TabCaption or TabVisible, work on one tab. Their index parameter, nTab, can be the tab index (zero based), its TabKey, or its TabCaption.
+The properties without an index that refer to one tab, like Caption or Picture, work on the selected tab, as they do in SSTab.
 
 Properties: 
 
 AutoRelocateControls property:
 	Type: NTAutoRelocateControlsConstants
-	Returns or sets a value that determines if the contained controls will be automatically relocated when the tab body changes in position.
+	Returns or sets a value that determines whether the contained controls are moved automatically when the body changes its position.
+	
+	The body moves when the tab strip changes: another TabOrientation, more or fewer rows of tabs, a different TabHeight, Style or font. The contained controls are moved by the same amount, so they keep their place relative to the body.
 	
 	Values:
-	ntRelocateOnTabOrientationChange: The contained controls will be automatically relocated when TabOrientation changes.
-	ntRelocateAlways: The contained controls will be automatically relocated when TabOrientation changes and also when the tab space changes in height.
-	ntRelocateNever:  The contained controls will never be automatically relocated. Choose this value if you are relocating the controls by code in the Form_Resize or Resize events.
+	ntRelocateAlways (default): the controls are moved whenever the body moves.
+	ntRelocateOnTabOrientationChange: the controls are moved only when TabOrientation changes.
+	ntRelocateNever: the controls are never moved. Choose this value if your code places them, for example in the Resize event.
+	
+	Note: after changing by code something that moves the body, place new controls reading ClientLeft and ClientTop, which applies the pending change first. A control moved to fixed numbers before that is moved again when the control redraws.
 
 
 AutoTabHeight property:
 	Type: Boolean
-	Returns or sets the a value that determines whether the tab height (and value of property TabHeight) is set automatically according to the font (and tab icons (or pictures, in case there are set icons or pictures). Note: it asumes one-liner captions.
-	If the property TabHeight is manually set, AutoTabHeight is then set to False.
-	For newly added controls, its default it True, but if you are updating from a previous version or an SSTab control, it will be set to False.
+	Returns or sets a value that determines whether the height of the tabs (TabHeight) is calculated automatically.
+	
+	When True, the height is calculated from the Font, TabPaddingHeight, the icons and pictures of the tabs, the close button and the other glyphs that the tabs can show. It is recalculated whenever any of these change.
+	Setting TabHeight sets AutoTabHeight to False.
+	
+	The height is calculated for captions of one line. With WordWrap set to True, a caption that doesn't fit in the length of the tab is split in two lines but the tab doesn't grow, so the second line can be cut. That happens only when the length of the tab doesn't come from its caption: with ntTWEqualWidth, TabsPerRow, a fixed width, or the side orientations. In those cases set WordWrap to False (the caption gets an ellipsis) or set TabHeight by hand.
+	
+	The default is True for new controls. Forms saved with earlier versions of the control, and forms converted from SSTab, keep False.
 
 
 BackColor property:
 	Type: Long
-	Returns or sets the background color. The background color is not the color of the tabs background (that color is handled by the BackColorTabs property, nor the color of the selected tab, hadled by BackColorSelectedTab property) but the color ouside the tabs.
+	Returns or sets the background color of the control: the color of the area that is not covered by the tabs or the body, like the space at the end of the tab strip.
+	While it is not set, it follows the background color of the container.
+	
+	It is not the color of the tabs: the inactive tabs use BackColorTabs, and the selected tab and the body use BackColorSelectedTab.
+	With BackStyle set to transparent, this area is not painted.
 
 
 BackColorSelectedTab property:
 	Type: Long
-	Returns or sets the color of the active tab, including the tab body (the space were the contained controls are located).
-	If ChangeControlsBackColor is True, changing this color will change also the BackColor of the contained controls.
-	When the control is themed, this property value has no effect.
+	Returns or sets the color of the selected tab and of the body (the area where the contained controls are).
+	
+	While it is not set, it is calculated from BackColorTabs: the same color, or a variant of it in the Flat style.
+	If ChangeControlsBackColor is True, the contained controls that have this color as their BackColor follow it when it changes.
+	While the tabs are drawn with the Windows visual styles, the body and the selected tab are painted by Windows and this color is not used for them.
+	
+	A tab can have a color of its own with TabCustomColor.
 
 
 BackColorTabs property:
 	Type: Long
-	Returns or sets the background color of the tabs, except the active tab that is set by BackColorSelectedTab.
-	When the control is themed, this property value has no effect.
+	Returns or sets the background color of the inactive tabs. The selected tab uses BackColorSelectedTab, which follows this color while it is not set.
+	While the tabs are drawn with the Windows visual styles, the tabs are painted by Windows and this color is not used for them.
+	
+	A tab can have a color of its own with TabCustomColor.
 
 
 BackStyle property:
 	Type: NTBackStyleConstants
-	Returns or sets the a value that determines whether the background will be opaque or transparent.
+	Returns or sets which parts of the control are left transparent, so that the container shows through.
+	
+	Values:
+	ntOpaque (default): everything is painted.
+	ntTransparentBackOnly: only the area painted with BackColor is transparent. The tabs and the body are painted.
+	ntTransparent: the area of BackColor and also the body and the selected tab are transparent. The inactive tabs are painted.
+	
+	The transparent parts don't receive mouse clicks: they go to what is behind.
+	With ntTransparent the tabs can't be drawn with the Windows visual styles, and the Windows style is drawn like the TabStrip style.
+	At run time, when no tab is visible and there is no new tab button, the whole control is transparent.
 
 
 CanReorderTabs property:
 	Type: Boolean
-	Returns or sets a value that determines whether the user will be able to change tab positions by dragging them with the mouse.
+	Returns or sets a value that determines whether the user can change the order of the tabs by dragging them with the mouse.
 	
-	This feature is only available for TabOrientation top and bottom.
+	It works in all the orientations, with one or several rows of tabs, and with RightToLeft.
+	While a tab is dragged the others open a gap where it will fall, and the order changes when the mouse button is released. Before that the BeforeTabReorder event is raised, where the move can be canceled or its destination changed, and after it the TabReordered event.
+	TabMovable keeps a tab in its place. The new tab button and the tab 0 of the TDI modes never move.
+	
+	When the order changes, the tab indexes change. To find a tab after the user moved it, use its TabKey, TabData or TabTag, or its original index with FindTab. GetTabsOrder and SetTabsOrder save and restore the order, and need this property to be True.
 
 
 Caption property:
 	Type: String
-	Returns or sets the caption of the currently selected tab by the Tab property.
-	Captions can have accelerators by adding "&" before the letter that will act as the accelerator.
+	Returns or sets the caption of the selected tab. To read or set the caption of any tab, use TabCaption.
+	A caption can have an access key: the letter after a "&" is underlined, and pressing ALT and that letter selects the tab. "&&" shows a "&".
 
 
 CaptionAlignment property:
 	Type: NTAlignmentConstants
-	Returns or sets the alignment of the tab captions.
+	Returns or sets the alignment of the captions inside the tabs: ntAlignmentCenter (default), ntAlignmentLeft or ntAlignmentRight.
+	It is noticed when the tab is wider than its caption.
+
+
+CausesValidation property:
+	Type: Boolean
+	Returns or sets whether the Validate event of the control that is losing the focus is raised when the NewTab gets it.
+	On a form, this is the property that VB adds to every control. The control also exposes it so that it can be reached from code that uses the control through a variable typed As NewTab.
 
 
 ChangeControlsBackColor property:
 	Type: Boolean
-	Returns or sets a value that determines if the background color of the contained controls will be changed according to the background color of the tabs (the BackColorSelectedTab property value).
+	Returns or sets a value that determines whether the BackColor of the contained controls is changed to the background color of the selected tab. The default is True.
 	
-	If Windows Visual Styles are applied (Style = ntStyleWindows), the background of the controls are painted with the background of the themed tab body, so this property has no effect in that case.
-	If ChangeControlsBackColor is False, the BackColor of the contained controls is left unchanged.
-	If ChangeControlsBackColor is True, and the control is not themed, changing the BackColorSelectedTab propery value will also change the BackColor of the contained controls, but only when their BackColor's has the same color as the previous BackColorSelectedTab setting.
-	If ChangeControlsBackColor is True, and the control is themed, only the controls that has the BackColor property value set to the same color of BackColorSelectedTab are changed.
+	The controls that are changed are the ones whose BackColor is the color the tab control gave them before (at first, the same color as the body). A control with a different BackColor is left as it is.
+	So when BackColorSelectedTab changes, a theme is applied, or a tab with a color of its own (TabCustomColor) is selected, those controls follow the color of the body.
+	The ChangeControlBackColor event allows to exclude some controls.
+	
+	When the body is drawn with the Windows visual styles, it is lighter than the button color that the controls have. Then:
+	- The controls with a window (CheckBox, OptionButton, Frame and others) are painted with the body behind them. This needs subclassing: with SubclassingMethod disabled or set to one of the "only UserControl" values they keep the button color.
+	- The opaque Labels with that color are changed to a transparent BackStyle. This is done also at design time, and the change is saved in the form.
 
 
 ChangeControlsForeColor property:
 	Type: Boolean
-	Returns or sets a value that determines if the text color of the contained controls will be changed according to the ForeColorSelectedTab property value.
+	Returns or sets a value that determines whether the ForeColor of the contained controls is changed to the caption color of the selected tab. The default is True.
 	
-	If ChangeControlsForeColor is False, the ForeColor of the contained controls is left unchanged.
-	If ChangeControlsForeColor is True, and the control is not themed, changing the ForeColorSelectedTab propery value will also change the ForeColor of the contained controls, but only when their ForeColor's has the same color as the previous ForeColorSelectedTab setting.
-	If ChangeControlsBackColor is True, and the control is themed, only the controls that has the ForeColor property value set to the same color of ForeColorSelectedTab are changed.
+	Like with ChangeControlsBackColor, only the controls whose ForeColor is the color that the tab control gave them before are changed.
+	The color they get is:
+	- the ForeColorSelectedTab of the tab or of the control, when it was set by hand. It is given as it is;
+	- otherwise, the inherited caption color, if it has enough contrast against the background of the selected tab. If it doesn't, the controls get black or white, whichever reads better.
+	The ChangeControlForeColor event allows to exclude some controls.
 
 
 ClientHeight property:
 	Type: Single (Read only)
-	Returns the height of the "tab body". The tab body is the space available to place contained controls.
-	They return the value in Twips.
+	Returns the height of the client area, in twips. The client area is the inside of the body, where the contained controls go.
+	It reaches the border line of the body, with no margin: the space between the controls and the border is up to your design.
+	Reading it applies any pending change to the layout first.
 
 
 ClientLeft property:
 	Type: Single (Read only)
-	Returns the left of the "tab body". The tab body is the space available to place contained controls.
-	They return the value in Twips.
+	Returns the left of the client area, in twips. The client area is the inside of the body, where the contained controls go.
+	With RightToLeft set to True it is already mirrored: it can be used as it is to place a control.
+	It reaches the border line of the body, with no margin. Reading it applies any pending change to the layout first.
+	
+	At some DPI settings that are not a multiple of 24 (like 175%), moving a control with these values can leave it a pixel or two off, because VB6 rounds the twips per pixel. FitToClientArea doesn't have that problem.
 
 
 ClientTop property:
 	Type: Single (Read only)
-	Returns top of the "tab body". The tab body is the space available to place contained controls.
-	They return the value in Twips.
+	Returns the top of the client area, in twips. The client area is the inside of the body, where the contained controls go.
+	It reaches the border line of the body, with no margin. Reading it applies any pending change to the layout first.
 
 
 ClientWidth property:
 	Type: Single (Read only)
-	Returns the width of the "tab body". The tab body is the space available to place contained controls.
-	They return the value in Twips.
+	Returns the width of the client area, in twips. The client area is the inside of the body, where the contained controls go.
+	It reaches the border line of the body, with no margin. Reading it applies any pending change to the layout first.
 
 
 CloseButton property:
 	Type: Boolean
-	Returns/sets a value that determines if a close button (a 'x') is shown by default on the tabs, allowing the user to close them. Can be overridden per tab with the TabCloseButton property.
+	Returns or sets a value that determines whether the tabs show a close button (an "x") that allows the user to close them.
+	Each tab can override it with TabCloseButton. Where the buttons are shown is set by CloseButtonPosition.
+	
+	Clicking the button raises the CloseButtonClick event. If it is not canceled, the tab is hidden (TabVisible = False): it is not removed.
+	In the TDI modes the mode decides which tabs have a close button, and this property and TabCloseButton are not used.
+
+
+CloseButtonChar property:
+	Type: Long
+	Returns or sets the Unicode code of the character drawn as the close button, in the font of CloseButtonFont.
+	0 (default) lets the control choose the character, according to the font that is used.
 
 
 CloseButtonColor property:
 	Type: Long
-	Returns/sets the color used to draw the close button (the 'x') of the tabs.
+	Returns or sets the color of the close button of the inactive tabs, while the mouse is not over the button.
+	While it is not set, it follows ForeColor.
+	
+	The close button has five colors: this one, CloseButtonColorSelectedTab for the selected tab, CloseButtonColorTabHighlighted for a tab under the mouse, and CloseButtonColorMouseHover and CloseButtonColorMouseHoverSelectedTab for the button itself under the mouse.
 
 
-CloseButtonColorHighlight property:
+CloseButtonColorMouseHover property:
 	Type: Long
-	Returns/sets the color used to draw the close button (the 'x') of a tab when the mouse pointer is over it.
+	Returns or sets the color of the close button of an inactive tab while the mouse is over the button. The default is red.
+	It is also used for the close button at the end of the tab strip (CloseButtonPosition = ntCBPositionStripEnd).
+
+
+CloseButtonColorMouseHoverSelectedTab property:
+	Type: Long
+	Returns or sets the color of the close button of the selected tab while the mouse is over the button. The default is red, like CloseButtonColorMouseHover.
+
+
+CloseButtonColorSelectedTab property:
+	Type: Long
+	Returns or sets the color of the close button of the selected tab, while the mouse is not over the button.
+	While it is not set, it is inherited from CloseButtonColor or from ForeColorSelectedTab.
+
+
+CloseButtonColorTabHighlighted property:
+	Type: Long
+	Returns or sets the color of the close button of an inactive tab while the mouse is over the tab but not over the button.
+	While it is not set, it is inherited from CloseButtonColor or from ForeColorHighlighted.
+
+
+CloseButtonFont property:
+	Type: Font
+	Returns or sets the font of the close button character.
+	While it is not set, or if the font is not installed, the control uses the first one available of "Segoe MDL2 Assets", "Marlett" and "Arial". Setting it to Nothing goes back to that.
+	The fonts are not part of the themes.
+
+
+CloseButtonPadding property:
+	Type: Long
+	Returns or sets the space, in pixels, on each side of the close button of a tab: between the button and the caption, and between the button and the edge of the tab (there the larger of this value and TabPaddingWidth is used).
+	The value is scaled by the DPI. It can be from 0 to 40; the default is 6.
+
+
+CloseButtonPosition property:
+	Type: NTCloseButtonPositionConstants
+	Returns or sets where the close buttons are shown.
+	
+	Values:
+	ntCBPositionOnTabs (default): on each tab that has one.
+	ntCBPositionOnSelectedTab: only on the selected tab.
+	ntCBPositionOnHoveredTab: only on the tab under the mouse.
+	ntCBPositionOnSelectedAndHoveredTabs: on the selected tab and on the tab under the mouse.
+	ntCBPositionStripEnd: a single button at the end of the tab strip, which closes the selected tab.
+	
+	With the values that show the button only on some tabs, every tab keeps the space of its button, so the tabs don't change their size when it appears.
 
 
 Container property:
 	Type: Object
-	Returns the control's container.
+	Returns or sets the container of the control.
+	On a form, this is the property that VB adds to every control. The control also exposes it for code that uses it through a variable typed As NewTab.
+	
+	To put another control inside a NewTab by code, set that control's Container to the NewTab and then call ControlSetTab.
 
 
 ControlLeft property:
@@ -144,142 +293,198 @@ ControlLeft property:
 	
 	Additional parameter(s):
 	    In/Out	Required	nControl	As	Variant
-	Returns or sets the Left of a contained control.
-	The argument ControlName must be the name of a contained control.
+	Returns or sets the Left of a contained control as if it were on the selected tab.
+	
+	The controls of the tabs that are not selected are moved LeftOffsetToHide twips to the left, so their real Left is not where they are shown. ControlLeft hides that: it returns and takes the position the control has when its tab is selected.
+	The nControl parameter is the control, or its name as a String. For an element of a control array, the name includes the index, as in "Text1(2)".
+	If the control is not found, error 1501 is raised.
 
 
 Controls property:
 	Type: ContainedControls (Read only)
-	Returns a collection of the controls that were added to the NewTab.
+	Returns the collection of the controls contained in the NewTab, of all the tabs.
+	It holds only the controls placed directly on the NewTab, not the controls that are inside them (for example, inside a Frame).
+	It is not available at design time.
 	
-	It only holds controls that are directly contained in the control, it does not include controls that are inside others controls. Also see the TabControls property.
-	It is not available at design time, and is read-only at run time.
+	To get the controls of one tab, use TabControls.
 
 
 DragIcon property:
 	Type: Picture
-	Returns or sets the icon to be used as mouse pointer in a drag-and-drop operation.
+	Returns or sets the icon used as the mouse pointer in a drag-and-drop operation.
 
 
 DragMode property:
 	Type: Integer
 	Returns or sets a value that determines whether manual or automatic drag mode is used for a drag-and-drop operation.
+	This is VB's drag and drop of the control itself. Dragging tabs to reorder them is set by CanReorderTabs.
 
 
 Enabled property:
 	Type: Boolean
-	Returns or sets a value that determines whether a form or control can respond to user-generated events.
+	Returns or sets a value that determines whether the control responds to the user.
+	A disabled control draws its captions and icons grayed. ShowDisabledState grays also the background of the tabs.
+	To disable one tab, use TabEnabled.
 
 
 EndOfTabs property:
 	Type: Single (Read only)
-	Returns a value that indicates where the last tab ends. Depending on the TabOrientation setting, it can be the rightmost tab (orientation top and bottom), the topmost tab (orientation left) or the bottommost tab (orientation right).
+	Returns the position where the last tab ends, along the tab strip, in units of the container.
+	For the orientations with the tabs at the top or bottom, it is a horizontal position; for the others, a vertical one.
 
 
-FlatBarColorHighlight property:
+FlatBarColorHighlighted property:
 	Type: Long
-	Returns or sets the color of the bar when a tab is highlighted in flat style.
+	Returns or sets the color of the bar of a tab under the mouse, in the Flat style.
+	While it is not set, it is a tint of FlatBarColorSelectedTab: that color mixed at 60% with BackColorTabs.
+	The bar is shown when HighlightMode has the ntHLFlatBar flag.
 
 
 FlatBarColorInactive property:
 	Type: Long
-	Returns or sets the color of the bar when a tab is inactive in flat style.
+	Returns or sets the color of the bar of the inactive tabs, in the Flat style.
+	The inactive tabs show a bar when HighlightMode has the ntHLFlatBar flag. Some themes hide it by giving it the background color of the tabs.
 
 
 FlatBarColorSelectedTab property:
 	Type: Long
-	Returns or sets the color of the bar when a tab is selected in flat style.
+	Returns or sets the color of the bar of the selected tab, in the Flat style.
+	It is the accent color of the Flat style: FlatBarColorHighlighted and the border colors of the tabs follow it while they are not set.
+	The bar is shown when HighlightModeSelectedTab has the ntHLFlatBar flag.
 
 
 FlatBarGripHeight property:
 	Type: Long
-	Returns or sets a value in pixels that determines the height of a grip for the highlight bar in the flat style. A negative value defines a notch instead.
+	Returns or sets the height, in pixels, of the grip of the bar in the Flat style: a small rise in the middle of the bar. A negative value makes a notch instead.
+	The grip is drawn when the highlight mode has the ntHLFlatBarGrip flag along with ntHLFlatBar.
+	The value is scaled by the DPI. It can be from -50 to 50; the default is -5.
 
 
 FlatBarHeight property:
 	Type: Long
-	Returns or sets the height in pixels of the bar in flat style.
+	Returns or sets the height, in pixels, of the bar of the tabs in the Flat style.
+	The value is scaled by the DPI. It can be from 0 to 15; the default is 3.
 
 
 FlatBarPosition property:
 	Type: NTFlatBarPositionConstants
-	Returns or sets the position of the bar in flat style. It can be at the top (ntBarPositionTop)  or at the bottom (ntBarPositionBottom).
+	Returns or sets on which side of the tab the bar is drawn in the Flat style: ntBarPositionTop (default), on the outer side of the tab, or ntBarPositionBottom, on the side of the body.
+	Top and bottom are as seen with the tabs at the top; in the other orientations the bar turns with the tabs.
 
 
 FlatBodySeparationLineColor property:
 	Type: Long
-	Returns or sets the color of the separation line between the tabs and the body in flat style.
+	Returns or sets the color of the line between the tabs and the body, in the Flat style.
 
 
 FlatBodySeparationLineHeight property:
 	Type: Long
-	Returns or sets the height in pixels of the separation line between the tabs and the body in flat style.
+	Returns or sets the height, in pixels, of the line between the tabs and the body, in the Flat style. 0 draws no line.
+	The value is scaled by the DPI, except a height of 1, which stays one pixel at any DPI. It can be from 0 to 50; the default is 1.
+	With a value other than 1 the top corners of the body are square. With 0, they are rounded only under a tab whose bottom is closed, so the side of the body doesn't end in the air.
 
 
 FlatBorderColor property:
 	Type: Long
-	Returns or sets the color of the border in flat style.
+	Returns or sets the color of the border in the Flat style.
 
 
 FlatBorderMode property:
 	Type: NTFlatBorderModeConstants
-	Returns or sets the way the border will be drawn in flat style.
-	It may be around the selected tab (ntBorderSelectedTab) or all the control (ntBorderTabs).
+	Returns or sets what the border goes around in the Flat style.
+	
+	Values:
+	ntBorderTabs (default): around the body and all the tabs.
+	ntBorderSelectedTab: around the body and the selected tab only.
+	
+	With ntBorderSelectedTab, when the selected tab or the tab under the mouse is at an end of the front row and rounds its bottom together with the body, the stretch of border under its curve is left open, and what is behind shows there. That is intended.
 
 
 FlatRoundnessBottom property:
 	Type: Long
-	Returns or sets the size in pixels of the roundness of the bottom corners.
+	Returns or sets the radius, in pixels, of the corners of the body on the side opposite to the tabs, in the Flat style. 0 makes them square.
+	The value is scaled by the DPI. It can be from 0 to 100; the default is 8.
+	With rounded corners, FitToClientArea clips the contained controls to them.
 
 
 FlatRoundnessTabs property:
 	Type: Long
-	Returns or sets the size in pixels of the roundness of the tabs corners.
+	Returns or sets the radius, in pixels, of the corners of the tabs, in the Flat style. 0 (default) makes them square.
+	The value is scaled by the DPI. It can be from 0 to 100.
+	
+	With several rows of tabs, without perspective and with this value at 0, the ends of the front rows are square and the ntHLRoundBottom highlight flag has no effect. To get rounded tabs in every row, use a value greater than 0, or ShowRowsInPerspective.
 
 
 FlatRoundnessTop property:
 	Type: Long
-	Returns or sets the size in pixels of the roundness of the top corners.
+	Returns or sets the radius, in pixels, of the corners of the body on the side of the tabs, in the Flat style. 0 makes them square.
+	The corners are rounded only where no tab covers them.
+	The value is scaled by the DPI. It can be from 0 to 100; the default is 8.
+	With rounded corners, FitToClientArea clips the contained controls to them.
 
 
-FlatTabBorderColorHighlight property:
+FlatTabBodyGap property:
 	Type: Long
-	Returns or sets the color that is used to highlight the tabs with a border when the mouse hovers on them, and the HighlightMode property has the corresponding flag ntHLFlatDrawBorder.
+	Returns or sets a space, in pixels, added to the tabs on the side of the body, in the Flat style.
+	The tabs grow by that amount. With AutoTabHeight set to False, it is taken from the fixed TabHeight instead.
+	The tabs that round their bottom with the highlight (the ntHLRoundBottom flag) leave the space empty, so they look floating over the body; the other tabs paint it.
+	The value is scaled by the DPI. It can be from 0 to 50; the default is 0.
+
+
+FlatTabBorderColorHighlighted property:
+	Type: Long
+	Returns or sets the color of the border of a tab under the mouse, in the Flat style, when HighlightMode has the ntHLFlatDrawBorder flag.
+	While it is not set, it takes the color of the bar of that state, FlatBarColorHighlighted.
+
+
+FlatTabBorderColorInactive property:
+	Type: Long
+	Returns or sets the color of the border of the inactive tabs, in the Flat style, when HighlightMode has the flags ntHLFlatShapeInactive and ntHLFlatDrawBorder.
+	While it is not set, it takes the color of the bar of the inactive tabs, FlatBarColorInactive. Some themes hide that bar by giving it the background color; with them the border is not seen until it gets a color of its own.
 
 
 FlatTabBorderColorSelectedTab property:
 	Type: Long
-	Returns or sets the color that is used to highlight the active tab with a border when the HighlightModeSelectedTab property has the corresponding flag ntHLFlatDrawBorder.
+	Returns or sets the color of the border of the selected tab, in the Flat style, when HighlightModeSelectedTab has the ntHLFlatDrawBorder flag.
+	While it is not set, it takes the color of the bar of the selected tab, FlatBarColorSelectedTab.
 
 
 FlatTabsSeparationLineColor property:
 	Type: Long
-	Returns or sets the color of the separation line between tabs in flat style.
+	Returns or sets the color of the lines between the tabs, in the Flat style.
 
 
 Font property:
 	Type: Font
-	Returns or sets a Font object correspondig to the font that will be used to display the tab captions.
+	Returns or sets the font of the captions of the tabs.
+	With AutoTabHeight set to True, the height of the tabs follows the font.
+	The font is not part of the themes: applying a theme doesn't change it.
 
 
 ForeColor property:
 	Type: Long
-	Returns or sets the color of the tab captions.
+	Returns or sets the color of the captions of the inactive tabs.
+	While it is not set, it follows the text color of the container.
+	The other caption and icon colors (ForeColorSelectedTab, ForeColorHighlighted, IconColor and others) follow it while they are not set.
 
 
 ForeColorHighlighted property:
 	Type: Long
-	Returns or sets the color used to draw the captions of the inactive tabs when they are highlighted because the mouse is over them.
+	Returns or sets the color of the caption of an inactive tab while the mouse is over it.
+	While it is not set, it follows ForeColor.
 
 
 ForeColorSelectedTab property:
 	Type: Long
-	Returns or sets the the caption color of the active tab.
+	Returns or sets the color of the caption of the selected tab.
+	While it is not set, it follows ForeColor.
+	If ChangeControlsForeColor is True, it is also the color given to the contained controls.
 
 
 HandleHighContrastTheme property:
 	Type: Boolean
-	When True (default setting), the control handles the system changes to high contrast theme automatically by changing the colors of the control to system's high contrast colors.
+	Returns or sets a value that determines whether the control changes its colors automatically when Windows switches to a high contrast theme, and back. The default is True.
+	With high contrast the control uses the system colors of that theme, and the contained controls are given those colors too (at run time).
 
 
 Height property:
@@ -289,175 +494,234 @@ Height property:
 
 HelpContextID property:
 	Type: Long
-	Returns or sets a string expression containing the context ID for a topic in a Help file.
+	Returns or sets the context ID of a topic in a Help file, shown when the user presses F1 while the control has the focus.
 
 
 HighlightColor property:
 	Type: Long
-	Returns or sets the color used to highlight an inactive tab when the user hovers over it.
+	Returns or sets the color of the background highlight of an inactive tab while the mouse is over it.
+	It is used when HighlightMode has a background flag (ntHLBackgroundPlain, ntHLBackgroundGradient or ntHLBackgroundDoubleGradient). The gradients go from this color to HighlightGradientColor.
 
 
 HighlightColorSelectedTab property:
 	Type: Long
-	Returns or sets the color used to highlight the selected tab.
+	Returns or sets the color of the background highlight of the selected tab.
+	It is used when HighlightModeSelectedTab has a background flag. The gradients go from this color to HighlightGradientColorSelectedTab.
 
 
 HighlightEffect property:
-	Type: Boolean
-	Returns or sets a value that determines whether tabs will display a progressive effect when they are highlighted due to hovering over them.
+	Type: NTAnimationSpeedConstants
+	Returns or sets the speed at which the highlight of a tab appears when the mouse moves over it, or ntAnimationNone for it to appear at once. The default is ntAnimationFast.
+
+
+HighlightEffectOut property:
+	Type: NTAnimationSpeedConstants
+	Returns or sets the speed at which the highlight of a tab fades away when the mouse leaves it, or ntAnimationNone for it to disappear at once. The default is ntAnimationMedium.
+
+
+HighlightGradientColor property:
+	Type: Long
+	Returns or sets the second color of the gradients that highlight an inactive tab under the mouse (the first one is HighlightColor).
+	While it is not set, it is the background color of the tab.
+	It is only the second color of the gradient: it doesn't change the color of the tab or of the body.
+
+
+HighlightGradientColorSelectedTab property:
+	Type: Long
+	Returns or sets the second color of the gradients that highlight the selected tab (the first one is HighlightColorSelectedTab).
+	While it is not set, it is the background color of the selected tab, so the gradient ends in the color of the body.
+	If it is set to a color different from BackColorSelectedTab, the tab ends its gradient in that color and the body continues in its own, so a step is seen where they meet. To avoid it, leave it not set.
+	It doesn't change the color of the body or the color given to the contained controls.
 
 
 HighlightMode property:
-	Type: Long
-	Returns or sets a value that determines if and how the tabs will appear highlighted when the mouse is over them.
+	Type: NTHighlightModeFlagsConstants
+	Returns or sets how the inactive tabs are highlighted while the mouse is over them.
+	The selected tab has its own setting, HighlightModeSelectedTab.
 	
-	This value consists in a group of flags that determine how to highlight a tab.
+	The value is a combination of the flags of NTHighlightModeFlagsConstants:
+	- The background, one of: ntHLBackgroundPlain (4), ntHLBackgroundGradient (2) or ntHLBackgroundDoubleGradient (3). ntHLBackgroundLight (8) makes it lighter.
+	- The caption: ntHLCaptionBold (16), ntHLCaptionUnderlined (32).
+	- The size and position: ntHLExtraHeight (256) makes the tab taller by HighlightTabExtraHeight, ntHLShiftCaption (1024) moves its contents by HighlightTabCaptionShift, ntHLWidenTab (2048) widens it on both sides.
+	- Flat style only: ntHLFlatBar (64) shows the bar, ntHLFlatBarGrip (128) adds a grip to the bar, ntHLFlatDrawBorder (512) draws a border around the tab, ntHLRoundBottom (4096) rounds also the corners of the tab on the side of the body, ntHLFlatShapeInactive (8192) gives the inactive tabs, also when the mouse is not over them, the shape of the highlighted one (only for this property).
+	ntHLNone (1) is no highlight, and ntHLAuto (0), the default, lets Style decide:
+	- Flat: background gradient, light, and the bar.
+	- Windows: plain background.
+	- Tabbed dialog, property page and TabStrip: none, like the original controls.
 	
-	7 = Background type mask.
-	8 = Light background flag.
-	16 = CaptionBold flag.
-	32 = CaptionUnderlined flag.
-	64 = FlatBar flag.
-	128 = Grip for FlatBar flag. It needs FlatBar flag, so 192 = FlatBarWithGrip.
-	256 = ExtraHeight flag.
-	
-	When the control is themed, this setting is mostly ignored, the only flags that has effect are CaptionBold and CaptionUnderlined.
+	While the tabs are drawn with the Windows visual styles, any background flag shows the "hot" look of Windows, and the gradient and light flags make no difference. The caption, size and position flags work in every style.
+	The Highlight page of the property pages disables the flags that have no effect with the current settings.
 
 
 HighlightModeSelectedTab property:
-	Type: Long
-	Returns or sets a value that determines if and how the selected tab will be highlighted.
+	Type: NTHighlightModeFlagsConstants
+	Returns or sets how the selected tab is highlighted. Unlike the inactive tabs, it is always highlighted, whether the mouse is over it or not.
 	
-	This value consists in a group of flags that determine how to highlight a tab.
+	The value is a combination of the same flags as HighlightMode, except ntHLFlatShapeInactive.
+	With ntHLAuto (default) it depends on Style:
+	- Flat: background gradient, light, and the bar.
+	- Tabbed dialog: bold caption, like SSTab.
+	- Property page: extra height and widened tab.
+	- TabStrip and Windows: extra height, widened tab and shifted caption, like the TabStrip control.
+	A value set by hand replaces the Auto answer, it is not added to it.
 	
-	7 = Background type mask.
-	8 = Light background flag.
-	16 = CaptionBold flag.
-	32 = CaptionUnderlined flag.
-	64 = FlatBar flag.
-	128 = Grip for FlatBar flag. It needs FlatBar flag, so 192 = FlatBarWithGrip.
-	256 = ExtraHeight flag.
-	
-	When the control is themed, this setting is mostly ignored, the only flags that has effect are CaptionBold and CaptionUnderlined.
+	While the tabs are drawn with the Windows visual styles, the background of the selected tab is painted by Windows and the background flags have no effect.
+
+
+HighlightTabCaptionShift property:
+	Type: Single
+	Returns or sets how far the contents of a highlighted tab (caption and icon) move towards the outer edge of the tab strip, in units of the container.
+	It is applied only when the highlight mode has the ntHLShiftCaption flag. A negative value moves them towards the body.
+	The default is 15 twips (one pixel at 96 DPI).
 
 
 HighlightTabExtraHeight property:
 	Type: Single
-	Returns or sets a value that determines the extra height that a tab will have when it is highlighted. This value is in units of the container. It must be between 0 (zero) and twice the TabHeight property value.
-
-
-HorizontalTabHeightStyle property:
-	Type: NTHorizontalTabHeightStyleConstants
-	Returns or sets a value that determines how much of the strip each tab takes up, for the Horizontal TabOrientations (LeftHorizontal, RightHorizontal, LeftTopHorizontal, RightBottomHorizontal) only.
-	
-	ntTHFill: tabs stretch to fill all available strip space.
-	
-	ntTHTabCaptionHeight: each tab gets just the height its own caption (wrapped if needed) + icon needs.
-	
-	ntTHMaxCaptionHeight: all tabs of a column equal: the height of the tallest tab in that column.
-	
-	ntTHFixed: respects the TabHeight property (global).
+	Returns or sets the height added to a highlighted tab, in units of the container.
+	It is applied only when the highlight mode has the ntHLExtraHeight flag. The tab grows towards the outside of the tab strip.
+	A negative value raises error 380. A value greater than TabHeight is reduced to it.
+	The default is 30 twips (two pixels at 96 DPI).
 
 
 hWnd property:
 	Type: Long (Read only, not available at design time)
-	Returns the Windows handle of the control.
+	Returns the window handle of the control.
 
 
 IconAlignment property:
 	Type: NTIconAlignmentConstants
-	Returns or sets the alignment of the icon (or picture) with respect of the tab caption.
+	Returns or sets where the icon or picture of each tab goes, with respect to the caption.
+	
+	Values:
+	ntIconAlignCenteredBeforeCaption (default): before the caption. When the caption is aligned to a side, the icon is centered in the free space on its side if there is enough room, so it doesn't look stuck to the caption.
+	ntIconAlignBeforeCaption: right before the caption, the two aligned together.
+	ntIconAlignCenteredAfterCaption and ntIconAlignAfterCaption: the same, after the caption.
+	ntIconAlignStart: at the start edge of the tab; the caption is aligned in the remaining space.
+	ntIconAlignEnd: at the end edge of the tab.
+	ntIconAlignCenteredOnTab: the icon in the middle of the tab, with the caption after it. If the tab has no room for that, it falls back to the pair centered.
+	ntIconAlignAtTop and ntIconAlignAtBottom: above or below the caption.
+	
+	"Before" and "start" follow the reading order of the caption: with RightToLeft they are on the right, and in the Left and LeftTop orientations, whose captions read from bottom to top, they are below.
+	With the caption centered (CaptionAlignment), the "Centered" values draw the same as the others.
+	With the icon above or below the caption, the captions of all the tabs with an icon are at the same height, and the icons are centered in the height of the largest one. A tab without icon centers its caption.
 
 
 IconCharHex property:
 	Type: String
-	Returns or sets a string representing the hexadecimal value of the character that will be used as the icon in the currently selected tab. If this property is set, anything in the picture properties is ignored.
+	Returns or sets the character used as the icon of the selected tab, as its Unicode code in hexadecimal, for example "E713" or "&HE713&". The character is drawn with IconFont.
+	While a tab has an icon character, its pictures (Picture, Pic16 and the others) are not shown. An empty string removes the icon.
+	To set the icon of any tab, use TabIconCharHex.
+	
+	Icon fonts, like "Segoe MDL2 Assets" or "Segoe Fluent Icons", scale with the DPI without losing quality, and their color can be set (IconColor).
 
 
 IconColor property:
 	Type: Long
-	Returns sets the color of the icon (it doesn't work with pictures, but with icons set with IconCharHex).
+	Returns or sets the color of the icons of the inactive tabs. It applies to the icons from an icon font (IconCharHex), not to pictures.
+	While it is not set, it follows ForeColor.
+	
+	The icons have five colors: this one, IconColorSelectedTab for the selected tab, IconColorTabHighlighted for a tab under the mouse, and IconColorMouseHover and IconColorMouseHoverSelectedTab for the icon itself under the mouse. They are not used for icons drawn in color (IconInColor).
 
 
 IconColorMouseHover property:
 	Type: Long
-	Returns or sets the color that the icon will show when the mouse hovers it, for the non active tabs.
-	
-	IconColorMouseHoverSelectedTab property
-	IconColorTabHighlighted property
+	Returns or sets the color of the icon of an inactive tab while the mouse is over the icon.
+	While it is not set, it follows IconColorTabHighlighted.
+	Use it to show that the icon can be clicked (IconClick event).
 
 
 IconColorMouseHoverSelectedTab property:
 	Type: Long
-	Returns or sets the color that the icon will show when the mouse hovers it, for the active tab.
-	
-	IconColorMouseHover property
-	IconColorTabHighlighted property
+	Returns or sets the color of the icon of the selected tab while the mouse is over the icon.
+	While it is not set, it follows IconColorSelectedTab.
 
 
 IconColorSelectedTab property:
 	Type: Long
-	Returns or sets the color used to draw the icon when the tab is seleted.
+	Returns or sets the color of the icon of the selected tab.
+	While it is not set, it is inherited from IconColor or from ForeColorSelectedTab.
 
 
 IconColorTabHighlighted property:
 	Type: Long
-	Returns or sets the color used to draw the icon when the tab is highlighted (not the icon itself).
+	Returns or sets the color of the icon of an inactive tab while the mouse is over the tab (but not over the icon itself).
+	While it is not set, it is inherited from IconColor or from ForeColorHighlighted.
 
 
 IconFont property:
 	Type: Font
-	Returns or sets the Font that will be used to draw the icon of the currently selected tab.
-	Each tab can have a different font for its icon.
+	Returns or sets the font used to draw the icon character of the selected tab (IconCharHex).
+	Each tab can have a different font: to set the font of any tab, use TabIconFont.
+	The default is "Segoe MDL2 Assets", 11 points. If the font is not installed on the computer where the program runs, the tab doesn't show the icon character (it shows its picture, if it has one).
+
+
+IconInColor property:
+	Type: Boolean
+	Returns or sets whether the icon character of the selected tab is drawn with the colors of the font itself, as it is done with emoji and color icon fonts.
+	Then the icon colors (IconColor and the others) are not used, except while the tab is disabled.
+	It needs Windows 8.1 or later; on earlier versions the icon is drawn in one color, as if it were False.
+	To set it for any tab, use TabIconInColor.
 
 
 IconLeftOffset property:
 	Type: Long
-	Returns or sets the value in pixels of the offset for the left position when drawing the icon of the currently selected tab. It can be negative.
+	Returns or sets a horizontal offset, in pixels, for the icon or picture of the selected tab. It can be negative.
+	The value is scaled by the DPI. Use it to correct the position of icons from fonts that are not well centered.
+	To set it for any tab, use TabIconLeftOffset.
 
 
 IconTopOffset property:
 	Type: Long
-	Returns or sets the value in pixels of the offset for the top position when drawing the icon of the currently selected tab. It can be negative.
+	Returns or sets a vertical offset, in pixels, for the icon or picture of the selected tab. It can be negative.
+	The value is scaled by the DPI.
+	To set it for any tab, use TabIconTopOffset.
+
+
+Index property:
+	Type: Integer (Read only)
+	Returns the number that identifies the control in a control array.
+	On a form, this is the property that VB adds to every control. The control also exposes it for code that uses it through a variable typed As NewTab.
 
 
 Left property:
 	Type: Single
-	Returns or sets the distance between the internal left edge of the control and the left edge of its container.
+	Returns or sets the distance between the left edge of the control and the left edge of its container.
+	At DPI settings that are not a multiple of 24 (like 175%), changing Left or Top at run time can change the size of the control by some pixels, because VB6 applies the width and height again with its rounded twips per pixel. Setting Width and Height again after moving the control corrects it.
 
 
 LeftOffsetToHide property:
 	Type: Long (Read only)
-	Returns the shift to the left in twips that the NewTab is using to hide the controls in the non-active tabs.
-	
-	With the original SSTab control that was fixed to 75000 twips, but now in hight DPI screen settings it can change to avoid overflow due to a Windows limitation.
+	Returns how far to the left, in twips, the controls of the tabs that are not selected are moved to hide them.
+	SSTab always used 75000 twips. NewTab can use less at high DPI settings, because Windows limits the coordinates a window can have.
+	To place or read the position of a contained control without taking this into account, use ControlLeft and ControlMove.
 
 
 MaskColor property:
 	Type: Long
-	Returns or sets the color that will be transparent for the bitmaps that are in the TabPicture, TabPic16, TabPic20 and TabPic24 properties.
+	Returns or sets the color that is shown transparent in the bitmaps of the tabs, when UseMaskColor is True. The default is magenta (&HFF00FF).
+	It is one setting for all the tabs, and it applies to bitmaps only: icons have their own mask. In the TDI Forms mode it also applies to a bitmap given in the TDIFormsShowTabIcon event.
 
 
 MinSizeNeeded property:
 	Type: Single (Read only)
-	Returns the minimun Width (or Height, depending on the TabOpientation setting) of the control needed to show all the tabs in one row (without adding new rows).
-	
-	When TabWidthStyle is set to other than ntTWTabCaptionWidth or ntTWTabCaptionWidthFillRows, it returns 0 (zero).
+	Returns the minimum width of the control (or height, for the side orientations) needed to show all the tabs in one row, in units of the container.
+	It counts the visible tabs and the new tab button.
 
 
 MouseIcon property:
 	Type: Picture
-	Returns or sets the icon used as the mouse pointer when the MousePointer property is set to 99 (custom).
+	Returns or sets the icon used as the mouse pointer when MousePointer is set to 99 (ssCustom).
 
 
 MousePointer property:
 	Type: NTMousePointerConstants
-	Returns or sets the type of mouse pointer displayed when over the control.
+	Returns or sets the type of mouse pointer shown over the control.
+	TabMousePointerHand shows the hand over the tabs.
 
 
 MouseTab property:
 	Type: Long (Read only)
-	Returns the index of the tab under the mouse. If there is no tab under the mouse it returns -1.
+	Returns the index of the tab under the mouse, or -1 if the mouse is not over a tab.
 
 
 Name property:
@@ -465,129 +729,300 @@ Name property:
 	Returns the name used in code to identify the control.
 
 
+NewTabButton property:
+	Type: NTAutoYesNoConstants
+	Returns or sets whether the new tab button (a "+") is shown.
+	
+	Values:
+	ntYNAuto (default): shown only in the TDI Controls mode.
+	ntYes: shown.
+	ntNo: not shown.
+	
+	Clicking the button raises the NewTabButtonClick event. In the TDI Controls mode a new tab is added after the event unless it is canceled. In the other modes nothing is added: your code adds the tab, for example with AddTab.
+	The button is not counted in Tabs or VisibleTabs, it is not a tab that can be selected, and it is never saved with the form.
+
+
+NewTabButtonChar property:
+	Type: Long
+	Returns or sets the Unicode code of the character drawn as the new tab button, in the font of NewTabButtonFont.
+	0 (default) lets the control choose the character, according to the font that is used.
+
+
+NewTabButtonColor property:
+	Type: Long
+	Returns or sets the color of the new tab button (the "+") when it is drawn as a tab after the last one, while the mouse is not over it.
+	While it is not set, it follows ForeColor.
+	When the button is at the end of the tab strip, it uses StripButtonsColor instead.
+
+
+NewTabButtonColorHighlighted property:
+	Type: Long
+	Returns or sets the color of the new tab button (the "+") when it is drawn as a tab after the last one, while the mouse is over it.
+	While it is not set, it is inherited from NewTabButtonColor or from ForeColorHighlighted.
+	When the button is at the end of the tab strip, it uses StripButtonsColorHighlighted instead.
+
+
+NewTabButtonFont property:
+	Type: Font
+	Returns or sets the font of the new tab button character.
+	While it is not set, or if the font is not installed, the control uses "Segoe MDL2 Assets", or "Arial" if that one is not available. Setting it to Nothing goes back to that.
+
+
+NewTabButtonPosition property:
+	Type: NTNewTabButtonPositionConstants
+	Returns or sets where the new tab button goes.
+	
+	Values:
+	ntNBAfterLastTab (default): after the last tab, drawn as one more tab. While the tab strip is scrolled (TabsOverflow), it moves to the end of the strip.
+	ntNBStripEnd: always at the end of the tab strip, with the other strip buttons.
+
+
+NewTabButtonToolTipText property:
+	Type: String
+	Returns or sets the tooltip text of the new tab button. An empty string shows no tooltip.
+
+
 Object property:
 	Type: Object (Read only)
-	Returns the control instance without the extender.
+	Returns the control itself, without the extender that VB adds on the form.
 
 
 OLEDropMode property:
 	Type: NTOLEDropConstants
-	Returns/sets how a target component handles drop operations.
+	Returns or sets whether the control accepts OLE drop operations: ssOLEDropNone (default) or ssOLEDropManual, which raises the OLE drag and drop events.
 
 
 OLEDropOnOtherTabs property:
 	Type: Boolean
-	Returns or sets a value that determines if the user in a OLE drag operation will be able to drop over inactive tabs or just over the selected tab.
+	Returns or sets a value that determines whether, in an OLE drag and drop operation, the object can also be dropped over the inactive tabs. The default is True. With False, the drop events are raised only over the selected tab.
 
 
 Parent property:
 	Type: Object (Read only)
-	Returns the object in which the control is located.
+	Returns the form or other object where the control is.
 
 
 Pic16 property:
 	Type: Picture
-	Returns or sets a bitmap to display on the current tab, when the application is DPI aware.
+	Returns or sets a bitmap to show on the selected tab at 96 DPI (100%).
 	
-	Pic16 is used for 96 DPI, Pic20 for 120 DPI and Pic24 for 144 DPI. Others DPI setting are handled automatically.
-	The application need to have a manifest file to declare it as DPI aware.
-	When these pictures are set, the Picture property is ignored.
-	Use TabPic16, TabPic20 and TabPic24 properties to set or get the pictures of any tab at run time.
+	Pic16, Pic20 and Pic24 are three sizes of the same picture: 16, 20 and 24 pixels, for 96, 120 and 144 DPI. At other DPI settings the closest one is scaled. When any of them is set, Picture is not used.
+	The program needs to be DPI aware (declared in its manifest) for this to make a difference.
+	At run time, use TabPic16 to set it for any tab.
 
 
 Pic20 property:
 	Type: Picture
-	Returns or sets a bitmap to display on the current tab, when the application is DPI aware.
+	Returns or sets a bitmap to show on the selected tab at 120 DPI (125%).
 	
-	Pic16 is used for 96 DPI, Pic20 for 120 DPI and Pic24 for 144 DPI. Others DPI setting are handled automatically.
-	The application need to have a manifest file to declare it as DPI aware.
-	When these pictures are set, the Picture property is ignored.
-	Use TabPic16, TabPic20 and TabPic24 properties to set or get the pictures of any tab at run time.
+	Pic16, Pic20 and Pic24 are three sizes of the same picture: 16, 20 and 24 pixels, for 96, 120 and 144 DPI. At other DPI settings the closest one is scaled. When any of them is set, Picture is not used.
+	At run time, use TabPic20 to set it for any tab.
 
 
 Pic24 property:
 	Type: Picture
-	Returns or sets a bitmap to display on the current tab, when the application is DPI aware.
+	Returns or sets a bitmap to show on the selected tab at 144 DPI (150%).
 	
-	Pic16 is used for 96 DPI, Pic20 for 120 DPI and Pic24 for 144 DPI. Others DPI setting are handled automatically.
-	The application need to have a manifest file to declare it as DPI aware.
-	When these pictures are set, the Picture property is ignored.
-	Use TabPic16, TabPic20 and TabPic24 properties to set or get the pictures of any tab at run time.
+	Pic16, Pic20 and Pic24 are three sizes of the same picture: 16, 20 and 24 pixels, for 96, 120 and 144 DPI. At other DPI settings the closest one is scaled. When any of them is set, Picture is not used.
+	At run time, use TabPic24 to set it for any tab.
 
 
 Picture property:
 	Type: Picture
-	Returns or sets a bitmap or icon to display on the current tab. To get or set the picture of any tab at run time, use the TabPicture property.
-	If IconCharHex property value is set, anything in this Picture property or its companion Pic16, etc. is ignored.
+	Returns or sets the bitmap or icon shown on the selected tab. To read or set the picture of any tab, use TabPicture.
+	The picture is assumed to be designed for 96 DPI; at other DPI settings it is scaled as set by ScalePicturesForDPI. For pictures designed for several sizes, use Pic16, Pic20 and Pic24.
+	If the tab has an icon character (IconCharHex), the pictures are not shown.
 
 
 Redraw property:
 	Type: Boolean (Not available at design time)
-	Returns or sets a value that determines if the drawing of the control has to be updated with any change. Not available at design time.
+	Returns or sets a value that determines whether the control redraws itself after each change. Not available at design time.
+	Set it to False before making many changes by code, and back to True after them: the control then draws once.
 
 
 RightToLeft property:
 	Type: Boolean
-	Returns or sets a value that determines the text display direction and control visual appearance on a bidirectional system.
+	Returns or sets a value that determines whether the control is laid out from right to left, for languages like Arabic or Hebrew.
+	When True, the whole control is mirrored: the first tab is at the right, captions read from right to left, and the icons, close buttons and strip buttons swap their sides. It works with every Style and TabOrientation.
+	ClientLeft and GetTabLeft return values that are already mirrored.
 
 
 Rows property:
 	Type: Long (Default property, read only, not available at design time)
 	Returns the number of rows of tabs.
 	
-	The Rows property value can change its value when new tabs are dinamically added or, when TabWidthStyle is set to ntTWFixed or ntTWTabCaptionWidth and TabsPerRow was changed, or TabWidthStyle is set to ntTWStretchToFill and the Width of the control changed, the tab captions changed or the Font setting has changed.
-	You can use the Resize event to properly set the position of the contained controls.
-	The RowsChange notifies of the change of this property.
+	The rows depend on the number of visible tabs, their captions, the Font, TabWidthStyle, TabsPerRow, and the size of the control. With TabsOverflow set to scroll, there is always one row.
+	The RowsChange event is raised when it changes.
+
+
+ScalePicturesForDPI property:
+	Type: NTScalePicturesForDPIConstants
+	Returns or sets whether the pictures of the tabs (Picture, TabPicture) are scaled to the current DPI, and how.
+	They are assumed to be designed for 96 DPI.
+	
+	Values:
+	ntScalePicturesBalanced (default): a balance between smooth curves and sharp angles.
+	ntScalePicturesSmooth: favors smooth curves.
+	ntScalePicturesCrisp: favors sharp angles and straight lines.
+	ntScalePicturesDisabled: the pictures are shown at their own size.
+	
+	It affects only Picture and TabPicture: the pictures of Pic16, Pic20 and Pic24, and the icons of the TDI Forms mode, are always scaled when needed, with the balanced method.
 
 
 ShowDisabledState property:
-	Type: Boolean (Not available at design time)
-	Returns or sets a value that determines if the tabs color will be darkened when the control is disabled (Enabled = False).
-	If has no effect when the control is themed (Style = ntStyleWindows).
+	Type: Boolean
+	Returns or sets a value that determines whether the background of the tabs is painted in a grayed variant of its color when the control or the tab is disabled. The default is False.
+	The captions and icons of a disabled control or tab are always grayed, whatever this setting is.
+	It has no effect while the tabs are drawn with the Windows visual styles.
 
 
 ShowFocusRect property:
 	Type: Boolean
-	Returns or sets a value that determines if the focus rectangle is visible on a tab when the tab gets the focus.
+	Returns or sets a value that determines whether a focus rectangle is drawn around the caption of the selected tab while the control has the focus. The default is False.
+	Forms converted from SSTab keep the SSTab setting, which is True by default.
 
 
 ShowRowsInPerspective property:
 	Type: NTAutoYesNoConstants
-	Returns or sets a value that determines when the control has more that one row of tabs, if they will be drawn changing the horizontal position on each row.
+	Returns or sets a value that determines whether, when there are several rows of tabs, each row is drawn shifted from the one in front of it, like a stack of cards.
 	
-	If the value is ntYNAuto, the behavior will be determined by the Style property setting in this way: for ssStyleTabbedDialog and ssStylePropertyPage the rows will be drawn is perspective, and for ntStyleTabStrip without.
+	Values:
+	ntYNAuto (default): it depends on Style: in perspective for tabbed dialog and property page, like SSTab, and without perspective for TabStrip, Flat and Windows.
+	ntYes: in perspective.
+	ntNo: without perspective.
 
 
 SoftEdges property:
 	Type: Boolean
-	Returns or sets a value that determines if the edges will be displayed with less contrast: lighter and more colored.
-	With styles Flat and Windows it has no effect.
+	Returns or sets a value that determines whether the edges of the tabs and the body are drawn with less contrast: lighter and taking the colors of the tabs. The default is True.
+	It applies to the tabbed dialog, property page and TabStrip appearances. It has no effect in the Flat style and while the tabs are drawn with the Windows visual styles.
+
+
+StripButtonBackChar property:
+	Type: Long
+	Returns or sets the Unicode code of the character of the "scroll back" button, in the font of StripButtonsFont.
+	Give the character that points to the left: that is how it looks with the tabs at the top and from left to right. The control turns or swaps it for the other orientations and for RightToLeft.
+	0 (default) lets the control choose it.
+
+
+StripButtonBackToolTipText property:
+	Type: String
+	Returns or sets the tooltip text of the "scroll back" button. An empty string shows no tooltip.
+
+
+StripButtonForwardChar property:
+	Type: Long
+	Returns or sets the Unicode code of the character of the "scroll forward" button, in the font of StripButtonsFont.
+	Give the character that points to the right: that is how it looks with the tabs at the top and from left to right. The control turns or swaps it for the other orientations and for RightToLeft.
+	0 (default) lets the control choose it.
+
+
+StripButtonForwardToolTipText property:
+	Type: String
+	Returns or sets the tooltip text of the "scroll forward" button. An empty string shows no tooltip.
+
+
+StripButtonListChar property:
+	Type: Long
+	Returns or sets the Unicode code of the character of the tab list button, in the font of StripButtonsFont.
+	Give the character that points down: that is how it looks with the tabs at the top. The control turns it for the other orientations.
+	0 (default) lets the control choose it.
+
+
+StripButtonListToolTipText property:
+	Type: String
+	Returns or sets the tooltip text of the tab list button. An empty string shows no tooltip.
+
+
+StripButtonsColor property:
+	Type: Long
+	Returns or sets the color of the buttons at the end of the tab strip, while the mouse is not over them: the scroll and list buttons, and the new tab button and the close button when they are there.
+	These buttons are drawn over the background of the control, BackColor, and not over a tab. While it is not set, it is the text color of the container, or another color if that one doesn't contrast enough with BackColor.
+	These colors are not part of the themes.
+
+
+StripButtonsColorHighlighted property:
+	Type: Long
+	Returns or sets the color of the buttons at the end of the tab strip while the mouse is over them: the scroll and list buttons, and the new tab button when it is there. The close button there uses CloseButtonColorMouseHover.
+	While it is not set, it follows StripButtonsColor.
+
+
+StripButtonsFont property:
+	Type: Font
+	Returns or sets the font of the characters of the scroll and list buttons.
+	While it is not set, or if the font is not installed, the control uses the first one available of "Segoe MDL2 Assets", "Marlett" and "Arial". Setting it to Nothing goes back to that.
+
+
+StripButtonsRow property:
+	Type: NTStripButtonsRowConstants
+	Returns or sets on which row of tabs the buttons at the end of the tab strip go, when there is more than one row.
+	
+	Values:
+	ntSBSelectedTabRow (default): on the row of the selected tab, the one next to the body.
+	ntSBOuterRow: on the outer row.
+
+
+StripEndFreeSpace property:
+	Type: Single
+	Returns or sets a space that is left free after the last tab, in units of the container. The tabs don't use it, also when they are stretched to fill the row.
+	"After the last tab" is to the right with the tabs at the top, and it follows the orientation and RightToLeft.
+	A negative value raises error 380. The default is 0.
 
 
 Style property:
 	Type: NTStyleConstants
-	Returns or sets the style of the tabs.
+	Returns or sets the style of the control.
 	
-	For some other properties, it acts as a meta-property. It means that it sets at once certain features that can be set individually through other properties.
-	It performs internal settings for TabAppearance, TabWidthStyle, ShowRowsInPerspective, HighlightMode and HighlightModeSelectedTab as long as these properties are set to Auto.
-	The changes are internal, they are not reflected on these properties values (they remain set to Auto).
+	Values:
+	ssStyleTabbedDialog: the tabbed dialog of SSTab.
+	ssStylePropertyPage: the property page of SSTab.
+	ntStyleTabStrip: like the TabStrip control of the Common Controls.
+	ntStyleFlat: flat, with the many options of the Flat* properties.
+	ntStyleWindows (default): drawn with the Windows visual styles. When they are not available (classic Windows theme, high contrast, or a transparent BackStyle) it is drawn like TabStrip.
 	
-	It also can set if the control will have Windows Styles (the Windows "theme" look) or alrernatively a Flat appearance that unlocks other properties.
+	Style is a package: it decides the drawing, and the answer of the properties that are set to Auto: TabAppearance, TabWidthStyle, ShowRowsInPerspective, HighlightMode and HighlightModeSelectedTab. The answer is used internally; those properties remain set to Auto.
+	A property set to a value other than Auto doesn't follow Style any more. For example, TabAppearance can draw the tabs with the Windows visual styles under another style.
+	
+	A Theme may set Style and other properties at once.
 
 
 SubclassingMethod property:
 	Type: NTSubclassingMethodConstants
-	Returns/sets the sublassing method, what to subclass (only the UserControl or the Form too) and if the subclassing will be enabled at all. If subclassing is disabled or partially disabled some features may not work. This property is provided in case of incompatibility with other third party controls.
+	Returns or sets how the control subclasses windows, or that it doesn't.
+	
+	Values:
+	ntSMSetWindowSubclass (default): subclasses the control and its form with SetWindowSubclass.
+	ntSMSetWindowLong: subclasses the control and its form with SetWindowLong.
+	ntSM_SWSOnlyUserControl and ntSM_SWLOnlyUserControl: the same two methods, but only the control and not the form.
+	ntSMDisabled: no subclassing.
+	
+	It is provided in case of an incompatibility with other components. Without subclassing, or partially without it, some features don't work. For example, with the Windows visual styles the windowed contained controls can't be painted over the body (see ChangeControlsBackColor).
 
 
 Tab property:
 	Type: Variant
-	Returns or sets the selected tab by its index, TabKey or TabCaption.
+	Returns or sets the selected tab. This is the default property of the control.
+	It returns the index of the tab, or -1 when no tab is visible (at run time all the tabs can be hidden or removed).
+	To set it, give the index of the tab, its TabKey or its TabCaption. A hidden tab can't be selected, and it raises error 380, like an index out of range. A disabled tab can be selected by code, but not by the user.
+	
+	Selecting another tab raises BeforeClick, where the change can be canceled or redirected, then Click and TabChange.
 
 
 TabAppearance property:
 	Type: NTTabAppearanceConstants
-	Returns or sets a value that determines the appearance of the tabs. When the control is themed, the theme defines the appearance.
+	Returns or sets how the tabs are drawn.
+	
+	Values:
+	ntTAAuto (default): the appearance of the current Style.
+	ntTATabbedDialog: like the SSTab tabbed dialog.
+	ntTATabbedDialogRounded: the same, with rounded corners.
+	ntTAPropertyPage: like the SSTab property page.
+	ntTAPropertyPageRounded: the same, with rounded corners.
+	ntTATabStrip: like the TabStrip control without visual styles: the property page drawing with a second, inner light line.
+	ntTAFlat: the Flat drawing.
+	ntTAWindows: drawn by Windows with the visual styles. When they are not available, it is drawn like ntTATabStrip.
+	
+	TabAppearance changes only how the tabs are drawn. The other things that Style decides (the widths of the tabs, the highlight, the perspective of the rows) still follow Style.
 
 
 TabCaption property:
@@ -595,8 +1030,9 @@ TabCaption property:
 	
 	Additional parameter(s):
 	    In	Required	nTab	As	Variant
-	Returns or sets the caption of a tab identified by the Index parameter.
-	Captions can have accelerators by adding "&" before the letter that will act as the accelerator.
+	Returns or sets the caption of a tab, given by its index, TabKey or current caption.
+	A caption can have an access key: the letter after a "&" is underlined, and pressing ALT and that letter selects the tab. "&&" shows a "&".
+	Captions with characters outside ASCII are saved in the form so that they are read correctly on computers with another code page.
 
 
 TabCloseButton property:
@@ -604,7 +1040,14 @@ TabCloseButton property:
 	
 	Additional parameter(s):
 	    In	Required	nTab	As	Variant
-	Returns/sets if the specified tab shows a close button (a 'x'). ntYNAuto (the default) makes it follow the general CloseButton property.
+	Returns or sets whether a tab shows a close button.
+	
+	Values:
+	ntYNAuto (default): it follows CloseButton.
+	ntYes: the tab shows it, whatever CloseButton is.
+	ntNo: the tab doesn't show it.
+	
+	In the TDI modes the mode decides which tabs have a close button, and this property is not used.
 
 
 TabCloseButtonEnabled property:
@@ -612,7 +1055,7 @@ TabCloseButtonEnabled property:
 	
 	Additional parameter(s):
 	    In	Required	nTab	As	Variant
-	Returns/sets if the close button (the 'x') of the specified tab is enabled. When False, the button is shown grayed out and clicking it has no effect.
+	Returns or sets whether the close button of a tab is enabled. When False, the button is drawn grayed and clicking it does nothing. The default is True.
 
 
 TabControls property:
@@ -620,12 +1063,12 @@ TabControls property:
 	
 	Additional parameter(s):
 	    In	Required	nTab	As	Variant
-	    In/Out	Optional	GetChilds	As	Boolean
-	Returns a collection of the controls that are inside a tab. The tab must be identified by the nTab parameter.
+	    In/Out	Optional	IncludeChildren	As	Boolean
+	Returns a new collection with the controls that are on a tab.
+	With the optional IncludeChildren parameter set to True (default), it also includes the controls that are inside those controls, like the controls in a Frame. With False, only the ones placed directly on the NewTab.
+	It is not available at design time.
 	
-	The optional GetChilds parameter determines if only the controls that are directly contained in the NewTab will be returned, or also the controls contained into them. Its default value is True.
-	
-	It is not available at design time, and is read-only at run time.
+	Note: up to the previous version, the parameter was called GetChilds. Code that passes it by name has to be changed.
 
 
 TabCustomColor property:
@@ -634,9 +1077,13 @@ TabCustomColor property:
 	Additional parameter(s):
 	    In	Required	nTab	As	Variant
 	    In	Optional	ColorID	As	NTTabCustomColorIDConstants	Default value: ntCCBackColorTab (0)
-	Returns or sets a custom color for a tab. It may be a color when it is inactive or active.
+	Returns or sets a color of one tab, overriding the general color of the control for that tab.
 	
-	Note: The Style property must be set to other than Windows for this feature to work (the Windows "visual styles" must not be applied).
+	The ColorID parameter says which color: one of the NTTabCustomColorIDConstants constants, each named after the general property it overrides. For example, ntCCBackColorTab is the BackColorTabs of the tab, and ntCCForeColorSelectedTab its ForeColorSelectedTab. An invalid ColorID raises error 1382.
+	
+	Setting -1 removes the color of the tab, which then uses the general one again. Reading it always returns the color in effect for the tab.
+	The colors of a tab are inherited like the general ones: for example, a tab with its own ForeColor also gets it for the selected tab caption, unless that one is set too.
+	The background colors have no effect while the tabs are drawn with the Windows visual styles.
 
 
 TabData property:
@@ -644,7 +1091,8 @@ TabData property:
 	
 	Additional parameter(s):
 	    In	Required	nTab	As	Variant
-	Used to store any data as a Long value, similar to ListBox's ItemData. If the tabs are reordered, it will keep this data for this tab.
+	Returns or sets a number of your own, of type Long, for each tab, like the ItemData of a ListBox.
+	It stays with the tab when the tabs are reordered.
 
 
 TabEnabled property:
@@ -652,24 +1100,47 @@ TabEnabled property:
 	
 	Additional parameter(s):
 	    In	Required	nTab	As	Variant
-	Returns or sets a value that determines whether the tab identified by the Index argument enabled.
+	Returns or sets whether a tab is enabled. A disabled tab is drawn grayed and the user can't select it; it can still be selected by code.
+	If the selected tab is disabled, it remains selected.
 
 
 TabFixedWidth property:
-	Type: Long
+	Type: Single
 	
 	Additional parameter(s):
 	    In	Required	nTab	As	Variant
-	Returns/sets a fixed width for a tab. To set it for its automatic width (according to the TabWidthStyle setting), set it to 0 (zero).
+	Returns or sets a fixed width for a tab, in units of the container. 0 (default) gives it the width that TabWidthStyle and the other settings give to the tabs. A negative value raises error 380.
+	It takes precedence over TabMinWidth, TabMaxWidth and TabGeneralFixedWidth.
+	In the side orientations with horizontal captions, it sets the size of the tab along the tab strip.
+	It is not available at design time.
 	
-	Note: you can use the GetTabWidth function (or GetTabHeight for vertical orientations) for getting the normal size of the tab. That must be done while TabFixedWidth is set to 0 (zero).
-	
-	This property is not available at design time.
+	Tip: to know the width a tab gets by itself, read it with GetTabWidth (or GetTabHeight in the side orientations) while TabFixedWidth is 0.
+
+
+TabGeneralFixedWidth property:
+	Type: Single
+	Returns or sets the width of all the tabs when TabWidthStyle is ntTWGeneralFixedWidth or ntTWGeneralFixedWidthFillRows, in units of the container.
+	With those styles, TabMinWidth and TabMaxWidth are not used. The tabs that have a TabFixedWidth keep theirs.
+	It can't be 0: the minimum is 150 twips, and a smaller value raises error 380. The default is 1.25 inches (120 pixels at 96 DPI).
 
 
 TabHeight property:
 	Type: Single
-	Returns or sets the height of tabs.
+	Returns or sets the height of the tabs, in units of the container. For the side orientations it is their width.
+	While AutoTabHeight is True it is calculated by the control. Setting it sets AutoTabHeight to False.
+	Zero or a negative value raises error 380. A value larger than the control is reduced.
+
+
+TabHeightStyleForHorizontal property:
+	Type: NTTabHeightStyleForHorizontalConstants
+	Returns or sets how the tabs share the length of the tab strip in the side orientations with horizontal captions (ntTabOrientationLeftHorizontal, ntTabOrientationRightHorizontal, ntTabOrientationLeftBottomHorizontal and ntTabOrientationRightBottomHorizontal). In those orientations TabWidthStyle is not used.
+	
+	Values:
+	ntTHMaxCaptionHeight (default): all the tabs of a column have the height of the tallest tab of that column.
+	ntTHTabCaptionHeight: each tab is as tall as its own caption (wrapped if needed) and icon need.
+	ntTHStretchToFill: each tab is as tall as its own content, the columns are balanced, and every column is stretched to the length of the strip.
+	ntTHFill: the tabs are stretched to fill the whole strip.
+	ntTHFixed: every tab is TabHeight tall.
 
 
 TabIconCharHex property:
@@ -677,7 +1148,8 @@ TabIconCharHex property:
 	
 	Additional parameter(s):
 	    In	Required	nTab	As	Variant
-	Returns or sets a string representing the hexadecimal value of the character that will be used as the icon in the tab identified by the Index parameter. If this property is set, anything in the picture properties is ignored.
+	Returns or sets the character used as the icon of a tab, as its Unicode code in hexadecimal, for example "E713" or "&HE713&". The character is drawn with the font of TabIconFont.
+	While a tab has an icon character, its pictures are not shown. An empty string removes the icon.
 
 
 TabIconFont property:
@@ -685,8 +1157,17 @@ TabIconFont property:
 	
 	Additional parameter(s):
 	    In	Required	nTab	As	Variant
-	Returns or sets the Font that will be used to draw the icon of the tab identified by the Index parameter.
-	Each tab can have a different font for its icon.
+	Returns or sets the font used to draw the icon character of a tab. Each tab can have a different font.
+	If the font is not installed on the computer where the program runs, the tab doesn't show the icon character.
+
+
+TabIconInColor property:
+	Type: Boolean
+	
+	Additional parameter(s):
+	    In	Required	nTab	As	Variant
+	Returns or sets whether the icon character of a tab is drawn with the colors of the font itself, as it is done with emoji and color icon fonts. Then the icon colors are not used, except while the tab is disabled.
+	It needs Windows 8.1 or later; on earlier versions the icon is drawn in one color.
 
 
 TabIconLeftOffset property:
@@ -694,7 +1175,7 @@ TabIconLeftOffset property:
 	
 	Additional parameter(s):
 	    In	Required	nTab	As	Variant
-	Returns or sets the value in pixels of the offset for the left position when drawing the icon of the tab identified by the Index parameter. It can be negative.
+	Returns or sets a horizontal offset, in pixels, for the icon or picture of a tab. It can be negative. The value is scaled by the DPI.
 
 
 TabIconTopOffset property:
@@ -702,7 +1183,14 @@ TabIconTopOffset property:
 	
 	Additional parameter(s):
 	    In	Required	nTab	As	Variant
-	Returns or sets the value in pixels of the offset for the top position when drawing the icon of the tab identified by the Index parameter. It can be negative.
+	Returns or sets a vertical offset, in pixels, for the icon or picture of a tab. It can be negative. The value is scaled by the DPI.
+
+
+TabIndex property:
+	Type: Integer
+	Returns or sets the position of the control in the TAB key order of its form.
+	On a form, this is the property that VB adds to every control. The control also exposes it for code that uses it through a variable typed As NewTab.
+	It is not related to the tabs of the control: the selected tab is Tab.
 
 
 TabKey property:
@@ -710,37 +1198,70 @@ TabKey property:
 	
 	Additional parameter(s):
 	    In	Required	nTab	As	Variant
-	A key that can be used to set the current/active/selected tab with the Tab property. Keys are case insensitive.
-	Or alternatively used to hold custom String data similar to TabTag.
+	Returns or sets a key for a tab: a name to identify it that doesn't change when the tabs are reordered.
+	The key can be used instead of the index in Tab and in all the properties that take a tab, and with FindTab. Keys are not case sensitive.
+	A key can't start with a number (error 380), and two tabs can't have the same key (error 457). An empty string means no key.
 
 
 TabMaxWidth property:
 	Type: Single
-	Returns or sets the maximum width of each tab. If set to 0 (zero), it means no maximun.
-	
-	When the TabWidthStyle property setting is ntTWFixed and the TabMaxWidth property is set to 0 (zero), the control automatically sizes the tabs based on TabsPerRow property, to fit evenly across the control.
-	Unlike the original SSTab, this property is no longer ignored when Style property is set to ssStylePropertyPage.
-	
-	If TabWidthStyle property setting is ntTWTabCaptionWidth, ntTWTabStripEmulation or ntTWTabCaptionWidthFillRows, It determines the maximun width that a tab can have, regardless of the length of the caption.
-	When a tab caption doesn't fit in the available width, if WordWrap is set to True it will have an additional line, and if it is set to False it will cut the caption text and add an ellipsis.
-	In the case when TabWidthStyle setting is ntTWTabStripEmulation and it is needed more space than TabMaxWidth * Rows to fill all the rows space, then the tabs can have more width than the specified in the TabMaxWidth setting.
+	Returns or sets the maximum width of the tabs, in units of the container. 0 (default) means no maximum.
+	It applies when the width of the tabs comes from their captions. A caption that doesn't fit is wrapped in two lines if WordWrap is True, or cut with an ellipsis if not.
+	With ntTWTabStripEmulation and ntTWStretchToFill, the tabs can be wider than this when they are stretched to fill the rows.
+	It doesn't apply with ntTWEqualWidth, and setting it then at design time raises error 380. With ntTWGeneralFixedWidth it is not used.
+	The minimum is 150 twips.
 
 
 TabMinWidth property:
 	Type: Single
-	Returns or sets the minimun width of each tab. If set to 0 (zero), it means no minimun.
-	
-	Note: this property has no effect if TabWidthStyle is set to ntTWTabCaptionWidth or ntTWFixed.
+	Returns or sets the minimum width of the tabs, in units of the container. 0 (default) means no minimum.
+	It applies when the width of the tabs comes from their captions. It doesn't apply with ntTWEqualWidth, and setting it then at design time raises error 380. With ntTWGeneralFixedWidth it is not used.
+	If it is greater than TabMaxWidth, TabMaxWidth is raised to it.
 
 
 TabMousePointerHand property:
 	Type: Boolean
-	Returns or sets a value that determines if the mouse pointer over tabs will be the hand.
+	Returns or sets a value that determines whether the mouse pointer is a hand over the tabs. The default is False.
+
+
+TabMovable property:
+	Type: Boolean
+	
+	Additional parameter(s):
+	    In	Required	nTab	As	Variant
+	Returns or sets whether the user can move a tab by dragging it, when CanReorderTabs is True. The default is True.
+	A tab that can't be moved also stays in its place when others are dragged around it. So the fixed tabs split the strip into zones: a tab can only be dragged inside the zone between the fixed tabs around it.
+	It affects only the user: MoveTab can still move the tab.
 
 
 TabOrientation property:
 	Type: NTTabOrientationConstants
-	Returns or sets a value that determines on which side of the control the tabs will appear.
+	Returns or sets on which side of the control the tabs are, and how they are aligned.
+	
+	Values:
+	ssTabOrientationTop, ssTabOrientationBottom, ssTabOrientationLeft and ssTabOrientationRight: the four of SSTab. The captions of the side tabs are rotated.
+	ntTabOrientationTopRight, ntTabOrientationBottomRight, ntTabOrientationLeftTop and ntTabOrientationRightBottom: the same sides, with the tabs aligned at the other end.
+	ntTabOrientationLeftHorizontal, ntTabOrientationRightHorizontal, ntTabOrientationLeftBottomHorizontal and ntTabOrientationRightBottomHorizontal: the tabs on a side with horizontal captions. How the tabs share the length of the side is set by TabHeightStyleForHorizontal.
+	
+	The captions of the Left and LeftTop orientations read from bottom to top, and those of Right and RightBottom from top to bottom.
+	With RightToLeft, left and right swap.
+	
+	Note: the value 10 used to be called ntTabOrientationLeftTopHorizontal, and now is ntTabOrientationLeftBottomHorizontal. Code that uses the old name doesn't compile; forms saved with earlier versions are converted when they are loaded.
+
+
+TabPaddingHeight property:
+	Type: Long
+	Returns or sets the space, in pixels, above and below the caption and icon of a tab, inside the tab. It is added to the height of a line of the Font.
+	With AutoTabHeight set to True, it changes the height of the tabs.
+	The value is scaled by the DPI. The default is 4.
+	With 0, there is still the space that the font itself keeps above (for accents on capital letters) and below (for letters that go down), which is different for each font.
+
+
+TabPaddingWidth property:
+	Type: Long
+	Returns or sets the space, in pixels, on each side between the caption and icon of a tab and the edges of the tab.
+	It is part of the width of the tabs when it comes from their captions.
+	The value is scaled by the DPI. It can be from 0 to 40; the default is 5.
 
 
 TabPic16 property:
@@ -748,11 +1269,9 @@ TabPic16 property:
 	
 	Additional parameter(s):
 	    In	Required	nTab	As	Variant
-	Returns or sets the bitmap to be displayed on the tab specified by the Index parameter, when the application is DPI aware.
-	TabPic16 is used for 96 DPI, TabPic20 for 120 DPI and TabPic24 for 144 DPI. Others DPI setting are handled automatically.
-	The application need to have a manifest file to declare it as DPI aware.
-	When these pictures are set, the TabPicture property is ignored.
-	They can be accessed at design time through a property page.
+	Returns or sets the bitmap of a tab for 96 DPI (100%), 16 pixels.
+	TabPic16, TabPic20 and TabPic24 are three sizes of the same picture, for 96, 120 and 144 DPI. At other DPI settings the closest one is scaled. When any of them is set, TabPicture is not used.
+	At design time they are set in the Icons page of the property pages.
 
 
 TabPic20 property:
@@ -760,11 +1279,8 @@ TabPic20 property:
 	
 	Additional parameter(s):
 	    In	Required	nTab	As	Variant
-	Returns or sets the bitmap to be displayed on the tab specified by the Index parameter, when the application is DPI aware.
-	TabPic16 is used for 96 DPI, TabPic20 for 120 DPI and TabPic24 for 144 DPI. Others DPI setting are handled automatically.
-	The application need to have a manifest file to declare it as DPI aware.
-	When these pictures are set, the TabPicture property is ignored.
-	They can be accessed at design time through a property page.
+	Returns or sets the bitmap of a tab for 120 DPI (125%), 20 pixels.
+	TabPic16, TabPic20 and TabPic24 are three sizes of the same picture, for 96, 120 and 144 DPI. At other DPI settings the closest one is scaled. When any of them is set, TabPicture is not used.
 
 
 TabPic24 property:
@@ -772,11 +1288,8 @@ TabPic24 property:
 	
 	Additional parameter(s):
 	    In	Required	nTab	As	Variant
-	Returns or sets the bitmap to be displayed on the tab specified by the Index parameter, when the application is DPI aware.
-	TabPic16 is used for 96 DPI, TabPic20 for 120 DPI and TabPic24 for 144 DPI. Others DPI setting are handled automatically.
-	The application need to have a manifest file to declare it as DPI aware.
-	When these pictures are set, the TabPicture property is ignored.
-	They can be accessed at design time through a property page.
+	Returns or sets the bitmap of a tab for 144 DPI (150%), 24 pixels.
+	TabPic16, TabPic20 and TabPic24 are three sizes of the same picture, for 96, 120 and 144 DPI. At other DPI settings the closest one is scaled. When any of them is set, TabPicture is not used.
 
 
 TabPicture property:
@@ -784,29 +1297,48 @@ TabPicture property:
 	
 	Additional parameter(s):
 	    In	Required	nTab	As	Variant
-	Returns or sets the bitmap or icon to display on the tab specified by the Index argument.
+	Returns or sets the bitmap or icon shown on a tab.
+	It is assumed to be designed for 96 DPI; at other DPI settings it is scaled as set by ScalePicturesForDPI.
+	If the tab has an icon character (TabIconCharHex) or pictures in TabPic16, TabPic20 or TabPic24, this picture is not shown.
 
 
 Tabs property:
 	Type: Long
-	Returns or sets the total number of tabs.
-
-
-TabsEndFreeSpace property:
-	Type: Long
-	Returns or sets the size of an optional free space after the last tab (for top-otiented tabs that is the rightmost tab).
+	Returns or sets the number of tabs. The new tab button is not counted.
+	Adding tabs adds them at the end. Reducing the number removes the last ones: if any of them holds contained controls, error 1390 is raised and nothing is removed (SSTab raised 380).
+	It can be from 0 to 1000 at run time, and from 1 at design time. In the TDI modes it can't be changed at design time (error 1380).
+	To insert or remove one tab at a given position, use AddTab and RemoveTab.
 
 
 TabSeparation property:
 	Type: Long
-	Returns or sets the number of pixels of separation between tabs. The value must be between 0 (zero) and 20.
-	When the control has Windows visual styles (Windows "theme"), values less than two pixels are ignored, since the themed tabs have two pixels of separation by design.
+	Returns or sets the space between the tabs, in pixels. The value is scaled by the DPI. It can be from 0 (default) to 20.
+
+
+TabsOverflow property:
+	Type: NTTabsOverflowConstants
+	Returns or sets what the tab strip does when the tabs don't fit in one row.
+	
+	Values:
+	ntTOMultiRow (default): more rows of tabs are added, as SSTab does.
+	ntTOScroll: there is always one row, and when it doesn't fit, two buttons at its ends scroll it. The mouse wheel over the strip scrolls it too.
+	ntTOScrollWithList: the same, plus a button that shows the list of all the tabs in a menu, to go to any of them.
+	
+	The scroll and list buttons are shown only while the row doesn't fit. Holding a scroll button down repeats, like a key. The selected tab is always scrolled into view.
+	With scrolling, TabsPerRow used with ntTWEqualWidth is the number of tabs seen at a time.
 
 
 TabsPerRow property:
 	Type: Long
-	Returns or sets the number of tabs for each row.
-	If TabWidthStyle property setting is other than ntTWFixed or ntTWTabCaptionWidth, this setting has no effect. If TabWidthStyle property is set to Auto, it has effect only for styles ssStyleTabbedDialog and ssStylePropertyPage.
+	Returns or sets the number of tabs on each row. A value less than 1 raises error 380. The default is 3.
+	It applies when TabWidthStyle is ntTWEqualWidth, ntTWTabCaptionWidth or ntTWGeneralFixedWidth (or ntTWAuto resolving to one of them). With the other settings the control decides how many tabs go on a row.
+	With ntTWEqualWidth, all the tabs have the width of the control divided by TabsPerRow. With fixed widths that don't fit in the row, the last tab goes out of the control: TabsPerRow decides how many tabs go on a row and none moves to the next one.
+
+
+TabStop property:
+	Type: Boolean
+	Returns or sets whether the user can give the focus to the control with the TAB key.
+	On a form, this is the property that VB adds to every control. The control also exposes it for code that uses it through a variable typed As NewTab.
 
 
 TabTag property:
@@ -814,7 +1346,8 @@ TabTag property:
 	
 	Additional parameter(s):
 	    In	Required	nTab	As	Variant
-	Similar to a Tag property, but for each tab. You can store any string there. If the tabs are reordered, it will keep this data for this tab.
+	Returns or sets a String of your own for each tab, like the Tag property of a control.
+	It stays with the tab when the tabs are reordered.
 
 
 TabToolTipText property:
@@ -822,13 +1355,14 @@ TabToolTipText property:
 	
 	Additional parameter(s):
 	    In	Required	nTab	As	Variant
-	Returns or sets the text that will be shown as tooltip text when the mouse pointer is over the tab identified by the Index parameter.
-	If the tab has not a TabToolTipText set, it will show the control ToolTipText, if there is any text set on that property.
+	Returns or sets the tooltip text shown while the mouse is over a tab.
+	A tab without tooltip text shows the ToolTipText of the control, if it has one.
 
 
 TabTransition property:
-	Type: NTTabTransitionConstants
-	Returns or sets a value that determines whether the transition between tabs will be with an effect that smooths the transition (and its speed).
+	Type: NTAnimationSpeedConstants
+	Returns or sets a value that determines whether the change of tab is shown with a smooth transition effect, and its speed. The default is ntAnimationNone: the new tab is shown at once.
+	It works only at run time and when the animations of Windows are turned on.
 
 
 TabVisible property:
@@ -836,94 +1370,129 @@ TabVisible property:
 	
 	Additional parameter(s):
 	    In	Required	nTab	As	Variant
-	Returns or sets a value that determines whether the tab identified by the Index will be visible.
+	Returns or sets whether a tab is visible.
+	Hiding the selected tab selects a neighbor tab: the previous one, or the next one if there is none. If that change is canceled in the BeforeClick event, the tab is not hidden.
+	At run time all the tabs can be hidden; then Tab is -1, and showing a tab again selects it.
+	A hidden tab keeps its index and its controls. The close button hides the tab instead of removing it.
 
 
 TabWidthStyle property:
 	Type: NTTabWidthStyleConstants
-	Returns or sets a value that determines the justification or width of the tabs.
+	Returns or sets how the width of the tabs is decided.
 	
-	ntTWFixed: All tabs have the same width. If TabMaxWidth is 0 (zero), the tab width will be the available space / TabsPerRow. If TabMaxWidth is greater than 0 (zero), that setting will determine the tabs width.
+	Values:
+	ntTWAuto (default): it depends on Style, and on the TDI mode and the new tab button. See below.
+	ntTWEqualWidth: all the tabs have the same width: the width of the control divided by TabsPerRow. In earlier versions this value was called ntTWFixed.
+	ntTWTabCaptionWidth: each tab is as wide as its caption and icon need, within TabMinWidth and TabMaxWidth. A new row starts every TabsPerRow tabs. If a row doesn't fit, its tabs are made narrower.
+	ntTWTabStripEmulation: like the TabStrip control: each tab as wide as its caption, and when they don't fit in one row, they are distributed evenly in several rows and stretched so that every row fills the width of the control. If they fit in one row, they are not stretched.
+	ntTWStretchToFill: like ntTWTabStripEmulation, but a single row is also stretched to fill the width.
+	ntTWTabCaptionWidthFillRows: each tab as wide as its caption; when they don't fit in one row a new row is started, without distributing them evenly, so one row can have eight tabs and the next one one. With several rows, each row is stretched to fill the width.
+	ntTWGeneralFixedWidth: all the tabs have the width of TabGeneralFixedWidth, TabsPerRow per row.
+	ntTWGeneralFixedWidthFillRows: all the tabs start with the width of TabGeneralFixedWidth, and the rows are filled as with ntTWTabCaptionWidthFillRows.
 	
-	ntTWTabCaptionWidth: The width of the tabs will be determined by the size of the caption + the size of the tab picture (if any). TabMinWidth and TabMaxWidth settings can set a boundary for the width that a tab can have. Unlike the original SSTab control, if the sum of the widths of all the tabs in a row exceeds the available space, the widths of the tabs in that row are shrunken to fit in the available space.
+	ntTWAuto resolves to:
+	- in a TDI mode, or with the new tab button: ntTWTabCaptionWidthFillRows;
+	- tabbed dialog: ntTWEqualWidth, like SSTab;
+	- property page: ntTWTabCaptionWidth, like SSTab;
+	- TabStrip: ntTWTabStripEmulation;
+	- Flat and Windows: ntTWStretchToFill.
 	
-	ntTWTabStripEmulation: Same as ntTWTabCaptionWidth but if the control is not wide enough to show all the tabs, it starts a new row.
-	If the control needs to distribute the tabs in more than one row because there is not enough space to fit them all in one row, it will do so by distributing them evenly on the rows. The width of each tab will be increased so that each row of tabs spans the width of the control. 
-	But if all the tabs fit in one row, the tabs are not justified (it works the same as ntTWTabCaptionWidth).
-	
-	ntTWStretchToFill: same as ntTWTabStripEmulation but when there is only one row, if the captions are not wide enough to fill the row, they are stretched to do so.
-	
-	ntTWTabCaptionWidthFillRows: it works as ntTWTabStripEmulation but if one row is not enough to accomodate all the tabs, it starts a new row but does not distribute all the tabs evenly between rows as ntTWStretchToFill does. So it can show 8 tabs in one row and 1 tab in another row.
-	
-	ntTWAuto: The behavior is defined by the Style and TDIMode property settings, in this way:
-	TDIMode <> <i>ntTDIModeNone</i>: ntTWTabCaptionWidthFillRows
-	<i>ssStyleTabbedDialog</i>: ntTWFixed
-	<i>ssStylePropertyPage</i>: ntTWTabCaptionWidth
-	<i>ntStyleTabStrip</i>: ntTWTabStripEmulation
-	<i>ntStyleFlat</i>: ntTWStretchToFill
-	<i>ntStyleWindows</i>: ntTWStretchToFill
-	
-	Note: if the TabOrientation property is set to ntTabOrientationLeftHorizontal or ntTabOrientationRightHorizontal this property has no effect since the tab widths are defined by the widest tab caption. The minimal height is defined by the TabHeight property.
-	Also TabMinWidth and TabMaxWidth property settings can be used to set the minimun and maximun tabs size for those orientations.
+	A tab with TabFixedWidth keeps its own width with any of them.
+	In the side orientations with horizontal captions this property is not used: see TabHeightStyleForHorizontal.
 
 
 Tag property:
 	Type: String
-	Returns or sets an expression that stores any extra data needed for your program.
+	Returns or sets a String of your own for the control.
+	For one string per tab, use TabTag.
+
+
+TDIDefaultTabCaption property:
+	Type: String
+	Returns or sets, in the TDI Controls mode, the caption of the tab that is opened at the start and when the last tab is closed. The default is "Default tab".
+	The TDIBeforeNewTab event can still change it for each tab.
+
+
+TDIFormsIconSize property:
+	Type: NTTDIFormsIconSizeConstants
+	Returns or sets, in the TDI Forms mode, the size at which the icons of the forms are shown in the tabs. The size is given for 96 DPI and is scaled with the DPI, like TabPic16 and its companions. The default is ntTDIFormsIcon24.
+	Form icons are 32 x 32, which is usually too large for a tab. ntTDIFormsIconNative shows them at their own size.
+	The TDIFormsShowTabIcon event can change the size for one tab.
 
 
 TDIMode property:
 	Type: NTTDIModeConstants
-	Returns/sets a value that determines if the control will be used for TDI (tabbed document interface) and which mode (controls or forms). The control behavior changes significantly in this mode because some things are automated.
+	Returns or sets whether the control works as a TDI (Tabbed Document Interface) and in which mode. In a TDI mode the user opens and closes tabs, and the control handles them.
 	
-	ntTDIModeControls: Each tab is a "document". Add controls in the tab 0, all control arrays with index 0. For each new tab the controls will replicate. Add also the business code that your program needs to work.
+	Values:
+	ntTDIModeNone (default): normal mode.
+	ntTDIModeControls: each tab is a "document" made of the controls of tab 0, which is a template and is hidden at run time. Put the controls on tab 0 at design time, all of them as control arrays with Index 0. For each new tab the controls are loaded again (with Load) and placed on it. Your code tells the copies apart by their Index. A new tab button ("+") opens new tabs.
+	ntTDIModeForms: the NewTab hosts the other forms of the program, like an MDI form but with tabs. Place it on the main form, sized to fill it; every form that is shown afterwards opens in a new tab, and closing the tab unloads it. Tab 0, called "Home", is always there and can't be closed: it can hold controls of the main form, like a menu of the program.
 	
-	ntTDIModeForms: Add the tab control to the main form, resize the tab control to fit the form, and all the other forms should work automatically.
-	It is like an MDI form, but tabbed, that's why it is called 'TDI'. 
+	It can only be changed on a control that was just placed on the form, with its initial tabs and no contained controls. At design time the property pages say why it can't be changed; at run time error 1391 is raised.
+	At run time it can be set on a control created with Controls.Add, before the control is shown. For the Controls mode, set the mode, then put the template controls into tab 0 with Container and ControlSetTab; the mode starts when the control is shown.
 	
-	MDI stands for Multiple Documents Interface.
-	SDI stands for Single Document Interface.
-	TDI is Tabbed Document Interface.
+	In the TDI modes:
+	- AddTab and RemoveTab are not available, and Tabs can't be changed at design time.
+	- The mode decides which tabs have a close button.
+	- TDIBeforeNewTab, TDINewTabAdded, TDIBeforeClosingTab and TDITabClosed tell when tabs are opened and closed. Their TabNumber parameter identifies a tab for as long as it lives; nTab is its current index, which changes when the tabs are reordered.
+
+
+TDINewTabCaption property:
+	Type: String
+	Returns or sets, in the TDI Controls mode, the caption of the tabs added with the new tab button. The default is "New tab".
+	The TDIBeforeNewTab event can still change it for each tab.
 
 
 Theme property:
 	Type: String
-	Returns or sets a value in string format that determines a set of property settings with a name, called "theme".
+	Returns or sets the theme of the control, by its name.
+	
+	A theme is a named set of property settings, mostly of appearance: colors, style, highlight, Flat settings and others. Setting Theme applies those settings once: they are written into the properties, saved with the form like any other setting, and can be changed afterwards. The control doesn't keep a link to the theme.
+	Reading Theme returns the name of the theme that matches the current settings, or "Custom" if none matches. So after changing a property of a theme by hand, it returns "Custom".
+	The names are not case sensitive. A name that doesn't exist raises error 380.
+	
+	The fonts, the texts and the colors of the strip buttons are not part of the themes.
+	The Themes page of the property pages shows the themes with a preview, and allows to save custom themes to a file, to the registry, or to the form.
 
 
 Themes property:
 	Type: NewTabThemes (Read only)
-	Returns a collection of NewTabTheme objects. They basically provide the names of the themes that are available (and you can set in the Theme property).
+	Returns the collection of the available themes, as NewTabTheme objects: the built-in ones and the custom ones saved by the developer.
+	Their names can be set in the Theme property.
 
 
 ToolTipText property:
 	Type: String
-	Returns or sets a the tool tip text to be displayed when the mouse is over the control.
+	Returns or sets the tooltip text shown while the mouse is over the control.
+	The tabs can have their own, with TabToolTipText.
 
 
 Top property:
 	Type: Single
-	Returns or sets the distance between the internal top edge of the control and the top edge of its container.
+	Returns or sets the distance between the top edge of the control and the top edge of its container.
+	See the note about DPI in Left.
 
 
 UseMaskColor property:
 	Type: Boolean
-	Returns or sets a value that determines whether the color assigned in the MaskColor property is used as a mask (that is used to set transparent regions in the tab pictures).
+	Returns or sets a value that determines whether the color of MaskColor is shown transparent in the bitmaps of the tabs. The default is True.
 
 
 Visible property:
 	Type: Boolean
-	Returns or sets a value indicating whether the control is visible or hidden.
+	Returns or sets whether the control is visible.
+	To hide one tab, use TabVisible.
 
 
 VisibleTabs property:
 	Type: Long (Read only)
-	Returns the numbers of tabs that are visible. [TabVisible(Index) = True].
+	Returns the number of visible tabs, the ones with TabVisible set to True. The new tab button is not counted.
 
 
 WhatsThisHelpID property:
 	Type: Long
-	Returns or sets an associated context number for the control.
+	Returns or sets the context number of the What's This help topic of the control.
 
 
 Width property:
@@ -933,18 +1502,44 @@ Width property:
 
 WordWrap property:
 	Type: Boolean
-	Returns or sets a value that determines how the control displays the text on each tab.
-	In a control that its size and/or the tab texts change dinamically, to make sure that text will not be truncated if it is too long, set the WordWrap property to True, the TabMaxWidth property to 0, and the TabHeight property to a height that allows to view the longest piece of text.
+	Returns or sets a value that determines whether a caption that doesn't fit in its tab is split in two lines. When False, it is cut and ends in an ellipsis. The default is True.
+	With AutoTabHeight set to True, the height is calculated for one line, so the second line may be cut. See AutoTabHeight.
 
 
 Methods: 
+
+AddTab function:
+	Return Type:	Long
+	Parameter(s):
+	    In	Optional	Caption	As	Variant
+	    In	Optional	Key	As	String
+	    In	Optional	ToolTipText	As	String
+	    In	Optional	CloseButton	As	NTAutoYesNoConstants	Default value: ntYNAuto (2)
+	    In	Optional	Index	As	Long	Default value: -1
+
+	Adds a tab and returns the index where it was placed, or -1 if it could not be added.
+	
+	Parameters, all optional:
+	Caption: the caption of the tab. If it is not given, the caption is "Tab" and the index. An empty string gives a tab without caption, for a tab that shows only an icon.
+	Key: the TabKey of the tab. A key that is already used raises error 457.
+	ToolTipText: the TabToolTipText of the tab.
+	CloseButton: the TabCloseButton setting of the tab.
+	Index: where to insert it, from 0 to Tabs. Without it, the tab is added after the last one. An invalid index raises error 5.
+	
+	Everything is checked before the tab is created, so when an error is raised no tab was added.
+	The new tab is not selected. To select it: NewTab1.Tab = NewTab1.AddTab("Caption")
+	It is not available in the TDI modes (error 1387).
+	
+	Tip: to find the tab later even if the user reorders the tabs, give it a Key.
+
 
 ControlGetTab function:
 	Return Type:	Long
 	Parameter(s):
 	    In/Out	Required	nControl	As	Variant
 
-	Returns the tab where a control is.
+	Returns the index of the tab where a contained control is, or -1 if the control is not on the NewTab.
+	The nControl parameter is the control, or its name as a String; for an element of a control array, with its index, as in "Text1(2)".
 
 
 ControlMove method:
@@ -956,7 +1551,14 @@ ControlMove method:
 	    In	Optional	Height	As	Variant
 	    In	Optional	TabToMoveTheControl	As	Variant
 
-	Replaces the ControlName.Move method. The difference is that it takes into account the Left offset of controls on inactive tabs.
+	Moves a contained control, like its Move method, but with the position it has when its tab is selected.
+	The controls of the tabs that are not selected are moved to the left to hide them (LeftOffsetToHide), so calling Move on them directly would show them. ControlMove takes that into account.
+	
+	Parameters:
+	nControl: the control, or its name as a String; for an element of a control array, with its index, as in "Text1(2)".
+	Left, Top: the new position, in units of the container.
+	Width, Height: optional, the new size.
+	TabToMoveTheControl: optional, a tab to move the control to, by index, key or caption.
 
 
 ControlSetTab method:
@@ -964,14 +1566,23 @@ ControlSetTab method:
 	    In/Out	Required	nControl	As	Variant
 	    In	Required	nTab	As	Variant
 
-	Sets or change the tab where a contained control is.
+	Moves a contained control to another tab.
+	nControl is the control, or its name as a String; for an element of a control array, with its index, as in "Text1(2)". nTab is the tab, by index, key or caption.
+	The control keeps its position inside the body.
+	
+	To put a control of the form into the NewTab by code, set its Container first:
+	
+	Set Text1.Container = NewTab1
+	NewTab1.ControlSetTab Text1, 2
+	
+	If the control is not found, error 1501 is raised.
 
 
 Drag method:
 	Parameter(s):
 	    In/Out	Optional	Action	As	Variant
 
-	Begins, ends, or cancels a drag operation.
+	Begins, ends, or cancels a drag operation of the control.
 
 
 FindTab function:
@@ -981,17 +1592,51 @@ FindTab function:
 	    In	Optional	Method	As	NTFindTabMethodConstants	Default value: ntFindCaption (0)
 	    In/Out	Optional	StartingTab	As	Variant
 
-	Finds a tab based on the values provided in the parameters and returns its index. If the tab is not found, it returns -1.
+	Finds a tab and returns its index, or -1 if it is not found. It doesn't change the selected tab.
 	
-	This method is similar to SelectTab but it does not change the current tab.
-	Please read SelectTab for an explanation of the parameters.
+	Parameters:
+	Find: what to look for.
+	Method: optional, where to look for it. One of:
+	ntFindCaption (default): the TabCaption.
+	ntFindPartialCaption: a part of the caption.
+	ntFindPartialCaptionReverse: a part of the caption, starting from the last tab.
+	ntFindKey: the TabKey.
+	ntFindTag: the TabTag.
+	ntFindData: the TabData.
+	ntFindOriginalIndex: the index the tab had when it was created. For the tabs added at run time, it is the order of creation.
+	ntFindContainedControl: the tab that holds the control given in Find.
+	StartingTab: optional, the index of the tab where the search starts.
+	
+	With CanReorderTabs, the user can change the indexes of the tabs: FindTab(2, ntFindOriginalIndex) finds the tab that was at position 2 at design time, wherever it is now.
+
+
+FitToClientArea method:
+	Parameter(s):
+	    In	Required	nControl	As	Object
+	    In	Optional	AutoRefit	As	Boolean	Default value: True
+
+	Places a contained control so that it fills the client area (the inside of the body), and clips it to the rounded corners of the body if there are any.
+	
+	Parameters:
+	nControl: the control. It must have a window (a hWnd) and be placed directly on the NewTab; otherwise error 380 is raised.
+	AutoRefit: optional. With True (default), the control is fitted again every time the client area changes: when the NewTab is resized, the rows change, and so on. With False, it is fitted only once.
+	
+	It works in pixels, so unlike moving the control with ClientLeft and the others, it is exact at any DPI setting. It works with RightToLeft too.
+	The control is not given any margin: if you want one, place the control inside a container (for example a PictureBox) and fit the container.
+	ReleaseFromClientArea stops fitting it and removes the clipping.
+	
+	NewTab1.FitToClientArea Picture1
+	
 
 
 GetClientRgn function:
 	Return Type:	LongPtr
 	No parameters.
 
-	Returns a handle that is a region object containing the client area (intended to be used by Windows APIs).
+	Returns a new GDI region with the shape of the client area, or 0 if the body has no rounded corners.
+	The region is in the coordinates of the client area: 0, 0 is its top left corner.
+	The caller owns the region: pass it to the SetWindowRgn API, which keeps it, or delete it with DeleteObject. Since SetWindowRgn hWnd, 0, True removes any clipping, the result can be passed without checking it.
+	FitToClientArea does all this by itself.
 
 
 GetTabHeight function:
@@ -999,7 +1644,8 @@ GetTabHeight function:
 	Parameter(s):
 	    In	Required	nTab	As	Variant
 
-	Returns the height of a tab.
+	Returns the height of a tab, in twips. nTab is the tab, by index, key or caption.
+	The new tab button is accepted, at the index Tabs.
 
 
 GetTabLeft function:
@@ -1007,7 +1653,14 @@ GetTabLeft function:
 	Parameter(s):
 	    In	Required	nTab	As	Variant
 
-	Returns the left position of a tab.
+	Returns the left of a tab, in twips, relative to the control. nTab is the tab, by index, key or caption.
+	With RightToLeft it is already mirrored.
+	The new tab button is accepted, at the index Tabs. For example, to show a menu under it in the NewTabButtonClick event.
+	
+	Private Sub NewTab1_TabRightClick(ByVal nTab As Long, ByVal Shift As Long, ByVal X As Single, ByVal Y As Single)
+	    PopupMenu mnuTab, , NewTab1.Left + NewTab1.GetTabLeft(nTab), NewTab1.Top + NewTab1.GetTabTop(nTab) + NewTab1.GetTabHeight(nTab)
+	End Sub
+	
 
 
 GetTabOriginalIndex function:
@@ -1015,14 +1668,17 @@ GetTabOriginalIndex function:
 	Parameter(s):
 	    In	Required	nTab	As	Variant
 
-	It returns the original index of the tab by supplying the current index. If CanReorderTabs is set to True, the tab index can change.
+	Returns the index that a tab had when it was created, given its current index. For the tabs added at run time, it is the order of creation.
+	With CanReorderTabs the indexes can change, but the original index stays with the tab. The inverse question, where the tab that was created at an index is now, is FindTab(Index, ntFindOriginalIndex).
+	An invalid index raises error 5.
 
 
 GetTabsOrder function:
 	Return Type:	String
 	No parameters.
 
-	Returns a string with data containing the tab positions (order) for later use with SetTabsOrder. CanReorderTabs must be set to True.
+	Returns a String with the current order of the tabs, to restore it later with SetTabsOrder. For example, to save in the registry the order that the user gave to the tabs.
+	CanReorderTabs must be True; if not, error 1381 is raised.
 
 
 GetTabTop function:
@@ -1030,7 +1686,8 @@ GetTabTop function:
 	Parameter(s):
 	    In	Required	nTab	As	Variant
 
-	Returns the top position of a tab.
+	Returns the top of a tab, in twips, relative to the control. nTab is the tab, by index, key or caption.
+	The new tab button is accepted, at the index Tabs.
 
 
 GetTabWidth function:
@@ -1038,21 +1695,34 @@ GetTabWidth function:
 	Parameter(s):
 	    In	Required	nTab	As	Variant
 
-	Returns the width of a tab.
+	Returns the width of a tab, in twips. nTab is the tab, by index, key or caption.
+	The new tab button is accepted, at the index Tabs.
 
 
 GetThemeData function:
 	Return Type:	String
 	No parameters.
 
-	Returns a string with the current theme data. It can be later applied with SetThemeData.
+	Returns a String with the current settings of the theme properties. It can be applied later, to this or another NewTab, with SetThemeData.
 
 
 IsThemed function:
 	Return Type:	Boolean
 	No parameters.
 
-	Returns a boolean value indicating whether the Windows visual styles are applied to the control or not.
+	Returns True if the tabs are being drawn with the Windows visual styles.
+	It can be False with Style set to Windows, when the visual styles are not available (classic Windows theme, high contrast, a transparent BackStyle, or a program without a manifest for the Common Controls 6).
+
+
+Move method:
+	Parameter(s):
+	    In	Required	NewLeft	As	Single
+	    In/Out	Optional	NewTop	As	Variant
+	    In/Out	Optional	NewWidth	As	Variant
+	    In/Out	Optional	NewHeight	As	Variant
+
+	Moves the control and optionally changes its size.
+	On a form, this is the method that VB adds to every control. The control also exposes it for code that uses it through a variable typed As NewTab.
 
 
 MoveTab method:
@@ -1060,19 +1730,46 @@ MoveTab method:
 	    In	Required	CurrentIndex	As	Long
 	    In	Required	NewIndex	As	Long
 
-	Moves a tab to another position.
+	Moves a tab from the index CurrentIndex to the index NewIndex. The tabs in between move one place.
+	It raises the BeforeTabReorder event, where it can be canceled, and then the TabReordered event.
+	It works whatever CanReorderTabs and TabMovable are. The new tab button and the tab 0 of the TDI modes can't be moved, nor can another tab be moved to their place. An invalid index raises error 5.
 
 
 Refresh method:
 	No parameters.
 
-	Redraws the control.
+	Redraws the control at once, and gives the colors to the contained controls again.
 
 
 RefreshContainedControls method:
 	No parameters.
 
-	Forces the redraw of some controls that can be problematic because they don't draw correctly after changing tab. Invoke it in the Click event of the control (after changing tab).
+	Forces the repaint of the contained controls of the selected tab. Some controls don't repaint correctly after the tab changes; call it in the Click event, after the change.
+
+
+ReleaseFromClientArea method:
+	Parameter(s):
+	    In	Required	nControl	As	Object
+
+	Stops keeping a control fitted to the client area, and removes the clipping that FitToClientArea gave it. The control is not moved.
+
+
+RemoveTab function:
+	Return Type:	Boolean
+	Parameter(s):
+	    In	Required	nTab	As	Variant
+
+	Removes a tab and returns True if it was removed. nTab is the tab, by index, key or caption.
+	The tabs after it move one place back.
+	
+	Errors:
+	- 5: the tab doesn't exist.
+	- 1390: the tab still holds contained controls. Move them to another tab or unload them first.
+	- 1389: it is the last tab, at design time. At run time all the tabs can be removed; then Tab is -1.
+	- 1388: the control is in a TDI mode.
+	
+	If the tab is the selected one, the selection moves to a neighbor tab first. If that change is canceled in the BeforeClick event, the tab is not removed and it returns False.
+	Hidden tabs can be removed.
 
 
 SelectTab function:
@@ -1082,43 +1779,39 @@ SelectTab function:
 	    In	Optional	Method	As	NTFindTabMethodConstants	Default value: ntFindCaption (0)
 	    In/Out	Optional	StartingTab	As	Variant
 
-	Sets the current ('selected' or 'active') tab by other means than its index (that can be done with the Tab property).
-	If the tab is found its retuns True, otherwise it returns False.
+	Selects a tab found by other means than its index, and returns True if it was found.
+	It takes the same parameters as FindTab: what to find, where to look for it, and the tab where the search starts.
+	For example, NewTab1.SelectTab "Customers", ntFindPartialCaption selects the first tab whose caption contains "Customers".
 	
-	This method is mainly useful when you don't know the position of the tab because the user may have changed it due to the CanReorderTabs property set to True.
-	
-	Find parameter: find a tab with this data.
-	
-	Method optional parameter: where to look for the data to find.
-	
-	ntFindCaption: searches for a tab with the TabCaption specified in the Find parameter.
-	ntFindOriginalIndex: searches for a tab that when it was created had that tab index. If CanReorderTabs is True, the current index of the tab may not be the index it had when it was created.
-	ntFindData: searches for a tab with the TabData specified in the Find parameter.
-	ntFindTag: searches for a tab with the TabTag specified in the Find parameter.
-	ntFindPartialCaption: searches for a tab with a partial match for the TabCaption.
-	ntFindPartialCaptionReverse: searches for a tab with a partial match for the TabCaption, staring from the last tab.
-	
-	StartingTab optional parameter: the index of the tb from where to search.
+	It is useful when the user may have changed the order of the tabs (CanReorderTabs).
 
 
 SetFocus method:
 	No parameters.
 
-	Moves the focus to this control.
+	Moves the focus to the control.
 
 
 SetTabsOrder method:
 	Parameter(s):
 	    In	Required	PosData	As	String
 
-	Sets the tab positions (order) using data previously obtained with GetTabsOrder. CanReorderTabs must be set to True.
+	Restores an order of the tabs saved with GetTabsOrder.
+	CanReorderTabs must be True; if not, error 1381 is raised.
 
 
 SetThemeData method:
 	Parameter(s):
 	    In	Required	nThemeData	As	String
 
-	Applies a theme from data contained in a String. That string can be obtained with GetThemeData.
+	Applies the theme settings contained in a String, as returned by GetThemeData.
+
+
+ShowWhatsThis method:
+	No parameters.
+
+	Shows the What's This help topic of the control.
+	On a form, this is the method that VB adds to every control. The control also exposes it for code that uses it through a variable typed As NewTab.
 
 
 TDIGetFormHwndByTab function:
@@ -1126,7 +1819,7 @@ TDIGetFormHwndByTab function:
 	Parameter(s):
 	    In	Required	Index	As	Long
 
-	When in TDI mode forms, it returns the hWnd of the form that is in that tab index.
+	In the TDI Forms mode, returns the hWnd of the form that is in a tab, given the tab index.
 
 
 TDIGetTabByFormHwnd function:
@@ -1134,7 +1827,7 @@ TDIGetTabByFormHwnd function:
 	Parameter(s):
 	    In	Required	FormhWnd	As	LongPtr
 
-	When in TDI mode forms, it returns the tab index by supplying the hWnd of the form.
+	In the TDI Forms mode, returns the index of the tab that holds a form, given the hWnd of the form.
 
 
 TDIGetTabIndexByTabNumber function:
@@ -1142,7 +1835,8 @@ TDIGetTabIndexByTabNumber function:
 	Parameter(s):
 	    In	Required	nTabNumber	As	Long
 
-	When in TDI mode, it returns the Index of a tab given its number.
+	In a TDI mode, returns the current index of a tab given its number, or -1 if there is no tab with that number.
+	The number identifies a tab for as long as it lives, and is the TabNumber parameter of the TDI events. The index can change when the tabs are reordered.
 
 
 TDIGetTabNumberByTabIndex function:
@@ -1150,14 +1844,15 @@ TDIGetTabNumberByTabIndex function:
 	Parameter(s):
 	    In	Required	Index	As	Long
 
-	When in TDI mode, it returns the number of a tab given its Index.
+	In a TDI mode, returns the number of a tab given its current index, or -1.
+	The number identifies a tab for as long as it lives, and is the TabNumber parameter of the TDI events.
 
 
 ZOrder method:
 	Parameter(s):
 	    In/Out	Optional	Position	As	Variant
 
-	Places the control at the front or back of the z-order within its graphical level.
+	Places the control at the front or at the back of the z-order within its graphical level.
 
 
 Events: 
@@ -1167,9 +1862,11 @@ BeforeClick event:
 	    Info	CurrentSelectedTab	As	Long
 	    Returns value	NewSelectedTab	As	Long
 	    Returns value	Cancel	As	Boolean
-	Occurs when the current tab (Tab) is about to change.
-	Use the BeforeClick event to validate the information on the old tab before actually generating a Click event that selects the new tab.
-	Setting the Cancel parameter to True allows you to prevent the change to the new tab selection.
+	Occurs before the selected tab changes, by the user or by code.
+	CurrentSelectedTab is the tab that is selected now, and NewSelectedTab the one that is going to be selected. Your code can change NewSelectedTab to select another tab, or set Cancel to True to keep the current one.
+	Use it to validate the data of the current tab before leaving it.
+	
+	Note: canceling it also cancels the operations that need to move the selection: hiding the selected tab or removing it with RemoveTab.
 
 
 BeforeTabReorder event:
@@ -1177,7 +1874,8 @@ BeforeTabReorder event:
 	    Info	CurrentIndex	As	Long
 	    Returns value	NewIndex	As	Long
 	    Returns value	Cancel	As	Boolean
-	Occurs when before a tab is changed from one position to another. The action can be canceled using the Cancel parameter or the new position can be altered from the NewIndex parameter.
+	Occurs before a tab is moved to another position, by the user dragging it (CanReorderTabs) or by MoveTab.
+	CurrentIndex is the index of the tab. NewIndex is where it is going, and can be changed. Setting Cancel to True leaves the tab where it was.
 
 
 ChangeControlBackColor event:
@@ -1185,10 +1883,9 @@ ChangeControlBackColor event:
 	    Info	ControlName	As	String
 	    Info	ControlTypeName	As	String
 	    Returns value	Cancel	As	Boolean
-	When ChangeControlsBackColor property is set to True, allows you to determine individually which controls will have their background changed (or not).
-	This event is generated for each control on the current tab, before the tab is painted.
-	The ControlName parameter specifies the name of the control, to avoid changing a particular control BackColor, set the parameter Cancel to True.
-	The ControlTypeName parameter specifies the type of the control (for example "CommandButton" or "Label"), this allow you to handle a whole class of controls without writing each name.
+	Occurs when the control is going to change the BackColor of a contained control, if ChangeControlsBackColor is True. Setting Cancel to True leaves that control unchanged.
+	ControlName is the name of the control, and ControlTypeName its type, for example "CommandButton" or "Label", to handle a whole type of controls at once.
+	It is raised for each control on the selected tab, before the tab is painted.
 
 
 ChangeControlForeColor event:
@@ -1196,81 +1893,83 @@ ChangeControlForeColor event:
 	    Info	ControlName	As	String
 	    Info	ControlTypeName	As	String
 	    Returns value	Cancel	As	Boolean
-	When ChangeControlsForeColor property is set to True, allows you to determine individually which controls will have their text color changed (or not).
-	This event is generated for each control on the current tab, before the tab is painted.
-	The ControlName parameter specifies the name of the control, to avoid changing a particular control ForeColor, set the parameter Cancel to True.
-	The ControlTypeName parameter specifies the type of the control (for example "CommandButton" or "Label"), this allow you to handle a whole class of controls without writing each name.
+	Occurs when the control is going to change the ForeColor of a contained control, if ChangeControlsForeColor is True. Setting Cancel to True leaves that control unchanged.
+	ControlName is the name of the control, and ControlTypeName its type, for example "CommandButton" or "Label".
+	It is raised for each control on the selected tab, before the tab is painted.
 
 
 Click event:
 	Parameter(s):
 	    Info	PreviousTab	As	Integer
-	Occurs when the current tab (Tab) changes.
+	Occurs when the selected tab changes, after BeforeClick. PreviousTab is the tab that was selected before.
+	Unlike other controls, it is not raised for any click, only for a change of tab; for clicks, use MouseDown and MouseUp.
 
 
 CloseButtonClick event:
 	Parameter(s):
 	    Info	nTab	As	Long
 	    Returns value	Cancel	As	Boolean
-	Occurs when the user clicks the close button (the 'x') of a tab. If Cancel is not set to True, the tab is automatically hidden (TabVisible = False).
-	
-	CloseButton property
+	Occurs when the user clicks the close button of a tab. nTab is the tab.
+	If Cancel is not set to True, the tab is hidden (TabVisible = False). It is not removed: to remove it, call RemoveTab in the event and set Cancel to True.
+	In the TDI modes the tabs are closed with the TDI events instead: TDIBeforeClosingTab.
 
 
 CloseButtonMouseEnter event:
 	Parameter(s):
 	    Info	nTab	As	Long
-	Occurs when the mouse starts hovering the close button (the 'x') of a tab.
+	Occurs when the mouse moves over the close button of a tab. nTab is the tab.
 
 
 CloseButtonMouseLeave event:
 	Parameter(s):
 	    Info	nTab	As	Long
-	Occurs when the mouse ends hovering the close button (the 'x') of a tab.
+	Occurs when the mouse leaves the close button of a tab. nTab is the tab.
 
 
 DblClick event:
 	No parameters.
-	Occurs when the user presses and releases a mouse button and then presses and releases it again over the control.
+	Occurs when the user double-clicks the control.
 
 
 IconClick event:
 	Parameter(s):
 	    Info	nTab	As	Long
 	    Returns value	ForwardClickToTab	As	Boolean
-	Occurs when the icon of the tab identified by the Index parameter is clicked (it doesn't work with pictures).
+	Occurs when the user clicks the icon of a tab. nTab is the tab.
+	It works with the icons from an icon font (IconCharHex), not with pictures.
+	ForwardClickToTab comes as True: the click then also selects the tab, as a click on any other part of it. Set it to False to use the icon as a button that doesn't change the tab.
 
 
 IconMouseEnter event:
 	Parameter(s):
 	    Info	nTab	As	Long
-	Occurs when the mouse enters hovering over the icon (not the picture) of the tab identified by the Index parameter.
+	Occurs when the mouse moves over the icon of a tab (an icon from a font, not a picture). nTab is the tab.
 
 
 IconMouseLeave event:
 	Parameter(s):
 	    Info	nTab	As	Long
-	Occurs when the mouse goes out after hovering over a tab icon (not picture).
+	Occurs when the mouse leaves the icon of a tab. nTab is the tab.
 
 
 KeyDown event:
 	Parameter(s):
 	    Info	KeyCode	As	Integer
 	    Info	Shift	As	Integer
-	Occurs when the user presses a key while an control has the focus.
+	Occurs when the user presses a key while the control has the focus.
 
 
 KeyPress event:
 	Parameter(s):
 	    Info	KeyAscii	As	Integer
-	Occurs when the user presses and releases an ANSI key.
+	Occurs when the user presses and releases a key that produces a character.
 
 
 KeyUp event:
 	Parameter(s):
 	    Info	KeyCode	As	Integer
 	    Info	Shift	As	Integer
-	Occurs when the user releases a key after pressing it while an control has the focus.
+	Occurs when the user releases a key while the control has the focus.
 
 
 MouseDown event:
@@ -1279,7 +1978,7 @@ MouseDown event:
 	    Info	Shift	As	Integer
 	    Info	X	As	Single
 	    Info	Y	As	Single
-	Occurs when the user presses a mouse button being the mouse over the control.
+	Occurs when the user presses a mouse button over the control.
 
 
 MouseMove event:
@@ -1297,13 +1996,26 @@ MouseUp event:
 	    Info	Shift	As	Integer
 	    Info	X	As	Single
 	    Info	Y	As	Single
-	Occurs when the user releases the mouse button after pressing it being the mouse over the control.
+	Occurs when the user releases a mouse button over the control.
+
+
+NewTabButtonClick event:
+	Parameter(s):
+	    Returns value	Cancel	As	Boolean
+	Occurs when the user clicks the new tab button (the "+").
+	In the TDI Controls mode, a new tab is added after the event unless Cancel is set to True.
+	In the other modes nothing is added: your code adds the tab, for example:
+	
+	Private Sub NewTab1_NewTabButtonClick(Cancel As Boolean)
+	    NewTab1.Tab = NewTab1.AddTab("New document")
+	End Sub
+	
 
 
 OLECompleteDrag event:
 	Parameter(s):
 	    Returns value	Effect	As	Long
-	Occurs when a source component is dropped onto a target component, informing the source component that a drag action was either performed or canceled.
+	Occurs on the source of an OLE drag and drop operation when the object is dropped or the operation is canceled.
 
 
 OLEDragDrop event:
@@ -1314,8 +2026,7 @@ OLEDragDrop event:
 	    Returns value	Shift	As	Integer
 	    Returns value	X	As	Single
 	    Returns value	Y	As	Single
-	Occurs when a source component is dropped onto a target component when the source component determines that a drop can occur.
-	This event occurs only if OLEDropMode is set to 1 (Manual).
+	Occurs when an object is dropped on the control in an OLE drag and drop operation. It is raised only if OLEDropMode is ssOLEDropManual.
 
 
 OLEDragOver event:
@@ -1327,69 +2038,66 @@ OLEDragOver event:
 	    Returns value	X	As	Single
 	    Returns value	Y	As	Single
 	    Returns value	State	As	Integer
-	Occurs when one component is dragged over another.
+	Occurs when an object is dragged over the control in an OLE drag and drop operation.
 
 
 OLEGiveFeedback event:
 	Parameter(s):
 	    Returns value	Effect	As	Long
 	    Returns value	DefaultCursors	As	Boolean
-	Occurs after every OLEDragOver event. OLEGiveFeedback allows the source component to provide visual feedback to the user, such as changing the mouse cursor to indicate what will happen if the user drops the object, or provide visual feedback on the selection (in the source component) to indicate what will happen.
+	Occurs after every OLEDragOver event, on the source of the operation, to let it show feedback, like changing the mouse pointer.
 
 
 OLESetData event:
 	Parameter(s):
 	    Returns value	Data	As	DataObject
 	    Returns value	DataFormat	As	Integer
-	Occurs on a source component when a target component performs the GetData method on the source's DataObject object, but before the data for the specified format has been loaded.
+	Occurs on the source of an OLE drag and drop operation when the target asks for data in a format that has not been loaded yet.
 
 
 OLEStartDrag event:
 	Parameter(s):
 	    Returns value	Data	As	DataObject
 	    Returns value	AllowedEffects	As	Long
-	Occurs when a component's OLEDrag method is performed, or when a component initiates an OLE drag/drop operation when the OLEDragMode property is set to Automatic.
+	Occurs when an OLE drag and drop operation starts.
 
 
 Resize event:
 	No parameters.
-	Occurs when the tab body (the size available for controls) changes its size.
-	The size and position of the tab body are available by the properties ClientLeft, ClientTop, ClientWidth and ClientHeight.
+	Occurs when the client area (the inside of the body) changes its size or position: because the control is resized, or because the tab strip changes (rows, orientation, tab height, style).
+	The new area is given by ClientLeft, ClientTop, ClientWidth and ClientHeight. Use this event to place the contained controls by code.
 
 
 RowsChange event:
 	No parameters.
-	Occurs when the control is first drawn and when the Rows property changes its value.
-	The Rows property value can change its value when new tabs are dinamically added or upon changing some property settings, like TabWidthStyle or TabsPerRow (for some configurations). Also changing the Width of the control, tab captions or the Font setting may produce different row number and raise this event.
-	You can use this event along with ClientTop to properly set the Top (or use ClientLeft, depending on TabOrientation) of the contained controls.
-	But if AutoRelocateControls is set to True, that's is already done automaticaly.
+	Occurs when the number of rows of tabs (Rows) changes.
+	The rows can change when tabs are added, hidden or shown, when captions change, when the control is resized, or when settings like Font, TabWidthStyle or TabsPerRow change.
 
 
 TabChange event:
 	No parameters.
-	Occurs after the selected (or "current") tab has already changed.
-	For the events that occur before, see BeforeClick and Click.
-	This event is also generated when the control is first shown.
+	Occurs after the selected tab changed, and when the control is shown for the first time.
+	The events before it are BeforeClick and Click.
 
 
 TabMouseEnter event:
 	Parameter(s):
 	    Info	nTab	As	Long
-	Occurs when the mouse pointer enters a tab, which is specified with the nTab parameter.
+	Occurs when the mouse moves over a tab. nTab is the tab.
 
 
 TabMouseLeave event:
 	Parameter(s):
 	    Info	nTab	As	Long
-	Occurs after the mouse pointer leaves a tab, which is specified in the nTab parameter.
+	Occurs when the mouse leaves a tab. nTab is the tab.
 
 
 TabReordered event:
 	Parameter(s):
 	    Info	CurrentIndex	As	Long
 	    Info	OldIndex	As	Long
-	Occurs when a tab changed its position. 
-	It can be due to an user action (see CanReorderTabs property) or by code (see MoveTab method).
+	Occurs after a tab moved to another position, by the user (CanReorderTabs) or by MoveTab.
+	CurrentIndex is the new index of the tab, and OldIndex the one it had.
 
 
 TabRightClick event:
@@ -1398,20 +2106,25 @@ TabRightClick event:
 	    Info	Shift	As	Long
 	    Info	X	As	Single
 	    Info	Y	As	Single
-	Occurs when the user clicks with the mouse right button on a tab.
-	The tab is specified in the nTab parameter.
-	The Shift parameter indicates the state of  the SHIFT, CTRL, and ALT keys.
-	The X and Y parameters return a number that specifies the current position of the mouse pointer.
+	Occurs when the user clicks a tab with the right mouse button. nTab is the tab, Shift the state of the SHIFT, CTRL and ALT keys, and X and Y the position of the mouse. It is raised when the button is released, after MouseUp.
 
 
 TDIBeforeClosingTab event:
 	Parameter(s):
 	    Info	TabNumber	As	Long
+	    Info	nTab	As	Long
 	    Info	IsLastTab	As	Boolean
 	    Returns value	OpenNewOnLastClosed	As	Boolean
 	    Returns value	UnloadControls	As	Boolean
 	    Returns value	Cancel	As	Boolean
-	It occurs before closing a tab in TDI mode.
+	In a TDI mode, occurs before a tab is closed by the user (with its close button, for example).
+	TabNumber identifies the tab for as long as it lives; nTab is its current index.
+	IsLastTab tells if it is the last tab that can be closed.
+	OpenNewOnLastClosed: in the Controls mode, whether a new tab is opened when the last one is closed.
+	UnloadControls: in the Controls mode, whether the controls of the tab are unloaded.
+	Cancel: set to True to keep the tab open.
+	
+	It is not raised when your code unloads a form of the Forms mode: the form has its own QueryUnload event.
 
 
 TDIBeforeNewTab event:
@@ -1422,14 +2135,19 @@ TDIBeforeNewTab event:
 	    Returns value	LoadControls	As	Boolean
 	    Returns value	ShowTabCloseButton	As	Boolean
 	    Returns value	Cancel	As	Boolean
-	It occurs before opening a new tab in TDI mode.
-	
-	If ShowTabCloseButton is set to False, the X to close the tab is not shown.
+	In a TDI mode, occurs before a new tab is opened. The parameters allow to change it or cancel it.
+	TabType says why it is opened: ntDefaultTab (the tab opened at the start), ntNewTabByClickingIcon (the new tab button), ntLastTabClosed (the tab opened when the last one was closed) or ntTDIForm (a form shown in the Forms mode).
+	TabNumber is the number the tab will have.
+	TabCaption: the caption, which can be changed.
+	LoadControls: in the Controls mode, whether the controls of the template are loaded into the tab.
+	ShowTabCloseButton: whether the tab has a close button.
+	Cancel: set to True to not open the tab.
 
 
 TDIFormsShowTabIcon event:
 	Parameter(s):
 	    Info	TabNumber	As	Long
+	    Info	nTab	As	Long
 	    Info	FormCaption	As	String
 	    Info	FormhWnd	As	LongPtr
 	    Returns value	IconPicture	As	Object
@@ -1443,65 +2161,65 @@ TDIFormsShowTabIcon event:
 	    Returns value	IconColor	As	Long
 	    Returns value	IconColorHighlighted	As	Long
 	    Returns value	IconColorSelected	As	Long
+	    Returns value	IconInColor	As	Boolean
 	    Returns value	NoIcon	As	Boolean
-	In TDI mode forms, it allows full control  for the icon that is displayed on the tab, including the icon itself and the size and position. It is also possible to use an icon font for the icon.
+	In the TDI Forms mode, occurs when the icon of the tab of a form is going to be drawn, and allows to change it: the picture, its size and position, or an icon from a font instead.
+	The icon is asked for when it is drawn, so the event can be raised many times for the same tab.
 	
-	TabNumber: The number (or index) of the tab.
-	
-	FormCaption: The form caption. May be used to identify the form.
-	
-	FormhWnd: The form hWnd.  May be used to identify the form.
-	
-	IconPicture: It is a StdPicture. If UseIconFont is False (default), it is the icon that will be displayed. You can set another icon by setting this picture. It can be a bitmap or an icon. By default it has the form icon.
-	It comes As Object to avoid dependency with the Stdole2 typelib.
-	
-	IconLeftOffset and IconTopOffset: change the position of the icon. They can be negative. They also work when UseIconFont is set to True.
-	
-	IconWidth and IconHeight: Size of the icon. Not used when UseIconFont is set to True.
-	
-	UseIconFont: defines that the icon will be rendered using the icon font, not the IconPicture.
-	
-	IconFont: It is a StdFont object containing the font that will be used to render the icon. By default it uses the "Segoe MDL2 Assets" font (if it is available, otherwise it uses "Arial"), but you can change it to another font. Its default size depends on the TabHeight property. Bold is set to True by default. Like IconPicture, it comes As Object to avoid dependency with the Stdole2 typelib.
-	
-	IconChar: The character that will be rendered. It is a Variant that can accept the Unicode character itself like ChrW(&HE00B&), the String representation of the character number, like "&HE00B&" or the character number like &HE00B& (the long value). By default it shows the &HE160& character that is a icon for document in the "Segoe MDL2 Assets" font.
-	
-	IconColor, IconColorHovered and IconColorSelected work when UseIconFont is True and can set the icon color for each condition (normal, hovered, selected). Their defaults are taken from IconColor, IconColorTabHighlighted and IconColorSelectedTab properties.
-	
-	NoIcon: If is set to True, the form icon is not shown.
+	Parameters:
+	TabNumber: identifies the tab for as long as it lives. nTab: its current index, which changes when the tabs are reordered.
+	FormCaption and FormhWnd: to identify the form.
+	IconPicture: the picture to show, by default the icon of the form. It can be set to another icon or bitmap. It is declared As Object to avoid a dependency on the stdole2 type library.
+	IconLeftOffset and IconTopOffset: offsets for the position of the icon. They can be negative.
+	IconWidth and IconHeight: the size at which the icon is shown, which comes from TDIFormsIconSize and can be changed. Not used with an icon font.
+	UseIconFont: set to True to draw a character of IconFont instead of the picture.
+	IconFont: the font for the icon character, a StdFont declared As Object. By default "Segoe MDL2 Assets" (or "Arial" if it is not available), bold, with a size that depends on the height of the tabs.
+	IconChar: the character. It can be the character itself, as ChrW(&HE160&), its code as a number, &HE160&, or as a String, "&HE160&". By default &HE160&, a document icon in "Segoe MDL2 Assets".
+	IconColor, IconColorHighlighted and IconColorSelected: the colors of the icon character for the normal, highlighted and selected states. When they are not changed, the tab uses the icon colors of the control.
+	IconInColor: draws the icon character with the colors of the font (Windows 8.1 or later).
+	NoIcon: set to True to show no icon.
 
 
 TDINewTabAdded event:
 	Parameter(s):
 	    Info	TabNumber	As	Long
-	It occurs after a new tab was opened in TDI mode.
+	    Info	nTab	As	Long
+	In a TDI mode, occurs after a new tab was opened, also the one opened at the start.
+	TabNumber identifies the tab for as long as it lives; nTab is its current index, which changes when the tabs are reordered.
 
 
 TDITabClosed event:
 	Parameter(s):
 	    Info	TabNumber	As	Long
 	    Info	IsLastTab	As	Boolean
-	It occurs after a tab was closed in TDI mode.
+	In a TDI mode, occurs after a tab was closed, by the user or because your code unloaded the form of the tab (Forms mode).
+	TabNumber is the number the tab had. IsLastTab tells if it was the last tab that could be closed.
+	The tab is not removed but hidden, so its index is not given: it should not be used any more.
 
 
 *NewTabTheme object*
-- "Themes" are a set of property settings stored together.
-They are mostly about appeaarance, but it can affect behavior also with some properties.
+- A theme: a named set of property settings stored together, mostly about appearance. The available themes are in the NewTabThemes collection that the Themes property returns, and one is applied by setting its name in the Theme property.
 
 Properties: 
 
 Custom property:
 	Type: Boolean (Read only)
-	Returns whether this theme is custom or built-in by default.
+	Returns True for a custom theme, saved by the developer, and False for a built-in one.
 
 
 Name property:
 	Type: String (Read only)
-	Returns the name of the theme.
+	Returns the name of the theme, the one used in the Theme property.
 
 
 *NewTabThemes object*
-- Returns the colection of "Themes".
-Use the names of the themes to set one into the Theme property.
+- The collection of the available themes, as NewTabTheme objects: the built-in ones followed by the custom ones. It is returned by the Themes property, and can be walked with For Each.
+
+Dim iTheme As NewTabTheme
+For Each iTheme In NewTab1.Themes
+    List1.AddItem iTheme.Name
+Next
+
 
 Properties: 
 
@@ -1515,7 +2233,7 @@ Item property:
 	
 	Additional parameter(s):
 	    In	Required	IndexOrKey	As	Variant
-	Returns a NewTabTheme object.
+	Returns a theme of the collection, by its position (starting at 1) or by its name. This is the default member. A theme that doesn't exist raises error 5.
 
 
 Methods: 
@@ -1525,14 +2243,15 @@ Exists function:
 	Parameter(s):
 	    In	Required	nThemeName	As	String
 
-	Returns True if the theme exists in the collection.
+	Returns True if there is a theme with that name in the collection. The names are not case sensitive.
 
 
 Remove method:
 	Parameter(s):
 	    In	Required	nThemeName	As	String
 
-	Removes a theme from the collection.
+	Removes a theme from this collection, by its name. A theme that doesn't exist raises error 5.
+	It changes only the collection in memory: a custom theme saved to a file or to the registry is deleted from the Themes page of the property pages.
 
 
 Rename method:
@@ -1540,218 +2259,684 @@ Rename method:
 	    In	Required	nOldThemeName	As	String
 	    In	Required	nNewThemeName	As	String
 
-	Renames a theme.
+	Renames a theme of this collection. Error 5 is raised if the theme doesn't exist or the new name is already used.
+	It changes only the collection in memory.
 
 
 Events: 
 
 ThemeRemoved event:
 	No parameters.
-	Occurs after a theme has been removed.
+	Occurs after a theme was removed from the collection.
 
 
 ThemeRenamed event:
 	No parameters.
-	Occurs after a theme has ben renamed.
+	Occurs after a theme of the collection was renamed.
 
 
 Constants
 
+LongPtr ENUMERATION
+
+In VB6, the type of the parameters that hold pointers and handles, like the result of GetClientRgn. It is a 32 bit Long. It exists so that the same source code also compiles in twinBASIC for 64 bits, where LongPtr is a native type.
+Use a Long variable for these values in VB6.
+
+	_ = 0
+
 NTAlignmentConstants ENUMERATION
 
+The alignment of the captions inside the tabs, for the CaptionAlignment property.
+
 	ntAlignmentLeft = 0
+	Aligned to the start of the tab.
+
 	ntAlignmentRight = 1
+	Aligned to the end of the tab.
+
 	ntAlignmentCenter = 2
+	Centered (default).
+
+
+NTAnimationSpeedConstants ENUMERATION
+
+The speed of an animation, for the HighlightEffect, HighlightEffectOut and TabTransition properties.
+
+	ntAnimationNone = 0
+	No animation: the change is shown at once.
+
+	ntAnimationFaster = 1
+	The fastest animation.
+
+	ntAnimationFast = 2
+	A fast animation.
+
+	ntAnimationMedium = 3
+	A medium speed.
+
+	ntAnimationSlow = 4
+	A slow animation.
+
+	ntAnimationSlower = 5
+	The slowest animation.
+
 
 NTAutoRelocateControlsConstants ENUMERATION
 
+When the contained controls are moved along with the body, for the AutoRelocateControls property.
+
 	ntRelocateNever = 0
+	The controls are never moved.
+
 	ntRelocateAlways = 1
+	The controls are moved whenever the body moves (default).
+
 	ntRelocateOnTabOrientationChange = 2
+	The controls are moved only when the tab orientation changes.
+
 
 NTAutoYesNoConstants ENUMERATION
 
+A setting that can be forced on or off, or left to the control.
+
 	ntNo = 0
+	Off.
+
 	ntYes = 1
+	On.
+
 	ntYNAuto = 2
+	Decided by the control, or by a more general setting. Each property that uses it says what it follows.
+
 
 NTBackStyleConstants ENUMERATION
 
+Which parts of the control are transparent, for the BackStyle property.
+
 	ntTransparent = 0
+	The area of BackColor, the body and the selected tab are transparent.
+
 	ntOpaque = 1
-	ntOpaqueSelectedTab = 2
+	Everything is painted (default).
+
+	ntTransparentBackOnly = 2
+	Only the area of BackColor is transparent. This value was called ntOpaqueSelectedTab in earlier versions.
+
+
+NTCloseButtonPositionConstants ENUMERATION
+
+Where the close buttons are shown, for the CloseButtonPosition property.
+
+	ntCBPositionOnTabs = 0
+	On each tab that has one (default).
+
+	ntCBPositionStripEnd = 1
+	A single button at the end of the tab strip, which closes the selected tab.
+
+	ntCBPositionOnSelectedTab = 2
+	Only on the selected tab.
+
+	ntCBPositionOnHoveredTab = 3
+	Only on the tab under the mouse.
+
+	ntCBPositionOnSelectedAndHoveredTabs = 4
+	On the selected tab and on the tab under the mouse.
+
 
 NTFindTabMethodConstants ENUMERATION
 
+What to search, for the FindTab and SelectTab methods.
+
 	ntFindCaption = 0
+	The caption of the tab (default).
+
 	ntFindOriginalIndex = 1
+	The index the tab had when it was created.
+
 	ntFindData = 2
+	The TabData of the tab.
+
 	ntFindTag = 3
+	The TabTag of the tab.
+
 	ntFindPartialCaption = 4
+	A part of the caption.
+
 	ntFindPartialCaptionReverse = 5
+	A part of the caption, searching from the last tab.
+
 	ntFindKey = 6
+	The TabKey of the tab.
+
 	ntFindContainedControl = 7
+	The tab that holds a contained control.
+
 
 NTFlatBarPositionConstants ENUMERATION
 
+On which side of the tab the bar of the Flat style goes, for the FlatBarPosition property.
+
 	ntBarPositionTop = 0
+	On the outer side of the tab (default).
+
 	ntBarPositionBottom = 1
+	On the side of the body.
+
 
 NTFlatBorderModeConstants ENUMERATION
 
+What the border goes around in the Flat style, for the FlatBorderMode property.
+
 	ntBorderTabs = 0
+	Around the body and all the tabs (default).
+
 	ntBorderSelectedTab = 1
+	Around the body and the selected tab only.
+
 
 NTHighlightModeFlagsConstants ENUMERATION
 
+The flags that make up the highlight of the tabs, for the HighlightMode and HighlightModeSelectedTab properties. Several flags are combined with Or.
+The three background values (2, 3 and 4) are not flags: they are the values of a field, and only one of them can be used.
+
 	ntHLAuto = 0
+	Decided by the Style property (default).
+
 	ntHLNone = 1
+	No highlight.
+
 	ntHLBackgroundGradient = 2
+	Background with a gradient.
+
 	ntHLBackgroundDoubleGradient = 3
+	Background with a double gradient.
+
 	ntHLBackgroundPlain = 4
+	Background of a plain color.
+
 	ntHLBackgroundTypeFilter = 7
+	Not a flag: the mask of the background type. Value And ntHLBackgroundTypeFilter gives the background.
+
 	ntHLBackgroundLight = 8
+	Makes the background lighter.
+
 	ntHLCaptionBold = 16
+	Bold caption.
+
 	ntHLCaptionUnderlined = 32
+	Underlined caption.
+
 	ntHLFlatBar = 64
+	Flat style: shows the bar.
+
 	ntHLFlatBarGrip = 128
-	ntHLFlatBarWithGrip = 196
+	Flat style: adds a grip to the bar. It needs ntHLFlatBar.
+
 	ntHLExtraHeight = 256
+	The tab is taller by HighlightTabExtraHeight.
+
 	ntHLFlatDrawBorder = 512
-	ntHLAllFlags = 1023
+	Flat style: draws a border around the tab.
 
-NTHorizontalTabHeightStyleConstants ENUMERATION
+	ntHLShiftCaption = 1024
+	The contents of the tab move by HighlightTabCaptionShift.
 
-	ntTHFill = 0
-	ntTHTabCaptionHeight = 1
-	ntTHMaxCaptionHeight = 2
-	ntTHFixed = 3
+	ntHLWidenTab = 2048
+	The tab is wider on both sides.
+
+	ntHLRoundBottom = 4096
+	Flat style: the highlight rounds also the corners of the tab on the side of the body.
+
+	ntHLFlatShapeInactive = 8192
+	Flat style, HighlightMode only: the inactive tabs always have the shape of the highlighted one (rounded with ntHLRoundBottom, with border with ntHLFlatDrawBorder).
+
 
 NTIconAlignmentConstants ENUMERATION
 
+Where the icon of a tab goes with respect to the caption, for the IconAlignment property.
+
 	ntIconAlignBeforeCaption = 0
+	Right before the caption.
+
 	ntIconAlignCenteredBeforeCaption = 1
+	Before the caption, centered in the free space on its side when there is room (default).
+
 	ntIconAlignAfterCaption = 2
+	Right after the caption.
+
 	ntIconAlignCenteredAfterCaption = 3
+	After the caption, centered in the free space on its side when there is room.
+
 	ntIconAlignStart = 4
+	At the start edge of the tab.
+
 	ntIconAlignEnd = 5
+	At the end edge of the tab.
+
 	ntIconAlignCenteredOnTab = 6
+	In the middle of the tab, with the caption after it.
+
 	ntIconAlignAtTop = 7
+	Above the caption.
+
 	ntIconAlignAtBottom = 8
+	Below the caption.
+
 
 NTMousePointerConstants ENUMERATION
 
+The mouse pointers, for the MousePointer property. They are the same as the standard VB pointers.
+
 	ssDefault = 0
+	The default pointer.
+
 	ssArrow = 1
+	Arrow.
+
 	ssCross = 2
+	Cross.
+
 	ssIBeam = 3
+	I-beam.
+
 	ssIcon = 4
+	Icon.
+
 	ssSize = 5
+	Size, four arrows.
+
 	ssSizeNESW = 6
+	Size NE-SW.
+
 	ssSizeNS = 7
+	Size N-S.
+
 	ssSizeNWSE = 8
+	Size NW-SE.
+
 	ssSizeEW = 9
+	Size E-W.
+
 	ssUpArrow = 10
+	Up arrow.
+
 	ssHourglass = 11
+	Hourglass.
+
 	ntNoDrop = 12
+	No drop.
+
 	ssArrowHourglass = 13
+	Arrow and hourglass.
+
 	ssArrowQuestion = 14
+	Arrow and question mark.
+
 	ssSizeAll = 15
+	Size all.
+
 	ssCustom = 99
+	The icon set in the MouseIcon property.
+
+
+NTNewTabButtonPositionConstants ENUMERATION
+
+Where the new tab button goes, for the NewTabButtonPosition property.
+
+	ntNBAfterLastTab = 0
+	After the last tab, drawn as one more tab (default).
+
+	ntNBStripEnd = 1
+	At the end of the tab strip, with the other strip buttons.
+
 
 NTOLEDropConstants ENUMERATION
 
+Whether the control accepts OLE drops, for the OLEDropMode property.
+
 	ssOLEDropNone = 0
+	It doesn't accept drops (default).
+
 	ssOLEDropManual = 1
+	It raises the OLE drag and drop events.
+
+
+NTScalePicturesForDPIConstants ENUMERATION
+
+How the pictures of the tabs are scaled to the DPI, for the ScalePicturesForDPI property.
+
+	ntScalePicturesDisabled = 0
+	They are not scaled.
+
+	ntScalePicturesSmooth = 1
+	Scaled favoring smooth curves.
+
+	ntScalePicturesCrisp = 2
+	Scaled favoring sharp angles and straight lines.
+
+	ntScalePicturesBalanced = 3
+	Scaled with a balance of both (default).
+
+
+NTStripButtonsRowConstants ENUMERATION
+
+On which row the buttons at the end of the tab strip go, for the StripButtonsRow property.
+
+	ntSBSelectedTabRow = 0
+	On the row of the selected tab, next to the body (default).
+
+	ntSBOuterRow = 1
+	On the outer row.
+
 
 NTStyleConstants ENUMERATION
 
+The styles of the control, for the Style property.
+
 	ssStyleTabbedDialog = 0
+	The tabbed dialog of SSTab.
+
 	ssStylePropertyPage = 1
+	The property page of SSTab.
+
 	ntStyleTabStrip = 2
+	Like the TabStrip control of the Common Controls.
+
 	ntStyleFlat = 3
+	Flat.
+
 	ntStyleWindows = 4
+	Drawn with the Windows visual styles (default).
+
 
 NTSubclassingMethodConstants ENUMERATION
 
+How the control subclasses windows, for the SubclassingMethod property.
+
 	ntSMSetWindowSubclass = 0
+	The control and its form, with SetWindowSubclass (default).
+
 	ntSMSetWindowLong = 1
+	The control and its form, with SetWindowLong.
+
 	ntSMDisabled = 2
+	No subclassing. Some features don't work.
+
 	ntSM_SWSOnlyUserControl = 3
+	Only the control, with SetWindowSubclass.
+
 	ntSM_SWLOnlyUserControl = 4
+	Only the control, with SetWindowLong.
+
 
 NTTabAppearanceConstants ENUMERATION
 
+How the tabs are drawn, for the TabAppearance property.
+
 	ntTAAuto = 0
+	The appearance of the current Style (default).
+
 	ntTATabbedDialog = 1
+	Like the SSTab tabbed dialog.
+
 	ntTATabbedDialogRounded = 2
+	Like the SSTab tabbed dialog, with rounded corners.
+
 	ntTAPropertyPage = 3
+	Like the SSTab property page.
+
 	ntTAPropertyPageRounded = 4
+	Like the SSTab property page, with rounded corners.
+
 	ntTAFlat = 5
+	Flat.
+
+	ntTATabStrip = 6
+	Like the TabStrip control without visual styles.
+
+	ntTAWindows = 7
+	Drawn by Windows with the visual styles; like ntTATabStrip when they are not available.
+
 
 NTTabCustomColorIDConstants ENUMERATION
 
+Which color of a tab is read or set with the TabCustomColor property. Each one overrides, for that tab, the general property of the same name.
+
 	ntCCBackColorTab = 0
+	BackColorTabs: the background of the tab while it is inactive.
+
 	ntCCBackColorSelectedTab = 1
+	BackColorSelectedTab: the background of the tab and the body while it is selected.
+
 	ntCCHighlightColor = 2
+	HighlightColor.
+
 	ntCCHighlightColorSelectedTab = 3
+	HighlightColorSelectedTab.
+
 	ntCCFlatBarColorInactive = 4
-	ntCCFlatBarColorHighlight = 5
+	FlatBarColorInactive.
+
+	ntCCFlatBarColorHighlighted = 5
+	FlatBarColorHighlighted.
+
 	ntCCFlatBarColorSelectedTab = 6
-	ntCCFlatTabBorderColorHighlight = 7
+	FlatBarColorSelectedTab.
+
+	ntCCFlatTabBorderColorHighlighted = 7
+	FlatTabBorderColorHighlighted.
+
 	ntCCFlatTabBorderColorSelectedTab = 8
+	FlatTabBorderColorSelectedTab.
+
 	ntCCForeColor = 9
+	ForeColor.
+
 	ntCCForeColorHighlighted = 10
+	ForeColorHighlighted.
+
 	ntCCForeColorSelectedTab = 11
+	ForeColorSelectedTab.
+
 	ntCCIconColor = 12
+	IconColor.
+
 	ntCCIconColorSelectedTab = 13
+	IconColorSelectedTab.
+
 	ntCCIconColorMouseHover = 14
+	IconColorMouseHover.
+
 	ntCCIconColorMouseHoverSelectedTab = 15
+	IconColorMouseHoverSelectedTab.
+
 	ntCCIconColorTabHighlighted = 16
+	IconColorTabHighlighted.
+
+	ntCCCloseButtonColor = 17
+	CloseButtonColor.
+
+	ntCCCloseButtonColorSelectedTab = 18
+	CloseButtonColorSelectedTab.
+
+	ntCCCloseButtonColorMouseHover = 19
+	CloseButtonColorMouseHover.
+
+	ntCCCloseButtonColorMouseHoverSelectedTab = 20
+	CloseButtonColorMouseHoverSelectedTab.
+
+	ntCCCloseButtonColorTabHighlighted = 21
+	CloseButtonColorTabHighlighted.
+
+	ntCCHighlightGradientColor = 22
+	HighlightGradientColor.
+
+	ntCCHighlightGradientColorSelectedTab = 23
+	HighlightGradientColorSelectedTab.
+
+	ntCCFlatTabBorderColorInactive = 24
+	FlatTabBorderColorInactive.
+
+
+NTTabHeightStyleForHorizontalConstants ENUMERATION
+
+How the tabs share the length of the tab strip in the side orientations with horizontal captions, for the TabHeightStyleForHorizontal property.
+
+	ntTHFill = 0
+	The tabs are stretched to fill the whole strip.
+
+	ntTHTabCaptionHeight = 1
+	Each tab as tall as its own caption and icon need.
+
+	ntTHMaxCaptionHeight = 2
+	All the tabs of a column as tall as the tallest one of the column (default).
+
+	ntTHFixed = 3
+	Every tab is TabHeight tall.
+
+	ntTHStretchToFill = 4
+	Each tab as tall as its own content, with the columns balanced and stretched to the length of the strip.
+
 
 NTTabOrientationConstants ENUMERATION
 
+On which side the tabs are, and how they are aligned, for the TabOrientation property.
+
 	ssTabOrientationTop = 0
+	At the top.
+
 	ssTabOrientationBottom = 1
+	At the bottom.
+
 	ssTabOrientationLeft = 2
+	At the left, with the captions rotated, reading from bottom to top.
+
 	ssTabOrientationRight = 3
+	At the right, with the captions rotated, reading from top to bottom.
+
 	ntTabOrientationLeftHorizontal = 4
+	At the left, with horizontal captions, aligned at the top.
+
 	ntTabOrientationRightHorizontal = 5
+	At the right, with horizontal captions, aligned at the top.
+
 	ntTabOrientationTopRight = 6
+	At the top, aligned at the other end (the right).
+
 	ntTabOrientationBottomRight = 7
+	At the bottom, aligned at the other end (the right).
+
 	ntTabOrientationLeftTop = 8
+	At the left, aligned at the other end, with the captions reading from bottom to top.
+
 	ntTabOrientationRightBottom = 9
-	ntTabOrientationLeftTopHorizontal = 10
+	At the right, aligned at the other end, with the captions reading from top to bottom.
+
+	ntTabOrientationLeftBottomHorizontal = 10
+	At the left, with horizontal captions, aligned at the bottom. Called ntTabOrientationLeftTopHorizontal in earlier versions.
+
 	ntTabOrientationRightBottomHorizontal = 11
+	At the right, with horizontal captions, aligned at the bottom.
 
-NTTabTransitionConstants ENUMERATION
 
-	ntTransitionImmediate = 0
-	ntTransitionFaster = 1
-	ntTransitionFast = 2
-	ntTransitionMedium = 3
-	ntTransitionSlow = 4
-	ntTransitionSlower = 5
+NTTabsOverflowConstants ENUMERATION
+
+What the tab strip does when the tabs don't fit in one row, for the TabsOverflow property.
+
+	ntTOMultiRow = 0
+	More rows are added (default).
+
+	ntTOScroll = 1
+	One row that scrolls, with two buttons.
+
+	ntTOScrollWithList = 2
+	One row that scrolls, plus a button with the list of all the tabs.
+
 
 NTTabWidthStyleConstants ENUMERATION
 
+How the width of the tabs is decided, for the TabWidthStyle property.
+
 	ntTWTabStripEmulation = 0
+	As wide as the caption; several rows are balanced and stretched, like the TabStrip control.
+
 	ntTWTabCaptionWidth = 1
-	ntTWFixed = 2
+	As wide as the caption, TabsPerRow per row.
+
+	ntTWEqualWidth = 2
+	All the same width: the width of the control divided by TabsPerRow. Called ntTWFixed in earlier versions.
+
 	ntTWAuto = 3
+	Decided by the Style and the TDI mode (default).
+
 	ntTWStretchToFill = 4
+	Like ntTWTabStripEmulation, and a single row is also stretched.
+
 	ntTWTabCaptionWidthFillRows = 5
+	As wide as the caption, filling each row before starting the next one.
+
+	ntTWGeneralFixedWidth = 6
+	All with the width of TabGeneralFixedWidth, TabsPerRow per row.
+
+	ntTWGeneralFixedWidthFillRows = 7
+	All starting with the width of TabGeneralFixedWidth, filling each row before starting the next one.
+
+
+NTTDIFormsIconSizeConstants ENUMERATION
+
+The size of the icons of the forms in the TDI Forms mode, given for 96 DPI, for the TDIFormsIconSize property.
+
+	ntTDIFormsIconNative = 0
+	The size of the icon itself.
+
+	ntTDIFormsIcon16 = 16
+	x 16.
+
+	ntTDIFormsIcon20 = 20
+	x 20.
+
+	ntTDIFormsIcon24 = 24
+	x 24 (default).
+
+	ntTDIFormsIcon32 = 32
+	x 32.
+
+	ntTDIFormsIcon48 = 48
+	x 48.
+
 
 NTTDIModeConstants ENUMERATION
 
+The TDI modes, for the TDIMode property.
+
 	ntTDIModeNone = 0
+	Normal mode (default).
+
 	ntTDIModeControls = 1
+	Each tab is a copy of the controls of tab 0.
+
 	ntTDIModeForms = 2
+	Each tab hosts a form of the program.
+
 
 NTTDINewTabTypeConstants ENUMERATION
 
-	ntDefaultTab = 0
-	ntNewTabByClickingIcon = 1
-	ntLastTabClosed = 2
-	ntTDIForm = 3
+Why a tab is being opened in a TDI mode, in the TabType parameter of the TDIBeforeNewTab event.
 
+	ntDefaultTab = 0
+	The tab opened at the start.
+
+	ntNewTabByClickingIcon = 1
+	The user clicked the new tab button.
+
+	ntLastTabClosed = 2
+	The last tab was closed, and a new one replaces it.
+
+	ntTDIForm = 3
+	A form was shown, in the TDI Forms mode.
+
+
+End Notes
+
+The control is distributed with its source code, so it can also be added to a project as a UserControl instead of using the compiled OCX.
+It was tested on Windows XP and Windows 11. Color icon fonts (IconInColor) need Windows 8.1 or later.

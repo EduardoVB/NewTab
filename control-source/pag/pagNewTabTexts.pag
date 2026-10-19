@@ -1,0 +1,455 @@
+VERSION 5.00
+Begin VB.PropertyPage pagNewTabTexts 
+   Caption         =   "Texts"
+   ClientHeight    =   8508
+   ClientLeft      =   0
+   ClientTop       =   0
+   ClientWidth     =   6804
+   BeginProperty Font 
+      Name            =   "Tahoma"
+      Size            =   8.4
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
+   LockControls    =   -1  'True
+   PaletteMode     =   0  'Halftone
+   ScaleHeight     =   8508
+   ScaleWidth      =   6804
+   Begin VB.Frame fraToolTips 
+      Caption         =   "Tooltips of the strip buttons (empty = no tooltip)"
+      Height          =   1760
+      Left            =   90
+      TabIndex        =   0
+      Top             =   310
+      Width           =   6624
+      Begin VB.PictureBox picTextHolder 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   310
+         Index           =   0
+         Left            =   2720
+         ScaleHeight     =   312
+         ScaleWidth      =   3780
+         TabIndex        =   2
+         Top             =   240
+         Width           =   3780
+      End
+      Begin VB.PictureBox picTextHolder 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   310
+         Index           =   1
+         Left            =   2720
+         ScaleHeight     =   312
+         ScaleWidth      =   3780
+         TabIndex        =   4
+         Top             =   600
+         Width           =   3780
+      End
+      Begin VB.PictureBox picTextHolder 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   310
+         Index           =   2
+         Left            =   2720
+         ScaleHeight     =   312
+         ScaleWidth      =   3780
+         TabIndex        =   6
+         Top             =   960
+         Width           =   3780
+      End
+      Begin VB.PictureBox picTextHolder 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   310
+         Index           =   3
+         Left            =   2720
+         ScaleHeight     =   312
+         ScaleWidth      =   3780
+         TabIndex        =   8
+         Top             =   1320
+         Width           =   3780
+      End
+      Begin VB.Label lblText 
+         Alignment       =   1  'Right Justify
+         Caption         =   "NewTabButtonToolTipText:"
+         Height          =   230
+         Index           =   0
+         Left            =   120
+         TabIndex        =   1
+         Top             =   280
+         Width           =   2540
+      End
+      Begin VB.Label lblText 
+         Alignment       =   1  'Right Justify
+         Caption         =   "StripButtonBackToolTipText:"
+         Height          =   230
+         Index           =   1
+         Left            =   120
+         TabIndex        =   3
+         Top             =   640
+         Width           =   2540
+      End
+      Begin VB.Label lblText 
+         Alignment       =   1  'Right Justify
+         Caption         =   "StripButtonForwardToolTipText:"
+         Height          =   230
+         Index           =   2
+         Left            =   120
+         TabIndex        =   5
+         Top             =   1000
+         Width           =   2540
+      End
+      Begin VB.Label lblText 
+         Alignment       =   1  'Right Justify
+         Caption         =   "StripButtonListToolTipText:"
+         Height          =   230
+         Index           =   3
+         Left            =   120
+         TabIndex        =   7
+         Top             =   1360
+         Width           =   2540
+      End
+   End
+   Begin VB.Frame fraTDICaptions 
+      Caption         =   "Captions of new tabs (TDIMode = ntTDIModeControls)"
+      Height          =   1040
+      Left            =   90
+      TabIndex        =   9
+      Top             =   2380
+      Width           =   6624
+      Begin VB.PictureBox picTextHolder 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   310
+         Index           =   4
+         Left            =   2720
+         ScaleHeight     =   312
+         ScaleWidth      =   3780
+         TabIndex        =   11
+         Top             =   240
+         Width           =   3780
+      End
+      Begin VB.PictureBox picTextHolder 
+         Appearance      =   0  'Flat
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   310
+         Index           =   5
+         Left            =   2720
+         ScaleHeight     =   312
+         ScaleWidth      =   3780
+         TabIndex        =   13
+         Top             =   600
+         Width           =   3780
+      End
+      Begin VB.Label lblText 
+         Alignment       =   1  'Right Justify
+         Caption         =   "TDIDefaultTabCaption:"
+         Height          =   230
+         Index           =   4
+         Left            =   120
+         TabIndex        =   10
+         Top             =   280
+         Width           =   2540
+      End
+      Begin VB.Label lblText 
+         Alignment       =   1  'Right Justify
+         Caption         =   "TDINewTabCaption:"
+         Height          =   230
+         Index           =   5
+         Left            =   120
+         TabIndex        =   12
+         Top             =   640
+         Width           =   2540
+      End
+   End
+   Begin VB.CommandButton cmdDefaults 
+      Caption         =   "Defaults..."
+      Height          =   360
+      Left            =   5214
+      TabIndex        =   14
+      ToolTipText     =   "Save these texts as the defaults for new NewTab controls, or bring back the saved or factory ones"
+      Top             =   3590
+      Width           =   1500
+   End
+End
+Attribute VB_Name = "pagNewTabTexts"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = True
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = True
+Option Explicit
+
+Private Type RECT
+    Left As Long
+    Top As Long
+    Right As Long
+    Bottom As Long
+End Type
+
+Private Declare Function CreatePopupMenu Lib "user32" () As LongPtr
+Private Declare Function AppendMenuW Lib "user32" (ByVal hMenu As LongPtr, ByVal uFlags As Long, ByVal uIDNewItem As LongPtr, ByVal lpNewItem As LongPtr) As Long
+Private Declare Function TrackPopupMenuEx Lib "user32" (ByVal hMenu As LongPtr, ByVal uFlags As Long, ByVal X As Long, ByVal Y As Long, ByVal hWnd As LongPtr, ByVal lptpm As LongPtr) As Long
+Private Declare Function DestroyMenu Lib "user32" (ByVal hMenu As LongPtr) As Long
+Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As LongPtr, lpRect As RECT) As Long
+
+Private Const MF_STRING As Long = &H0&
+Private Const MF_GRAYED As Long = &H1&
+Private Const TPM_RIGHTALIGN As Long = &H8&
+Private Const TPM_NONOTIFY As Long = &H80&
+Private Const TPM_RETURNCMD As Long = &H100&
+Private Const ES_AUTOHSCROLL As Long = &H80&
+Private Const WS_VISIBLE As Long = &H10000000
+Private Const WS_EX_CLIENTEDGE As Long = &H200&
+
+Private Const cMenuSaveDefaults As Long = 1
+Private Const cMenuApplyDefaults As Long = 2
+Private Const cMenuFactory As Long = 3
+
+' VB's TextBox is ANSI; these are the Unicode ones pagNewTabTabs uses. WithEvents takes no arrays,
+' so one variable per text, in the order of mNewTabTexts.TextPropertyName
+Private WithEvents mUniText0 As cUniTextBox
+Attribute mUniText0.VB_VarHelpID = -1
+Private WithEvents mUniText1 As cUniTextBox
+Attribute mUniText1.VB_VarHelpID = -1
+Private WithEvents mUniText2 As cUniTextBox
+Attribute mUniText2.VB_VarHelpID = -1
+Private WithEvents mUniText3 As cUniTextBox
+Attribute mUniText3.VB_VarHelpID = -1
+Private WithEvents mUniText4 As cUniTextBox
+Attribute mUniText4.VB_VarHelpID = -1
+Private WithEvents mUniText5 As cUniTextBox
+Attribute mUniText5.VB_VarHelpID = -1
+
+Private mTextValue(cTextsLast) As String
+' True while focus is being handed from a holder to its edit box, see cUniTextBox
+Private mTextFocusSync(cTextsLast) As Boolean
+Private mAppName As String
+Private mLoading As Boolean
+
+Private Sub PropertyPage_Initialize()
+    Dim c As Long
+    
+    For c = 0 To cTextsLast
+        Set picTextHolder(c).Font = PropertyPage.Font
+        picTextHolder(c).ScaleMode = vbPixels
+    Next c
+    Set mUniText0 = New cUniTextBox
+    Set mUniText1 = New cUniTextBox
+    Set mUniText2 = New cUniTextBox
+    Set mUniText3 = New cUniTextBox
+    Set mUniText4 = New cUniTextBox
+    Set mUniText5 = New cUniTextBox
+    For c = 0 To cTextsLast
+        UniText(c).CreateTextBox picTextHolder(c).hWnd, 0, 0, picTextHolder(c).ScaleWidth, picTextHolder(c).ScaleHeight, ES_AUTOHSCROLL Or WS_VISIBLE, WS_EX_CLIENTEDGE, ""
+    Next c
+End Sub
+
+Private Sub PropertyPage_Terminate()
+    Set mUniText0 = Nothing
+    Set mUniText1 = Nothing
+    Set mUniText2 = Nothing
+    Set mUniText3 = Nothing
+    Set mUniText4 = Nothing
+    Set mUniText5 = Nothing
+End Sub
+
+Private Function UniText(ByVal nIndex As Long) As cUniTextBox
+    Select Case nIndex
+        Case 0: Set UniText = mUniText0
+        Case 1: Set UniText = mUniText1
+        Case 2: Set UniText = mUniText2
+        Case 3: Set UniText = mUniText3
+        Case 4: Set UniText = mUniText4
+        Case 5: Set UniText = mUniText5
+    End Select
+End Function
+
+Private Sub PropertyPage_SelectionChanged()
+    Dim iSC As NewTab
+    Dim c As Long
+    
+    If TypeName(SelectedControls(0)) <> "NewTab" Then Exit Sub
+    Set iSC = SelectedControls(0)
+    mAppName = TypeName(iSC)
+    For c = 0 To cTextsLast
+        mTextValue(c) = CStr(CallByName(iSC, TextPropertyName(c), VbGet))
+    Next c
+    ShowTextValues
+    Changed = False
+End Sub
+
+Private Sub PropertyPage_ApplyChanges()
+    Dim iSC As NewTab
+    Dim c As Long
+    
+    Set iSC = SelectedControls(0)
+    For c = 0 To cTextsLast
+        If CStr(CallByName(iSC, TextPropertyName(c), VbGet)) <> mTextValue(c) Then CallByName iSC, TextPropertyName(c), VbLet, mTextValue(c)
+    Next c
+End Sub
+
+Private Sub ShowTextValues()
+    Dim c As Long
+    
+    mLoading = True
+    For c = 0 To cTextsLast
+        UniText(c).Text = mTextValue(c)
+    Next c
+    mLoading = False
+End Sub
+
+' Defaults menu
+
+Private Sub cmdDefaults_Click()
+    Dim iMenu As LongPtr
+    Dim iRect As RECT
+    Dim iCaption As String
+    Dim iFlags As Long
+    Dim iCommand As Long
+    Dim iTexts() As String
+    Dim c As Long
+    
+    iMenu = CreatePopupMenu
+    If iMenu = 0 Then Exit Sub
+    iCaption = "Save as defaults for new controls"
+    AppendMenuW iMenu, MF_STRING, cMenuSaveDefaults, StrPtr(iCaption)
+    iCaption = "Apply saved defaults"
+    iFlags = MF_STRING
+    If Not SavedTextsExist(mAppName) Then iFlags = iFlags Or MF_GRAYED
+    AppendMenuW iMenu, iFlags, cMenuApplyDefaults, StrPtr(iCaption)
+    iCaption = "Restore factory texts"
+    AppendMenuW iMenu, MF_STRING, cMenuFactory, StrPtr(iCaption)
+    GetWindowRect cmdDefaults.hWnd, iRect
+    iCommand = TrackPopupMenuEx(iMenu, TPM_RETURNCMD Or TPM_NONOTIFY Or TPM_RIGHTALIGN, iRect.Right, iRect.Bottom, PropertyPage.hWnd, 0)
+    DestroyMenu iMenu
+    
+    Select Case iCommand
+        Case cMenuSaveDefaults
+            SaveTexts mAppName, mTextValue
+        Case cMenuApplyDefaults
+            GetSavedTexts mAppName, iTexts
+            For c = 0 To cTextsLast
+                mTextValue(c) = iTexts(c)
+            Next c
+            ShowTextValues
+            Changed = True
+        Case cMenuFactory
+            For c = 0 To cTextsLast
+                mTextValue(c) = TextFactoryValue(c)
+            Next c
+            ShowTextValues
+            Changed = True
+    End Select
+End Sub
+
+' Edit boxes
+
+Private Sub TextChanged(ByVal nIndex As Long)
+    If mLoading Then Exit Sub
+    mTextValue(nIndex) = UniText(nIndex).Text
+    Changed = True
+End Sub
+
+Private Sub TextGotFocus(ByVal nIndex As Long)
+    ' a click on the edit box itself: route it through the holder so tabbing stays in step
+    If Not mTextFocusSync(nIndex) Then picTextHolder(nIndex).SetFocus
+End Sub
+
+Private Sub TextLostFocus(ByVal nIndex As Long)
+    mTextFocusSync(nIndex) = False
+End Sub
+
+Private Sub picTextHolder_GotFocus(nIndex As Integer)
+    If Not mTextFocusSync(nIndex) Then
+        mTextFocusSync(nIndex) = True
+        UniText(nIndex).SetFocus
+    End If
+End Sub
+
+Private Sub mUniText0_Change()
+    TextChanged 0
+End Sub
+
+Private Sub mUniText0_GotFocus()
+    TextGotFocus 0
+End Sub
+
+Private Sub mUniText0_LostFocus()
+    TextLostFocus 0
+End Sub
+
+Private Sub mUniText1_Change()
+    TextChanged 1
+End Sub
+
+Private Sub mUniText1_GotFocus()
+    TextGotFocus 1
+End Sub
+
+Private Sub mUniText1_LostFocus()
+    TextLostFocus 1
+End Sub
+
+Private Sub mUniText2_Change()
+    TextChanged 2
+End Sub
+
+Private Sub mUniText2_GotFocus()
+    TextGotFocus 2
+End Sub
+
+Private Sub mUniText2_LostFocus()
+    TextLostFocus 2
+End Sub
+
+Private Sub mUniText3_Change()
+    TextChanged 3
+End Sub
+
+Private Sub mUniText3_GotFocus()
+    TextGotFocus 3
+End Sub
+
+Private Sub mUniText3_LostFocus()
+    TextLostFocus 3
+End Sub
+
+Private Sub mUniText4_Change()
+    TextChanged 4
+End Sub
+
+Private Sub mUniText4_GotFocus()
+    TextGotFocus 4
+End Sub
+
+Private Sub mUniText4_LostFocus()
+    TextLostFocus 4
+End Sub
+
+Private Sub mUniText5_Change()
+    TextChanged 5
+End Sub
+
+Private Sub mUniText5_GotFocus()
+    TextGotFocus 5
+End Sub
+
+Private Sub mUniText5_LostFocus()
+    TextLostFocus 5
+End Sub

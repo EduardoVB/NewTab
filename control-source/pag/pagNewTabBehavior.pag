@@ -1,0 +1,817 @@
+VERSION 5.00
+Begin VB.PropertyPage pagNewTabBehavior 
+   Caption         =   "Behavior"
+   ClientHeight    =   8508
+   ClientLeft      =   0
+   ClientTop       =   0
+   ClientWidth     =   6804
+   BeginProperty Font 
+      Name            =   "Tahoma"
+      Size            =   8.4
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
+   LockControls    =   -1  'True
+   PaletteMode     =   0  'Halftone
+   ScaleHeight     =   8508
+   ScaleWidth      =   6804
+   Begin VB.Frame fraInteraction 
+      Caption         =   "Tabs and user interaction"
+      Height          =   2130
+      Left            =   90
+      TabIndex        =   0
+      Top             =   30
+      Width           =   6624
+      Begin VB.Label lblCanReorderTabs 
+         Alignment       =   1  'Right Justify
+         Caption         =   "CanReorderTabs:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   1
+         Top             =   310
+         Width           =   2280
+      End
+      Begin VB.CheckBox chkCanReorderTabs 
+         Height          =   255
+         Left            =   2400
+         TabIndex        =   2
+         Top             =   292
+         Width           =   255
+      End
+      Begin VB.Label lblCanReorderTabsInfo 
+         Caption         =   "the user can drag the tabs to reorder them"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   2760
+         TabIndex        =   3
+         ToolTipText     =   "the user can drag the tabs to reorder them"
+         Top             =   310
+         Width           =   3800
+      End
+      Begin VB.Label lblTabMousePointerHand 
+         Alignment       =   1  'Right Justify
+         Caption         =   "TabMousePointerHand:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   4
+         Top             =   670
+         Width           =   2280
+      End
+      Begin VB.CheckBox chkTabMousePointerHand 
+         Height          =   255
+         Left            =   2400
+         TabIndex        =   5
+         Top             =   652
+         Width           =   255
+      End
+      Begin VB.Label lblTabMousePointerHandInfo 
+         Caption         =   "hand pointer over the tabs"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   2760
+         TabIndex        =   6
+         ToolTipText     =   "hand pointer over the tabs"
+         Top             =   670
+         Width           =   3800
+      End
+      Begin VB.Label lblTabTransition 
+         Alignment       =   1  'Right Justify
+         Caption         =   "TabTransition:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   7
+         Top             =   1030
+         Width           =   2280
+      End
+      Begin VB.ComboBox cboTabTransition 
+         Height          =   300
+         Left            =   2400
+         Style           =   2  'Dropdown List
+         TabIndex        =   8
+         Top             =   990
+         Width           =   1900
+      End
+      Begin VB.Label lblTabTransitionInfo 
+         Caption         =   "when the active tab changes"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   4360
+         TabIndex        =   9
+         ToolTipText     =   "when the active tab changes"
+         Top             =   1030
+         Width           =   2200
+      End
+      Begin VB.Label lblShowFocusRect 
+         Alignment       =   1  'Right Justify
+         Caption         =   "ShowFocusRect:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   10
+         Top             =   1390
+         Width           =   2280
+      End
+      Begin VB.CheckBox chkShowFocusRect 
+         Height          =   255
+         Left            =   2400
+         TabIndex        =   11
+         Top             =   1372
+         Width           =   255
+      End
+      Begin VB.Label lblShowFocusRectInfo 
+         Caption         =   "on the active caption, with the focus"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   2760
+         TabIndex        =   12
+         ToolTipText     =   "on the active caption, with the focus"
+         Top             =   1390
+         Width           =   3800
+      End
+      Begin VB.Label lblEnabled 
+         Alignment       =   1  'Right Justify
+         Caption         =   "Enabled:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   13
+         Top             =   1750
+         Width           =   2280
+      End
+      Begin VB.CheckBox chkEnabled 
+         Height          =   255
+         Left            =   2400
+         TabIndex        =   14
+         Top             =   1732
+         Width           =   255
+      End
+      Begin VB.Label lblEnabledInfo 
+         Caption         =   "not applied to the preview"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   2760
+         TabIndex        =   15
+         ToolTipText     =   "not applied to the preview"
+         Top             =   1750
+         Width           =   3800
+      End
+   End
+   Begin VB.Frame fraContainedControls 
+      Caption         =   "Contained controls"
+      Height          =   1410
+      Left            =   90
+      TabIndex        =   16
+      Top             =   2310
+      Width           =   6624
+      Begin VB.Label lblAutoRelocateControls 
+         Alignment       =   1  'Right Justify
+         Caption         =   "AutoRelocateControls:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   17
+         Top             =   310
+         Width           =   2280
+      End
+      Begin VB.ComboBox cboAutoRelocateControls 
+         Height          =   300
+         Left            =   2400
+         Style           =   2  'Dropdown List
+         TabIndex        =   18
+         Top             =   270
+         Width           =   1900
+      End
+      Begin VB.Label lblAutoRelocateControlsInfo 
+         Caption         =   "when the tab body changes"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   4360
+         TabIndex        =   19
+         ToolTipText     =   "when the tab body changes"
+         Top             =   310
+         Width           =   2200
+      End
+      Begin VB.Label lblChangeControlsBackColor 
+         Alignment       =   1  'Right Justify
+         Caption         =   "ChangeControlsBackColor:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   20
+         Top             =   670
+         Width           =   2280
+      End
+      Begin VB.CheckBox chkChangeControlsBackColor 
+         Height          =   255
+         Left            =   2400
+         TabIndex        =   21
+         Top             =   652
+         Width           =   255
+      End
+      Begin VB.Label lblChangeControlsBackColorInfo 
+         Caption         =   "they take the back color of the active tab"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   2760
+         TabIndex        =   22
+         ToolTipText     =   "they take the back color of the active tab"
+         Top             =   670
+         Width           =   3800
+      End
+      Begin VB.Label lblChangeControlsForeColor 
+         Alignment       =   1  'Right Justify
+         Caption         =   "ChangeControlsForeColor:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   23
+         Top             =   1030
+         Width           =   2280
+      End
+      Begin VB.CheckBox chkChangeControlsForeColor 
+         Height          =   255
+         Left            =   2400
+         TabIndex        =   24
+         Top             =   1012
+         Width           =   255
+      End
+      Begin VB.Label lblChangeControlsForeColorInfo 
+         Caption         =   "they take a fore color readable on it"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   2760
+         TabIndex        =   25
+         ToolTipText     =   "they take a fore color readable on it"
+         Top             =   1030
+         Width           =   3800
+      End
+   End
+   Begin VB.Frame fraOLEDrop 
+      Caption         =   "OLE drag and drop"
+      Height          =   1050
+      Left            =   90
+      TabIndex        =   26
+      Top             =   3870
+      Width           =   6624
+      Begin VB.Label lblOLEDropMode 
+         Alignment       =   1  'Right Justify
+         Caption         =   "OLEDropMode:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   27
+         Top             =   310
+         Width           =   2280
+      End
+      Begin VB.ComboBox cboOLEDropMode 
+         Height          =   300
+         Left            =   2400
+         Style           =   2  'Dropdown List
+         TabIndex        =   28
+         Top             =   270
+         Width           =   1900
+      End
+      Begin VB.Label lblOLEDropModeInfo 
+         Caption         =   "Manual raises the OLE events"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   4360
+         TabIndex        =   29
+         ToolTipText     =   "Manual raises the OLE events"
+         Top             =   310
+         Width           =   2200
+      End
+      Begin VB.Label lblOLEDropOnOtherTabs 
+         Alignment       =   1  'Right Justify
+         Caption         =   "OLEDropOnOtherTabs:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   30
+         Top             =   670
+         Width           =   2280
+      End
+      Begin VB.CheckBox chkOLEDropOnOtherTabs 
+         Height          =   255
+         Left            =   2400
+         TabIndex        =   31
+         Top             =   652
+         Width           =   255
+      End
+      Begin VB.Label lblOLEDropOnOtherTabsInfo 
+         Caption         =   "also on the inactive tabs"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   2760
+         TabIndex        =   32
+         ToolTipText     =   "also on the inactive tabs"
+         Top             =   670
+         Width           =   3800
+      End
+   End
+   Begin VB.Frame fraSystem 
+      Caption         =   "System"
+      Height          =   690
+      Left            =   90
+      TabIndex        =   33
+      Top             =   5070
+      Width           =   6624
+      Begin VB.Label lblHandleHighContrastTheme 
+         Alignment       =   1  'Right Justify
+         Caption         =   "HandleHighContrastTheme:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   34
+         Top             =   310
+         Width           =   2280
+      End
+      Begin VB.CheckBox chkHandleHighContrastTheme 
+         Height          =   255
+         Left            =   2400
+         TabIndex        =   35
+         Top             =   292
+         Width           =   255
+      End
+      Begin VB.Label lblHandleHighContrastThemeInfo 
+         Caption         =   "system colors under high contrast"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   2760
+         TabIndex        =   36
+         ToolTipText     =   "Left Alt + left Shift + Print Screen switches Windows to high contrast"
+         Top             =   310
+         Width           =   3800
+      End
+   End
+   Begin VB.Frame fraTDI 
+      Caption         =   "TDI mode"
+      Height          =   1170
+      Left            =   90
+      TabIndex        =   37
+      Top             =   5910
+      Width           =   6624
+      Begin VB.Label lblTDIMode 
+         Alignment       =   1  'Right Justify
+         Caption         =   "TDIMode:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   38
+         Top             =   310
+         Width           =   2280
+      End
+      Begin VB.ComboBox cboTDIMode 
+         Height          =   300
+         Left            =   2400
+         Style           =   2  'Dropdown List
+         TabIndex        =   39
+         Top             =   270
+         Width           =   1900
+      End
+      Begin VB.Label lblTDIModeInfo 
+         Caption         =   "Only right after adding the control, before changing anything else and with no controls inside. Changing it rebuilds the tabs."
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   400
+         Left            =   240
+         TabIndex        =   40
+         Top             =   670
+         Width           =   6300
+      End
+   End
+   Begin VB.PictureBox picSampleContainer 
+      BorderStyle     =   0  'None
+      Height          =   972
+      Left            =   120
+      ScaleHeight     =   972
+      ScaleWidth      =   6612
+      TabIndex        =   41
+      Top             =   7440
+      Width           =   6612
+      Begin NewTabCtl.NewTab NewTab1 
+         Height          =   972
+         Left            =   0
+         TabIndex        =   42
+         Top             =   0
+         Width           =   6612
+         _ExtentX        =   11663
+         _ExtentY        =   1715
+         ControlsBackColorApplied=   -2147483633
+         AutoTabHeight   =   -1  'True
+         ControlVersion  =   18
+         TabCaption(0)   =   ""
+         TabCaption(1)   =   ""
+         TabCaption(2)   =   ""
+      End
+   End
+End
+Attribute VB_Name = "pagNewTabBehavior"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = True
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = True
+Option Explicit
+
+Private Declare Function SendMessageW Lib "user32" (ByVal hWnd As LongPtr, ByVal wMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
+
+Private Const CB_SETDROPPEDWIDTH As Long = &H160&
+
+Private mPreview As NewTab
+Private mLoading As Boolean
+Private mTDIModeCanChange As Boolean
+
+Private Sub PropertyPage_SelectionChanged()
+    Dim iSC As NewTab
+    Dim t As Long
+
+    If TypeName(SelectedControls(0)) <> "NewTab" Then Exit Sub
+    mLoading = True
+    Set iSC = SelectedControls(0)
+    Set mPreview = NewTab1
+
+    LoadCombos
+    mTDIModeCanChange = iSC.TDIModeCanChange
+
+    chkCanReorderTabs.Value = IIf(iSC.CanReorderTabs, vbChecked, vbUnchecked)
+    chkTabMousePointerHand.Value = IIf(iSC.TabMousePointerHand, vbChecked, vbUnchecked)
+    SelectInComboByItemData cboTabTransition, iSC.TabTransition
+    chkShowFocusRect.Value = IIf(iSC.ShowFocusRect, vbChecked, vbUnchecked)
+    chkEnabled.Value = IIf(iSC.Enabled, vbChecked, vbUnchecked)
+    SelectInComboByItemData cboAutoRelocateControls, iSC.AutoRelocateControls
+    chkChangeControlsBackColor.Value = IIf(iSC.ChangeControlsBackColor, vbChecked, vbUnchecked)
+    chkChangeControlsForeColor.Value = IIf(iSC.ChangeControlsForeColor, vbChecked, vbUnchecked)
+    SelectInComboByItemData cboOLEDropMode, iSC.OLEDropMode
+    chkOLEDropOnOtherTabs.Value = IIf(iSC.OLEDropOnOtherTabs, vbChecked, vbUnchecked)
+    chkHandleHighContrastTheme.Value = IIf(iSC.HandleHighContrastTheme, vbChecked, vbUnchecked)
+    SelectInComboByItemData cboTDIMode, iSC.TDIMode
+
+    ' The sample is the developer's control, as in the other pages. Not disabled with it: then it
+    ' could not be tried
+    mPreview.Redraw = False
+    mPreview.RightToLeft = iSC.RightToLeft
+    mPreview.CloseButton = iSC.CloseButton
+    mPreview.CloseButtonPosition = iSC.CloseButtonPosition
+    mPreview.CaptionAlignment = iSC.CaptionAlignment
+    mPreview.Tabs = iSC.Tabs
+    For t = 0 To iSC.Tabs - 1
+        SeedPreviewTab iSC, t
+    Next t
+    Select Case iSC.TabOrientation
+        Case ssTabOrientationRight, ssTabOrientationLeft, ntTabOrientationRightBottom, ntTabOrientationLeftTop
+            mPreview.Width = iSC.Height
+            mPreview.Height = iSC.Width
+        Case Else
+            mPreview.Width = iSC.Width
+            mPreview.Height = iSC.Height
+    End Select
+    CopyControlProperties iSC, mPreview
+    If iSC.TabSel > -1 Then
+        If mPreview.TabVisible(iSC.TabSel) Then mPreview.TabSel = iSC.TabSel
+    End If
+    UpdatePreview
+    mPreview.Redraw = True
+    PlacePreview
+
+    SetComboDropWidth cboTabTransition
+    SetComboDropWidth cboAutoRelocateControls
+    SetComboDropWidth cboOLEDropMode
+    SetComboDropWidth cboTDIMode
+    SetEnabledStates
+    Changed = False
+    mLoading = False
+End Sub
+
+Private Sub PropertyPage_EditProperty(PropertyName As String)
+    On Error Resume Next
+    Select Case PropertyName
+        Case "TabMousePointerHand": chkTabMousePointerHand.SetFocus
+        Case "TabTransition": cboTabTransition.SetFocus
+        Case "ShowFocusRect": chkShowFocusRect.SetFocus
+        Case "Enabled": chkEnabled.SetFocus
+        Case "AutoRelocateControls": cboAutoRelocateControls.SetFocus
+        Case "ChangeControlsBackColor": chkChangeControlsBackColor.SetFocus
+        Case "ChangeControlsForeColor": chkChangeControlsForeColor.SetFocus
+        Case "OLEDropMode": cboOLEDropMode.SetFocus
+        Case "OLEDropOnOtherTabs": chkOLEDropOnOtherTabs.SetFocus
+        Case "HandleHighContrastTheme": chkHandleHighContrastTheme.SetFocus
+        Case "TDIMode": cboTDIMode.SetFocus
+        Case Else: chkCanReorderTabs.SetFocus
+    End Select
+End Sub
+
+' TDIMode goes first: the control takes it only until any other property is set
+Private Sub PropertyPage_ApplyChanges()
+    Dim iSC As NewTab
+
+    If mPreview Is Nothing Then Exit Sub
+    Set iSC = SelectedControls(0)
+    On Error Resume Next
+    If mTDIModeCanChange And (iSC.TDIMode <> ComboValue(cboTDIMode)) Then iSC.TDIMode = ComboValue(cboTDIMode)
+    iSC.Redraw = False
+    If iSC.CanReorderTabs <> CheckValue(chkCanReorderTabs) Then iSC.CanReorderTabs = CheckValue(chkCanReorderTabs)
+    If iSC.TabMousePointerHand <> CheckValue(chkTabMousePointerHand) Then iSC.TabMousePointerHand = CheckValue(chkTabMousePointerHand)
+    If iSC.TabTransition <> ComboValue(cboTabTransition) Then iSC.TabTransition = ComboValue(cboTabTransition)
+    If iSC.ShowFocusRect <> CheckValue(chkShowFocusRect) Then iSC.ShowFocusRect = CheckValue(chkShowFocusRect)
+    If iSC.AutoRelocateControls <> ComboValue(cboAutoRelocateControls) Then iSC.AutoRelocateControls = ComboValue(cboAutoRelocateControls)
+    If iSC.ChangeControlsBackColor <> CheckValue(chkChangeControlsBackColor) Then iSC.ChangeControlsBackColor = CheckValue(chkChangeControlsBackColor)
+    If iSC.ChangeControlsForeColor <> CheckValue(chkChangeControlsForeColor) Then iSC.ChangeControlsForeColor = CheckValue(chkChangeControlsForeColor)
+    If iSC.OLEDropMode <> ComboValue(cboOLEDropMode) Then iSC.OLEDropMode = ComboValue(cboOLEDropMode)
+    If iSC.OLEDropOnOtherTabs <> CheckValue(chkOLEDropOnOtherTabs) Then iSC.OLEDropOnOtherTabs = CheckValue(chkOLEDropOnOtherTabs)
+    If iSC.HandleHighContrastTheme <> CheckValue(chkHandleHighContrastTheme) Then iSC.HandleHighContrastTheme = CheckValue(chkHandleHighContrastTheme)
+    If iSC.Enabled <> CheckValue(chkEnabled) Then iSC.Enabled = CheckValue(chkEnabled)
+    iSC.Redraw = True
+    mTDIModeCanChange = iSC.TDIModeCanChange
+    On Error GoTo 0
+    SetEnabledStates
+End Sub
+
+Private Function CheckValue(nCheck As CheckBox) As Boolean
+    CheckValue = (nCheck.Value = vbChecked)
+End Function
+
+Private Function ComboValue(nCombo As ComboBox) As Long
+    If nCombo.ListIndex > -1 Then ComboValue = nCombo.ItemData(nCombo.ListIndex)
+End Function
+
+Private Sub LoadCombos()
+    cboTabTransition.Clear
+    cboTabTransition.AddItem ntAnimationNone & " - ntAnimationNone": cboTabTransition.ItemData(cboTabTransition.NewIndex) = ntAnimationNone
+    cboTabTransition.AddItem ntAnimationFaster & " - ntAnimationFaster": cboTabTransition.ItemData(cboTabTransition.NewIndex) = ntAnimationFaster
+    cboTabTransition.AddItem ntAnimationFast & " - ntAnimationFast": cboTabTransition.ItemData(cboTabTransition.NewIndex) = ntAnimationFast
+    cboTabTransition.AddItem ntAnimationMedium & " - ntAnimationMedium": cboTabTransition.ItemData(cboTabTransition.NewIndex) = ntAnimationMedium
+    cboTabTransition.AddItem ntAnimationSlow & " - ntAnimationSlow": cboTabTransition.ItemData(cboTabTransition.NewIndex) = ntAnimationSlow
+    cboTabTransition.AddItem ntAnimationSlower & " - ntAnimationSlower": cboTabTransition.ItemData(cboTabTransition.NewIndex) = ntAnimationSlower
+
+    cboAutoRelocateControls.Clear
+    cboAutoRelocateControls.AddItem ntRelocateNever & " - ntRelocateNever": cboAutoRelocateControls.ItemData(cboAutoRelocateControls.NewIndex) = ntRelocateNever
+    cboAutoRelocateControls.AddItem ntRelocateAlways & " - ntRelocateAlways": cboAutoRelocateControls.ItemData(cboAutoRelocateControls.NewIndex) = ntRelocateAlways
+    cboAutoRelocateControls.AddItem ntRelocateOnTabOrientationChange & " - ntRelocateOnTabOrientationChange": cboAutoRelocateControls.ItemData(cboAutoRelocateControls.NewIndex) = ntRelocateOnTabOrientationChange
+
+    cboOLEDropMode.Clear
+    cboOLEDropMode.AddItem ssOLEDropNone & " - ssOLEDropNone": cboOLEDropMode.ItemData(cboOLEDropMode.NewIndex) = ssOLEDropNone
+    cboOLEDropMode.AddItem ssOLEDropManual & " - ssOLEDropManual": cboOLEDropMode.ItemData(cboOLEDropMode.NewIndex) = ssOLEDropManual
+
+    cboTDIMode.Clear
+    cboTDIMode.AddItem ntTDIModeNone & " - ntTDIModeNone": cboTDIMode.ItemData(cboTDIMode.NewIndex) = ntTDIModeNone
+    cboTDIMode.AddItem ntTDIModeControls & " - ntTDIModeControls": cboTDIMode.ItemData(cboTDIMode.NewIndex) = ntTDIModeControls
+    cboTDIMode.AddItem ntTDIModeForms & " - ntTDIModeForms": cboTDIMode.ItemData(cboTDIMode.NewIndex) = ntTDIModeForms
+End Sub
+
+Private Sub Edited()
+    If mLoading Then Exit Sub
+    SetEnabledStates
+    UpdatePreview
+    Changed = True
+End Sub
+
+Private Sub chkCanReorderTabs_Click()
+    Edited
+End Sub
+
+Private Sub chkTabMousePointerHand_Click()
+    Edited
+End Sub
+
+Private Sub cboTabTransition_Click()
+    Edited
+End Sub
+
+Private Sub chkShowFocusRect_Click()
+    Edited
+End Sub
+
+Private Sub chkEnabled_Click()
+    Edited
+End Sub
+
+Private Sub cboAutoRelocateControls_Click()
+    Edited
+End Sub
+
+Private Sub chkChangeControlsBackColor_Click()
+    Edited
+End Sub
+
+Private Sub chkChangeControlsForeColor_Click()
+    Edited
+End Sub
+
+Private Sub cboOLEDropMode_Click()
+    Edited
+End Sub
+
+Private Sub chkOLEDropOnOtherTabs_Click()
+    Edited
+End Sub
+
+Private Sub chkHandleHighContrastTheme_Click()
+    Edited
+End Sub
+
+Private Sub cboTDIMode_Click()
+    Edited
+End Sub
+
+Private Sub SetRowEnabled(nLabel As Label, nField As Control, ByVal nEnabled As Boolean)
+    nLabel.Enabled = nEnabled
+    nField.Enabled = nEnabled
+End Sub
+
+' OLEDropOnOtherTabs only filters the drops that OLEDropMode Manual lets in
+Private Sub SetEnabledStates()
+    SetRowEnabled lblOLEDropOnOtherTabs, chkOLEDropOnOtherTabs, (ComboValue(cboOLEDropMode) = ssOLEDropManual)
+    lblOLEDropOnOtherTabsInfo.Enabled = chkOLEDropOnOtherTabs.Enabled
+    SetRowEnabled lblTDIMode, cboTDIMode, mTDIModeCanChange
+End Sub
+
+' Preview
+
+' What can be tried on the sample. The contained controls, OLE drop, Enabled and TDIMode are left out
+Private Sub UpdatePreview()
+    On Error Resume Next
+    mPreview.CanReorderTabs = CheckValue(chkCanReorderTabs)
+    mPreview.TabMousePointerHand = CheckValue(chkTabMousePointerHand)
+    mPreview.TabTransition = ComboValue(cboTabTransition)
+    mPreview.ShowFocusRect = CheckValue(chkShowFocusRect)
+    mPreview.HandleHighContrastTheme = CheckValue(chkHandleHighContrastTheme)
+    On Error GoTo 0
+End Sub
+
+Private Sub SeedPreviewTab(ByVal nSC As NewTab, ByVal nTab As Long)
+    Dim c As Long
+    
+    For c = 0 To ntCCFlatTabBorderColorInactive
+        If nSC.TabCustomColorIsSet(nTab, c) Then
+            mPreview.TabCustomColor(nTab, c) = nSC.TabCustomColor(nTab, c)
+        Else
+            mPreview.TabCustomColor(nTab, c) = -1
+        End If
+    Next c
+    mPreview.TabCaption(nTab) = nSC.TabCaption(nTab)
+    mPreview.TabEnabled(nTab) = nSC.TabEnabled(nTab)
+    mPreview.TabVisible(nTab) = nSC.TabVisible(nTab)
+    mPreview.TabCloseButton(nTab) = nSC.TabCloseButton(nTab)
+    mPreview.TabCloseButtonEnabled(nTab) = nSC.TabCloseButtonEnabled(nTab)
+    Set mPreview.TabPic16(nTab) = nSC.TabPic16(nTab)
+    Set mPreview.TabPic20(nTab) = nSC.TabPic20(nTab)
+    Set mPreview.TabPic24(nTab) = nSC.TabPic24(nTab)
+    Set mPreview.TabPicture(nTab) = nSC.TabPicture(nTab)
+    Set mPreview.TabIconFont(nTab) = CloneFont(nSC.TabIconFont(nTab))
+    mPreview.TabIconCharHex(nTab) = nSC.TabIconCharHex(nTab)
+    mPreview.TabIconLeftOffset(nTab) = nSC.TabIconLeftOffset(nTab)
+    mPreview.TabIconTopOffset(nTab) = nSC.TabIconTopOffset(nTab)
+End Sub
+
+' Placed the way Tabs places its sample: centred against the page, then moved so that the selected
+' tab is in sight
+Private Sub PlacePreview()
+    mPreview.Left = (PropertyPage.ScaleWidth - mPreview.Width) / 2
+    If mPreview.TabSel > -1 Then
+        If (mPreview.Left + mPreview.GetTabLeft(mPreview.TabSel) + mPreview.GetTabWidth(mPreview.TabSel)) > PropertyPage.ScaleWidth Then
+            mPreview.Left = PropertyPage.ScaleWidth - (mPreview.GetTabLeft(mPreview.TabSel) + mPreview.GetTabWidth(mPreview.TabSel)) - 120
+        ElseIf (mPreview.Left + mPreview.GetTabLeft(mPreview.TabSel)) < 0 Then
+            mPreview.Left = 120 - mPreview.GetTabLeft(mPreview.TabSel)
+        End If
+    End If
+    mPreview.Top = PreviewTop(mPreview, picSampleContainer.ScaleHeight)
+End Sub
+
+Private Sub NewTab1_CloseButtonClick(ByVal nTab As Long, Cancel As Boolean)
+    Cancel = True
+End Sub
+
+Private Function CloneFont(nOrigFont As iFont) As StdFont
+    If nOrigFont Is Nothing Then Exit Function
+    nOrigFont.Clone CloneFont
+End Function
+
+' The list opens as wide as its longest item. picSampleContainer measures because it has the page
+' font, the same as the combos
+Private Sub SetComboDropWidth(nCombo As ComboBox)
+    Dim c As Long
+    Dim iWidth As Single
+    Dim iMaxWidth As Single
+    
+    For c = 0 To nCombo.ListCount - 1
+        iWidth = picSampleContainer.TextWidth(nCombo.List(c))
+        If iWidth > iMaxWidth Then iMaxWidth = iWidth
+    Next c
+    ' room for the item margins and a vertical scroll bar
+    iMaxWidth = mPreview.pScaleX(iMaxWidth, vbTwips, vbPixels) + mPreview.pScaleX(360, vbTwips, vbPixels)
+    If iMaxWidth > mPreview.pScaleX(nCombo.Width, vbTwips, vbPixels) Then SendMessageW nCombo.hWnd, CB_SETDROPPEDWIDTH, CLng(iMaxWidth), 0
+End Sub
+
+Private Function SelectInComboByItemData(nCombo As Control, nItemData As Long) As Boolean
+    Dim c As Long
+    
+    For c = 0 To nCombo.ListCount - 1
+        If nCombo.ItemData(c) = nItemData Then
+            nCombo.ListIndex = c
+            SelectInComboByItemData = True
+            Exit Function
+        End If
+    Next c
+End Function
+

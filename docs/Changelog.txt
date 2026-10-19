@@ -1,5 +1,50 @@
-2025-07-20 Fix en TDI mode forms regarding closing tabs and reopening them when they start a new row of tabs.
-2025-07-20 Changed to OLE version 15.
+2026-10-19 Updted the documentation.
+2026-10-13 Added FlatTabBodyGap property.
+2026-10-13 Added HighlightGradientColor and HighlightGradientColorSelectedTab properties.
+2026-10-12 Renamed properties: FlatTabBorderColorHighlight to FlatTabBorderColorHighlighted, FlatBarColorHighlight to FlatBarColorHighlighted, CloseButtonColorHighlight to CloseButtonColorHighlighted, HorizontalTabHeightStyle to TabHeightStyleForHorizontal, TabsEndFreeSpace to StripEndFreeSpace.
+2026-10-08 Added several new default Themes.
+2026-10-08 Added ntHLRoundBottom flag to NTHighlightModeFlagsConstants. 
+2026-10-05 ntOpaqueSelectedTab enum member of NTBackStyleConstants renamed to ntTransparentBackOnly.
+2026-10-02 Added methods FitToClientArea and ReleaseFromClientArea to fit contained controls to the client area, considering roundness and adapting to size changes.
+2026-10-01 Now text properties fully support Unicode.
+2026-09-30 Tab dragging and reordering much improved. Now it includes animation.
+2026-09-30 Fixed issue with Unicode textboxes in property pages where you couldn't use arrow keys.
+2026-09-29 Added new Boolean property TabIconInColor that is per tab and the shortcut property IconInColor that works with the currently selected tab. When True, the icon can display color emojis.
+2026-09-29 Fixed bug in property page Icons about showing Unicode characters from font's private sections.
+2026-09-29 Fixed bug with icon chars of hight Unicode numbers (over &H1FFFF). 
+2026-09-28 Property pages reworked. General was removed and added Appearance, Behavior, Strip, Highlight, Buttons and Texts. 
+2026-09-27 Added Properties NewTabButtonColor and NewTabButtonColorHighlighted that apply only when the NewTabButton is not on the Strip but on a own tab.
+2026-09-21 Orientation LeftHorizontal now aligns top, with first tab at the top. Orientation LeftTopHorizontal was replaced with LeftBottomHorizontal. In RightBottomHorizontal the first tab now goes to the bottom. ntTabOrientationLeftTopHorizontal no longer exists.
+2026-09-21 Added property: TabsOverflow for handling multirow or not.
+2026-09-21 Added properties: CloseButtonPosition, NewTabButtonPosition, StripButtonsRow, StripButtonsColor, StripButtonsColorHighlighted. 
+2026-09-21 Added options ntTWGeneralFixedWidth and ntTWGeneralFixedWidthFillRows to TabWidthStyle property and new property TabGeneralFixedWidth.
+2026-09-19 TabTransition and HighlightEffect/Out properties now check for user SPI_GETCLIENTAREAANIMATION preference to perform the animation.
+2026-09-19 TabTransition property and feature has been improved.
+2026-09-19 Changed parameters in events TDIBeforeClosingTab and TDIFormsShowTabIcon.
+2026-09-15 Added TabAppearance ntTAWindows.
+2026-09-14 Added TabAppearance ntTATabStrip.
+2026-09-11 Added the ntHLWidenTab flag for highlight.
+2026-09-10 Added HighlightTabCaptionShift property and ntHLShiftCaption flag for highlight.
+2026-09-08 Changed property TabTransition to NTAnimationSpeedConstants.
+2026-09-08 Added property HighlightEffectOut.
+2026-09-08 Changed property HighlightEffect from Boolean to NTAnimationSpeedConstants.
+2026-08-18 Fixed bug in TabFixedWidth property.
+2026-08-18 Performance has improved by not redrawing the body when it is not necessary.
+2026-08-14 Added TabPaddingWidth and TabPaddingHeight properties.
+2026-08-09 Added ScalePicturesForDPI and TDIFormsIconSize properties.
+2026-08-09 Added MMPX algorithm for image scaling.
+2026-08-06 Added NewTabButtonColor and NewTabButtonColorHighlighted properties.
+2026-08-06 Restructured colors and themes, including proper color inheritance between dependent properties and custom colors per tab.
+2026-07-29 Added AddTab and RemoveTab methods.
+2026-07-29 Opus found and fixed several edge case bugs regarding tab indexes, validation of tab identifiers and others edge case issues.
+2026-07-28 Added NewTabButton property that adds a "+" at the end of the tabs. In TDI mode controls it has a preprogrammed function, for other modes it just raises the NewTabButtonClick event (also added now).
+2026-07-27 Added ntCCCloseButtonColor and ntCCCloseButtonColorHighlight to NTTabCustomColorIDConstants enum as custom colors per tab used in TabCustomColor property, corresponding to equivalent general properties CloseButtonColor and CloseButtonColorHighlight added recently. 
+2026-07-27 Added TabMovable property. It determines for each tab if that tab can be dragged or not when general property CanReorderTabs = True. Fixed tabs also determine zones where the tabs contained within them can be moved by the user by dragging them.
+2026-07-27 Change in the way the tab dragging works.
+2026-07-25 Fixed bug regarding close buttons and tab dragging.
+2026-07-25 Fixed bug: in TabOrientation ssTabOrientationLeft, tab pictures that are of the icon type, where rendered as black boxes.
+2026-07-20 Fix en TDI mode forms regarding closing tabs and reopening them when they start a new row of tabs.
+2026-07-20 Changed to OLE version 15.
 2026-07-20 Fixed BackStyle bug with RightToLeft.
 2026-07-20 Removed TabOrientation restrictions with RightToLeft. RightToLeft now can work with any TabOrientation setting.
 2026-07-19 Changed pointers from Long to LongPtr to be already prepared for 64 bits.
@@ -132,7 +177,6 @@
 2023-12-08 TDIMode property changed from boolean to Long, now there are two TDI modes: controls and forms.
 2023-12-08 Improvements in tab dragging (CanReorderTabs property).
 2023-11-28 Changed to OLE version 5.0.
-2023-11-27 Recently added TabsRightFreeSpace property renamed as TabsEndFreeSpace.
 2023-11-27 Added ntTabOrientationLeftHorizontal and ntTabOrientationRightHorizontal options to the TabOrientation property.
 2023-11-22 Several minor bugs fixed.
 2023-11-05 Changed to OLE version 4.0.

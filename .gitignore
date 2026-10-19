@@ -7,3 +7,11 @@
 *.tmp
 /docs/Documenter
 ToDo.txt
+/control-source/*.vbg
+/control-source/test
+/ocx/*
+!/ocx/*.bat
+!/ocx/NewTab01.ocx
+/control-source/ctl/*
+!/control-source/ctl/ctlNewTab.ctl
+!/control-source/ctl/ctlNewTab.ctx

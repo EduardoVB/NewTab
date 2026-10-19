@@ -1,0 +1,3 @@
+VBGROUP 5.0
+StartupProject=test with compiled ocx\Test.vbp
+Project=test with compiled ocx\TDIForms test\TDIFormsTest.vbp

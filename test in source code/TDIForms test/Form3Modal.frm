@@ -3,8 +3,8 @@ Begin VB.Form Form3Modal
    BorderStyle     =   3  'Fixed Dialog
    Caption         =   "Form3 Modal"
    ClientHeight    =   3444
-   ClientLeft      =   2340
-   ClientTop       =   2064
+   ClientLeft      =   2268
+   ClientTop       =   1848
    ClientWidth     =   5148
    BeginProperty Font 
       Name            =   "Segoe UI"
@@ -21,7 +21,6 @@ Begin VB.Form Form3Modal
    ScaleHeight     =   3444
    ScaleWidth      =   5148
    ShowInTaskbar   =   0   'False
-   StartUpPosition =   1  'CenterOwner
    Begin VB.CommandButton Command1 
       Caption         =   "Close"
       Height          =   492

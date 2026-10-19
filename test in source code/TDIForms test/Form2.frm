@@ -2,8 +2,8 @@ VERSION 5.00
 Begin VB.Form Form2 
    Caption         =   "Form2"
    ClientHeight    =   9084
-   ClientLeft      =   2340
-   ClientTop       =   2064
+   ClientLeft      =   2280
+   ClientTop       =   1800
    ClientWidth     =   5604
    BeginProperty Font 
       Name            =   "Segoe UI"

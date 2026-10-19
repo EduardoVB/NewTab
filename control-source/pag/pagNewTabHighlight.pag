@@ -1,0 +1,1196 @@
+VERSION 5.00
+Begin VB.PropertyPage pagNewTabHighlight 
+   Caption         =   "Highlight"
+   ClientHeight    =   8508
+   ClientLeft      =   0
+   ClientTop       =   0
+   ClientWidth     =   6804
+   BeginProperty Font 
+      Name            =   "Tahoma"
+      Size            =   8.4
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
+   LockControls    =   -1  'True
+   PaletteMode     =   0  'Halftone
+   ScaleHeight     =   8508
+   ScaleWidth      =   6804
+   Begin VB.Frame fraMode 
+      Caption         =   "HighlightMode"
+      Height          =   4200
+      Index           =   0
+      Left            =   90
+      TabIndex        =   0
+      Top             =   30
+      Width           =   3282
+      Begin VB.TextBox txtHighlightModeValue 
+         Alignment       =   1  'Right Justify
+         Height          =   300
+         Left            =   2280
+         TabIndex        =   3
+         Top             =   240
+         Width           =   852
+      End
+      Begin VB.CheckBox chkHLAuto 
+         Caption         =   "Auto"
+         Height          =   255
+         Index           =   0
+         Left            =   120
+         TabIndex        =   1
+         Top             =   270
+         Width           =   1500
+      End
+      Begin VB.CheckBox chkHLBackground 
+         Caption         =   "Background"
+         Height          =   255
+         Index           =   0
+         Left            =   120
+         TabIndex        =   4
+         Top             =   547
+         Width           =   3042
+      End
+      Begin VB.CheckBox chkHLBackgroundGradient 
+         Caption         =   "BackgroundGradient"
+         Height          =   255
+         Index           =   0
+         Left            =   360
+         TabIndex        =   5
+         Top             =   824
+         Width           =   2802
+      End
+      Begin VB.CheckBox chkHLBackgroundDoubleGradient 
+         Caption         =   "BackgroundDoubleGradient"
+         Height          =   255
+         Index           =   0
+         Left            =   600
+         TabIndex        =   6
+         Top             =   1101
+         Width           =   2562
+      End
+      Begin VB.CheckBox chkHLBackgroundLight 
+         Caption         =   "BackgroundLight"
+         Height          =   255
+         Index           =   0
+         Left            =   360
+         TabIndex        =   7
+         Top             =   1378
+         Width           =   2802
+      End
+      Begin VB.CheckBox chkHLCaptionBold 
+         Caption         =   "CaptionBold"
+         Height          =   255
+         Index           =   0
+         Left            =   120
+         TabIndex        =   8
+         Top             =   1655
+         Width           =   3042
+      End
+      Begin VB.CheckBox chkHLCaptionUnderlined 
+         Caption         =   "CaptionUnderlined"
+         Height          =   255
+         Index           =   0
+         Left            =   120
+         TabIndex        =   9
+         Top             =   1932
+         Width           =   3042
+      End
+      Begin VB.CheckBox chkHLFlatBar 
+         Caption         =   "FlatBar"
+         Height          =   255
+         Index           =   0
+         Left            =   120
+         TabIndex        =   10
+         Top             =   2209
+         Width           =   3042
+      End
+      Begin VB.CheckBox chkHLFlatBarGrip 
+         Caption         =   "FlatBarGrip"
+         Height          =   255
+         Index           =   0
+         Left            =   360
+         TabIndex        =   11
+         Top             =   2486
+         Width           =   2802
+      End
+      Begin VB.CheckBox chkHLExtraHeight 
+         Caption         =   "ExtraHeight"
+         Height          =   255
+         Index           =   0
+         Left            =   120
+         TabIndex        =   12
+         Top             =   2763
+         Width           =   3042
+      End
+      Begin VB.CheckBox chkHLShiftCaption 
+         Caption         =   "ShiftCaption"
+         Height          =   255
+         Index           =   0
+         Left            =   120
+         TabIndex        =   13
+         Top             =   3040
+         Width           =   3042
+      End
+      Begin VB.CheckBox chkHLWidenTab 
+         Caption         =   "WidenTab"
+         Height          =   255
+         Index           =   0
+         Left            =   120
+         TabIndex        =   14
+         Top             =   3317
+         Width           =   3042
+      End
+      Begin VB.CheckBox chkHLFlatDrawBorder 
+         Caption         =   "FlatDrawBorder"
+         Height          =   255
+         Index           =   0
+         Left            =   120
+         TabIndex        =   15
+         Top             =   3594
+         Width           =   1620
+      End
+      Begin VB.CheckBox chkHLFlatShapeInactive 
+         Caption         =   "Inactive too"
+         Height          =   255
+         Left            =   1800
+         TabIndex        =   16
+         Top             =   3594
+         Width           =   1362
+      End
+      Begin VB.CheckBox chkHLRoundBottom 
+         Caption         =   "RoundBottom"
+         Height          =   255
+         Index           =   0
+         Left            =   120
+         TabIndex        =   17
+         Top             =   3871
+         Width           =   3042
+      End
+      Begin VB.Label lblHighlightModeValue 
+         Caption         =   "Value:"
+         Height          =   252
+         Left            =   1800
+         TabIndex        =   2
+         Top             =   270
+         Width           =   612
+      End
+   End
+   Begin VB.Frame fraMode 
+      Caption         =   "HighlightModeSelectedTab"
+      Height          =   4200
+      Index           =   1
+      Left            =   3432
+      TabIndex        =   18
+      Top             =   30
+      Width           =   3282
+      Begin VB.TextBox txtHighlightModeSelectedTabValue 
+         Alignment       =   1  'Right Justify
+         Height          =   300
+         Left            =   2280
+         TabIndex        =   21
+         Top             =   240
+         Width           =   852
+      End
+      Begin VB.CheckBox chkHLAuto 
+         Caption         =   "Auto"
+         Height          =   255
+         Index           =   1
+         Left            =   120
+         TabIndex        =   19
+         Top             =   270
+         Width           =   1500
+      End
+      Begin VB.CheckBox chkHLBackground 
+         Caption         =   "Background"
+         Height          =   255
+         Index           =   1
+         Left            =   120
+         TabIndex        =   22
+         Top             =   547
+         Width           =   3042
+      End
+      Begin VB.CheckBox chkHLBackgroundGradient 
+         Caption         =   "BackgroundGradient"
+         Height          =   255
+         Index           =   1
+         Left            =   360
+         TabIndex        =   23
+         Top             =   824
+         Width           =   2802
+      End
+      Begin VB.CheckBox chkHLBackgroundDoubleGradient 
+         Caption         =   "BackgroundDoubleGradient"
+         Height          =   255
+         Index           =   1
+         Left            =   600
+         TabIndex        =   24
+         Top             =   1101
+         Width           =   2562
+      End
+      Begin VB.CheckBox chkHLBackgroundLight 
+         Caption         =   "BackgroundLight"
+         Height          =   255
+         Index           =   1
+         Left            =   360
+         TabIndex        =   25
+         Top             =   1378
+         Width           =   2802
+      End
+      Begin VB.CheckBox chkHLCaptionBold 
+         Caption         =   "CaptionBold"
+         Height          =   255
+         Index           =   1
+         Left            =   120
+         TabIndex        =   26
+         Top             =   1655
+         Width           =   3042
+      End
+      Begin VB.CheckBox chkHLCaptionUnderlined 
+         Caption         =   "CaptionUnderlined"
+         Height          =   255
+         Index           =   1
+         Left            =   120
+         TabIndex        =   27
+         Top             =   1932
+         Width           =   3042
+      End
+      Begin VB.CheckBox chkHLFlatBar 
+         Caption         =   "FlatBar"
+         Height          =   255
+         Index           =   1
+         Left            =   120
+         TabIndex        =   28
+         Top             =   2209
+         Width           =   3042
+      End
+      Begin VB.CheckBox chkHLFlatBarGrip 
+         Caption         =   "FlatBarGrip"
+         Height          =   255
+         Index           =   1
+         Left            =   360
+         TabIndex        =   29
+         Top             =   2486
+         Width           =   2802
+      End
+      Begin VB.CheckBox chkHLExtraHeight 
+         Caption         =   "ExtraHeight"
+         Height          =   255
+         Index           =   1
+         Left            =   120
+         TabIndex        =   30
+         Top             =   2763
+         Width           =   3042
+      End
+      Begin VB.CheckBox chkHLShiftCaption 
+         Caption         =   "ShiftCaption"
+         Height          =   255
+         Index           =   1
+         Left            =   120
+         TabIndex        =   31
+         Top             =   3040
+         Width           =   3042
+      End
+      Begin VB.CheckBox chkHLWidenTab 
+         Caption         =   "WidenTab"
+         Height          =   255
+         Index           =   1
+         Left            =   120
+         TabIndex        =   32
+         Top             =   3317
+         Width           =   3042
+      End
+      Begin VB.CheckBox chkHLFlatDrawBorder 
+         Caption         =   "FlatDrawBorder"
+         Height          =   255
+         Index           =   1
+         Left            =   120
+         TabIndex        =   33
+         Top             =   3594
+         Width           =   3042
+      End
+      Begin VB.CheckBox chkHLRoundBottom 
+         Caption         =   "RoundBottom"
+         Height          =   255
+         Index           =   1
+         Left            =   120
+         TabIndex        =   34
+         Top             =   3871
+         Width           =   3042
+      End
+      Begin VB.Label lblHighlightModeSelectedTabValue 
+         Caption         =   "Value:"
+         Height          =   252
+         Left            =   1800
+         TabIndex        =   20
+         Top             =   270
+         Width           =   612
+      End
+   End
+   Begin VB.Frame fraSettings 
+      Caption         =   "Settings for both"
+      Height          =   1740
+      Left            =   90
+      TabIndex        =   35
+      Top             =   4260
+      Width           =   6624
+      Begin VB.ComboBox cboHighlightEffect 
+         Height          =   300
+         Left            =   2480
+         Style           =   2  'Dropdown List
+         TabIndex        =   37
+         Top             =   270
+         Width           =   2800
+      End
+      Begin VB.ComboBox cboHighlightEffectOut 
+         Height          =   300
+         Left            =   2480
+         Style           =   2  'Dropdown List
+         TabIndex        =   39
+         Top             =   630
+         Width           =   2800
+      End
+      Begin VB.TextBox txtHighlightTabExtraHeight 
+         Height          =   310
+         Left            =   2480
+         TabIndex        =   41
+         Top             =   990
+         Width           =   900
+      End
+      Begin VB.TextBox txtHighlightTabCaptionShift 
+         Height          =   310
+         Left            =   2480
+         TabIndex        =   44
+         Top             =   1350
+         Width           =   900
+      End
+      Begin VB.Label lblHighlightEffect 
+         Alignment       =   1  'Right Justify
+         Caption         =   "HighlightEffect:"
+         Height          =   230
+         Left            =   120
+         TabIndex        =   36
+         Top             =   310
+         Width           =   2300
+      End
+      Begin VB.Label lblHighlightEffectOut 
+         Alignment       =   1  'Right Justify
+         Caption         =   "HighlightEffectOut:"
+         Height          =   230
+         Left            =   120
+         TabIndex        =   38
+         Top             =   670
+         Width           =   2300
+      End
+      Begin VB.Label lblHighlightTabExtraHeight 
+         Alignment       =   1  'Right Justify
+         Caption         =   "HighlightTabExtraHeight:"
+         Height          =   230
+         Left            =   120
+         TabIndex        =   40
+         Top             =   1030
+         Width           =   2300
+      End
+      Begin VB.Label lblHighlightTabExtraHeightUnits 
+         Caption         =   "in units of the container"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   3440
+         TabIndex        =   42
+         Top             =   1030
+         Width           =   3100
+      End
+      Begin VB.Label lblHighlightTabCaptionShift 
+         Alignment       =   1  'Right Justify
+         Caption         =   "HighlightTabCaptionShift:"
+         Height          =   230
+         Left            =   120
+         TabIndex        =   43
+         Top             =   1390
+         Width           =   2300
+      End
+      Begin VB.Label lblHighlightTabCaptionShiftUnits 
+         Caption         =   "in units of the container; negative = inward"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   3440
+         TabIndex        =   45
+         Top             =   1390
+         Width           =   3200
+      End
+   End
+   Begin VB.Frame fraColors 
+      Caption         =   "Colors"
+      Height          =   1300
+      Left            =   90
+      TabIndex        =   46
+      Top             =   6010
+      Width           =   6624
+      Begin VB.ComboBox cboColor 
+         Height          =   300
+         Left            =   120
+         Style           =   2  'Dropdown List
+         TabIndex        =   47
+         Top             =   240
+         Width           =   4200
+      End
+      Begin VB.TextBox txtColorHex 
+         Height          =   310
+         Left            =   5040
+         TabIndex        =   49
+         Top             =   240
+         Width           =   1040
+      End
+      Begin VB.PictureBox picColor 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H80000005&
+         ForeColor       =   &H80000008&
+         Height          =   612
+         Left            =   120
+         ScaleHeight     =   49
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   49
+         TabIndex        =   50
+         Top             =   600
+         Width           =   612
+      End
+      Begin VB.PictureBox picAutomaticColor 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H80000005&
+         ForeColor       =   &H80000008&
+         Height          =   612
+         Left            =   3660
+         ScaleHeight     =   49
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   49
+         TabIndex        =   53
+         TabStop         =   0   'False
+         Top             =   600
+         Width           =   612
+      End
+      Begin VB.Label lblColorHex 
+         Alignment       =   1  'Right Justify
+         Caption         =   "Color:"
+         Height          =   230
+         Left            =   4380
+         TabIndex        =   48
+         Top             =   280
+         Width           =   600
+      End
+      Begin VB.Label lblColorState 
+         Caption         =   "(Automatic)"
+         Height          =   230
+         Left            =   800
+         TabIndex        =   51
+         Top             =   800
+         Width           =   1300
+      End
+      Begin VB.Label lblColorTip 
+         Caption         =   "Tip: to set a color back to automatic in code, set it to -1."
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   612
+         Left            =   4380
+         TabIndex        =   54
+         Top             =   640
+         Width           =   2140
+      End
+      Begin VB.Label lblAutomaticColor 
+         Alignment       =   1  'Right Justify
+         Caption         =   "The automatic color is:"
+         Height          =   480
+         Left            =   2280
+         TabIndex        =   52
+         Top             =   650
+         Width           =   1300
+      End
+   End
+   Begin VB.PictureBox picSampleContainer 
+      BorderStyle     =   0  'None
+      Height          =   972
+      Left            =   120
+      ScaleHeight     =   972
+      ScaleWidth      =   6612
+      TabIndex        =   55
+      Top             =   7440
+      Width           =   6612
+      Begin NewTabCtl.NewTab NewTab1 
+         Height          =   972
+         Left            =   0
+         TabIndex        =   56
+         Top             =   0
+         Width           =   6612
+         _ExtentX        =   11663
+         _ExtentY        =   1715
+         ControlsBackColorApplied=   -2147483633
+         AutoTabHeight   =   -1  'True
+         ControlVersion  =   18
+         TabCaption(0)   =   ""
+         TabCaption(1)   =   ""
+         TabCaption(2)   =   ""
+      End
+   End
+End
+Attribute VB_Name = "pagNewTabHighlight"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = True
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = True
+Option Explicit
+
+Private Declare Function SendMessageW Lib "user32" (ByVal hWnd As LongPtr, ByVal wMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
+Private Declare Function OleTranslateColor Lib "olepro32.dll" (ByVal clr As OLE_COLOR, ByVal palet As LongPtr, Col As Long) As Long
+
+Private Const CB_SETDROPPEDWIDTH As Long = &H160&
+
+Private Const cColorLast As Long = 10
+
+' Column 0 is HighlightMode, column 1 HighlightModeSelectedTab
+
+' The preview shows every edit. The two sizes are kept here in the units of the developer's
+' container, not read back from the preview, whose container has other units
+Private mPreview As NewTab
+Private mLoading As Boolean
+Private mSettingText As Boolean
+Private mExtraHeight As Single
+Private mCaptionShift As Single
+Private mUpdateingValue As Boolean
+' What Auto resolves to, per column. Read once: this page does not change Style
+Private mAutoFlags(1) As Long
+' The flags that do something in the control's appearance, per column. A flag outside it is greyed and keeps its tick
+Private mFlagsWithEffect(1) As Long
+
+Private Sub PropertyPage_SelectionChanged()
+    Dim iSC As NewTab
+    Dim t As Long
+    Dim c As Long
+    
+    If TypeName(SelectedControls(0)) <> "NewTab" Then Exit Sub
+    mLoading = True
+    Set iSC = SelectedControls(0)
+    Set mPreview = NewTab1
+    
+    LoadSpeedCombo cboHighlightEffect
+    LoadSpeedCombo cboHighlightEffectOut
+    cboColor.Clear
+    For c = 0 To cColorLast
+        cboColor.AddItem ColorPropertyName(c)
+        cboColor.ItemData(cboColor.NewIndex) = c
+    Next c
+    
+    ' The sample is the developer's control, as the samples of Tabs and Icons are
+    mPreview.Redraw = False
+    mPreview.RightToLeft = iSC.RightToLeft
+    mPreview.CloseButton = iSC.CloseButton
+    mPreview.CloseButtonPosition = iSC.CloseButtonPosition
+    mPreview.CaptionAlignment = iSC.CaptionAlignment
+    mPreview.Tabs = iSC.Tabs
+    For t = 0 To iSC.Tabs - 1
+        SeedPreviewTab iSC, t
+    Next t
+    Select Case iSC.TabOrientation
+        Case ssTabOrientationRight, ssTabOrientationLeft, ntTabOrientationRightBottom, ntTabOrientationLeftTop
+            mPreview.Width = iSC.Height
+            mPreview.Height = iSC.Width
+        Case Else
+            mPreview.Width = iSC.Width
+            mPreview.Height = iSC.Height
+    End Select
+    CopyControlProperties iSC, mPreview
+    If iSC.TabSel > -1 Then
+        If mPreview.TabVisible(iSC.TabSel) Then mPreview.TabSel = iSC.TabSel
+    End If
+    mPreview.HighlightMode = iSC.HighlightMode
+    mPreview.HighlightModeSelectedTab = iSC.HighlightModeSelectedTab
+    mPreview.HighlightEffect = iSC.HighlightEffect
+    mPreview.HighlightEffectOut = iSC.HighlightEffectOut
+    mExtraHeight = iSC.HighlightTabExtraHeight
+    mCaptionShift = iSC.HighlightTabCaptionShift
+    SetPreviewSizes iSC
+    mPreview.Redraw = True
+    PlacePreview
+    
+    txtHighlightModeValue.Text = iSC.HighlightMode
+    txtHighlightModeSelectedTabValue.Text = iSC.HighlightModeSelectedTab
+    
+    mAutoFlags(0) = iSC.AutoHighlightMode(False)
+    mAutoFlags(1) = iSC.AutoHighlightMode(True)
+    mFlagsWithEffect(0) = iSC.HighlightFlagsWithEffect(False)
+    mFlagsWithEffect(1) = iSC.HighlightFlagsWithEffect(True)
+    LoadColumn 0, iSC.HighlightMode
+    LoadColumn 1, iSC.HighlightModeSelectedTab
+    SelectInComboByItemData cboHighlightEffect, iSC.HighlightEffect
+    SelectInComboByItemData cboHighlightEffectOut, iSC.HighlightEffectOut
+    txtHighlightTabExtraHeight.Text = CStr(mExtraHeight)
+    txtHighlightTabCaptionShift.Text = CStr(mCaptionShift)
+    SetComboDropWidth cboHighlightEffect
+    SetComboDropWidth cboHighlightEffectOut
+    SetComboDropWidth cboColor
+    If cboColor.ListIndex = -1 Then cboColor.ListIndex = 0
+    ShowCurrentColor True
+    Changed = False
+    mLoading = False
+End Sub
+
+Private Sub PropertyPage_EditProperty(PropertyName As String)
+    On Error Resume Next
+    If PropertyName = "HighlightModeSelectedTab" Then
+        chkHLAuto(1).SetFocus
+    Else
+        chkHLAuto(0).SetFocus
+    End If
+End Sub
+
+Private Sub PropertyPage_ApplyChanges()
+    Dim iSC As NewTab
+    Dim iValue As Long
+    Dim iUnused As Long
+    Dim c As Long
+    
+    If mPreview Is Nothing Then Exit Sub
+    Set iSC = SelectedControls(0)
+    If iSC.HighlightMode <> mPreview.HighlightMode Then iSC.HighlightMode = mPreview.HighlightMode
+    If iSC.HighlightModeSelectedTab <> mPreview.HighlightModeSelectedTab Then iSC.HighlightModeSelectedTab = mPreview.HighlightModeSelectedTab
+    If iSC.HighlightEffect <> mPreview.HighlightEffect Then iSC.HighlightEffect = mPreview.HighlightEffect
+    If iSC.HighlightEffectOut <> mPreview.HighlightEffectOut Then iSC.HighlightEffectOut = mPreview.HighlightEffectOut
+    If iSC.HighlightTabExtraHeight <> mExtraHeight Then iSC.HighlightTabExtraHeight = mExtraHeight
+    If iSC.HighlightTabCaptionShift <> mCaptionShift Then iSC.HighlightTabCaptionShift = mCaptionShift
+    ' -1 against -1 is two automatic ones, so a plain comparison covers the state too
+    For c = 0 To cColorLast
+        iValue = ColorValue(mPreview, c, iUnused)
+        If iValue <> ColorValue(iSC, c, iUnused) Then CallByName iSC, ColorPropertyName(c), VbLet, iValue
+    Next c
+End Sub
+
+' Converted through himetric: the developer's container and the preview's can have different units
+Private Sub SetPreviewSizes(ByVal nSC As NewTab)
+    Dim iPreviewUnit As Single
+    
+    iPreviewUnit = mPreview.FromContainerSizeY(1, vbHimetric)
+    If iPreviewUnit = 0 Then Exit Sub
+    mPreview.HighlightTabExtraHeight = nSC.FromContainerSizeY(mExtraHeight, vbHimetric) / iPreviewUnit
+    mPreview.HighlightTabCaptionShift = nSC.FromContainerSizeY(mCaptionShift, vbHimetric) / iPreviewUnit
+End Sub
+
+Private Sub SeedPreviewTab(ByVal nSC As NewTab, ByVal nTab As Long)
+    Dim c As Long
+    
+    For c = 0 To ntCCFlatTabBorderColorInactive
+        If nSC.TabCustomColorIsSet(nTab, c) Then
+            mPreview.TabCustomColor(nTab, c) = nSC.TabCustomColor(nTab, c)
+        Else
+            mPreview.TabCustomColor(nTab, c) = -1
+        End If
+    Next c
+    mPreview.TabCaption(nTab) = nSC.TabCaption(nTab)
+    mPreview.TabEnabled(nTab) = nSC.TabEnabled(nTab)
+    mPreview.TabVisible(nTab) = nSC.TabVisible(nTab)
+    mPreview.TabCloseButton(nTab) = nSC.TabCloseButton(nTab)
+    mPreview.TabCloseButtonEnabled(nTab) = nSC.TabCloseButtonEnabled(nTab)
+    Set mPreview.TabPic16(nTab) = nSC.TabPic16(nTab)
+    Set mPreview.TabPic20(nTab) = nSC.TabPic20(nTab)
+    Set mPreview.TabPic24(nTab) = nSC.TabPic24(nTab)
+    Set mPreview.TabPicture(nTab) = nSC.TabPicture(nTab)
+    Set mPreview.TabIconFont(nTab) = CloneFont(nSC.TabIconFont(nTab))
+    mPreview.TabIconCharHex(nTab) = nSC.TabIconCharHex(nTab)
+    mPreview.TabIconLeftOffset(nTab) = nSC.TabIconLeftOffset(nTab)
+    mPreview.TabIconTopOffset(nTab) = nSC.TabIconTopOffset(nTab)
+End Sub
+
+' Placed the way Tabs places its sample: centred against the page, then moved so that the selected
+' tab is in sight. No dragging as in Tabs and Icons: here only a few tabs are needed to hover
+Private Sub PlacePreview()
+    mPreview.Left = (PropertyPage.ScaleWidth - mPreview.Width) / 2
+    If mPreview.TabSel > -1 Then
+        If (mPreview.Left + mPreview.GetTabLeft(mPreview.TabSel) + mPreview.GetTabWidth(mPreview.TabSel)) > PropertyPage.ScaleWidth Then
+            mPreview.Left = PropertyPage.ScaleWidth - (mPreview.GetTabLeft(mPreview.TabSel) + mPreview.GetTabWidth(mPreview.TabSel)) - 120
+        ElseIf (mPreview.Left + mPreview.GetTabLeft(mPreview.TabSel)) < 0 Then
+            mPreview.Left = 120 - mPreview.GetTabLeft(mPreview.TabSel)
+        End If
+    End If
+    mPreview.Top = PreviewTop(mPreview, picSampleContainer.ScaleHeight)
+End Sub
+
+Private Sub NewTab1_CloseButtonClick(ByVal nTab As Long, Cancel As Boolean)
+    Cancel = True
+End Sub
+
+Private Function CloneFont(nOrigFont As iFont) As StdFont
+    If nOrigFont Is Nothing Then Exit Function
+    nOrigFont.Clone CloneFont
+End Function
+
+' Highlight mode columns
+
+Private Sub LoadColumn(ByVal nColumn As Long, ByVal nFlags As Long)
+    Dim iBackground As Long
+    
+    chkHLAuto(nColumn).Value = IIf(nFlags = ntHLAuto, vbChecked, vbUnchecked)
+    ' Under Auto the greyed boxes show what it applies, and are left ticked when Auto is cleared
+    If nFlags = ntHLAuto Then nFlags = mAutoFlags(nColumn)
+    If nFlags = ntHLNone Then nFlags = 0
+    iBackground = nFlags And ntHLBackgroundTypeFilter
+    chkHLBackground(nColumn).Value = IIf(iBackground <> 0, vbChecked, vbUnchecked)
+    chkHLBackgroundGradient(nColumn).Value = IIf((iBackground = ntHLBackgroundGradient) Or (iBackground = ntHLBackgroundDoubleGradient), vbChecked, vbUnchecked)
+    chkHLBackgroundDoubleGradient(nColumn).Value = IIf(iBackground = ntHLBackgroundDoubleGradient, vbChecked, vbUnchecked)
+    chkHLBackgroundLight(nColumn).Value = FlagCheck(nFlags, ntHLBackgroundLight)
+    chkHLCaptionBold(nColumn).Value = FlagCheck(nFlags, ntHLCaptionBold)
+    chkHLCaptionUnderlined(nColumn).Value = FlagCheck(nFlags, ntHLCaptionUnderlined)
+    chkHLFlatBar(nColumn).Value = FlagCheck(nFlags, ntHLFlatBar)
+    chkHLFlatBarGrip(nColumn).Value = FlagCheck(nFlags, ntHLFlatBarGrip)
+    chkHLExtraHeight(nColumn).Value = FlagCheck(nFlags, ntHLExtraHeight)
+    chkHLShiftCaption(nColumn).Value = FlagCheck(nFlags, ntHLShiftCaption)
+    chkHLWidenTab(nColumn).Value = FlagCheck(nFlags, ntHLWidenTab)
+    chkHLFlatDrawBorder(nColumn).Value = FlagCheck(nFlags, ntHLFlatDrawBorder)
+    chkHLRoundBottom(nColumn).Value = FlagCheck(nFlags, ntHLRoundBottom)
+    If nColumn = 0 Then chkHLFlatShapeInactive.Value = FlagCheck(nFlags, ntHLFlatShapeInactive)
+    SetColumnEnabledState nColumn
+End Sub
+
+Private Function FlagCheck(ByVal nFlags As Long, ByVal nFlag As Long) As Integer
+    If (nFlags And nFlag) <> 0 Then FlagCheck = vbChecked
+End Function
+
+' A box that depends on another keeps its tick while greyed, and only counts while its parent is ticked
+Private Function ColumnFlags(ByVal nColumn As Long) As Long
+    Dim iValue As Long
+    
+    If chkHLAuto(nColumn).Value = vbChecked Then
+        ColumnFlags = ntHLAuto
+        Exit Function
+    End If
+    If chkHLBackground(nColumn).Value = vbChecked Then
+        If chkHLBackgroundGradient(nColumn).Value <> vbChecked Then
+            iValue = ntHLBackgroundPlain
+        ElseIf chkHLBackgroundDoubleGradient(nColumn).Value = vbChecked Then
+            iValue = ntHLBackgroundDoubleGradient
+        Else
+            iValue = ntHLBackgroundGradient
+        End If
+        If chkHLBackgroundLight(nColumn).Value = vbChecked Then iValue = iValue Or ntHLBackgroundLight
+    End If
+    If chkHLCaptionBold(nColumn).Value = vbChecked Then iValue = iValue Or ntHLCaptionBold
+    If chkHLCaptionUnderlined(nColumn).Value = vbChecked Then iValue = iValue Or ntHLCaptionUnderlined
+    If chkHLFlatBar(nColumn).Value = vbChecked Then
+        iValue = iValue Or ntHLFlatBar
+        If chkHLFlatBarGrip(nColumn).Value = vbChecked Then iValue = iValue Or ntHLFlatBarGrip
+    End If
+    If chkHLExtraHeight(nColumn).Value = vbChecked Then iValue = iValue Or ntHLExtraHeight
+    If chkHLShiftCaption(nColumn).Value = vbChecked Then iValue = iValue Or ntHLShiftCaption
+    If chkHLWidenTab(nColumn).Value = vbChecked Then iValue = iValue Or ntHLWidenTab
+    If chkHLFlatDrawBorder(nColumn).Value = vbChecked Then iValue = iValue Or ntHLFlatDrawBorder
+    If chkHLRoundBottom(nColumn).Value = vbChecked Then iValue = iValue Or ntHLRoundBottom
+    If nColumn = 0 Then
+        If chkHLFlatShapeInactive.Value = vbChecked Then iValue = iValue Or ntHLFlatShapeInactive
+    End If
+    ' Nothing ticked and not Auto is asking for no highlight
+    If iValue = ntHLAuto Then iValue = ntHLNone
+    ColumnFlags = iValue
+End Function
+
+Private Sub SetColumnEnabledState(ByVal nColumn As Long)
+    Dim iFree As Boolean
+    Dim iBackgroundOn As Boolean
+    
+    iFree = (chkHLAuto(nColumn).Value <> vbChecked)
+    chkHLBackground(nColumn).Enabled = iFree And HasEffect(nColumn, ntHLBackgroundPlain)
+    iBackgroundOn = chkHLBackground(nColumn).Enabled And (chkHLBackground(nColumn).Value = vbChecked)
+    chkHLBackgroundGradient(nColumn).Enabled = iBackgroundOn And HasEffect(nColumn, ntHLBackgroundGradient)
+    chkHLBackgroundDoubleGradient(nColumn).Enabled = chkHLBackgroundGradient(nColumn).Enabled And (chkHLBackgroundGradient(nColumn).Value = vbChecked)
+    chkHLBackgroundLight(nColumn).Enabled = iBackgroundOn And HasEffect(nColumn, ntHLBackgroundLight)
+    chkHLCaptionBold(nColumn).Enabled = iFree And HasEffect(nColumn, ntHLCaptionBold)
+    chkHLCaptionUnderlined(nColumn).Enabled = iFree And HasEffect(nColumn, ntHLCaptionUnderlined)
+    chkHLFlatBar(nColumn).Enabled = iFree And HasEffect(nColumn, ntHLFlatBar)
+    chkHLFlatBarGrip(nColumn).Enabled = chkHLFlatBar(nColumn).Enabled And (chkHLFlatBar(nColumn).Value = vbChecked)
+    chkHLExtraHeight(nColumn).Enabled = iFree And HasEffect(nColumn, ntHLExtraHeight)
+    chkHLShiftCaption(nColumn).Enabled = iFree And HasEffect(nColumn, ntHLShiftCaption)
+    chkHLWidenTab(nColumn).Enabled = iFree And HasEffect(nColumn, ntHLWidenTab)
+    chkHLFlatDrawBorder(nColumn).Enabled = iFree And HasEffect(nColumn, ntHLFlatDrawBorder)
+    ' It rounds the highlight fill and the highlight border. Unlike the dependent boxes above, it stays in the value while greyed
+    chkHLRoundBottom(nColumn).Enabled = iFree And HasEffect(nColumn, ntHLRoundBottom) And (iBackgroundOn Or (chkHLFlatDrawBorder(nColumn).Value = vbChecked))
+    ' HighlightMode only. It takes the shape from the two boxes above and, like RoundBottom, stays in the value while greyed
+    If nColumn = 0 Then chkHLFlatShapeInactive.Enabled = iFree And HasEffect(0, ntHLFlatShapeInactive) And ((chkHLFlatDrawBorder(0).Value = vbChecked) Or (chkHLRoundBottom(0).Value = vbChecked))
+End Sub
+
+Private Function HasEffect(ByVal nColumn As Long, ByVal nFlag As Long) As Boolean
+    HasEffect = (mFlagsWithEffect(nColumn) And nFlag) <> 0
+End Function
+
+Private Sub ColumnClicked(ByVal nColumn As Long)
+    SetColumnEnabledState nColumn
+    If mLoading Then Exit Sub
+    If nColumn = 0 Then
+        mPreview.HighlightMode = ColumnFlags(0)
+        If Not mUpdateingValue Then txtHighlightModeValue.Text = ColumnFlags(0)
+    Else
+        mPreview.HighlightModeSelectedTab = ColumnFlags(1)
+        If Not mUpdateingValue Then txtHighlightModeSelectedTabValue.Text = ColumnFlags(1)
+    End If
+    Changed = True
+End Sub
+
+Private Sub chkHLAuto_Click(nIndex As Integer)
+    If (chkHLAuto(nIndex).Value = vbChecked) And (Not mLoading) And (Not mUpdateingValue) Then
+        mUpdateingValue = True
+        LoadColumn nIndex, ntHLAuto
+        mUpdateingValue = False
+    End If
+    ColumnClicked nIndex
+End Sub
+
+Private Sub chkHLBackground_Click(nIndex As Integer)
+    ColumnClicked nIndex
+End Sub
+
+Private Sub chkHLBackgroundGradient_Click(nIndex As Integer)
+    ColumnClicked nIndex
+End Sub
+
+Private Sub chkHLBackgroundDoubleGradient_Click(nIndex As Integer)
+    ColumnClicked nIndex
+End Sub
+
+Private Sub chkHLBackgroundLight_Click(nIndex As Integer)
+    ColumnClicked nIndex
+End Sub
+
+Private Sub chkHLCaptionBold_Click(nIndex As Integer)
+    ColumnClicked nIndex
+End Sub
+
+Private Sub chkHLCaptionUnderlined_Click(nIndex As Integer)
+    ColumnClicked nIndex
+End Sub
+
+Private Sub chkHLFlatBar_Click(nIndex As Integer)
+    ColumnClicked nIndex
+End Sub
+
+Private Sub chkHLFlatBarGrip_Click(nIndex As Integer)
+    ColumnClicked nIndex
+End Sub
+
+Private Sub chkHLExtraHeight_Click(nIndex As Integer)
+    ColumnClicked nIndex
+End Sub
+
+Private Sub chkHLShiftCaption_Click(nIndex As Integer)
+    ColumnClicked nIndex
+End Sub
+
+Private Sub chkHLWidenTab_Click(nIndex As Integer)
+    ColumnClicked nIndex
+End Sub
+
+Private Sub chkHLFlatDrawBorder_Click(nIndex As Integer)
+    ColumnClicked nIndex
+    If mLoading Or mUpdateingValue Then Exit Sub
+    If chkHLFlatDrawBorder(nIndex).Value = vbChecked Then WarnIfBorderIsInvisible nIndex
+End Sub
+
+Private Sub chkHLFlatShapeInactive_Click()
+    ColumnClicked 0
+    If mLoading Or mUpdateingValue Then Exit Sub
+    If (chkHLFlatShapeInactive.Value = vbChecked) And (chkHLFlatDrawBorder(0).Value = vbChecked) Then WarnIfInactiveBorderIsInvisible
+End Sub
+
+Private Sub WarnIfInactiveBorderIsInvisible()
+    If RGBColor(mPreview.FlatTabBorderColorInactive) <> RGBColor(mPreview.BackColorTabs) Then Exit Sub
+    MsgBox "The border of the inactive tabs has the same color as their background, so it will not be visible." & vbCrLf & vbCrLf & "Set a color for FlatTabBorderColorInactive in Colors.", vbInformation
+    SelectInComboByItemData cboColor, 10
+End Sub
+
+' The automatic border is the bar colour, and some themes hide the bar by giving it the colour of
+' the tab. Only equal is warned about: a border meant to be subtle is a valid choice
+Private Sub WarnIfBorderIsInvisible(ByVal nColumn As Long)
+    Dim iBorderColor As Long
+    Dim iTabBackColor As Long
+    Dim iBorderName As String
+    
+    iBorderName = ColorPropertyName(8 + nColumn)
+    iBorderColor = CLng(CallByName(mPreview, iBorderName, VbGet))
+    If (chkHLBackground(nColumn).Value = vbChecked) And chkHLBackground(nColumn).Enabled Then
+        If nColumn = 0 Then iTabBackColor = mPreview.HighlightColor Else iTabBackColor = mPreview.HighlightColorSelectedTab
+    Else
+        If nColumn = 0 Then iTabBackColor = mPreview.BackColorTabs Else iTabBackColor = mPreview.BackColorSelectedTab
+    End If
+    If RGBColor(iBorderColor) <> RGBColor(iTabBackColor) Then Exit Sub
+    MsgBox "The border has the same color as the background of the tab, so it will not be visible." & vbCrLf & vbCrLf & "Set a color for " & iBorderName & " in Colors.", vbInformation
+    SelectInComboByItemData cboColor, 8 + nColumn
+End Sub
+
+Private Function RGBColor(ByVal nColor As Long) As Long
+    If OleTranslateColor(nColor, 0, RGBColor) <> 0 Then RGBColor = nColor
+End Function
+
+Private Sub chkHLRoundBottom_Click(nIndex As Integer)
+    ColumnClicked nIndex
+End Sub
+
+' Settings
+
+Private Sub LoadSpeedCombo(nCombo As ComboBox)
+    nCombo.Clear
+    nCombo.AddItem ntAnimationNone & " - ntAnimationNone": nCombo.ItemData(nCombo.NewIndex) = ntAnimationNone
+    nCombo.AddItem ntAnimationFaster & " - ntAnimationFaster": nCombo.ItemData(nCombo.NewIndex) = ntAnimationFaster
+    nCombo.AddItem ntAnimationFast & " - ntAnimationFast": nCombo.ItemData(nCombo.NewIndex) = ntAnimationFast
+    nCombo.AddItem ntAnimationMedium & " - ntAnimationMedium": nCombo.ItemData(nCombo.NewIndex) = ntAnimationMedium
+    nCombo.AddItem ntAnimationSlow & " - ntAnimationSlow": nCombo.ItemData(nCombo.NewIndex) = ntAnimationSlow
+    nCombo.AddItem ntAnimationSlower & " - ntAnimationSlower": nCombo.ItemData(nCombo.NewIndex) = ntAnimationSlower
+End Sub
+
+Private Sub cboHighlightEffect_Click()
+    If mLoading Then Exit Sub
+    mPreview.HighlightEffect = cboHighlightEffect.ItemData(cboHighlightEffect.ListIndex)
+    Changed = True
+End Sub
+
+Private Sub cboHighlightEffectOut_Click()
+    If mLoading Then Exit Sub
+    mPreview.HighlightEffectOut = cboHighlightEffectOut.ItemData(cboHighlightEffectOut.ListIndex)
+    Changed = True
+End Sub
+
+Private Sub txtHighlightModeValue_Change()
+    If Not IsFlagsText(txtHighlightModeValue.Text) Then Exit Sub
+    If Not mLoading Then
+        mUpdateingValue = True
+        LoadColumn 0, Val(txtHighlightModeValue.Text)
+        mUpdateingValue = False
+    End If
+End Sub
+
+Private Sub txtHighlightModeValue_LostFocus()
+    txtHighlightModeValue.Text = CStr(ColumnFlags(0))
+End Sub
+
+Private Sub txtHighlightModeSelectedTabValue_Change()
+    If Not IsFlagsText(txtHighlightModeSelectedTabValue.Text) Then Exit Sub
+    If Not mLoading Then
+        mUpdateingValue = True
+        LoadColumn 1, Val(txtHighlightModeSelectedTabValue.Text)
+        mUpdateingValue = False
+    End If
+End Sub
+
+Private Sub txtHighlightModeSelectedTabValue_LostFocus()
+    txtHighlightModeSelectedTabValue.Text = CStr(ColumnFlags(1))
+End Sub
+
+' Empty or half typed is not a value yet: Val would read it as 0, which is Auto
+Private Function IsFlagsText(ByVal nText As String) As Boolean
+    nText = Trim$(nText)
+    If (Len(nText) = 0) Or (Len(nText) > 9) Then Exit Function
+    IsFlagsText = Not (nText Like "*[!0-9]*")
+End Function
+
+' A text that is not a number yet leaves the last valid value in place
+Private Sub txtHighlightTabExtraHeight_Change()
+    If mLoading Then Exit Sub
+    If Not IsNumeric(txtHighlightTabExtraHeight.Text) Then Exit Sub
+    If CSng(txtHighlightTabExtraHeight.Text) < 0 Then Exit Sub
+    mExtraHeight = CSng(txtHighlightTabExtraHeight.Text)
+    SetPreviewSizes SelectedControls(0)
+    Changed = True
+End Sub
+
+Private Sub txtHighlightTabCaptionShift_Change()
+    If mLoading Then Exit Sub
+    If Not IsNumeric(txtHighlightTabCaptionShift.Text) Then Exit Sub
+    mCaptionShift = CSng(txtHighlightTabCaptionShift.Text)
+    SetPreviewSizes SelectedControls(0)
+    Changed = True
+End Sub
+
+' Colors
+
+Private Function ColorPropertyName(ByVal nIndex As Long) As String
+    Select Case nIndex
+        Case 0: ColorPropertyName = "HighlightColor"
+        Case 1: ColorPropertyName = "HighlightColorSelectedTab"
+        Case 2: ColorPropertyName = "HighlightGradientColor"
+        Case 3: ColorPropertyName = "HighlightGradientColorSelectedTab"
+        Case 4: ColorPropertyName = "ForeColorHighlighted"
+        Case 5: ColorPropertyName = "IconColorTabHighlighted"
+        Case 6: ColorPropertyName = "FlatBarColorHighlighted"
+        Case 7: ColorPropertyName = "FlatBarColorSelectedTab"
+        Case 8: ColorPropertyName = "FlatTabBorderColorHighlighted"
+        Case 9: ColorPropertyName = "FlatTabBorderColorSelectedTab"
+        Case 10: ColorPropertyName = "FlatTabBorderColorInactive"
+    End Select
+End Function
+
+' -1 when automatic. For the one that has no automatic state nAutomaticColor is the value itself
+Private Function ColorValue(ByVal nCtl As NewTab, ByVal nIndex As Long, ByRef nAutomaticColor As Long) As Long
+    Dim iName As String
+    Dim iHasState As Boolean
+    Dim iIsAutomatic As Boolean
+    
+    iName = ColorPropertyName(nIndex)
+    iHasState = nCtl.ColorAutomaticState(iName, iIsAutomatic, nAutomaticColor)
+    If iHasState And iIsAutomatic Then
+        ColorValue = -1
+    Else
+        ColorValue = CLng(CallByName(nCtl, iName, VbGet))
+        If Not iHasState Then nAutomaticColor = ColorValue
+    End If
+End Function
+
+Private Function ColorHasAutomatic(ByVal nIndex As Long) As Boolean
+    ColorHasAutomatic = (ColorPropertyName(nIndex) <> "FlatBarColorSelectedTab")
+End Function
+
+Private Function CurrentColorIndex() As Long
+    CurrentColorIndex = cboColor.ItemData(cboColor.ListIndex)
+End Function
+
+Private Sub ShowCurrentColor(ByVal nUpdateText As Boolean)
+    Dim iIndex As Long
+    Dim iCurrent As Long
+    Dim iAutomatic As Long
+    Dim iSelector As New cColorSelector
+    
+    iIndex = CurrentColorIndex
+    iCurrent = ColorValue(mPreview, iIndex, iAutomatic)
+    If iCurrent = -1 Then
+        picColor.BackColor = iAutomatic
+        lblColorState.Caption = "(Automatic)"
+    Else
+        picColor.BackColor = iCurrent
+        lblColorState.Caption = ""
+    End If
+    picColor.ToolTipText = iSelector.ColorDisplayName(iCurrent) & " - click to change"
+    lblAutomaticColor.Visible = ColorHasAutomatic(iIndex)
+    picAutomaticColor.Visible = ColorHasAutomatic(iIndex)
+    lblColorTip.Visible = ColorHasAutomatic(iIndex)
+    picAutomaticColor.BackColor = iAutomatic
+    picAutomaticColor.ToolTipText = iSelector.ColorDisplayName(iAutomatic)
+    If nUpdateText Then
+        mSettingText = True
+        If iCurrent = -1 Then
+            txtColorHex.Text = ""
+        Else
+            txtColorHex.Text = "&H" & Hex$(iCurrent) & "&"
+        End If
+        mSettingText = False
+    End If
+End Sub
+
+Private Sub PickCurrentColor()
+    Dim iSelector As New cColorSelector
+    Dim iIndex As Long
+    Dim iCurrent As Long
+    Dim iAutomatic As Long
+    Dim iPicked As Long
+    
+    iIndex = CurrentColorIndex
+    iCurrent = ColorValue(mPreview, iIndex, iAutomatic)
+    If Not iSelector.PickColor(PropertyPage.hWnd, picColor.hWnd, iCurrent, iAutomatic, iPicked, ColorHasAutomatic(iIndex)) Then Exit Sub
+    If iPicked = iCurrent Then Exit Sub
+    CallByName mPreview, ColorPropertyName(iIndex), VbLet, iPicked
+    Changed = True
+    ShowCurrentColor True
+End Sub
+
+Private Sub cboColor_Click()
+    If Not mLoading Then ShowCurrentColor True
+End Sub
+
+Private Sub picColor_Click()
+    PickCurrentColor
+End Sub
+
+Private Sub picColor_KeyDown(KeyCode As Integer, Shift As Integer)
+    If (KeyCode = vbKeySpace) Or (KeyCode = vbKeyF4) Then PickCurrentColor
+End Sub
+
+' Empty is automatic, where the colour has one
+Private Sub txtColorHex_Change()
+    Dim iIndex As Long
+    Dim iValue As Long
+    Dim iAutomatic As Long
+    
+    If mLoading Or mSettingText Then Exit Sub
+    iIndex = CurrentColorIndex
+    If Len(Trim$(txtColorHex.Text)) = 0 Then
+        If Not ColorHasAutomatic(iIndex) Then Exit Sub
+        iValue = -1
+    Else
+        If Not ParseHexValue(txtColorHex.Text, 8, iValue) Then Exit Sub
+        If Not (((iValue And &HFF000000) = 0) Or (((iValue And &HFFFFFF00) = &H80000000) And ((iValue And &HFF&) <= &H18&))) Then Exit Sub
+    End If
+    If iValue = ColorValue(mPreview, iIndex, iAutomatic) Then Exit Sub
+    CallByName mPreview, ColorPropertyName(iIndex), VbLet, iValue
+    Changed = True
+    ShowCurrentColor False
+End Sub
+
+' Hex, with or without &H and the trailing &
+Private Function ParseHexValue(ByVal nText As String, ByVal nMaxDigits As Long, ByRef nValue As Long) As Boolean
+    Dim iText As String
+    
+    iText = UCase$(Trim$(nText))
+    If VBA.Left$(iText, 2) = "&H" Then iText = Mid$(iText, 3)
+    If VBA.Right$(iText, 1) = "&" Then iText = VBA.Left$(iText, Len(iText) - 1)
+    If (Len(iText) = 0) Or (Len(iText) > nMaxDigits) Then Exit Function
+    If iText Like "*[!0-9A-F]*" Then Exit Function
+    nValue = Val("&H" & iText & "&")
+    ParseHexValue = True
+End Function
+
+' The list opens as wide as its longest item. picSampleContainer measures because it has the page
+' font, the same as the combos
+Private Sub SetComboDropWidth(nCombo As ComboBox)
+    Dim c As Long
+    Dim iWidth As Single
+    Dim iMaxWidth As Single
+    
+    For c = 0 To nCombo.ListCount - 1
+        iWidth = picSampleContainer.TextWidth(nCombo.List(c))
+        If iWidth > iMaxWidth Then iMaxWidth = iWidth
+    Next c
+    ' room for the item margins and a vertical scroll bar
+    iMaxWidth = mPreview.pScaleX(iMaxWidth, vbTwips, vbPixels) + mPreview.pScaleX(360, vbTwips, vbPixels)
+    If iMaxWidth > mPreview.pScaleX(nCombo.Width, vbTwips, vbPixels) Then SendMessageW nCombo.hWnd, CB_SETDROPPEDWIDTH, CLng(iMaxWidth), 0
+End Sub
+
+Private Function SelectInComboByItemData(nCombo As Control, nItemData As Long) As Boolean
+    Dim c As Long
+    
+    For c = 0 To nCombo.ListCount - 1
+        If nCombo.ItemData(c) = nItemData Then
+            nCombo.ListIndex = c
+            SelectInComboByItemData = True
+            Exit Function
+        End If
+    Next c
+End Function

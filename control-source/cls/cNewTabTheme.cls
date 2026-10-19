@@ -67,6 +67,7 @@ Friend Property Let ThemeString(nThemeString As String)
             mData.Add iProp, iProp.Name
         End If
     Next
+    TranslateLegacyPropertyNames
 End Property
 
 Friend Property Get Data() As Collection
@@ -92,9 +93,6 @@ Private Function SimpleHash(ByVal nData As Variant, Optional nNumberOfHashCharac
     Dim iVarType As Long
     Dim iDataBytes() As Byte
 
-    'If nNumberOfHashCharacters_MustBeEvenAndLessThan512 Mod 2 <> 0 Then Err.Raise 1142, App.Title & ".SimpleHash", "nNumberOfHashCharacters_MustBeEvenAndLessThan512 must be even."
-    'If nNumberOfHashCharacters_MustBeEvenAndLessThan512 < 2 Then Err.Raise 1142, App.Title & ".SimpleHash", "nNumberOfHashCharacters_MustBeEvenAndLessThan512 must 2 or more."
-    'If nNumberOfHashCharacters_MustBeEvenAndLessThan512 > 512 Then Err.Raise 1142, App.Title & ".SimpleHash", "nNumberOfHashCharacters_MustBeEvenAndLessThan512 must 512 or less."
 
     n = (nNumberOfHashCharacters_MustBeEvenAndLessThan512 / 2)
     ReDim iHashBytes(n - 1)
@@ -160,7 +158,68 @@ Friend Sub Deserialize(nBytes() As Byte)
             mData.Add iProp, iProp.Name
         End If
     Next
+    TranslateLegacyPropertyNames
 End Sub
+
+' The hash is taken over the entries in order, so they are always put in the order
+' GetThemeStringFromControl sorts them in and the hash is recomputed. Old property names are
+' renamed on the way; when a string carries both names the current one wins
+Private Sub TranslateLegacyPropertyNames()
+    Dim iProp As cPropertyData
+    Dim iNewData As Collection
+    Dim iNewName As String
+    Dim iSortKey As String
+    Dim p As Long
+    
+    Set iNewData = New Collection
+    For Each iProp In mData
+        iNewName = CurrentPropertyName(iProp.Name)
+        If (iNewName = iProp.Name) Or (Not DataHasProperty(iNewName)) Then
+            iProp.Name = iNewName
+            iSortKey = PropertySortKey(iProp)
+            For p = 1 To iNewData.Count
+                If StrComp(iSortKey, PropertySortKey(iNewData(p)), vbBinaryCompare) < 0 Then Exit For
+            Next
+            If p > iNewData.Count Then
+                iNewData.Add iProp, iProp.Name
+            Else
+                iNewData.Add iProp, iProp.Name, p
+            End If
+        End If
+    Next
+    Set mData = iNewData
+    mThemeString = ""
+    mHash = ""
+End Sub
+
+Private Function CurrentPropertyName(ByVal nName As String) As String
+    Select Case nName
+        Case "BackColorTabSel": CurrentPropertyName = "BackColorSelectedTab"
+        Case "ForeColorTabSel": CurrentPropertyName = "ForeColorSelectedTab"
+        Case "FlatTabBorderColorHighlight": CurrentPropertyName = "FlatTabBorderColorHighlighted"
+        Case "FlatTabBorderColorTabSel": CurrentPropertyName = "FlatTabBorderColorSelectedTab"
+        Case "IconColorTabSel": CurrentPropertyName = "IconColorSelectedTab"
+        Case "IconColorMouseHoverTabSel": CurrentPropertyName = "IconColorMouseHoverSelectedTab"
+        Case "FlatBarColorTabSel": CurrentPropertyName = "FlatBarColorSelectedTab"
+        Case "FlatBarColorHighlight": CurrentPropertyName = "FlatBarColorHighlighted"
+        Case "HighlightColorTabSel": CurrentPropertyName = "HighlightColorSelectedTab"
+        Case "HighlightModeTabSel": CurrentPropertyName = "HighlightModeSelectedTab"
+        Case Else: CurrentPropertyName = nName
+    End Select
+End Function
+
+Private Function DataHasProperty(ByVal nName As String) As Boolean
+    Dim iProp As cPropertyData
+    
+    On Error Resume Next
+    Set iProp = mData(nName)
+    DataHasProperty = Not iProp Is Nothing
+End Function
+
+' The same text QuickSort compares in GetThemeStringFromControl
+Private Function PropertySortKey(ByVal nProp As cPropertyData) As String
+    PropertySortKey = "|" & nProp.Name & "=" & Trim$(CStr(nProp.Value))
+End Function
 
 Friend Function Clone() As NewTabTheme
     Set Clone = New NewTabTheme

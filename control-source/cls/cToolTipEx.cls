@@ -76,7 +76,6 @@ Private Const WS_EX_LAYOUTRTL = &H400000
 Private Const WM_SETFONT As Long = &H30
 
 Private Const MOUSEEVENTF_LEFTDOWN = &H2 ' Left button down
-'Private Const MOUSEEVENTF_LEFTUP = &H4 ' Left button up
 
 Public Event Closed()
 Public Event BeforeClose()
@@ -87,21 +86,21 @@ Private Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
 Private Declare Function ScreenToClient Lib "user32" (ByVal hWnd As LongPtr, lpPoint As POINTAPI) As Long
 Private Declare Function TranslateColor Lib "olepro32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As LongPtr, Col As Long) As Long
 ' GWL_HWNDPARENT holds an HWND: SetWindowLong truncates to 32 bits even on 64-bit
-' Windows, so the ...LongPtr variant has to be used. NOTE: SetWindowLongPtrA only
+' Windows, so the ...LongPtr variant has to be used. NOTE: SetWindowLongPtrW only
 ' exists as a real DLL symbol on 64-bit Windows; on 32-bit that name doesn't
-' exist (it's a C-side macro pointing at SetWindowLongA), so the Alias has to
+' exist (it's a C-side macro pointing at SetWindowLongW), so the Alias has to
 ' be conditioned on bitness.
 #If Win64 Then
-    Private Declare Function SetWindowLongPtr Lib "user32" Alias "SetWindowLongPtrA" (ByVal hWnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As LongPtr) As LongPtr
+    Private Declare Function SetWindowLongPtr Lib "user32" Alias "SetWindowLongPtrW" (ByVal hWnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As LongPtr) As LongPtr
 #Else
-    Private Declare Function SetWindowLongPtr Lib "user32" Alias "SetWindowLongA" (ByVal hWnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As LongPtr) As LongPtr
+    Private Declare Function SetWindowLongPtr Lib "user32" Alias "SetWindowLongW" (ByVal hWnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As LongPtr) As LongPtr
 #End If
 Private Const GWL_HWNDPARENT As Long = (-8)
 Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As LongPtr) As Long
 Private Declare Function ClientToScreen Lib "user32" (ByVal hWnd As LongPtr, lpPoint As POINTAPI) As Long
-Private Declare Function CreateWindowEx Lib "user32" Alias "CreateWindowExA" (ByVal dwExStyle As Long, ByVal lpClassName As String, ByVal lpWindowName As String, ByVal dwStyle As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As LongPtr, ByVal hMenu As LongPtr, ByVal hInstance As LongPtr, lpParam As Any) As LongPtr
-Private Declare Function SendMessage Lib "user32" Alias "SendMessageA" (ByVal hWnd As LongPtr, ByVal wMsg As Long, ByVal wParam As LongPtr, lParam As Any) As LongPtr
-Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageA" (ByVal hWnd As LongPtr, ByVal wMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
+Private Declare Function CreateWindowExW Lib "user32" (ByVal dwExStyle As Long, ByVal lpClassName As LongPtr, ByVal lpWindowName As LongPtr, ByVal dwStyle As Long, ByVal X As Long, ByVal Y As Long, ByVal nWidth As Long, ByVal nHeight As Long, ByVal hWndParent As LongPtr, ByVal hMenu As LongPtr, ByVal hInstance As LongPtr, ByVal lpParam As LongPtr) As LongPtr
+Private Declare Function SendMessage Lib "user32" Alias "SendMessageW" (ByVal hWnd As LongPtr, ByVal wMsg As Long, ByVal wParam As LongPtr, lParam As Any) As LongPtr
+Private Declare Function SendMessageLong Lib "user32" Alias "SendMessageW" (ByVal hWnd As LongPtr, ByVal wMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
 Private Declare Function DestroyWindow Lib "user32" (ByVal hWnd As LongPtr) As Long
 Private Declare Function GetMessageExtraInfo Lib "user32" () As LongPtr
 Private Declare Sub mouse_event Lib "user32" (ByVal dwFlags As Long, ByVal dX As Long, ByVal dY As Long, ByVal cButtons As Long, ByVal dwExtraInfo As LongPtr)
@@ -110,6 +109,11 @@ Private Declare Sub CopyMemoryAny1 Lib "kernel32" Alias "RtlMoveMemory" (lpvDest
 Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As LongPtr, ByVal nIndex As Long) As Long
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As LongPtr) As LongPtr
 Private Declare Function ReleaseDC& Lib "user32" (ByVal hWnd As LongPtr, ByVal hDC As LongPtr)
+Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
+
+Private Const LOGPIXELSX As Long = 88
+Private Const LOGPIXELSY As Long = 90
+Private Const SM_CXSCREEN As Long = 0
 
 Private Enum bsSystemFontConstants
    bsIconFont = 1
@@ -134,10 +138,7 @@ End Type
 
 ''Tooltip Window Constants
 Private Const TTS_NOPREFIX = &H2
-'Private Const TTF_TRANSPARENT = &H100
-'Private Const TTF_CENTERTIP = &H2
 Private Const TTM_ADDTOOLW = (WM_USER + 50)
-'Private Const TTM_ACTIVATE = WM_USER + 1
 Private Const TTM_UPDATETIPTEXTW = (WM_USER + 57)
 Private Const TTM_SETMAXTIPWIDTH = (WM_USER + 24)
 Private Const TTM_SETTIPBKCOLOR = (WM_USER + 19)
@@ -146,35 +147,20 @@ Private Const TTM_SETTITLEW = (WM_USER + 33)
 Private Const TTS_BALLOON = &H40
 Private Const TTS_ALWAYSTIP = &H1
 Private Const TTF_SUBCLASS = &H10
-'Private Const TTF_IDISHWND = &H1
-'Private Const TTM_SETDelayTimeSeconds = (WM_USER + 3)
-'Private Const TTDT_AUTOPOP = 2
-'Private Const TTDT_INITIAL = 3
 Private Const TTS_CLOSE As Long = &H80
 Private Const TTM_TRACKPOSITION = (WM_USER + 18)
 Private Const TTM_TRACKACTIVATE As Long = (WM_USER + 17)
 Private Const TTF_ABSOLUTE As Long = &H80
 Private Const TTF_TRACK As Long = &H20
 
-Private Const TOOLTIPS_CLASSA = "tooltips_class32"
+Private Const TOOLTIPS_CLASS = "tooltips_class32"
 
 ''Tooltip Window Types
-'Private Type TOOLINFO
-'    lSize As Long
-'    lFlags As Long
-'    hWnd As Long
-'    lId As Long
-'    lpRect As RECT
-'    hInstance As Long
-'    lpStr As String
-'    lParam As Long
-'End Type
-
 Private Type TOOLINFOW
     cbSize As Long
     uFlags As Long
     hWnd As LongPtr
-    uId As Long
+    uId As LongPtr
     RECT As RECT
     hInst As LongPtr
     lpszText As LongPtr
@@ -211,6 +197,12 @@ Private mTag As String
 Private mRightToLeft As Boolean
 
 'private data
+' The class reads the screen DPI itself instead of being handed it, so that it stays usable
+' on its own. Screen.TwipsPerPixelX/Y are not used anywhere in here: VB6 rounds them to a
+' whole number, and 1440 / DPI is not whole at 175%, 200% or 225%
+Private mDPIX As Long
+Private mDPIY As Long
+
 Private mTTHwnd As LongPtr ' hWnd of the tooltip
 Private mParentHwnd As LongPtr ' hWnd of the window the tooltip attached to
 Private mTi As TOOLINFOW
@@ -299,6 +291,10 @@ Public Function Create(ByVal nParentHwnd As LongPtr) As Boolean
     
     If IsWindowVisible(nParentHwnd) = 0 Then Exit Function
     
+    ' Read here and not once at class level: the monitor the parent window sits on can have
+    ' changed since the last time this instance showed a tip
+    RefreshDPI
+    
     mParentHwnd = nParentHwnd
     
     initcc.dwSize = Len(initcc)
@@ -311,12 +307,12 @@ Public Function Create(ByVal nParentHwnd As LongPtr) As Boolean
             GetCursorPos iPt
             ScreenToClient mParentHwnd, iPt
             If IsEmpty(mPositionX) Then
-                iPositionX = iPt.X * Screen.TwipsPerPixelX
+                iPositionX = pPixelsToTwipsX(iPt.X)
             Else
                 iPositionX = mPositionX
             End If
             If IsEmpty(mPositionY) Then
-                iPositionY = iPt.Y * Screen.TwipsPerPixelY
+                iPositionY = pPixelsToTwipsY(iPt.Y)
             Else
                 iPositionY = mPositionY
             End If
@@ -359,9 +355,9 @@ Public Function Create(ByVal nParentHwnd As LongPtr) As Boolean
     ''create baloon style if desired
     If mStyle = vxTTBalloon Then lWinStyle = lWinStyle Or TTS_BALLOON
     
-    mTTHwnd = CreateWindowEx(IIf(mRightToLeft, WS_EX_LAYOUTRTL, 0&), _
-        TOOLTIPS_CLASSA, _
-        vbNullString, _
+    mTTHwnd = CreateWindowExW(IIf(mRightToLeft, WS_EX_LAYOUTRTL, 0&), _
+        StrPtr(TOOLTIPS_CLASS), _
+        0&, _
         lWinStyle, _
         CW_USEDEFAULT, _
         CW_USEDEFAULT, _
@@ -380,12 +376,12 @@ Public Function Create(ByVal nParentHwnd As LongPtr) As Boolean
                
     If Not IsEmpty(mWidth) Then
         If mWidth > 0 Then
-            SendMessageLong mTTHwnd, TTM_SETMAXTIPWIDTH, 0, CLng(mWidth / Screen.TwipsPerPixelX)
+            SendMessageLong mTTHwnd, TTM_SETMAXTIPWIDTH, 0, CLng(pTwipsToPixelsX(mWidth))
         Else
-            SendMessageLong mTTHwnd, TTM_SETMAXTIPWIDTH, 0, Screen.Width / Screen.TwipsPerPixelX / 2 ' to enable multiline and limit the width to half the screen size
+            SendMessageLong mTTHwnd, TTM_SETMAXTIPWIDTH, 0, GetSystemMetrics(SM_CXSCREEN) \ 2 ' to enable multiline and limit the width to half the screen size
         End If
     Else
-        SendMessageLong mTTHwnd, TTM_SETMAXTIPWIDTH, 0, Screen.Width / Screen.TwipsPerPixelX / 2 ' to enable multiline and limit the width to half the screen size
+        SendMessageLong mTTHwnd, TTM_SETMAXTIPWIDTH, 0, GetSystemMetrics(SM_CXSCREEN) \ 2 ' to enable multiline and limit the width to half the screen size
     End If
                
     ''now set our tooltip info structure
@@ -393,15 +389,13 @@ Public Function Create(ByVal nParentHwnd As LongPtr) As Boolean
         If iAbsolutePosition Then
            .uFlags = TTF_TRACK Or TTF_ABSOLUTE
         Else
-           .uFlags = TTF_SUBCLASS  'Or TTF_TRACK Or TTF_ABSOLUTE
+           .uFlags = TTF_SUBCLASS
         End If
         
         ''set the hWnd prop to our parent control's hWnd
         .hWnd = mParentHwnd
-        .uId = mParentHwnd  '0
+        .uId = mParentHwnd
         .hInst = App.hInstance
-        '.lpstr = ALREADY SET
-        '.lpRect = lpRect
         .cbSize = Len(mTi)
     End With
     
@@ -427,8 +421,8 @@ Public Function Create(ByVal nParentHwnd As LongPtr) As Boolean
     End If
     
     If iAbsolutePosition Then
-        iPt.X = iPositionX / Screen.TwipsPerPixelX
-        iPt.Y = iPositionY / Screen.TwipsPerPixelY
+        iPt.X = pTwipsToPixelsX(iPositionX)
+        iPt.Y = pTwipsToPixelsY(iPositionY)
         ClientToScreen mParentHwnd, iPt
         SendMessageLong mTTHwnd, TTM_TRACKPOSITION, 0&, MakeLong(iPt.X, iPt.Y)
     End If
@@ -445,7 +439,6 @@ Public Function Create(ByVal nParentHwnd As LongPtr) As Boolean
     mAttached = True
     
     If mDelayTimeSecondsSng = 0 Then
-'        SendMessage mTTHwnd, TTM_TRACKACTIVATE, 1&, mTi
         Set mTmrDelay = New cTimer
         mTmrDelay.Interval = 1
         mStartTime = Timer - 1
@@ -652,8 +645,6 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As LongPtr, ByVal iMsg As Lon
             GetWindowRect mParentHwnd, iRect
             MoveWindow mTTHwnd, mTTOriginalRectPos.Left + iRect.Left - mParentOriginalRectPos.Left, mTTOriginalRectPos.Top + iRect.Top - mParentOriginalRectPos.Top, mTTOriginalRectPos.Right - mTTOriginalRectPos.Left, mTTOriginalRectPos.Bottom - mTTOriginalRectPos.Top, 1&
     End Select
-    
-'    IBSSubclass_WindowProc = CallOldWindowProc(hWnd, iMsg, wParam, lParam)
 End Function
 
 Private Sub mTmrClose_ThatTime()
@@ -688,8 +679,8 @@ Private Sub mTmrTrackMouse_ThatTime()
     Dim iClose As Boolean
     
     GetCursorPos iMpos
-    iPixX = mRestrictMouseMoveToTwips / Screen.TwipsPerPixelX
-    iPixY = mRestrictMouseMoveToTwips / Screen.TwipsPerPixelY
+    iPixX = pTwipsToPixelsX(mRestrictMouseMoveToTwips)
+    iPixY = pTwipsToPixelsY(mRestrictMouseMoveToTwips)
     
     If iPixX = 0 Then
         iClose = True
@@ -745,9 +736,6 @@ Private Function GetSystemFont(nSystemFont As bsSystemFontConstants) As StdFont
     Const SPI_GETNONCLIENTMETRICS = 41
     Const SPI_GETICONTITLELOGFONT = 31
     
-    
-'    iNcm.cbSize = 340
-'    iNcm.cbSize = 500
     iNcm.cbSize = LenB(iNcm)
     iRet = SystemParametersInfoW(SPI_GETNONCLIENTMETRICS, iNcm.cbSize, iNcm, 0)
     If (iRet = 0) Then Exit Function
@@ -775,11 +763,44 @@ Private Function GetSystemFont(nSystemFont As bsSystemFontConstants) As StdFont
     Set GetSystemFont = LogFontToStdFont(iLF)
 End Function
 
+Private Sub RefreshDPI()
+    Dim iDC As LongPtr
+    
+    iDC = GetDC(0)
+    mDPIX = GetDeviceCaps(iDC, LOGPIXELSX)
+    mDPIY = GetDeviceCaps(iDC, LOGPIXELSY)
+    ReleaseDC 0, iDC
+    ' A GetDC that failed would leave a zero behind, and the conversions below divide by it
+    If mDPIX = 0 Then mDPIX = 96
+    If mDPIY = 0 Then mDPIY = 96
+End Sub
+
+' The four below are the only unit conversion in the class. They guard on mDPIX because a
+' caller can set a property that needs converting before Create has run
+Private Function pTwipsToPixelsX(ByVal nTwips As Single) As Single
+    If mDPIX = 0 Then RefreshDPI
+    pTwipsToPixelsX = nTwips / 1440 * mDPIX
+End Function
+
+Private Function pTwipsToPixelsY(ByVal nTwips As Single) As Single
+    If mDPIY = 0 Then RefreshDPI
+    pTwipsToPixelsY = nTwips / 1440 * mDPIY
+End Function
+
+Private Function pPixelsToTwipsX(ByVal nPixels As Single) As Single
+    If mDPIX = 0 Then RefreshDPI
+    pPixelsToTwipsX = nPixels * 1440 / mDPIX
+End Function
+
+Private Function pPixelsToTwipsY(ByVal nPixels As Single) As Single
+    If mDPIY = 0 Then RefreshDPI
+    pPixelsToTwipsY = nPixels * 1440 / mDPIY
+End Function
+
 Private Function LogFontToStdFont(LF As LOGFONTW, Optional nPrinterFont As Boolean) As iFont
     Dim iFontName As String
     Dim iDPIY As Single
     Dim iDC As LongPtr
-    Const LOGPIXELSY As Long = 90
     
     Set LogFontToStdFont = New StdFont
     
@@ -810,7 +831,7 @@ Private Function LogFontToStdFont(LF As LOGFONTW, Optional nPrinterFont As Boole
         Case Is < 0
             LogFontToStdFont.Size = -LF.LFHeight / iDPIY * 72
         Case Is > 0
-            LogFontToStdFont.Size = LF.LFHeight / iDPIY * 72 * 0.8 ' lF.lfHeight / Screen.TwipsPerPixelY / 2.777777777
+            LogFontToStdFont.Size = LF.LFHeight / iDPIY * 72 * 0.8
         Case Else
             LogFontToStdFont.Size = 12
     End Select

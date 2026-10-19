@@ -1,0 +1,1257 @@
+VERSION 5.00
+Begin VB.PropertyPage pagNewTabStrip 
+   Caption         =   "Strip"
+   ClientHeight    =   8508
+   ClientLeft      =   0
+   ClientTop       =   0
+   ClientWidth     =   6804
+   BeginProperty Font 
+      Name            =   "Tahoma"
+      Size            =   8.4
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
+   LockControls    =   -1  'True
+   PaletteMode     =   0  'Halftone
+   ScaleHeight     =   8508
+   ScaleWidth      =   6804
+   Begin VB.Frame fraStrip 
+      Caption         =   "Strip"
+      Height          =   3210
+      Left            =   90
+      TabIndex        =   0
+      Top             =   30
+      Width           =   6624
+      Begin VB.ComboBox cboTabOrientation 
+         Height          =   300
+         Left            =   2400
+         Style           =   2  'Dropdown List
+         TabIndex        =   2
+         Top             =   270
+         Width           =   1900
+      End
+      Begin VB.ComboBox cboTabWidthStyle 
+         Height          =   300
+         Left            =   2400
+         Style           =   2  'Dropdown List
+         TabIndex        =   5
+         Top             =   630
+         Width           =   1900
+      End
+      Begin VB.TextBox txtTabsPerRow 
+         Height          =   310
+         Left            =   2400
+         TabIndex        =   8
+         Top             =   990
+         Width           =   700
+      End
+      Begin VB.ComboBox cboTabHeightStyleForHorizontal 
+         Height          =   300
+         Left            =   2400
+         Style           =   2  'Dropdown List
+         TabIndex        =   11
+         Top             =   1350
+         Width           =   1900
+      End
+      Begin VB.ComboBox cboShowRowsInPerspective 
+         Height          =   300
+         Left            =   2400
+         Style           =   2  'Dropdown List
+         TabIndex        =   14
+         Top             =   1710
+         Width           =   1900
+      End
+      Begin VB.ComboBox cboTabsOverflow 
+         Height          =   300
+         Left            =   2400
+         Style           =   2  'Dropdown List
+         TabIndex        =   17
+         Top             =   2070
+         Width           =   1900
+      End
+      Begin VB.ComboBox cboStripButtonsRow 
+         Height          =   300
+         Left            =   2400
+         Style           =   2  'Dropdown List
+         TabIndex        =   20
+         Top             =   2430
+         Width           =   1900
+      End
+      Begin VB.Label lblTabOrientation 
+         Alignment       =   1  'Right Justify
+         Caption         =   "TabOrientation:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   1
+         Top             =   310
+         Width           =   2280
+      End
+      Begin VB.Label lblTabOrientationInfo 
+         Caption         =   "side the tabs are on"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   4360
+         TabIndex        =   3
+         ToolTipText     =   "side the tabs are on"
+         Top             =   310
+         Width           =   2200
+      End
+      Begin VB.Label lblTabWidthStyle 
+         Alignment       =   1  'Right Justify
+         Caption         =   "TabWidthStyle:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   4
+         Top             =   670
+         Width           =   2280
+      End
+      Begin VB.Label lblTabWidthStyleInfo 
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   4360
+         TabIndex        =   6
+         Top             =   670
+         Width           =   3200
+      End
+      Begin VB.Label lblTabsPerRow 
+         Alignment       =   1  'Right Justify
+         Caption         =   "TabsPerRow:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   7
+         Top             =   1030
+         Width           =   2280
+      End
+      Begin VB.Label lblTabsPerRowInfo 
+         Caption         =   "only EqualWidth and TabCaptionWidth"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   3160
+         TabIndex        =   9
+         ToolTipText     =   "only EqualWidth and TabCaptionWidth"
+         Top             =   1030
+         Width           =   3400
+      End
+      Begin VB.Label lblTabHeightStyleForHorizontal 
+         Alignment       =   1  'Right Justify
+         Caption         =   "TabHeightStyleForHorizontal:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   10
+         ToolTipText     =   "TabHeightStyleForHorizontal"
+         Top             =   1390
+         Width           =   2280
+      End
+      Begin VB.Label lblTabHeightStyleForHorizontalInfo 
+         Caption         =   "*Horizontal orientations only"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   4360
+         TabIndex        =   12
+         ToolTipText     =   "*Horizontal orientations only"
+         Top             =   1390
+         Width           =   2200
+      End
+      Begin VB.Label lblShowRowsInPerspective 
+         Alignment       =   1  'Right Justify
+         Caption         =   "ShowRowsInPerspective:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   13
+         Top             =   1750
+         Width           =   2280
+      End
+      Begin VB.Label lblShowRowsInPerspectiveInfo 
+         Caption         =   "when there are several rows"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   4360
+         TabIndex        =   15
+         ToolTipText     =   "when there are several rows"
+         Top             =   1750
+         Width           =   2200
+      End
+      Begin VB.Label lblTabsOverflow 
+         Alignment       =   1  'Right Justify
+         Caption         =   "TabsOverflow:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   16
+         Top             =   2110
+         Width           =   2280
+      End
+      Begin VB.Label lblTabsOverflowInfo 
+         Caption         =   "when the tabs don't fit in a row"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   4360
+         TabIndex        =   18
+         ToolTipText     =   "when the tabs don't fit in a row"
+         Top             =   2110
+         Width           =   2200
+      End
+      Begin VB.Label lblStripButtonsRow 
+         Alignment       =   1  'Right Justify
+         Caption         =   "StripButtonsRow:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   19
+         Top             =   2470
+         Width           =   2280
+      End
+      Begin VB.Label lblStripButtonsRowInfo 
+         Caption         =   "several rows (see Buttons)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   4360
+         TabIndex        =   21
+         ToolTipText     =   "several rows (see Buttons)"
+         Top             =   2470
+         Width           =   2200
+      End
+      Begin VB.TextBox txtStripEndFreeSpace 
+         Height          =   310
+         Left            =   2400
+         TabIndex        =   54
+         Top             =   2790
+         Width           =   700
+      End
+      Begin VB.Label lblStripEndFreeSpace 
+         Alignment       =   1  'Right Justify
+         Caption         =   "StripEndFreeSpace:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   53
+         Top             =   2830
+         Width           =   2280
+      End
+      Begin VB.Label lblStripEndFreeSpaceInfo 
+         Caption         =   "free space after the last tab (*)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   3160
+         TabIndex        =   55
+         ToolTipText     =   "free space after the last tab, it shows what is behind the control"
+         Top             =   2830
+         Width           =   3400
+      End
+   End
+   Begin VB.Frame fraTabSize 
+      Caption         =   "Tab size"
+      Height          =   3570
+      Left            =   90
+      TabIndex        =   22
+      Top             =   3400
+      Width           =   6624
+      Begin VB.CheckBox chkAutoTabHeight 
+         Height          =   255
+         Left            =   2400
+         TabIndex        =   27
+         Top             =   652
+         Width           =   255
+      End
+      Begin VB.TextBox txtTabHeight 
+         Height          =   310
+         Left            =   2400
+         TabIndex        =   30
+         Top             =   990
+         Width           =   700
+      End
+      Begin VB.TextBox txtTabGeneralFixedWidth 
+         Height          =   310
+         Left            =   2400
+         TabIndex        =   33
+         Top             =   1350
+         Width           =   700
+      End
+      Begin VB.TextBox txtTabMinWidth 
+         Height          =   310
+         Left            =   2400
+         TabIndex        =   36
+         Top             =   1710
+         Width           =   700
+      End
+      Begin VB.TextBox txtTabMaxWidth 
+         Height          =   310
+         Left            =   2400
+         TabIndex        =   39
+         Top             =   2070
+         Width           =   700
+      End
+      Begin VB.TextBox txtTabSeparation 
+         Height          =   310
+         Left            =   2400
+         TabIndex        =   42
+         Top             =   2430
+         Width           =   700
+      End
+      Begin VB.TextBox txtTabPaddingWidth 
+         Height          =   310
+         Left            =   2400
+         TabIndex        =   45
+         Top             =   2790
+         Width           =   700
+      End
+      Begin VB.TextBox txtTabPaddingHeight 
+         Height          =   310
+         Left            =   2400
+         TabIndex        =   48
+         Top             =   3150
+         Width           =   700
+      End
+      Begin VB.CheckBox chkWordWrap 
+         Height          =   255
+         Left            =   2400
+         TabIndex        =   24
+         Top             =   292
+         Width           =   255
+      End
+      Begin VB.Label lblAutoTabHeight 
+         Alignment       =   1  'Right Justify
+         Caption         =   "AutoTabHeight:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   26
+         Top             =   670
+         Width           =   2280
+      End
+      Begin VB.Label lblAutoTabHeightInfo 
+         Caption         =   "from the font and the icons"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   2760
+         TabIndex        =   28
+         ToolTipText     =   "from the font and the icons"
+         Top             =   670
+         Width           =   3800
+      End
+      Begin VB.Label lblTabHeight 
+         Alignment       =   1  'Right Justify
+         Caption         =   "TabHeight:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   29
+         Top             =   1030
+         Width           =   2280
+      End
+      Begin VB.Label lblTabHeightInfo 
+         Caption         =   "(*)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   3160
+         TabIndex        =   31
+         ToolTipText     =   "in units of the container"
+         Top             =   1030
+         Width           =   3400
+      End
+      Begin VB.Label lblTabGeneralFixedWidth 
+         Alignment       =   1  'Right Justify
+         Caption         =   "TabGeneralFixedWidth:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   32
+         Top             =   1390
+         Width           =   2280
+      End
+      Begin VB.Label lblTabGeneralFixedWidthInfo 
+         Caption         =   "all tabs, GeneralFixedWidth styles (*)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   3160
+         TabIndex        =   34
+         ToolTipText     =   "all tabs, GeneralFixedWidth styles"
+         Top             =   1390
+         Width           =   3400
+      End
+      Begin VB.Label lblTabMinWidth 
+         Alignment       =   1  'Right Justify
+         Caption         =   "TabMinWidth:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   35
+         Top             =   1750
+         Width           =   2280
+      End
+      Begin VB.Label lblTabMinWidthInfo 
+         Caption         =   "tabs sized by their caption (*)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   3160
+         TabIndex        =   37
+         ToolTipText     =   "tabs sized by their caption"
+         Top             =   1750
+         Width           =   3400
+      End
+      Begin VB.Label lblTabMaxWidth 
+         Alignment       =   1  'Right Justify
+         Caption         =   "TabMaxWidth:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   38
+         Top             =   2110
+         Width           =   2280
+      End
+      Begin VB.Label lblTabMaxWidthInfo 
+         Caption         =   "tabs sized by their caption; 0 = none (*)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   3160
+         TabIndex        =   40
+         ToolTipText     =   "tabs sized by their caption; 0 = none"
+         Top             =   2110
+         Width           =   3400
+      End
+      Begin VB.Label lblTabSeparation 
+         Alignment       =   1  'Right Justify
+         Caption         =   "TabSeparation:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   41
+         Top             =   2470
+         Width           =   2280
+      End
+      Begin VB.Label lblTabSeparationInfo 
+         Caption         =   "pixels between tabs (**)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   3160
+         TabIndex        =   43
+         ToolTipText     =   "pixels between tabs"
+         Top             =   2470
+         Width           =   3400
+      End
+      Begin VB.Label lblTabPaddingWidth 
+         Alignment       =   1  'Right Justify
+         Caption         =   "TabPaddingWidth:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   44
+         Top             =   2830
+         Width           =   2280
+      End
+      Begin VB.Label lblTabPaddingWidthInfo 
+         Caption         =   "pixels at each side of caption and icon (**)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   3160
+         TabIndex        =   46
+         ToolTipText     =   "pixels at each side of caption and icon"
+         Top             =   2830
+         Width           =   3400
+      End
+      Begin VB.Label lblTabPaddingHeight 
+         Alignment       =   1  'Right Justify
+         Caption         =   "TabPaddingHeight:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   47
+         Top             =   3190
+         Width           =   2280
+      End
+      Begin VB.Label lblTabPaddingHeightInfo 
+         Caption         =   "pixels above and below caption and icon (**)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   3160
+         TabIndex        =   49
+         ToolTipText     =   "pixels above and below caption and icon"
+         Top             =   3190
+         Width           =   3400
+      End
+      Begin VB.Label lblWordWrap 
+         Alignment       =   1  'Right Justify
+         Caption         =   "WordWrap:"
+         Height          =   230
+         Left            =   60
+         TabIndex        =   23
+         Top             =   310
+         Width           =   2280
+      End
+      Begin VB.Label lblWordWrapInfo 
+         Caption         =   "long captions go on to more lines"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   2760
+         TabIndex        =   25
+         ToolTipText     =   "long captions go on to more lines"
+         Top             =   310
+         Width           =   3800
+      End
+   End
+   Begin VB.PictureBox picSampleContainer 
+      BorderStyle     =   0  'None
+      Height          =   972
+      Left            =   120
+      ScaleHeight     =   972
+      ScaleWidth      =   6612
+      TabIndex        =   50
+      Top             =   7440
+      Width           =   6612
+      Begin NewTabCtl.NewTab NewTab1 
+         Height          =   972
+         Left            =   0
+         TabIndex        =   51
+         Top             =   0
+         Width           =   6612
+         _ExtentX        =   11663
+         _ExtentY        =   1715
+         ControlsBackColorApplied=   -2147483633
+         AutoTabHeight   =   -1  'True
+         ControlVersion  =   18
+         TabCaption(0)   =   ""
+         TabCaption(1)   =   ""
+         TabCaption(2)   =   ""
+      End
+   End
+   Begin VB.Label Label1 
+      Caption         =   " Notes: (*) In units of the container.  (**) Pixels are scaled by DPI"
+      ForeColor       =   &H00C00000&
+      Height          =   372
+      Left            =   240
+      TabIndex        =   52
+      Top             =   7020
+      Width           =   6372
+   End
+End
+Attribute VB_Name = "pagNewTabStrip"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = True
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = True
+Option Explicit
+
+Private Declare Function SendMessageW Lib "user32" (ByVal hWnd As LongPtr, ByVal wMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
+
+Private Const CB_SETDROPPEDWIDTH As Long = &H160&
+
+' The sizes are kept in the units of the developer's container and converted for the preview,
+' whose container is the page
+Private mPreview As NewTab
+Private mSC As NewTab
+Private mLoading As Boolean
+Private mSettingText As Boolean
+Private mAutoWidthStyle As Long
+Private mTabsPerRow As Long
+Private mTabSeparation As Long
+Private mTabPaddingWidth As Long
+Private mTabPaddingHeight As Long
+Private mTabHeight As Single
+Private mTabGeneralFixedWidth As Single
+Private mTabMinWidth As Single
+Private mTabMaxWidth As Single
+Private mStripEndFreeSpace As Single
+
+Private Sub PropertyPage_SelectionChanged()
+    Dim iSC As NewTab
+    Dim t As Long
+
+    If TypeName(SelectedControls(0)) <> "NewTab" Then Exit Sub
+    mLoading = True
+    Set iSC = SelectedControls(0)
+    Set mSC = iSC
+    Set mPreview = NewTab1
+
+    LoadCombos
+    ' Read once: this page does not change Style, TDIMode or NewTabButton
+    mAutoWidthStyle = iSC.AutoTabWidthStyle
+
+    mTabsPerRow = iSC.TabsPerRow
+    mTabSeparation = iSC.TabSeparation
+    mTabPaddingWidth = iSC.TabPaddingWidth
+    mTabPaddingHeight = iSC.TabPaddingHeight
+    mTabHeight = iSC.TabHeight
+    mTabGeneralFixedWidth = iSC.TabGeneralFixedWidth
+    mTabMinWidth = iSC.TabMinWidth
+    mTabMaxWidth = iSC.TabMaxWidth
+    mStripEndFreeSpace = iSC.StripEndFreeSpace
+
+    SelectInComboByItemData cboTabOrientation, iSC.TabOrientation
+    SelectInComboByItemData cboTabWidthStyle, iSC.TabWidthStyle
+    SelectInComboByItemData cboTabHeightStyleForHorizontal, iSC.TabHeightStyleForHorizontal
+    SelectInComboByItemData cboShowRowsInPerspective, iSC.ShowRowsInPerspective
+    SelectInComboByItemData cboTabsOverflow, iSC.TabsOverflow
+    SelectInComboByItemData cboStripButtonsRow, iSC.StripButtonsRow
+    chkAutoTabHeight.Value = IIf(iSC.AutoTabHeight, vbChecked, vbUnchecked)
+    chkWordWrap.Value = IIf(iSC.WordWrap, vbChecked, vbUnchecked)
+    ShowAllValues
+
+    ' The sample is the developer's control, as in the other pages
+    mPreview.Redraw = False
+    mPreview.RightToLeft = iSC.RightToLeft
+    mPreview.CloseButton = iSC.CloseButton
+    mPreview.CloseButtonPosition = iSC.CloseButtonPosition
+    mPreview.CaptionAlignment = iSC.CaptionAlignment
+    mPreview.Tabs = iSC.Tabs
+    For t = 0 To iSC.Tabs - 1
+        SeedPreviewTab iSC, t
+    Next t
+    CopyControlProperties iSC, mPreview
+    If iSC.TabSel > -1 Then
+        If mPreview.TabVisible(iSC.TabSel) Then mPreview.TabSel = iSC.TabSel
+    End If
+    UpdatePreview
+
+    SetComboDropWidth cboTabOrientation
+    SetComboDropWidth cboTabWidthStyle
+    SetComboDropWidth cboTabHeightStyleForHorizontal
+    SetComboDropWidth cboShowRowsInPerspective
+    SetComboDropWidth cboTabsOverflow
+    SetComboDropWidth cboStripButtonsRow
+    SetEnabledStates
+    ShowWidthStyleInfo
+    Changed = False
+    mLoading = False
+End Sub
+
+Private Sub PropertyPage_EditProperty(PropertyName As String)
+    On Error Resume Next
+    Select Case PropertyName
+        Case "TabsPerRow": txtTabsPerRow.SetFocus
+        Case "TabHeight": txtTabHeight.SetFocus
+        Case "TabGeneralFixedWidth": txtTabGeneralFixedWidth.SetFocus
+        Case "TabMinWidth": txtTabMinWidth.SetFocus
+        Case "TabMaxWidth": txtTabMaxWidth.SetFocus
+        Case "StripEndFreeSpace": txtStripEndFreeSpace.SetFocus
+        Case "TabSeparation": txtTabSeparation.SetFocus
+        Case "TabPaddingWidth": txtTabPaddingWidth.SetFocus
+        Case "TabPaddingHeight": txtTabPaddingHeight.SetFocus
+        Case Else: cboTabOrientation.SetFocus
+    End Select
+End Sub
+
+' TabWidthStyle goes before the widths: TabMinWidth and TabMaxWidth are refused while it is
+' ntTWEqualWidth. Max is cleared first so that neither Let clamps the other on the way
+Private Sub PropertyPage_ApplyChanges()
+    Dim iSC As NewTab
+
+    If mPreview Is Nothing Then Exit Sub
+    Set iSC = SelectedControls(0)
+    On Error Resume Next
+    iSC.Redraw = False
+    If iSC.TabOrientation <> ComboValue(cboTabOrientation) Then iSC.TabOrientation = ComboValue(cboTabOrientation)
+    If iSC.TabWidthStyle <> ComboValue(cboTabWidthStyle) Then iSC.TabWidthStyle = ComboValue(cboTabWidthStyle)
+    If iSC.TabsPerRow <> mTabsPerRow Then iSC.TabsPerRow = mTabsPerRow
+    If iSC.TabHeightStyleForHorizontal <> ComboValue(cboTabHeightStyleForHorizontal) Then iSC.TabHeightStyleForHorizontal = ComboValue(cboTabHeightStyleForHorizontal)
+    If iSC.ShowRowsInPerspective <> ComboValue(cboShowRowsInPerspective) Then iSC.ShowRowsInPerspective = ComboValue(cboShowRowsInPerspective)
+    If iSC.TabsOverflow <> ComboValue(cboTabsOverflow) Then iSC.TabsOverflow = ComboValue(cboTabsOverflow)
+    If iSC.StripButtonsRow <> ComboValue(cboStripButtonsRow) Then iSC.StripButtonsRow = ComboValue(cboStripButtonsRow)
+    If iSC.WordWrap <> (chkWordWrap.Value = vbChecked) Then iSC.WordWrap = (chkWordWrap.Value = vbChecked)
+    If iSC.TabSeparation <> mTabSeparation Then iSC.TabSeparation = mTabSeparation
+    If iSC.TabPaddingWidth <> mTabPaddingWidth Then iSC.TabPaddingWidth = mTabPaddingWidth
+    If iSC.TabPaddingHeight <> mTabPaddingHeight Then iSC.TabPaddingHeight = mTabPaddingHeight
+    If SizeDiffers(iSC.StripEndFreeSpace, mStripEndFreeSpace) Then iSC.StripEndFreeSpace = mStripEndFreeSpace
+    If SizeDiffers(iSC.TabGeneralFixedWidth, mTabGeneralFixedWidth) Then iSC.TabGeneralFixedWidth = mTabGeneralFixedWidth
+    If SizeDiffers(iSC.TabMinWidth, mTabMinWidth) Or SizeDiffers(iSC.TabMaxWidth, mTabMaxWidth) Then
+        iSC.TabMaxWidth = 0
+        iSC.TabMinWidth = mTabMinWidth
+        iSC.TabMaxWidth = mTabMaxWidth
+    End If
+    If chkAutoTabHeight.Value = vbChecked Then
+        If Not iSC.AutoTabHeight Then iSC.AutoTabHeight = True
+    Else
+        If iSC.AutoTabHeight Then iSC.AutoTabHeight = False
+        If SizeDiffers(iSC.TabHeight, mTabHeight) Then iSC.TabHeight = mTabHeight
+    End If
+    iSC.Redraw = True
+    On Error GoTo 0
+End Sub
+
+Private Function SizeDiffers(ByVal nValue1 As Single, ByVal nValue2 As Single) As Boolean
+    SizeDiffers = Abs(nValue1 - nValue2) > 0.0001
+End Function
+
+Private Function ComboValue(nCombo As ComboBox) As Long
+    If nCombo.ListIndex > -1 Then ComboValue = nCombo.ItemData(nCombo.ListIndex)
+End Function
+
+Private Sub LoadCombos()
+    cboTabOrientation.Clear
+    cboTabOrientation.AddItem ssTabOrientationTop & " - ssTabOrientationTop": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ssTabOrientationTop
+    cboTabOrientation.AddItem ssTabOrientationBottom & " - ssTabOrientationBottom": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ssTabOrientationBottom
+    cboTabOrientation.AddItem ssTabOrientationLeft & " - ssTabOrientationLeft": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ssTabOrientationLeft
+    cboTabOrientation.AddItem ssTabOrientationRight & " - ssTabOrientationRight": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ssTabOrientationRight
+    cboTabOrientation.AddItem ntTabOrientationLeftHorizontal & " - ntTabOrientationLeftHorizontal": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ntTabOrientationLeftHorizontal
+    cboTabOrientation.AddItem ntTabOrientationRightHorizontal & " - ntTabOrientationRightHorizontal": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ntTabOrientationRightHorizontal
+    cboTabOrientation.AddItem ntTabOrientationTopRight & " - ntTabOrientationTopRight": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ntTabOrientationTopRight
+    cboTabOrientation.AddItem ntTabOrientationBottomRight & " - ntTabOrientationBottomRight": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ntTabOrientationBottomRight
+    cboTabOrientation.AddItem ntTabOrientationLeftTop & " - ntTabOrientationLeftTop": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ntTabOrientationLeftTop
+    cboTabOrientation.AddItem ntTabOrientationRightBottom & " - ntTabOrientationRightBottom": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ntTabOrientationRightBottom
+    cboTabOrientation.AddItem ntTabOrientationLeftBottomHorizontal & " - ntTabOrientationLeftBottomHorizontal": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ntTabOrientationLeftBottomHorizontal
+    cboTabOrientation.AddItem ntTabOrientationRightBottomHorizontal & " - ntTabOrientationRightBottomHorizontal": cboTabOrientation.ItemData(cboTabOrientation.NewIndex) = ntTabOrientationRightBottomHorizontal
+
+    cboTabWidthStyle.Clear
+    cboTabWidthStyle.AddItem ntTWTabStripEmulation & " - ntTWTabStripEmulation": cboTabWidthStyle.ItemData(cboTabWidthStyle.NewIndex) = ntTWTabStripEmulation
+    cboTabWidthStyle.AddItem ntTWTabCaptionWidth & " - ntTWTabCaptionWidth": cboTabWidthStyle.ItemData(cboTabWidthStyle.NewIndex) = ntTWTabCaptionWidth
+    cboTabWidthStyle.AddItem ntTWEqualWidth & " - ntTWEqualWidth": cboTabWidthStyle.ItemData(cboTabWidthStyle.NewIndex) = ntTWEqualWidth
+    cboTabWidthStyle.AddItem ntTWAuto & " - ntTWAuto": cboTabWidthStyle.ItemData(cboTabWidthStyle.NewIndex) = ntTWAuto
+    cboTabWidthStyle.AddItem ntTWStretchToFill & " - ntTWStretchToFill": cboTabWidthStyle.ItemData(cboTabWidthStyle.NewIndex) = ntTWStretchToFill
+    cboTabWidthStyle.AddItem ntTWTabCaptionWidthFillRows & " - ntTWTabCaptionWidthFillRows": cboTabWidthStyle.ItemData(cboTabWidthStyle.NewIndex) = ntTWTabCaptionWidthFillRows
+    cboTabWidthStyle.AddItem ntTWGeneralFixedWidth & " - ntTWGeneralFixedWidth": cboTabWidthStyle.ItemData(cboTabWidthStyle.NewIndex) = ntTWGeneralFixedWidth
+    cboTabWidthStyle.AddItem ntTWGeneralFixedWidthFillRows & " - ntTWGeneralFixedWidthFillRows": cboTabWidthStyle.ItemData(cboTabWidthStyle.NewIndex) = ntTWGeneralFixedWidthFillRows
+
+    cboTabHeightStyleForHorizontal.Clear
+    cboTabHeightStyleForHorizontal.AddItem ntTHFill & " - ntTHFill": cboTabHeightStyleForHorizontal.ItemData(cboTabHeightStyleForHorizontal.NewIndex) = ntTHFill
+    cboTabHeightStyleForHorizontal.AddItem ntTHTabCaptionHeight & " - ntTHTabCaptionHeight": cboTabHeightStyleForHorizontal.ItemData(cboTabHeightStyleForHorizontal.NewIndex) = ntTHTabCaptionHeight
+    cboTabHeightStyleForHorizontal.AddItem ntTHMaxCaptionHeight & " - ntTHMaxCaptionHeight": cboTabHeightStyleForHorizontal.ItemData(cboTabHeightStyleForHorizontal.NewIndex) = ntTHMaxCaptionHeight
+    cboTabHeightStyleForHorizontal.AddItem ntTHFixed & " - ntTHFixed": cboTabHeightStyleForHorizontal.ItemData(cboTabHeightStyleForHorizontal.NewIndex) = ntTHFixed
+    cboTabHeightStyleForHorizontal.AddItem ntTHStretchToFill & " - ntTHStretchToFill": cboTabHeightStyleForHorizontal.ItemData(cboTabHeightStyleForHorizontal.NewIndex) = ntTHStretchToFill
+
+    cboShowRowsInPerspective.Clear
+    cboShowRowsInPerspective.AddItem ntNo & " - ntNo": cboShowRowsInPerspective.ItemData(cboShowRowsInPerspective.NewIndex) = ntNo
+    cboShowRowsInPerspective.AddItem ntYes & " - ntYes": cboShowRowsInPerspective.ItemData(cboShowRowsInPerspective.NewIndex) = ntYes
+    cboShowRowsInPerspective.AddItem ntYNAuto & " - ntYNAuto": cboShowRowsInPerspective.ItemData(cboShowRowsInPerspective.NewIndex) = ntYNAuto
+
+    cboTabsOverflow.Clear
+    cboTabsOverflow.AddItem ntTOMultiRow & " - ntTOMultiRow": cboTabsOverflow.ItemData(cboTabsOverflow.NewIndex) = ntTOMultiRow
+    cboTabsOverflow.AddItem ntTOScroll & " - ntTOScroll": cboTabsOverflow.ItemData(cboTabsOverflow.NewIndex) = ntTOScroll
+    cboTabsOverflow.AddItem ntTOScrollWithList & " - ntTOScrollWithList": cboTabsOverflow.ItemData(cboTabsOverflow.NewIndex) = ntTOScrollWithList
+
+    cboStripButtonsRow.Clear
+    cboStripButtonsRow.AddItem ntSBSelectedTabRow & " - ntSBSelectedTabRow": cboStripButtonsRow.ItemData(cboStripButtonsRow.NewIndex) = ntSBSelectedTabRow
+    cboStripButtonsRow.AddItem ntSBOuterRow & " - ntSBOuterRow": cboStripButtonsRow.ItemData(cboStripButtonsRow.NewIndex) = ntSBOuterRow
+End Sub
+
+' Values
+
+Private Sub ShowAllValues()
+    mSettingText = True
+    txtTabsPerRow.Text = CStr(mTabsPerRow)
+    txtTabSeparation.Text = CStr(mTabSeparation)
+    txtTabPaddingWidth.Text = CStr(mTabPaddingWidth)
+    txtTabPaddingHeight.Text = CStr(mTabPaddingHeight)
+    txtTabHeight.Text = CStr(mTabHeight)
+    txtTabGeneralFixedWidth.Text = CStr(mTabGeneralFixedWidth)
+    txtTabMinWidth.Text = CStr(mTabMinWidth)
+    txtTabMaxWidth.Text = CStr(mTabMaxWidth)
+    txtStripEndFreeSpace.Text = CStr(mStripEndFreeSpace)
+    mSettingText = False
+End Sub
+
+' A text that is not a valid value yet leaves the last valid one in place; leaving the box shows it
+Private Function ReadInteger(ByVal nText As String, ByVal nMin As Long, ByVal nMax As Long, ByRef nValue As Long) As Boolean
+    nText = Trim$(nText)
+    If (Len(nText) = 0) Or (Len(nText) > 4) Then Exit Function
+    If nText Like "*[!0-9]*" Then Exit Function
+    If (CLng(nText) < nMin) Or (CLng(nText) > nMax) Then Exit Function
+    nValue = CLng(nText)
+    ReadInteger = True
+End Function
+
+Private Function ReadSize(ByVal nText As String, ByRef nValue As Single) As Boolean
+    If Not IsNumeric(nText) Then Exit Function
+    If CSng(nText) < 0 Then Exit Function
+    nValue = CSng(nText)
+    ReadSize = True
+End Function
+
+Private Function SizeInTwipsX(ByVal nValue As Single) As Single
+    SizeInTwipsX = mSC.pScaleX(mSC.FromContainerSizeX(nValue, vbHimetric), vbHimetric, vbTwips)
+End Function
+
+Private Sub ValueEdited()
+    If mLoading Or mSettingText Then Exit Sub
+    UpdatePreview
+    Changed = True
+End Sub
+
+Private Sub txtTabsPerRow_Change()
+    If mLoading Or mSettingText Then Exit Sub
+    If ReadInteger(txtTabsPerRow.Text, 1, 1000, mTabsPerRow) Then ValueEdited
+End Sub
+
+Private Sub txtTabSeparation_Change()
+    If mLoading Or mSettingText Then Exit Sub
+    If ReadInteger(txtTabSeparation.Text, 0, 20, mTabSeparation) Then ValueEdited
+End Sub
+
+Private Sub txtTabPaddingWidth_Change()
+    If mLoading Or mSettingText Then Exit Sub
+    If ReadInteger(txtTabPaddingWidth.Text, 0, 40, mTabPaddingWidth) Then ValueEdited
+End Sub
+
+Private Sub txtTabPaddingHeight_Change()
+    If mLoading Or mSettingText Then Exit Sub
+    If ReadInteger(txtTabPaddingHeight.Text, 0, 40, mTabPaddingHeight) Then ValueEdited
+End Sub
+
+Private Sub txtTabHeight_Change()
+    Dim iValue As Single
+
+    If mLoading Or mSettingText Then Exit Sub
+    If Not ReadSize(txtTabHeight.Text, iValue) Then Exit Sub
+    If iValue = 0 Then Exit Sub
+    mTabHeight = iValue
+    ValueEdited
+End Sub
+
+' The same minimums the properties have: 150 twips, and 0 for TabMaxWidth meaning no limit
+Private Sub txtTabGeneralFixedWidth_Change()
+    Dim iValue As Single
+
+    If mLoading Or mSettingText Then Exit Sub
+    If Not ReadSize(txtTabGeneralFixedWidth.Text, iValue) Then Exit Sub
+    If SizeInTwipsX(iValue) < 150 Then Exit Sub
+    mTabGeneralFixedWidth = iValue
+    ValueEdited
+End Sub
+
+Private Sub txtTabMinWidth_Change()
+    Dim iValue As Single
+
+    If mLoading Or mSettingText Then Exit Sub
+    If Not ReadSize(txtTabMinWidth.Text, iValue) Then Exit Sub
+    mTabMinWidth = iValue
+    ValueEdited
+End Sub
+
+Private Sub txtTabMaxWidth_Change()
+    Dim iValue As Single
+
+    If mLoading Or mSettingText Then Exit Sub
+    If Not ReadSize(txtTabMaxWidth.Text, iValue) Then Exit Sub
+    If (iValue <> 0) And (SizeInTwipsX(iValue) < 150) Then Exit Sub
+    mTabMaxWidth = iValue
+    ValueEdited
+End Sub
+
+Private Sub txtStripEndFreeSpace_Change()
+    Dim iValue As Single
+
+    If mLoading Or mSettingText Then Exit Sub
+    If Not ReadSize(txtStripEndFreeSpace.Text, iValue) Then Exit Sub
+    mStripEndFreeSpace = iValue
+    ValueEdited
+End Sub
+
+Private Sub txtStripEndFreeSpace_LostFocus()
+    ShowAllValues
+End Sub
+
+Private Sub txtTabsPerRow_LostFocus()
+    ShowAllValues
+End Sub
+
+Private Sub txtTabSeparation_LostFocus()
+    ShowAllValues
+End Sub
+
+Private Sub txtTabPaddingWidth_LostFocus()
+    ShowAllValues
+End Sub
+
+Private Sub txtTabPaddingHeight_LostFocus()
+    ShowAllValues
+End Sub
+
+Private Sub txtTabHeight_LostFocus()
+    ShowAllValues
+End Sub
+
+Private Sub txtTabGeneralFixedWidth_LostFocus()
+    ShowAllValues
+End Sub
+
+Private Sub txtTabMinWidth_LostFocus()
+    ShowAllValues
+End Sub
+
+Private Sub txtTabMaxWidth_LostFocus()
+    ShowAllValues
+End Sub
+
+Private Sub ComboOrCheckEdited()
+    If mLoading Then Exit Sub
+    SetEnabledStates
+    ShowWidthStyleInfo
+    UpdatePreview
+    Changed = True
+End Sub
+
+Private Sub cboTabOrientation_Click()
+    ComboOrCheckEdited
+End Sub
+
+Private Sub cboTabWidthStyle_Click()
+    ComboOrCheckEdited
+End Sub
+
+Private Sub cboTabHeightStyleForHorizontal_Click()
+    ComboOrCheckEdited
+End Sub
+
+Private Sub cboShowRowsInPerspective_Click()
+    ComboOrCheckEdited
+End Sub
+
+Private Sub cboTabsOverflow_Click()
+    ComboOrCheckEdited
+End Sub
+
+Private Sub cboStripButtonsRow_Click()
+    ComboOrCheckEdited
+End Sub
+
+Private Sub chkAutoTabHeight_Click()
+    ComboOrCheckEdited
+End Sub
+
+Private Sub chkWordWrap_Click()
+    ComboOrCheckEdited
+End Sub
+
+' What applies and when
+
+Private Function OrientationIsHorizontal(ByVal nTabOrientation As Long) As Boolean
+    Select Case nTabOrientation
+        Case ntTabOrientationLeftHorizontal, ntTabOrientationRightHorizontal, ntTabOrientationLeftBottomHorizontal, ntTabOrientationRightBottomHorizontal
+            OrientationIsHorizontal = True
+    End Select
+End Function
+
+Private Function EffectiveWidthStyle() As Long
+    EffectiveWidthStyle = ComboValue(cboTabWidthStyle)
+    If EffectiveWidthStyle = ntTWAuto Then EffectiveWidthStyle = mAutoWidthStyle
+End Function
+
+Private Sub SetRowEnabled(nLabel As Label, nField As Control, ByVal nEnabled As Boolean)
+    nLabel.Enabled = nEnabled
+    nField.Enabled = nEnabled
+End Sub
+
+' TabsPerRow only breaks the rows of the grid styles, and the *Horizontal orientations lay out
+' columns by TabHeightStyleForHorizontal instead. The two GeneralFixed styles pin the width, so
+' they take the place of TabMinWidth and TabMaxWidth, which ntTWEqualWidth does not use either
+Private Sub SetEnabledStates()
+    Dim iHorizontal As Boolean
+    Dim iWidthStyle As Long
+    Dim iFixed As Boolean
+
+    iHorizontal = OrientationIsHorizontal(ComboValue(cboTabOrientation))
+    iWidthStyle = EffectiveWidthStyle
+    iFixed = (iWidthStyle = ntTWGeneralFixedWidth) Or (iWidthStyle = ntTWGeneralFixedWidthFillRows)
+    SetRowEnabled lblTabsPerRow, txtTabsPerRow, (Not iHorizontal) And ((iWidthStyle = ntTWEqualWidth) Or (iWidthStyle = ntTWTabCaptionWidth) Or (iWidthStyle = ntTWGeneralFixedWidth))
+    SetRowEnabled lblTabHeightStyleForHorizontal, cboTabHeightStyleForHorizontal, iHorizontal
+    SetRowEnabled lblStripButtonsRow, cboStripButtonsRow, (ComboValue(cboTabsOverflow) = ntTOMultiRow)
+    SetRowEnabled lblShowRowsInPerspective, cboShowRowsInPerspective, (ComboValue(cboTabsOverflow) = ntTOMultiRow)
+    SetRowEnabled lblTabHeight, txtTabHeight, (chkAutoTabHeight.Value <> vbChecked)
+    SetRowEnabled lblTabGeneralFixedWidth, txtTabGeneralFixedWidth, iFixed
+    SetRowEnabled lblTabMinWidth, txtTabMinWidth, (Not iFixed) And (iHorizontal Or (iWidthStyle <> ntTWEqualWidth))
+    SetRowEnabled lblTabMaxWidth, txtTabMaxWidth, txtTabMinWidth.Enabled
+End Sub
+
+Private Function WidthStyleName(ByVal nWidthStyle As Long) As String
+    Select Case nWidthStyle
+        Case ntTWTabStripEmulation: WidthStyleName = "TabStripEmulation"
+        Case ntTWTabCaptionWidth: WidthStyleName = "TabCaptionWidth"
+        Case ntTWEqualWidth: WidthStyleName = "EqualWidth"
+        Case ntTWStretchToFill: WidthStyleName = "StretchToFill"
+        Case ntTWTabCaptionWidthFillRows: WidthStyleName = "TabCaptionWidthFillRows"
+        Case ntTWGeneralFixedWidth: WidthStyleName = "GeneralFixedWidth"
+        Case ntTWGeneralFixedWidthFillRows: WidthStyleName = "GeneralFixedWidthFillRows"
+    End Select
+End Function
+
+Private Sub ShowWidthStyleInfo()
+    Dim iText As String
+
+    Select Case ComboValue(cboTabWidthStyle)
+        Case ntTWTabStripEmulation: iText = "caption widths, rows as TabStrip"
+        Case ntTWTabCaptionWidth: iText = "each tab as wide as its caption"
+        Case ntTWEqualWidth: iText = "all equal, TabsPerRow in a row"
+        Case ntTWAuto: iText = "Auto = " & WidthStyleName(mAutoWidthStyle)
+        Case ntTWStretchToFill: iText = "caption widths, stretched to fill"
+        Case ntTWTabCaptionWidthFillRows: iText = "caption widths, rows filled"
+        Case ntTWGeneralFixedWidth: iText = "all TabGeneralFixedWidth wide"
+        Case ntTWGeneralFixedWidthFillRows: iText = "the same, rows filled"
+    End Select
+    lblTabWidthStyleInfo.Caption = iText
+    lblTabWidthStyleInfo.ToolTipText = iText
+End Sub
+
+' Preview
+
+' Converted through himetric: the developer's container and the preview's can have different units
+Private Function PreviewSizeX(ByVal nValue As Single) As Single
+    Dim iPreviewUnit As Single
+
+    iPreviewUnit = mPreview.FromContainerSizeX(1, vbHimetric)
+    If iPreviewUnit <> 0 Then PreviewSizeX = mSC.FromContainerSizeX(nValue, vbHimetric) / iPreviewUnit
+End Function
+
+Private Function PreviewSizeY(ByVal nValue As Single) As Single
+    Dim iPreviewUnit As Single
+
+    iPreviewUnit = mPreview.FromContainerSizeY(1, vbHimetric)
+    If iPreviewUnit <> 0 Then PreviewSizeY = mSC.FromContainerSizeY(nValue, vbHimetric) / iPreviewUnit
+End Function
+
+' Same order as ApplyChanges. A value the preview refuses is simply not shown
+Private Sub UpdatePreview()
+    On Error Resume Next
+    mPreview.Redraw = False
+    ' As in the other pages: a vertical strip would not fit in the sample
+    mPreview.TabOrientation = PreviewTabOrientation(ComboValue(cboTabOrientation))
+    Select Case ComboValue(cboTabOrientation)
+        Case ssTabOrientationRight, ssTabOrientationLeft, ntTabOrientationRightBottom, ntTabOrientationLeftTop
+            mPreview.Move mPreview.Left, mPreview.Top, mSC.Height, mSC.Width
+        Case Else
+            mPreview.Move mPreview.Left, mPreview.Top, mSC.Width, mSC.Height
+    End Select
+    mPreview.TabWidthStyle = ComboValue(cboTabWidthStyle)
+    mPreview.TabsPerRow = mTabsPerRow
+    mPreview.TabHeightStyleForHorizontal = ComboValue(cboTabHeightStyleForHorizontal)
+    mPreview.ShowRowsInPerspective = ComboValue(cboShowRowsInPerspective)
+    mPreview.TabsOverflow = ComboValue(cboTabsOverflow)
+    mPreview.StripButtonsRow = ComboValue(cboStripButtonsRow)
+    mPreview.StripEndFreeSpace = PreviewSizeX(mStripEndFreeSpace)
+    mPreview.WordWrap = (chkWordWrap.Value = vbChecked)
+    mPreview.TabSeparation = mTabSeparation
+    mPreview.TabPaddingWidth = mTabPaddingWidth
+    mPreview.TabPaddingHeight = mTabPaddingHeight
+    mPreview.TabGeneralFixedWidth = PreviewSizeX(mTabGeneralFixedWidth)
+    mPreview.TabMaxWidth = 0
+    mPreview.TabMinWidth = PreviewSizeX(mTabMinWidth)
+    mPreview.TabMaxWidth = PreviewSizeX(mTabMaxWidth)
+    If chkAutoTabHeight.Value = vbChecked Then
+        mPreview.AutoTabHeight = True
+    Else
+        mPreview.AutoTabHeight = False
+        mPreview.TabHeight = PreviewSizeY(mTabHeight)
+    End If
+    mPreview.Redraw = True
+    On Error GoTo 0
+    PlacePreview
+End Sub
+
+Private Sub SeedPreviewTab(ByVal nSC As NewTab, ByVal nTab As Long)
+    Dim c As Long
+    
+    For c = 0 To ntCCFlatTabBorderColorInactive
+        If nSC.TabCustomColorIsSet(nTab, c) Then
+            mPreview.TabCustomColor(nTab, c) = nSC.TabCustomColor(nTab, c)
+        Else
+            mPreview.TabCustomColor(nTab, c) = -1
+        End If
+    Next c
+    mPreview.TabCaption(nTab) = nSC.TabCaption(nTab)
+    mPreview.TabEnabled(nTab) = nSC.TabEnabled(nTab)
+    mPreview.TabVisible(nTab) = nSC.TabVisible(nTab)
+    mPreview.TabCloseButton(nTab) = nSC.TabCloseButton(nTab)
+    mPreview.TabCloseButtonEnabled(nTab) = nSC.TabCloseButtonEnabled(nTab)
+    Set mPreview.TabPic16(nTab) = nSC.TabPic16(nTab)
+    Set mPreview.TabPic20(nTab) = nSC.TabPic20(nTab)
+    Set mPreview.TabPic24(nTab) = nSC.TabPic24(nTab)
+    Set mPreview.TabPicture(nTab) = nSC.TabPicture(nTab)
+    Set mPreview.TabIconFont(nTab) = CloneFont(nSC.TabIconFont(nTab))
+    mPreview.TabIconCharHex(nTab) = nSC.TabIconCharHex(nTab)
+    mPreview.TabIconLeftOffset(nTab) = nSC.TabIconLeftOffset(nTab)
+    mPreview.TabIconTopOffset(nTab) = nSC.TabIconTopOffset(nTab)
+End Sub
+
+' Placed the way Tabs places its sample: centred against the page, then moved so that the selected
+' tab is in sight. No dragging as in Tabs and Icons: here only a few tabs are needed to hover
+Private Sub PlacePreview()
+    mPreview.Left = (PropertyPage.ScaleWidth - mPreview.Width) / 2
+    If mPreview.TabSel > -1 Then
+        If (mPreview.Left + mPreview.GetTabLeft(mPreview.TabSel) + mPreview.GetTabWidth(mPreview.TabSel)) > PropertyPage.ScaleWidth Then
+            mPreview.Left = PropertyPage.ScaleWidth - (mPreview.GetTabLeft(mPreview.TabSel) + mPreview.GetTabWidth(mPreview.TabSel)) - 120
+        ElseIf (mPreview.Left + mPreview.GetTabLeft(mPreview.TabSel)) < 0 Then
+            mPreview.Left = 120 - mPreview.GetTabLeft(mPreview.TabSel)
+        End If
+    End If
+    mPreview.Top = PreviewTop(mPreview, picSampleContainer.ScaleHeight)
+End Sub
+
+Private Sub NewTab1_CloseButtonClick(ByVal nTab As Long, Cancel As Boolean)
+    Cancel = True
+End Sub
+
+Private Function CloneFont(nOrigFont As iFont) As StdFont
+    If nOrigFont Is Nothing Then Exit Function
+    nOrigFont.Clone CloneFont
+End Function
+
+' The list opens as wide as its longest item. picSampleContainer measures because it has the page
+' font, the same as the combos
+Private Sub SetComboDropWidth(nCombo As ComboBox)
+    Dim c As Long
+    Dim iWidth As Single
+    Dim iMaxWidth As Single
+    
+    For c = 0 To nCombo.ListCount - 1
+        iWidth = picSampleContainer.TextWidth(nCombo.List(c))
+        If iWidth > iMaxWidth Then iMaxWidth = iWidth
+    Next c
+    ' room for the item margins and a vertical scroll bar
+    iMaxWidth = mPreview.pScaleX(iMaxWidth, vbTwips, vbPixels) + mPreview.pScaleX(360, vbTwips, vbPixels)
+    If iMaxWidth > mPreview.pScaleX(nCombo.Width, vbTwips, vbPixels) Then SendMessageW nCombo.hWnd, CB_SETDROPPEDWIDTH, CLng(iMaxWidth), 0
+End Sub
+
+Private Function SelectInComboByItemData(nCombo As Control, nItemData As Long) As Boolean
+    Dim c As Long
+    
+    For c = 0 To nCombo.ListCount - 1
+        If nCombo.ItemData(c) = nItemData Then
+            nCombo.ListIndex = c
+            SelectInComboByItemData = True
+            Exit Function
+        End If
+    Next c
+End Function
+

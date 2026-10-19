@@ -14,7 +14,6 @@ Private m_cTimerCount As Integer
 
 Function TimerCreate(Timer As cTimer) As Boolean
     ' Create the Timer
-    'Debug.Print m_cTimerCount
     Timer.TimerID = SetTimer(0&, 0&, Timer.Interval, AddressOf TimerProc)
     If Timer.TimerID Then
         TimerCreate = True
@@ -31,14 +30,12 @@ Function TimerCreate(Timer As cTimer) As Boolean
         Next
         Timer.ErrRaise eeTooManyTimers
     Else
-        ' TimerCreate = False
         Timer.TimerID = 0
         Timer.Interval = 0
     End If
 End Function
 
 Public Function TimerDestroy(Timer As cTimer) As Long
-    ' TimerDestroy = False
     ' Find and remove this Timer
     Dim i As Integer, f As Boolean
     ' SPM - no need to count past the last Timer set up in the
@@ -53,14 +50,6 @@ Public Function TimerDestroy(Timer As cTimer) As Long
                 TimerDestroy = True
                 Exit Function
             End If
-        ' SPM: aTimers(1) could well be nothing before
-        ' aTimers(2) is.  This original [else] would leave
-        ' Timer 2 still running when the class terminates -
-        ' not very nice!  Causes serious GPF in IE and VB design
-        ' mode...
-        'Else
-        '    TimerDestroy = True
-        '    Exit Function
         End If
     Next
 End Function
@@ -88,19 +77,3 @@ Sub TimerProc(ByVal hWnd As LongPtr, ByVal uMsg As Long, _
         Next
     End If
 End Sub
-
-
-'Private Function StoreTimer(Timer As cTimer)
-'    Dim i As Integer
-'    For i = 1 To m_cTimerCount
-'        If aTimers(i) Is Nothing Then
-'            Set aTimers(i) = Timer
-'            StoreTimer = True
-'            Exit Function
-'        End If
-'    Next
-'End Function
-
-
-
-

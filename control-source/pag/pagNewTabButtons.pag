@@ -1,0 +1,1209 @@
+VERSION 5.00
+Begin VB.PropertyPage pagNewTabButtons 
+   Caption         =   "Buttons"
+   ClientHeight    =   8508
+   ClientLeft      =   0
+   ClientTop       =   0
+   ClientWidth     =   6804
+   BeginProperty Font 
+      Name            =   "Tahoma"
+      Size            =   8.4
+      Charset         =   0
+      Weight          =   400
+      Underline       =   0   'False
+      Italic          =   0   'False
+      Strikethrough   =   0   'False
+   EndProperty
+   LockControls    =   -1  'True
+   PaletteMode     =   0  'Halftone
+   ScaleHeight     =   8508
+   ScaleWidth      =   6804
+   Begin VB.Frame fraCloseButton 
+      Caption         =   "Close button (x)"
+      Height          =   1990
+      Left            =   90
+      TabIndex        =   0
+      Top             =   30
+      Width           =   6624
+      Begin VB.CheckBox chkCloseButton 
+         Height          =   255
+         Left            =   2040
+         TabIndex        =   2
+         Top             =   265
+         Width           =   255
+      End
+      Begin VB.ComboBox cboCloseButtonPosition 
+         Height          =   300
+         Left            =   4080
+         Style           =   2  'Dropdown List
+         TabIndex        =   4
+         Top             =   240
+         Width           =   2400
+      End
+      Begin VB.TextBox txtCloseButtonPadding 
+         Height          =   310
+         Left            =   2040
+         TabIndex        =   6
+         Top             =   600
+         Width           =   488
+      End
+      Begin VB.CheckBox chkGlyphCustom 
+         Caption         =   "Customize:"
+         Height          =   255
+         Index           =   0
+         Left            =   120
+         TabIndex        =   8
+         Top             =   975
+         Width           =   2000
+      End
+      Begin VB.TextBox txtGlyphFont 
+         Height          =   310
+         Index           =   0
+         Left            =   2040
+         Locked          =   -1  'True
+         TabIndex        =   10
+         Top             =   1260
+         Width           =   3240
+      End
+      Begin VB.CommandButton cmdGlyphFont 
+         Caption         =   "..."
+         Height          =   310
+         Index           =   0
+         Left            =   5310
+         TabIndex        =   11
+         Top             =   1260
+         Width           =   330
+      End
+      Begin VB.TextBox txtGlyphChar 
+         Height          =   310
+         Index           =   0
+         Left            =   2040
+         TabIndex        =   13
+         Top             =   1620
+         Width           =   1040
+      End
+      Begin VB.PictureBox picGlyphSample 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   620
+         Index           =   0
+         Left            =   5820
+         ScaleHeight     =   52
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   52
+         TabIndex        =   15
+         TabStop         =   0   'False
+         Top             =   1260
+         Width           =   620
+      End
+      Begin VB.Label lblCloseButton 
+         Alignment       =   1  'Right Justify
+         Caption         =   "CloseButton:"
+         Height          =   230
+         Left            =   120
+         TabIndex        =   1
+         Top             =   280
+         Width           =   1860
+      End
+      Begin VB.Label lblCloseButtonPosition 
+         Alignment       =   1  'Right Justify
+         Caption         =   "CloseButtonPosition:"
+         Height          =   230
+         Left            =   2400
+         TabIndex        =   3
+         Top             =   280
+         Width           =   1620
+      End
+      Begin VB.Label lblCloseButtonPadding 
+         Alignment       =   1  'Right Justify
+         Caption         =   "CloseButtonPadding:"
+         Height          =   230
+         Left            =   120
+         TabIndex        =   5
+         Top             =   640
+         Width           =   1860
+      End
+      Begin VB.Label lblCloseButtonPaddingUnits 
+         Caption         =   "pixels, scaled by DPI"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   2590
+         TabIndex        =   7
+         Top             =   640
+         Width           =   2400
+      End
+      Begin VB.Label lblGlyphFontName 
+         Alignment       =   1  'Right Justify
+         Caption         =   "CloseButtonFont:"
+         Height          =   230
+         Index           =   0
+         Left            =   120
+         TabIndex        =   9
+         Top             =   1300
+         Width           =   1860
+      End
+      Begin VB.Label lblGlyphChar 
+         Alignment       =   1  'Right Justify
+         Caption         =   "CloseButtonChar:"
+         Height          =   230
+         Index           =   0
+         Left            =   120
+         TabIndex        =   12
+         Top             =   1660
+         Width           =   1860
+      End
+      Begin VB.Label lblGlyphCharHex 
+         Caption         =   "(hex)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Index           =   0
+         Left            =   3140
+         TabIndex        =   14
+         Top             =   1660
+         Width           =   500
+      End
+   End
+   Begin VB.Frame fraNewTabButton 
+      Caption         =   "New tab button (+)"
+      Height          =   1990
+      Left            =   90
+      TabIndex        =   16
+      Top             =   2050
+      Width           =   6624
+      Begin VB.ComboBox cboNewTabButton 
+         Height          =   300
+         Left            =   2040
+         Style           =   2  'Dropdown List
+         TabIndex        =   18
+         Top             =   240
+         Width           =   2400
+      End
+      Begin VB.ComboBox cboNewTabButtonPosition 
+         Height          =   300
+         Left            =   2040
+         Style           =   2  'Dropdown List
+         TabIndex        =   20
+         Top             =   600
+         Width           =   2400
+      End
+      Begin VB.CheckBox chkGlyphCustom 
+         Caption         =   "Customize:"
+         Height          =   255
+         Index           =   1
+         Left            =   120
+         TabIndex        =   21
+         Top             =   975
+         Width           =   2000
+      End
+      Begin VB.TextBox txtGlyphFont 
+         Height          =   310
+         Index           =   1
+         Left            =   2040
+         Locked          =   -1  'True
+         TabIndex        =   23
+         Top             =   1260
+         Width           =   3240
+      End
+      Begin VB.CommandButton cmdGlyphFont 
+         Caption         =   "..."
+         Height          =   310
+         Index           =   1
+         Left            =   5310
+         TabIndex        =   24
+         Top             =   1260
+         Width           =   330
+      End
+      Begin VB.TextBox txtGlyphChar 
+         Height          =   310
+         Index           =   1
+         Left            =   2040
+         TabIndex        =   26
+         Top             =   1620
+         Width           =   1040
+      End
+      Begin VB.PictureBox picGlyphSample 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   620
+         Index           =   1
+         Left            =   5820
+         ScaleHeight     =   52
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   52
+         TabIndex        =   28
+         TabStop         =   0   'False
+         Top             =   1260
+         Width           =   620
+      End
+      Begin VB.Label lblNewTabButton 
+         Alignment       =   1  'Right Justify
+         Caption         =   "NewTabButton:"
+         Height          =   230
+         Left            =   120
+         TabIndex        =   17
+         Top             =   280
+         Width           =   1860
+      End
+      Begin VB.Label lblNewTabButtonPosition 
+         Alignment       =   1  'Right Justify
+         Caption         =   "NewTabButtonPosition:"
+         Height          =   230
+         Left            =   120
+         TabIndex        =   19
+         Top             =   640
+         Width           =   1860
+      End
+      Begin VB.Label lblGlyphFontName 
+         Alignment       =   1  'Right Justify
+         Caption         =   "NewTabButtonFont:"
+         Height          =   230
+         Index           =   1
+         Left            =   120
+         TabIndex        =   22
+         Top             =   1300
+         Width           =   1860
+      End
+      Begin VB.Label lblGlyphChar 
+         Alignment       =   1  'Right Justify
+         Caption         =   "NewTabButtonChar:"
+         Height          =   230
+         Index           =   1
+         Left            =   120
+         TabIndex        =   25
+         Top             =   1660
+         Width           =   1860
+      End
+      Begin VB.Label lblGlyphCharHex 
+         Caption         =   "(hex)"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Index           =   1
+         Left            =   3140
+         TabIndex        =   27
+         Top             =   1660
+         Width           =   500
+      End
+      Begin VB.Label lblNewTabButtonColors 
+         Caption         =   "Own colors as a tab; the strip buttons' ones at the end"
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   420
+         Left            =   3700
+         TabIndex        =   29
+         Top             =   1580
+         Width           =   2000
+      End
+   End
+   Begin VB.Frame fraStripButtons 
+      Caption         =   "Strip buttons (scroll and list)"
+      Height          =   1910
+      Left            =   90
+      TabIndex        =   30
+      Top             =   4070
+      Width           =   6624
+      Begin VB.CheckBox chkGlyphCustom 
+         Caption         =   "Customize:"
+         Height          =   255
+         Index           =   2
+         Left            =   120
+         TabIndex        =   32
+         Top             =   510
+         Width           =   2000
+      End
+      Begin VB.TextBox txtGlyphFont 
+         Height          =   310
+         Index           =   2
+         Left            =   2040
+         Locked          =   -1  'True
+         TabIndex        =   34
+         Top             =   800
+         Width           =   3240
+      End
+      Begin VB.CommandButton cmdGlyphFont 
+         Caption         =   "..."
+         Height          =   310
+         Index           =   2
+         Left            =   5310
+         TabIndex        =   35
+         Top             =   800
+         Width           =   330
+      End
+      Begin VB.TextBox txtGlyphChar 
+         Height          =   310
+         Index           =   2
+         Left            =   600
+         TabIndex        =   37
+         ToolTipText     =   "StripButtonBackChar (hex)"
+         Top             =   1355
+         Width           =   700
+      End
+      Begin VB.PictureBox picGlyphSample 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   620
+         Index           =   2
+         Left            =   1360
+         ScaleHeight     =   52
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   52
+         TabIndex        =   38
+         TabStop         =   0   'False
+         Top             =   1200
+         Width           =   620
+      End
+      Begin VB.TextBox txtGlyphChar 
+         Height          =   310
+         Index           =   3
+         Left            =   3000
+         TabIndex        =   40
+         ToolTipText     =   "StripButtonForwardChar (hex)"
+         Top             =   1355
+         Width           =   700
+      End
+      Begin VB.PictureBox picGlyphSample 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   620
+         Index           =   3
+         Left            =   3760
+         ScaleHeight     =   52
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   52
+         TabIndex        =   41
+         TabStop         =   0   'False
+         Top             =   1200
+         Width           =   620
+      End
+      Begin VB.TextBox txtGlyphChar 
+         Height          =   310
+         Index           =   4
+         Left            =   5060
+         TabIndex        =   43
+         ToolTipText     =   "StripButtonListChar (hex)"
+         Top             =   1355
+         Width           =   700
+      End
+      Begin VB.PictureBox picGlyphSample 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H80000005&
+         BorderStyle     =   0  'None
+         ForeColor       =   &H80000008&
+         Height          =   620
+         Index           =   4
+         Left            =   5820
+         ScaleHeight     =   52
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   52
+         TabIndex        =   44
+         TabStop         =   0   'False
+         Top             =   1200
+         Width           =   620
+      End
+      Begin VB.Label lblStripButtonsNote 
+         Caption         =   "Shown when TabsOverflow scrolls; the List button, only with ntTOScrollWithList."
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   230
+         Left            =   120
+         TabIndex        =   31
+         Top             =   270
+         Width           =   6360
+      End
+      Begin VB.Label lblGlyphFontName 
+         Alignment       =   1  'Right Justify
+         Caption         =   "StripButtonsFont:"
+         Height          =   230
+         Index           =   2
+         Left            =   120
+         TabIndex        =   33
+         Top             =   840
+         Width           =   1860
+      End
+      Begin VB.Label lblGlyphChar 
+         Alignment       =   1  'Right Justify
+         Caption         =   "Back:"
+         Height          =   230
+         Index           =   2
+         Left            =   60
+         TabIndex        =   36
+         ToolTipText     =   "StripButtonBackChar (hex)"
+         Top             =   1395
+         Width           =   480
+      End
+      Begin VB.Label lblGlyphChar 
+         Alignment       =   1  'Right Justify
+         Caption         =   "Forward:"
+         Height          =   230
+         Index           =   3
+         Left            =   2200
+         TabIndex        =   39
+         ToolTipText     =   "StripButtonForwardChar (hex)"
+         Top             =   1395
+         Width           =   740
+      End
+      Begin VB.Label lblGlyphChar 
+         Alignment       =   1  'Right Justify
+         Caption         =   "List:"
+         Height          =   230
+         Index           =   4
+         Left            =   4600
+         TabIndex        =   42
+         ToolTipText     =   "StripButtonListChar (hex)"
+         Top             =   1395
+         Width           =   400
+      End
+   End
+   Begin VB.Frame fraColors 
+      Caption         =   "Colors"
+      Height          =   1300
+      Left            =   90
+      TabIndex        =   45
+      Top             =   6010
+      Width           =   6624
+      Begin VB.ComboBox cboColor 
+         Height          =   300
+         Left            =   120
+         Style           =   2  'Dropdown List
+         TabIndex        =   46
+         Top             =   240
+         Width           =   4200
+      End
+      Begin VB.TextBox txtColorHex 
+         Height          =   310
+         Left            =   5040
+         TabIndex        =   48
+         Top             =   240
+         Width           =   1040
+      End
+      Begin VB.PictureBox picColor 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H80000005&
+         ForeColor       =   &H80000008&
+         Height          =   612
+         Left            =   120
+         ScaleHeight     =   49
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   49
+         TabIndex        =   49
+         Top             =   600
+         Width           =   612
+      End
+      Begin VB.PictureBox picAutomaticColor 
+         Appearance      =   0  'Flat
+         AutoRedraw      =   -1  'True
+         BackColor       =   &H80000005&
+         ForeColor       =   &H80000008&
+         Height          =   612
+         Left            =   3660
+         ScaleHeight     =   49
+         ScaleMode       =   3  'Pixel
+         ScaleWidth      =   49
+         TabIndex        =   52
+         TabStop         =   0   'False
+         Top             =   600
+         Width           =   612
+      End
+      Begin VB.Label lblColorHex 
+         Alignment       =   1  'Right Justify
+         Caption         =   "Color:"
+         Height          =   230
+         Left            =   4380
+         TabIndex        =   47
+         Top             =   280
+         Width           =   600
+      End
+      Begin VB.Label lblColorState 
+         Caption         =   "(Automatic)"
+         Height          =   230
+         Left            =   800
+         TabIndex        =   50
+         Top             =   800
+         Width           =   1300
+      End
+      Begin VB.Label lblColorTip 
+         Caption         =   "Tip: to set a color back to automatic in code, set it to -1."
+         BeginProperty Font 
+            Name            =   "Tahoma"
+            Size            =   7.2
+            Charset         =   0
+            Weight          =   400
+            Underline       =   0   'False
+            Italic          =   0   'False
+            Strikethrough   =   0   'False
+         EndProperty
+         ForeColor       =   &H00C00000&
+         Height          =   612
+         Left            =   4380
+         TabIndex        =   55
+         Top             =   640
+         Width           =   2140
+      End
+      Begin VB.Label lblAutomaticColor 
+         Alignment       =   1  'Right Justify
+         Caption         =   "The automatic color is:"
+         Height          =   480
+         Left            =   2280
+         TabIndex        =   51
+         Top             =   650
+         Width           =   1300
+      End
+   End
+   Begin VB.PictureBox picSampleContainer 
+      BorderStyle     =   0  'None
+      Height          =   972
+      Left            =   120
+      ScaleHeight     =   972
+      ScaleWidth      =   6612
+      TabIndex        =   53
+      Top             =   7440
+      Width           =   6612
+      Begin NewTabCtl.NewTab NewTab1 
+         Height          =   972
+         Left            =   0
+         TabIndex        =   54
+         Top             =   0
+         Width           =   6612
+         _ExtentX        =   11663
+         _ExtentY        =   1715
+         ControlsBackColorApplied=   -2147483633
+         AutoTabHeight   =   -1  'True
+         ControlVersion  =   18
+         TabCaption(0)   =   ""
+         TabCaption(1)   =   ""
+         TabCaption(2)   =   ""
+      End
+   End
+End
+Attribute VB_Name = "pagNewTabButtons"
+Attribute VB_GlobalNameSpace = False
+Attribute VB_Creatable = True
+Attribute VB_PredeclaredId = False
+Attribute VB_Exposed = True
+Option Explicit
+
+Private Type RECT
+    Left As Long
+    Top As Long
+    Right As Long
+    Bottom As Long
+End Type
+
+Private Declare Function SendMessageW Lib "user32" (ByVal hWnd As LongPtr, ByVal wMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
+Private Declare Function DrawTextW Lib "user32" (ByVal hDC As LongPtr, ByVal lpStr As LongPtr, ByVal nCount As Long, lpRect As RECT, ByVal wFormat As Long) As Long
+
+Private Const DT_CENTER As Long = &H1&
+Private Const DT_VCENTER As Long = &H4&
+Private Const DT_SINGLELINE As Long = &H20&
+Private Const DT_NOPREFIX As Long = &H800&
+Private Const CB_SETDROPPEDWIDTH As Long = &H160&
+
+Private Const cColorLast As Long = 8
+Private Const cGlyphGroupLast As Long = 2
+Private Const cGlyphCharLast As Long = 4
+Private Const cPreviewTabs As Long = 20
+
+' Glyph groups: 0 the 'x', 1 the '+', 2 the strip buttons. Glyph chars: 0 'x', 1 '+', 2 back,
+' 3 forward, 4 list.
+' The preview is the model of the page: every edit goes into it and every question is asked to it,
+' because the automatic colour of one colour depends on the others still pending
+Private mPreview As NewTab
+Private mLoading As Boolean
+Private mSettingText As Boolean
+Private mDefaultFont(cGlyphGroupLast) As StdFont
+Private mDefaultChar(cGlyphCharLast) As Long
+Private mGlyphFont(cGlyphGroupLast) As StdFont
+Private mGlyphChar(cGlyphCharLast) As Long
+' Only a group the developer touched is written: loading and writing back a custom glyph whose code
+' was left to its font would store the code
+Private mGlyphDirty(cGlyphGroupLast) As Boolean
+
+Private Sub PropertyPage_SelectionChanged()
+    Dim iSC As NewTab
+    Dim t As Long
+    Dim c As Long
+    
+    If TypeName(SelectedControls(0)) <> "NewTab" Then Exit Sub
+    mLoading = True
+    Set iSC = SelectedControls(0)
+    Set mPreview = NewTab1
+    
+    cboCloseButtonPosition.Clear
+    cboCloseButtonPosition.AddItem ntCBPositionOnTabs & " - ntCBPositionOnTabs": cboCloseButtonPosition.ItemData(cboCloseButtonPosition.NewIndex) = ntCBPositionOnTabs
+    cboCloseButtonPosition.AddItem ntCBPositionStripEnd & " - ntCBPositionStripEnd": cboCloseButtonPosition.ItemData(cboCloseButtonPosition.NewIndex) = ntCBPositionStripEnd
+    cboCloseButtonPosition.AddItem ntCBPositionOnSelectedTab & " - ntCBPositionOnSelectedTab": cboCloseButtonPosition.ItemData(cboCloseButtonPosition.NewIndex) = ntCBPositionOnSelectedTab
+    cboCloseButtonPosition.AddItem ntCBPositionOnHoveredTab & " - ntCBPositionOnHoveredTab": cboCloseButtonPosition.ItemData(cboCloseButtonPosition.NewIndex) = ntCBPositionOnHoveredTab
+    cboCloseButtonPosition.AddItem ntCBPositionOnSelectedAndHoveredTabs & " - ntCBPositionOnSelectedAndHoveredTabs": cboCloseButtonPosition.ItemData(cboCloseButtonPosition.NewIndex) = ntCBPositionOnSelectedAndHoveredTabs
+    
+    cboNewTabButton.Clear
+    cboNewTabButton.AddItem ntNo & " - ntNo": cboNewTabButton.ItemData(cboNewTabButton.NewIndex) = ntNo
+    cboNewTabButton.AddItem ntYes & " - ntYes": cboNewTabButton.ItemData(cboNewTabButton.NewIndex) = ntYes
+    cboNewTabButton.AddItem ntYNAuto & " - ntYNAuto (TDI mode)": cboNewTabButton.ItemData(cboNewTabButton.NewIndex) = ntYNAuto
+    
+    cboColor.Clear
+    For c = 0 To cColorLast
+        cboColor.AddItem ColorPropertyName(c) & ColorPlaceNote(c)
+        cboColor.ItemData(cboColor.NewIndex) = c
+    Next c
+    
+    cboNewTabButtonPosition.Clear
+    cboNewTabButtonPosition.AddItem ntNBAfterLastTab & " - ntNBAfterLastTab": cboNewTabButtonPosition.ItemData(cboNewTabButtonPosition.NewIndex) = ntNBAfterLastTab
+    cboNewTabButtonPosition.AddItem ntNBStripEnd & " - ntNBStripEnd": cboNewTabButtonPosition.ItemData(cboNewTabButtonPosition.NewIndex) = ntNBStripEnd
+    
+    CopyControlProperties iSC, mPreview
+    mPreview.Redraw = False
+    mPreview.TabOrientation = PreviewTabOrientationAsRow(mPreview.TabOrientation)
+    mPreview.RightToLeft = iSC.RightToLeft
+    ' Whatever the control has, the preview has to show every button
+    mPreview.NewTabButton = ntNo
+    mPreview.Tabs = cPreviewTabs
+    For t = 0 To cPreviewTabs - 1
+        mPreview.TabCaption(t) = "Tab " & t
+    Next t
+    mPreview.TabsOverflow = ntTOScrollWithList
+    mPreview.CloseButton = (chkCloseButton.Value = vbChecked)
+    mPreview.NewTabButton = ntYes
+    mPreview.Redraw = True
+    
+    chkCloseButton.Value = IIf(iSC.CloseButton, vbChecked, vbUnchecked)
+    SelectInComboByItemData cboCloseButtonPosition, iSC.CloseButtonPosition
+    txtCloseButtonPadding.Text = CStr(iSC.CloseButtonPadding)
+    SelectInComboByItemData cboNewTabButton, iSC.NewTabButton
+    SelectInComboByItemData cboNewTabButtonPosition, iSC.NewTabButtonPosition
+    LoadGlyphs iSC
+    SetComboDropWidth cboCloseButtonPosition
+    SetComboDropWidth cboNewTabButton
+    SetComboDropWidth cboNewTabButtonPosition
+    SetComboDropWidth cboColor
+    If cboColor.ListIndex = -1 Then cboColor.ListIndex = 0
+    ShowCurrentColor True
+    mLoading = False
+End Sub
+
+Private Sub PropertyPage_EditProperty(PropertyName As String)
+    On Error Resume Next
+    If PropertyName = "NewTabButton" Then
+        cboNewTabButton.SetFocus
+    Else
+        chkCloseButton.SetFocus
+    End If
+End Sub
+
+Private Sub PropertyPage_ApplyChanges()
+    Dim iSC As NewTab
+    Dim iValue As Long
+    Dim g As Long
+    Dim c As Long
+    Dim iUnused As Long
+    
+    If mPreview Is Nothing Then Exit Sub
+    Set iSC = SelectedControls(0)
+    If iSC.CloseButton <> (chkCloseButton.Value = vbChecked) Then iSC.CloseButton = (chkCloseButton.Value = vbChecked)
+    If iSC.CloseButtonPosition <> mPreview.CloseButtonPosition Then iSC.CloseButtonPosition = mPreview.CloseButtonPosition
+    If iSC.CloseButtonPadding <> mPreview.CloseButtonPadding Then iSC.CloseButtonPadding = mPreview.CloseButtonPadding
+    If cboNewTabButton.ListIndex > -1 Then
+        iValue = cboNewTabButton.ItemData(cboNewTabButton.ListIndex)
+        If iSC.NewTabButton <> iValue Then iSC.NewTabButton = iValue
+    End If
+    If iSC.NewTabButtonPosition <> mPreview.NewTabButtonPosition Then iSC.NewTabButtonPosition = mPreview.NewTabButtonPosition
+    For g = 0 To cGlyphGroupLast
+        If mGlyphDirty(g) Then
+            WriteGlyphGroup iSC, g
+            mGlyphDirty(g) = False
+        End If
+    Next g
+    ' -1 against -1 is two automatic ones, so a plain comparison covers the state too
+    For c = 0 To cColorLast
+        iValue = ColorValue(mPreview, c, iUnused)
+        If iValue <> ColorValue(iSC, c, iUnused) Then CallByName iSC, ColorPropertyName(c), VbLet, iValue
+    Next c
+End Sub
+
+Private Sub chkCloseButton_Click()
+    If Not mLoading Then Changed = True
+    mPreview.CloseButton = (chkCloseButton.Value = vbChecked)
+End Sub
+
+Private Sub cboCloseButtonPosition_Click()
+    cboCloseButtonPosition.ToolTipText = cboCloseButtonPosition.Text
+    If mLoading Then Exit Sub
+    mPreview.CloseButtonPosition = cboCloseButtonPosition.ItemData(cboCloseButtonPosition.ListIndex)
+    Changed = True
+End Sub
+
+Private Sub txtCloseButtonPadding_Change()
+    Dim iText As String
+    
+    If mLoading Then Exit Sub
+    iText = Trim$(txtCloseButtonPadding.Text)
+    If Len(iText) = 0 Or Len(iText) > 2 Then Exit Sub
+    If iText Like "*[!0-9]*" Then Exit Sub
+    If CLng(iText) > 40 Then Exit Sub
+    If CLng(iText) = mPreview.CloseButtonPadding Then Exit Sub
+    mPreview.CloseButtonPadding = CLng(iText)
+    Changed = True
+End Sub
+
+Private Sub cboNewTabButton_Click()
+    If Not mLoading Then Changed = True
+End Sub
+
+Private Sub cboNewTabButtonPosition_Click()
+    If mLoading Then Exit Sub
+    mPreview.NewTabButtonPosition = cboNewTabButtonPosition.ItemData(cboNewTabButtonPosition.ListIndex)
+    Changed = True
+End Sub
+
+' Colors
+
+Private Function ColorPropertyName(ByVal nIndex As Long) As String
+    Select Case nIndex
+        Case 0: ColorPropertyName = "CloseButtonColor"
+        Case 1: ColorPropertyName = "CloseButtonColorSelectedTab"
+        Case 2: ColorPropertyName = "CloseButtonColorTabHighlighted"
+        Case 3: ColorPropertyName = "CloseButtonColorMouseHover"
+        Case 4: ColorPropertyName = "CloseButtonColorMouseHoverSelectedTab"
+        Case 5: ColorPropertyName = "StripButtonsColor"
+        Case 6: ColorPropertyName = "StripButtonsColorHighlighted"
+        Case 7: ColorPropertyName = "NewTabButtonColor"
+        Case 8: ColorPropertyName = "NewTabButtonColorHighlighted"
+    End Select
+End Function
+
+' Which background each colour is drawn over, since that is what tells the two '+' colours apart
+Private Function ColorPlaceNote(ByVal nIndex As Long) As String
+    Select Case nIndex
+        Case 5, 6: ColorPlaceNote = " (end of the strip)"
+        Case 7, 8: ColorPlaceNote = " (+ as a tab)"
+    End Select
+End Function
+
+' -1 when automatic. For the two that have no automatic state nAutomaticColor is the value itself
+Private Function ColorValue(ByVal nCtl As NewTab, ByVal nIndex As Long, ByRef nAutomaticColor As Long) As Long
+    Dim iName As String
+    Dim iHasState As Boolean
+    Dim iIsAutomatic As Boolean
+    
+    iName = ColorPropertyName(nIndex)
+    iHasState = nCtl.ColorAutomaticState(iName, iIsAutomatic, nAutomaticColor)
+    If iHasState And iIsAutomatic Then
+        ColorValue = -1
+    Else
+        ColorValue = CLng(CallByName(nCtl, iName, VbGet))
+        If Not iHasState Then nAutomaticColor = ColorValue
+    End If
+End Function
+
+Private Function ColorHasAutomatic(ByVal nIndex As Long) As Boolean
+    ColorHasAutomatic = (nIndex <> 3) And (nIndex <> 4)
+End Function
+
+Private Function CurrentColorIndex() As Long
+    CurrentColorIndex = cboColor.ItemData(cboColor.ListIndex)
+End Function
+
+Private Sub ShowCurrentColor(ByVal nUpdateText As Boolean)
+    Dim iIndex As Long
+    Dim iCurrent As Long
+    Dim iAutomatic As Long
+    Dim iSelector As New cColorSelector
+    
+    iIndex = CurrentColorIndex
+    iCurrent = ColorValue(mPreview, iIndex, iAutomatic)
+    If iCurrent = -1 Then
+        picColor.BackColor = iAutomatic
+        lblColorState.Caption = "(Automatic)"
+    Else
+        picColor.BackColor = iCurrent
+        lblColorState.Caption = ""
+    End If
+    picColor.ToolTipText = iSelector.ColorDisplayName(iCurrent) & " - click to change"
+    lblAutomaticColor.Visible = ColorHasAutomatic(iIndex)
+    picAutomaticColor.Visible = ColorHasAutomatic(iIndex)
+    lblColorTip.Visible = ColorHasAutomatic(iIndex)
+    picAutomaticColor.BackColor = iAutomatic
+    picAutomaticColor.ToolTipText = iSelector.ColorDisplayName(iAutomatic)
+    If nUpdateText Then
+        mSettingText = True
+        If iCurrent = -1 Then
+            txtColorHex.Text = ""
+        Else
+            txtColorHex.Text = "&H" & Hex$(iCurrent) & "&"
+        End If
+        mSettingText = False
+    End If
+End Sub
+
+Private Sub DrawAllGlyphSamples()
+    Dim c As Long
+    
+    For c = 0 To cGlyphCharLast
+        DrawGlyphSample c
+    Next c
+End Sub
+
+Private Sub PickCurrentColor()
+    Dim iSelector As New cColorSelector
+    Dim iIndex As Long
+    Dim iCurrent As Long
+    Dim iAutomatic As Long
+    Dim iPicked As Long
+    
+    iIndex = CurrentColorIndex
+    iCurrent = ColorValue(mPreview, iIndex, iAutomatic)
+    If Not iSelector.PickColor(PropertyPage.hWnd, picColor.hWnd, iCurrent, iAutomatic, iPicked, ColorHasAutomatic(iIndex)) Then Exit Sub
+    If iPicked = iCurrent Then Exit Sub
+    CallByName mPreview, ColorPropertyName(iIndex), VbLet, iPicked
+    Changed = True
+    ShowCurrentColor True
+    DrawAllGlyphSamples
+End Sub
+
+Private Sub cboColor_Click()
+    If Not mLoading Then ShowCurrentColor True
+End Sub
+
+Private Sub picColor_Click()
+    PickCurrentColor
+End Sub
+
+Private Sub picColor_KeyDown(KeyCode As Integer, Shift As Integer)
+    If (KeyCode = vbKeySpace) Or (KeyCode = vbKeyF4) Then PickCurrentColor
+End Sub
+
+' Empty is automatic, where the colour has one
+Private Sub txtColorHex_Change()
+    Dim iIndex As Long
+    Dim iValue As Long
+    Dim iAutomatic As Long
+    
+    If mLoading Or mSettingText Then Exit Sub
+    iIndex = CurrentColorIndex
+    If Len(Trim$(txtColorHex.Text)) = 0 Then
+        If Not ColorHasAutomatic(iIndex) Then Exit Sub
+        iValue = -1
+    Else
+        If Not ParseHexValue(txtColorHex.Text, 8, iValue) Then Exit Sub
+        If Not (((iValue And &HFF000000) = 0) Or (((iValue And &HFFFFFF00) = &H80000000) And ((iValue And &HFF&) <= &H18&))) Then Exit Sub
+    End If
+    If iValue = ColorValue(mPreview, iIndex, iAutomatic) Then Exit Sub
+    CallByName mPreview, ColorPropertyName(iIndex), VbLet, iValue
+    Changed = True
+    ShowCurrentColor False
+    DrawAllGlyphSamples
+End Sub
+
+' Glyphs
+
+Private Function GlyphGroupOfChar(ByVal nCharIndex As Long) As Long
+    If nCharIndex < 2 Then
+        GlyphGroupOfChar = nCharIndex
+    Else
+        GlyphGroupOfChar = 2
+    End If
+End Function
+
+' The code the control uses for this char in this font when the code is left at 0
+Private Function FontCharCode(ByVal nFontName As String, ByVal nCharIndex As Long) As Long
+    Dim iCodes(cGlyphCharLast) As Long
+    
+    mPreview.GlyphCodesForFont nFontName, iCodes(0), iCodes(1), iCodes(2), iCodes(3), iCodes(4)
+    FontCharCode = iCodes(nCharIndex)
+End Function
+
+' Read through GlyphSettings and not through the properties: the Get of a font left to the control
+' answers the one in use, and writing that back would fix it in the .frm
+Private Sub LoadGlyphs(ByVal nSC As NewTab)
+    Dim iSettings As Variant
+    Dim iFont As StdFont
+    Dim iFontIsSet As Boolean
+    Dim iUserChar(cGlyphCharLast) As Long
+    Dim iCustom As Boolean
+    Dim g As Long
+    Dim c As Long
+    
+    mPreview.DefaultCloseButtonGlyph mDefaultFont(0), mDefaultChar(0)
+    mPreview.DefaultNewTabButtonGlyph mDefaultFont(1), mDefaultChar(1)
+    mPreview.DefaultStripButtonsGlyphs mDefaultFont(2), mDefaultChar(2), mDefaultChar(3), mDefaultChar(4)
+    iSettings = nSC.GlyphSettings
+    iUserChar(0) = iSettings(3)
+    iUserChar(1) = iSettings(7)
+    iUserChar(2) = iSettings(11)
+    iUserChar(3) = iSettings(12)
+    iUserChar(4) = iSettings(13)
+    For g = 0 To cGlyphGroupLast
+        Set iFont = iSettings(g * 4)
+        iFontIsSet = iSettings(g * 4 + 1)
+        If iFontIsSet And Not (iFont Is Nothing) Then
+            Set mGlyphFont(g) = CloneFont(iFont)
+        Else
+            Set mGlyphFont(g) = CloneFont(mDefaultFont(g))
+        End If
+        iCustom = iFontIsSet
+        For c = 0 To cGlyphCharLast
+            If GlyphGroupOfChar(c) = g Then
+                If iUserChar(c) <> 0 Then iCustom = True
+            End If
+        Next c
+        For c = 0 To cGlyphCharLast
+            If GlyphGroupOfChar(c) = g Then
+                If Not iCustom Then
+                    mGlyphChar(c) = mDefaultChar(c)
+                ElseIf iUserChar(c) <> 0 Then
+                    mGlyphChar(c) = iUserChar(c)
+                Else
+                    mGlyphChar(c) = FontCharCode(mGlyphFont(g).Name, c)
+                End If
+            End If
+        Next c
+        chkGlyphCustom(g).Value = IIf(iCustom, vbChecked, vbUnchecked)
+        mGlyphDirty(g) = False
+        ShowGlyphGroup g
+    Next g
+End Sub
+
+' Custom writes the font and the codes together: a code saved with its font falls back with it where
+' the font is missing, so it never draws something else
+Private Sub WriteGlyphGroup(ByVal nCtl As NewTab, ByVal nGroup As Long)
+    Dim iCustom As Boolean
+    
+    iCustom = (chkGlyphCustom(nGroup).Value = vbChecked)
+    Select Case nGroup
+        Case 0
+            If iCustom Then
+                Set nCtl.CloseButtonFont = CloneFont(mGlyphFont(0))
+                nCtl.CloseButtonChar = mGlyphChar(0)
+            Else
+                Set nCtl.CloseButtonFont = Nothing
+                nCtl.CloseButtonChar = 0
+            End If
+        Case 1
+            If iCustom Then
+                Set nCtl.NewTabButtonFont = CloneFont(mGlyphFont(1))
+                nCtl.NewTabButtonChar = mGlyphChar(1)
+            Else
+                Set nCtl.NewTabButtonFont = Nothing
+                nCtl.NewTabButtonChar = 0
+            End If
+        Case 2
+            If iCustom Then
+                Set nCtl.StripButtonsFont = CloneFont(mGlyphFont(2))
+                nCtl.StripButtonBackChar = mGlyphChar(2)
+                nCtl.StripButtonForwardChar = mGlyphChar(3)
+                nCtl.StripButtonListChar = mGlyphChar(4)
+            Else
+                Set nCtl.StripButtonsFont = Nothing
+                nCtl.StripButtonBackChar = 0
+                nCtl.StripButtonForwardChar = 0
+                nCtl.StripButtonListChar = 0
+            End If
+    End Select
+End Sub
+
+Private Sub ShowGlyphGroup(ByVal nGroup As Long)
+    Dim iCustom As Boolean
+    Dim c As Long
+    
+    iCustom = (chkGlyphCustom(nGroup).Value = vbChecked)
+    txtGlyphFont(nGroup).Text = FontDescription(mGlyphFont(nGroup))
+    txtGlyphFont(nGroup).Enabled = iCustom
+    cmdGlyphFont(nGroup).Enabled = iCustom
+    lblGlyphFontName(nGroup).Enabled = iCustom
+    mSettingText = True
+    For c = 0 To cGlyphCharLast
+        If GlyphGroupOfChar(c) = nGroup Then
+            txtGlyphChar(c).Text = "&H" & Hex$(mGlyphChar(c))
+            txtGlyphChar(c).Enabled = iCustom
+            lblGlyphChar(c).Enabled = iCustom
+            DrawGlyphSample c
+        End If
+    Next c
+    mSettingText = False
+End Sub
+
+Private Function FontDescription(ByVal nFont As StdFont) As String
+    FontDescription = nFont.Name & ", " & CStr(nFont.Size)
+    If nFont.Bold Then FontDescription = FontDescription & ", Bold"
+    If nFont.Italic Then FontDescription = FontDescription & ", Italic"
+End Function
+
+Private Sub DrawGlyphSample(ByVal nCharIndex As Long)
+    Dim iRect As RECT
+    Dim iGlyph As String
+    Dim iColorIndex As Long
+    Dim iColor As Long
+    Dim iAutomatic As Long
+    
+    ' the 'x' in its normal colour, the '+' in its colour as a tab, the strip buttons in theirs
+    Select Case nCharIndex
+        Case 0: iColorIndex = 0
+        Case 1: iColorIndex = 7
+        Case Else: iColorIndex = 5
+    End Select
+    iColor = ColorValue(mPreview, iColorIndex, iAutomatic)
+    If iColor = -1 Then iColor = iAutomatic
+    picGlyphSample(nCharIndex).Cls
+    Set picGlyphSample(nCharIndex).Font = CloneFont(mGlyphFont(GlyphGroupOfChar(nCharIndex)))
+    picGlyphSample(nCharIndex).ForeColor = iColor
+    iRect.Right = picGlyphSample(nCharIndex).ScaleWidth
+    iRect.Bottom = picGlyphSample(nCharIndex).ScaleHeight
+    iGlyph = ChrU(mGlyphChar(nCharIndex))
+    DrawTextW picGlyphSample(nCharIndex).hDC, StrPtr(iGlyph), Len(iGlyph), iRect, DT_CENTER Or DT_VCENTER Or DT_SINGLELINE Or DT_NOPREFIX
+    picGlyphSample(nCharIndex).Refresh
+End Sub
+
+Private Sub chkGlyphCustom_Click(nIndex As Integer)
+    Dim c As Long
+    
+    If mLoading Then Exit Sub
+    ' Turning it on starts from the defaults already shown; turning it off goes back to them
+    If chkGlyphCustom(nIndex).Value = vbUnchecked Then
+        Set mGlyphFont(nIndex) = CloneFont(mDefaultFont(nIndex))
+        For c = 0 To cGlyphCharLast
+            If GlyphGroupOfChar(c) = nIndex Then mGlyphChar(c) = mDefaultChar(c)
+        Next c
+    End If
+    mGlyphDirty(nIndex) = True
+    WriteGlyphGroup mPreview, nIndex
+    ShowGlyphGroup nIndex
+    Changed = True
+End Sub
+
+Private Sub cmdGlyphFont_Click(nIndex As Integer)
+    Dim iDlg As New cCommonDialog
+    
+    Set iDlg.Font = CloneFont(mGlyphFont(nIndex))
+    iDlg.ShowFont
+    If iDlg.Canceled Then Exit Sub
+    Set mGlyphFont(nIndex) = CloneFont(iDlg.Font)
+    mGlyphDirty(nIndex) = True
+    WriteGlyphGroup mPreview, nIndex
+    ShowGlyphGroup nIndex
+    Changed = True
+End Sub
+
+Private Sub txtGlyphChar_Change(nIndex As Integer)
+    Dim iCode As Long
+    Dim iGroup As Long
+    
+    If mLoading Or mSettingText Then Exit Sub
+    If Not ParseHexValue(txtGlyphChar(nIndex).Text, 6, iCode) Then Exit Sub
+    If (iCode < 1) Or (iCode > &H10FFFF) Then Exit Sub
+    If iCode = mGlyphChar(nIndex) Then Exit Sub
+    mGlyphChar(nIndex) = iCode
+    iGroup = GlyphGroupOfChar(nIndex)
+    mGlyphDirty(iGroup) = True
+    WriteGlyphGroup mPreview, iGroup
+    DrawGlyphSample nIndex
+    Changed = True
+End Sub
+
+' Hex, with or without &H and the trailing &
+Private Function ParseHexValue(ByVal nText As String, ByVal nMaxDigits As Long, ByRef nValue As Long) As Boolean
+    Dim iText As String
+    
+    iText = UCase$(Trim$(nText))
+    If VBA.Left$(iText, 2) = "&H" Then iText = Mid$(iText, 3)
+    If VBA.Right$(iText, 1) = "&" Then iText = VBA.Left$(iText, Len(iText) - 1)
+    If (Len(iText) = 0) Or (Len(iText) > nMaxDigits) Then Exit Function
+    If iText Like "*[!0-9A-F]*" Then Exit Function
+    nValue = Val("&H" & iText & "&")
+    ParseHexValue = True
+End Function
+
+Private Function ChrU(ByVal nCharCode As Long) As String
+    If nCharCode <= &HFFFF& Then
+        ChrU = ChrW$(nCharCode)
+    Else
+        ChrU = ChrW$(&HD800& + ((nCharCode - &H10000) \ &H400&)) & ChrW$(&HDC00& + ((nCharCode - &H10000) And &H3FF&))
+    End If
+End Function
+
+' The list opens as wide as its longest item. picSampleContainer measures because it has the page
+' font, the same as the combos
+Private Sub SetComboDropWidth(nCombo As ComboBox)
+    Dim c As Long
+    Dim iWidth As Single
+    Dim iMaxWidth As Single
+    
+    For c = 0 To nCombo.ListCount - 1
+        iWidth = picSampleContainer.TextWidth(nCombo.List(c))
+        If iWidth > iMaxWidth Then iMaxWidth = iWidth
+    Next c
+    ' room for the item margins and a vertical scroll bar
+    iMaxWidth = mPreview.pScaleX(iMaxWidth, vbTwips, vbPixels) + mPreview.pScaleX(360, vbTwips, vbPixels)
+    If iMaxWidth > mPreview.pScaleX(nCombo.Width, vbTwips, vbPixels) Then SendMessageW nCombo.hWnd, CB_SETDROPPEDWIDTH, CLng(iMaxWidth), 0
+End Sub
+
+Private Function SelectInComboByItemData(nCombo As Control, nItemData As Long) As Boolean
+    Dim c As Long
+    
+    For c = 0 To nCombo.ListCount - 1
+        If nCombo.ItemData(c) = nItemData Then
+            nCombo.ListIndex = c
+            SelectInComboByItemData = True
+            Exit Function
+        End If
+    Next c
+End Function
+
+Private Function CloneFont(nOrigFont As iFont) As StdFont
+    If nOrigFont Is Nothing Then Exit Function
+    nOrigFont.Clone CloneFont
+End Function
