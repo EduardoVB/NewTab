@@ -144,7 +144,7 @@ Private Sub Form_Load()
         ' Each tab keeps its own icon font, so it is given one per tab
         Set iFont = New StdFont
         iFont.Name = "Segoe UI Emoji"
-        iFont.Size = 12
+        iFont.Size = 16
         Set NewTab1.TabIconFont(t) = iFont
         NewTab1.TabIconCharHex(t) = iIcons(t)
         NewTab1.TabIconInColor(t) = True

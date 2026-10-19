@@ -2671,7 +2671,7 @@ Private Sub ApplyTabChainColorsForTab(ByVal nTab As Long)
         End If
     Next c
     If Not mTabData(nTab).IsNewTabButton Then
-        SeedTabChainRoots iIsSet, iColor, mTabData(nTab).CustomColors.FlatBarColorHighlighted, mTabData(nTab).CustomColors.FlatBarColorSelectedTab, mTabData(nTab).CustomColors.FlatBarColorInactive
+        SeedTabChainRoots iIsSet, iColor, FlatBarColorHighlightedFor(nTab), mTabData(nTab).CustomColors.FlatBarColorSelectedTab, mTabData(nTab).CustomColors.FlatBarColorInactive
         ResolveChainColors iIsSet, iColor
     End If
     For c = 0 To cChainColorLast
@@ -7232,6 +7232,17 @@ Private Function TabShowsDiscreteHighlight(ByVal nTab As Long) As Boolean
     TabShowsDiscreteHighlight = mAmbientUserMode And mTabData(nTab).Hovered
 End Function
 
+Private Function FlatBarColorHighlightedFor(ByVal nTab As Long) As Long
+    If Not IsEmpty(mTabData(nTab).CustomColors.FlatBarColorHighlighted) Then
+        FlatBarColorHighlightedFor = mTabData(nTab).CustomColors.FlatBarColorHighlighted
+    ElseIf mFlatBarColorHighlighted_IsAutomatic And (Not IsEmpty(mTabData(nTab).CustomColors.FlatBarColorSelectedTab)) Then
+        ' The hover previews the bar this tab takes when selected, not the current selected tab's
+        FlatBarColorHighlightedFor = MixColors(mBackColorTabs, mTabData(nTab).CustomColors.FlatBarColorSelectedTab, 60)
+    Else
+        FlatBarColorHighlightedFor = mFlatBarColorHighlighted
+    End If
+End Function
+
 Private Function HoverBarColorFor(ByVal nTab As Long) As Long
     ' mFlatBarGlowColor is one variable and there can be two tabs animating, so the tab in a
     ' slot reads its slot's colour. Everything else reads the module one, which slot 0 keeps
@@ -7288,7 +7299,7 @@ Private Sub ResolveHoverAnimation(ByVal nTab As Long, ByVal nSlot As Long)
     mHoverGradFrom(nSlot) = iBase
     mHoverGradTo(nSlot) = iTarget
     mHoverBarFrom(nSlot) = TranslatedColor(mFlatBarColorInactive, ntRoleBack)
-    mHoverBarTo(nSlot) = TranslatedColor(mFlatBarColorHighlighted, ntRoleHighlightBack)
+    mHoverBarTo(nSlot) = TranslatedColor(FlatBarColorHighlightedFor(nTab), ntRoleHighlightBack)
     ' Same split the old code made, kept on purpose: a tab with either flat bar colour of its
     ' own mixes its two raw colours, and the draw path runs the result through the mode
     ' afterwards, so translating them here as well would apply it twice
@@ -7299,11 +7310,7 @@ Private Sub ResolveHoverAnimation(ByVal nTab As Long, ByVal nSlot As Long)
         Else
             mHoverTabBarFrom(nSlot) = mTabData(nTab).CustomColors.FlatBarColorInactive
         End If
-        If IsEmpty(mTabData(nTab).CustomColors.FlatBarColorHighlighted) Then
-            mHoverTabBarTo(nSlot) = mFlatBarColorHighlighted
-        Else
-            mHoverTabBarTo(nSlot) = mTabData(nTab).CustomColors.FlatBarColorHighlighted
-        End If
+        mHoverTabBarTo(nSlot) = FlatBarColorHighlightedFor(nTab)
     End If
 End Sub
 
@@ -19816,11 +19823,8 @@ Private Sub SetColors()
     
     ' A lighter tint of the accent over the tab, not a greyed one: hover reads as a softer version
     ' of the selection, the way the common browsers and editors do it
-    If Not IsEmpty(mTabData(mTab).CustomColors.FlatBarColorSelectedTab) Then
-        mFlatBarColorHighlighted_ColorAutomatic = MixColors(mBackColorTabs, mTabData(mTab).CustomColors.FlatBarColorSelectedTab, 60)
-    Else
-        mFlatBarColorHighlighted_ColorAutomatic = MixColors(mBackColorTabs, mFlatBarColorSelectedTab, 60)
-    End If
+    ' A tab with a selected bar colour of its own gets its tint from FlatBarColorHighlightedFor
+    mFlatBarColorHighlighted_ColorAutomatic = MixColors(mBackColorTabs, mFlatBarColorSelectedTab, 60)
     If mFlatBarColorHighlighted_IsAutomatic Then
         mFlatBarColorHighlighted = mFlatBarColorHighlighted_ColorAutomatic
     End If
@@ -29093,11 +29097,7 @@ Attribute TabCustomColor.VB_ProcData.VB_Invoke_Property = ";Tabs"
                 TabCustomColor = mTabData(iIndex).CustomColors.FlatBarColorInactive
             End If
         Case ntCCFlatBarColorHighlighted
-            If IsEmpty(mTabData(iIndex).CustomColors.FlatBarColorHighlighted) Then
-                TabCustomColor = mFlatBarColorHighlighted
-            Else
-                TabCustomColor = mTabData(iIndex).CustomColors.FlatBarColorHighlighted
-            End If
+            TabCustomColor = FlatBarColorHighlightedFor(iIndex)
         Case ntCCFlatBarColorSelectedTab
             If IsEmpty(mTabData(iIndex).CustomColors.FlatBarColorSelectedTab) Then
                 TabCustomColor = mFlatBarColorSelectedTab
@@ -29216,11 +29216,7 @@ Public Property Let TabCustomColor(ByVal nTab As Variant, Optional ByVal ColorID
                 mTabData(iIndex).CustomColors.FlatBarColorInactive = nValue
                 Dim iFlatBarColorHighlighted As Long
                 
-                If IsEmpty(mTabData(iIndex).CustomColors.FlatBarColorHighlighted) Then
-                    iFlatBarColorHighlighted = mFlatBarColorHighlighted
-                Else
-                    iFlatBarColorHighlighted = mTabData(iIndex).CustomColors.FlatBarColorHighlighted
-                End If
+                iFlatBarColorHighlighted = FlatBarColorHighlightedFor(iIndex)
                 ' The resting value is the far end of the mix, which is the highlight colour
                 ' itself. The fade overwrites it while the mouse is on this tab and puts it
                 ' back on the way out
