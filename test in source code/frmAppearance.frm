@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{66E63055-5A66-4C79-9327-4BC077858695}#16.0#0"; "NewTab01.ocx"
+Object = "*\A..\control-source\NewTabCtl.vbp"
 Begin VB.Form frmAppearance 
    BorderStyle     =   1  'Fixed Single
    Caption         =   "Themes and more"
@@ -365,7 +365,7 @@ Private Sub chkTransition_Click()
 End Sub
 
 Private Sub NewTab1_Resize()
-    Const cPadding As Long = 15
+    Const cPadding As Long = 60
     
     NewTab1.ControlMove txtNotes, NewTab1.ClientLeft + cPadding, NewTab1.ClientTop + cPadding, NewTab1.ClientWidth - cPadding * 2, NewTab1.ClientHeight - cPadding * 2
 End Sub
