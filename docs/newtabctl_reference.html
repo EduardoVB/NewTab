@@ -548,9 +548,11 @@ When the body is drawn with the Windows visual styles, it is lighter than the bu
 <br>
 Like with <a href="#ChangeControlsBackColor-Property">ChangeControlsBackColor</a>, only the controls whose <b>ForeColor</b> is the color that the tab control gave them before are changed.<br>
 The color they get is:<br>
-- the <a href="#ForeColorSelectedTab-Property">ForeColorSelectedTab</a> of the tab or of the control, when it was set by hand. It is given as it is;<br>
-- otherwise, the inherited caption color, if it has enough contrast against the background of the selected tab. If it doesn't, the controls get black or white, whichever reads better.<br>
+- the <a href="#ForeColorSelectedTab-Property">ForeColorSelectedTab</a> of the tab, or the one of the control when it was set by hand (or by a theme) and the selected tab has no highlight background. It is given as it is;<br>
+- otherwise, the caption color, if it has enough contrast against the background of the selected tab. If it doesn't, the controls get black or white, whichever reads better. When the selected tab has a highlight background (<a href="#HighlightModeSelectedTab-Property">HighlightModeSelectedTab</a>), its caption color was chosen for that background and not for the body, so it is checked too.<br>
 The <a href="#ChangeControlForeColor-Event">ChangeControlForeColor</a> event allows to exclude some controls.<br>
+<br>
+With the Windows visual styles, Windows draws the captions of CheckBox, OptionButton and Frame controls in the color of the theme, ignoring their <b>ForeColor</b>. With subclassing (see <a href="#SubclassingMethod-Property">SubclassingMethod</a>) the control draws them with their <b>ForeColor</b>: the VB ones, and the check boxes and option buttons that are Windows buttons, like the ones of VBCCR. Without subclassing they stay in the color of the theme, which can't be read over a dark body.<br>
 <br>
 <h3>See Also:</h3><a href="#ChangeControlsBackColor-Property">ChangeControlsBackColor</a> property<br>
 <a href="#ForeColorSelectedTab-Property">ForeColorSelectedTab</a> property<br>
@@ -980,7 +982,7 @@ While it is not set, it follows <a href="#ForeColor-Property">ForeColor</a>.<br>
 <h3>Description:</h3>
 <p>Returns or sets the color of the caption of the selected tab.<br>
 While it is not set, it follows <a href="#ForeColor-Property">ForeColor</a>.<br>
-If <a href="#ChangeControlsForeColor-Property">ChangeControlsForeColor</a> is <b>True</b>, it is also the color given to the contained controls.<br>
+If <a href="#ChangeControlsForeColor-Property">ChangeControlsForeColor</a> is <b>True</b>, it is also the color given to the contained controls, unless it doesn't contrast with the body while the selected tab has a highlight background (see <a href="#ChangeControlsForeColor-Property">ChangeControlsForeColor</a>).<br>
 <br>
 <h3>See Also:</h3><a href="#ForeColor-Property">ForeColor</a> property<br>
 <a href="#ForeColorHighlighted-Property">ForeColorHighlighted</a> property<br>

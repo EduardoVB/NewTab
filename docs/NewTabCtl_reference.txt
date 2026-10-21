@@ -174,9 +174,11 @@ ChangeControlsForeColor property:
 	
 	Like with ChangeControlsBackColor, only the controls whose ForeColor is the color that the tab control gave them before are changed.
 	The color they get is:
-	- the ForeColorSelectedTab of the tab or of the control, when it was set by hand. It is given as it is;
-	- otherwise, the inherited caption color, if it has enough contrast against the background of the selected tab. If it doesn't, the controls get black or white, whichever reads better.
+	- the ForeColorSelectedTab of the tab, or the one of the control when it was set by hand (or by a theme) and the selected tab has no highlight background. It is given as it is;
+	- otherwise, the caption color, if it has enough contrast against the background of the selected tab. If it doesn't, the controls get black or white, whichever reads better. When the selected tab has a highlight background (HighlightModeSelectedTab), its caption color was chosen for that background and not for the body, so it is checked too.
 	The ChangeControlForeColor event allows to exclude some controls.
+	
+	With the Windows visual styles, Windows draws the captions of CheckBox, OptionButton and Frame controls in the color of the theme, ignoring their ForeColor. With subclassing (see SubclassingMethod) the control draws them with their ForeColor: the VB ones, and the check boxes and option buttons that are Windows buttons, like the ones of VBCCR. Without subclassing they stay in the color of the theme, which can't be read over a dark body.
 
 
 ClientHeight property:
@@ -478,7 +480,7 @@ ForeColorSelectedTab property:
 	Type: Long
 	Returns or sets the color of the caption of the selected tab.
 	While it is not set, it follows ForeColor.
-	If ChangeControlsForeColor is True, it is also the color given to the contained controls.
+	If ChangeControlsForeColor is True, it is also the color given to the contained controls, unless it doesn't contrast with the body while the selected tab has a highlight background (see ChangeControlsForeColor).
 
 
 HandleHighContrastTheme property:

@@ -294,6 +294,8 @@ Option Explicit
 #Const TWINJOINDIAG = 0 ' TEMP diagnostic
 ' Prints the body's far-end column (as-Top x = mBodyWidth - 1) after the body and after the active tab.
 #Const BODYEDGEDIAG = 0 ' TEMP diagnostic
+' Logs to %TEMP%\NewTab_btntext.log which buttons get the ForeColor drawing and what each paint decides.
+#Const BUTTONTEXTDIAG = 0 ' TEMP diagnostic
 #Const SHEETDIAG = 0 ' TEMP diagnostic
 
 Implements IBSSubclass
@@ -755,6 +757,52 @@ Private Declare Function IsThemeActive Lib "uxtheme" () As Long
 Private Declare Function OpenThemeData Lib "uxtheme" (ByVal hWnd As LongPtr, ByVal pszClassList As LongPtr) As LongPtr
 Private Declare Function CloseThemeData Lib "uxtheme" (ByVal hTheme As LongPtr) As Long
 Private Declare Function DrawThemeBackground Lib "uxtheme" (ByVal hTheme As LongPtr, ByVal lHDC As LongPtr, ByVal iPartId As Long, ByVal iStateId As Long, pRect As RECT, pClipRect As RECT) As Long
+Private Declare Function IsAppThemed Lib "uxtheme" () As Long
+Private Declare Function GetThemePartSize Lib "uxtheme" (ByVal hTheme As LongPtr, ByVal hDC As LongPtr, ByVal iPartId As Long, ByVal iStateId As Long, ByVal prc As LongPtr, ByVal eSize As Long, psz As POINTAPI) As Long
+Private Declare Function GetThemeColor Lib "uxtheme" (ByVal hTheme As LongPtr, ByVal iPartId As Long, ByVal iStateId As Long, ByVal iPropId As Long, pColor As Long) As Long
+Private Declare Function GetClassNameW Lib "user32" (ByVal hWnd As LongPtr, ByVal lpClassName As LongPtr, ByVal nMaxCount As Long) As Long
+Private Declare Function GetWindowTextW Lib "user32" (ByVal hWnd As LongPtr, ByVal lpString As LongPtr, ByVal nMaxCount As Long) As Long
+Private Declare Function IsWindowEnabled Lib "user32" (ByVal hWnd As LongPtr) As Long
+Private Declare Function DrawThemeParentBackground Lib "uxtheme" (ByVal hWnd As LongPtr, ByVal hDC As LongPtr, ByVal prc As LongPtr) As Long
+
+Private Const GWL_STYLE As Long = (-16)
+Private Const GWL_EXSTYLE As Long = (-20)
+Private Const WS_EX_RIGHT As Long = &H1000&
+Private Const WS_EX_RTLREADING As Long = &H2000&
+Private Const BS_TYPEMASK As Long = &HF&
+Private Const BS_CHECKBOX As Long = &H2&
+Private Const BS_AUTOCHECKBOX As Long = &H3&
+Private Const BS_RADIOBUTTON As Long = &H4&
+Private Const BS_3STATE As Long = &H5&
+Private Const BS_AUTO3STATE As Long = &H6&
+Private Const BS_GROUPBOX As Long = &H7&
+Private Const BS_AUTORADIOBUTTON As Long = &H9&
+Private Const BS_RIGHTBUTTON As Long = &H20&
+Private Const BS_LEFT As Long = &H100&
+Private Const BS_RIGHT As Long = &H200&
+Private Const BS_CENTER As Long = &H300&
+Private Const BS_PUSHLIKE As Long = &H1000&
+Private Const BM_GETCHECK As Long = &HF0&
+Private Const BM_GETSTATE As Long = &HF2&
+Private Const BST_CHECKED As Long = &H1&
+Private Const BST_INDETERMINATE As Long = &H2&
+Private Const BST_PUSHED As Long = &H4&
+Private Const BST_FOCUS As Long = &H8&
+Private Const BST_HOT As Long = &H200&
+Private Const WM_GETFONT As Long = &H31&
+Private Const WM_QUERYUISTATE As Long = &H129&
+Private Const UISF_HIDEFOCUS As Long = &H1&
+Private Const UISF_HIDEACCEL As Long = &H2&
+Private Const BP_RADIOBUTTON As Long = 2
+Private Const BP_CHECKBOX As Long = 3
+Private Const BP_GROUPBOX As Long = 4
+Private Const TMT_TEXTCOLOR As Long = 3803
+Private Const TS_DRAW As Long = 2
+Private Const DT_HIDEPREFIX As Long = &H100000
+Private Const COLOR_BTNFACE As Long = 15
+Private Const COLOR_BTNTEXT As Long = 18
+Private Const WM_CTLCOLORSTATIC As Long = &H138&
+Private Const BCM_GETTEXTMARGIN As Long = &H1605&
 
 Private Const TABP_TABITEM = 1
 Private Const TABP_TABITEMLEFTEDGE = 2
@@ -1694,6 +1742,8 @@ Private mParentControlsUseMnemonic As Collection
 Private mContainedControlsThatAreContainers As Collection
 Private mSubclassedControlsForPaintingHwnds As Collection
 Private mSubclassedFramesHwnds As Collection
+Private mSubclassedButtonsForTextHwnds As Collection
+Private mSubclassedButtonsForTextCtls As Collection
 Private mSubclassedControlsForMoveHwnds As Collection
 Private mTDISubclassedFormsHwnds As Collection
 Private mTabStopsInitialized As Boolean
@@ -2850,7 +2900,8 @@ Private Sub SetControlsProperForeColor(Optional nPrevColor As Long = -1)
     ' general one over the general body. Only a color that got here by inheritance is checked
     iDeliberate = Not IsEmpty(mTabData(mTab).CustomColors.ForeColorSelectedTab)
     If Not iDeliberate Then
-        If (Not mForeColorSelectedTab_IsAutomatic) And IsEmpty(mTabData(mTab).CustomColors.BackColorSelectedTab) Then
+        ' Over a highlight background the general color was chosen for that background, not for the body
+        If (Not mForeColorSelectedTab_IsAutomatic) And IsEmpty(mTabData(mTab).CustomColors.BackColorSelectedTab) And (Not SelectedTabCaptionOnHighlight) Then
             iDeliberate = (iForeColorSelectedTab = mForeColorSelectedTab)
         End If
     End If
@@ -2878,6 +2929,18 @@ Private Sub SetControlsProperForeColor(Optional nPrevColor As Long = -1)
         SetControlsForeColor vbWhite, nPrevColor
     End If
 End Sub
+
+Private Function SelectedTabCaptionOnHighlight() As Boolean
+    Dim iMode As Long
+    
+    iMode = mHighlightModeSelectedTab
+    If iMode = ntHLAuto Then iMode = AutoHighlightMode(True)
+    If iMode = ntHLNone Then Exit Function
+    Select Case iMode And ntHLBackgroundTypeFilter
+        Case ntHLBackgroundGradient, ntHLBackgroundDoubleGradient, ntHLBackgroundPlain
+            SelectedTabCaptionOnHighlight = True
+    End Select
+End Function
 
 ' True when an index can be used to reach into mTabData. Not IsValidTabIndex: that one
 ' answers a different question - whether the index names a tab the public per tab
@@ -5412,6 +5475,7 @@ Public Property Let HighlightModeSelectedTab(ByVal nValue As NTHighlightModeFlag
         mSetAutoTabHeightPending = True
         SetPropertyChanged "HighlightModeSelectedTab"
         SetHighlightMode
+        If mChangeControlsForeColor Then SetControlsProperForeColor
         DrawDelayed
     End If
 End Property
@@ -6409,8 +6473,11 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As LongPtr, ByVal iMsg As Lon
             Dim iLeft As Long
             Dim iColor As Long
             Dim iFillRect As RECT
+            Dim iOwnForeColor As Long
             
-            If GetUpdateRect(hWnd, iUpdateRect, 0&) <> 0& Then
+            If Not HwndInCollection(mSubclassedControlsForPaintingHwnds, hWnd) Then
+                IBSSubclass_WindowProc = PaintButtonWithForeColor(hWnd, iMsg, wParam, lParam)
+            ElseIf GetUpdateRect(hWnd, iUpdateRect, 0&) <> 0& Then
                 Call BeginPaint(hWnd, iPs)
                 
                 iDestDC = iPs.hDC
@@ -6426,7 +6493,11 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As LongPtr, ByVal iMsg As Lon
                 iTempBmp = CreateCompatibleBitmap(iDestDC, iControlRect.Right - iControlRect.Left, iControlRect.Bottom - iControlRect.Top)
                 DeleteObject SelectObject(iTempDC, iTempBmp)
                 
-                CallOldWindowProc hWnd, iMsg, iTempDC, lParam
+                iOwnForeColor = ButtonForeColorToDraw(hWnd)
+                If (iOwnForeColor = -1) Or (ButtonThemePart(hWnd) = BP_GROUPBOX) Then
+                    CallOldWindowProc hWnd, iMsg, iTempDC, lParam
+                End If
+                If iOwnForeColor <> -1 Then DrawButtonWithForeColor hWnd, iTempDC, iOwnForeColor
                 
                 iWidth = iControlRect.Right - iControlRect.Left
                 iHeight = iControlRect.Bottom - iControlRect.Top
@@ -6703,7 +6774,8 @@ Private Sub tmrCheckContainedControlsAdditionDesignTime_Timer()
         ' asked here as well: the arming site in WM_LBUTTONDOWN tests the property, this path did not
         If mChangeControlsBackColor Then SetControlsProperBackColor
         If mChangeControlsForeColor Then SetControlsProperForeColor
-        If mVisualStylesActive Or (mBackStyle <> ntOpaque) Then
+        ' Subclassed too: a new themed CheckBox, OptionButton or Frame needs AddButtonForText
+        If mVisualStylesActive Or (mBackStyle <> ntOpaque) Or (mSubclassed And (Not mOnlySubclassUserControl)) Then
             mSubclassControlsPaintingPending = True
             RedrawWindow mUserControlHwnd, ByVal 0&, 0&, RDW_INVALIDATE Or RDW_ALLCHILDREN
             Draw
@@ -7552,6 +7624,8 @@ Private Sub UserControl_Initialize()
     Set mContainedControlsThatAreContainers = New Collection
     Set mSubclassedControlsForPaintingHwnds = New Collection
     Set mSubclassedFramesHwnds = New Collection
+    Set mSubclassedButtonsForTextHwnds = New Collection
+    Set mSubclassedButtonsForTextCtls = New Collection
     Set mSubclassedControlsForMoveHwnds = New Collection
     Set mTDISubclassedFormsHwnds = New Collection
     Set mTabIconFontsEventsHandler = New cFontEventHandlers
@@ -9974,16 +10048,27 @@ Private Sub Unsubclass()
         mSubclassed = False
     End If
 
+    If Not mSubclassedButtonsForTextHwnds Is Nothing Then
+        For c = 1 To mSubclassedButtonsForTextHwnds.Count
+            iHwnd = mSubclassedButtonsForTextHwnds(c)
+            On Error Resume Next
+            DetachMessage Me, iHwnd, WM_PAINT
+            On Error GoTo 0
+        Next c
+    End If
+    
     If Not mSubclassedControlsForPaintingHwnds Is Nothing Then
         For c = 1 To mSubclassedControlsForPaintingHwnds.Count
             iHwnd = mSubclassedControlsForPaintingHwnds(c)
             On Error Resume Next
-            DetachMessage Me, iHwnd, WM_PAINT
+            If Not HwndInCollection(mSubclassedButtonsForTextHwnds, iHwnd) Then DetachMessage Me, iHwnd, WM_PAINT
             DetachMessage Me, iHwnd, WM_MOVE
             On Error GoTo 0
         Next c
         Set mSubclassedControlsForPaintingHwnds = Nothing
     End If
+    Set mSubclassedButtonsForTextHwnds = Nothing
+    Set mSubclassedButtonsForTextCtls = Nothing
     
     If Not mSubclassedFramesHwnds Is Nothing Then
         For c = 1 To mSubclassedFramesHwnds.Count
@@ -22602,10 +22687,13 @@ Private Sub SubclassControlsPainting()
     ' because the body and the children are all the same system color, so the painting subclass is
     ' dropped instead of being kept on a matching test that could never find anybody
     iSubclassTheControls = iCanSubclass And VisualStylesEffective And mChangeControlsBackColor
+#If BUTTONTEXTDIAG = 1 Then ' TEMP diagnostic
+    ButtonTextDiagLog "SubclassControlsPainting tab=" & mTab & " text=" & mSubclassedButtonsForTextHwnds.Count & " paint=" & mSubclassedControlsForPaintingHwnds.Count & " canSubclass=" & iCanSubclass
+#End If
     If mSubclassedControlsForPaintingHwnds.Count > 0 Then
         For c = 1 To mSubclassedControlsForPaintingHwnds.Count
             iHwnd = mSubclassedControlsForPaintingHwnds(c)
-            DetachMessage Me, iHwnd, WM_PAINT
+            If Not HwndInCollection(mSubclassedButtonsForTextHwnds, iHwnd) Then DetachMessage Me, iHwnd, WM_PAINT
             DetachMessage Me, iHwnd, WM_MOVE
             If Not iSubclassTheControls And mRepaintSubclassedControls Then
                 ' redraw the control
@@ -22669,6 +22757,11 @@ Private Sub SubclassControlsPainting()
                     iVisible = False
                     If Not (iContainer_Prev Is Nothing Or iContainer_Prev Is iParent) Then ' the control is contained in another control that is contained in the usercontrol
                         iVisible = iContainer_Prev.Left > -mLeftThresholdHidden
+                        If iCanSubclass Then
+                            iHwnd = 0
+                            iHwnd = GetControlHwnd2(iCtl)
+                            If iHwnd <> 0 Then AddButtonForText iCtl, iHwnd
+                        End If
                         If iVisible Then
                             iHwnd = 0
                             iHwnd = GetControlHwnd2(iCtl)
@@ -22721,6 +22814,11 @@ Private Sub SubclassControlsPainting()
                         End If
                     Else ' the control is directly contained in the usercontrol
                         iVisible = iCtl.Left > -mLeftThresholdHidden
+                        If iCanSubclass Then
+                            iHwnd = 0
+                            iHwnd = GetControlHwnd2(iCtl)
+                            If iHwnd <> 0 Then AddButtonForText iCtl, iHwnd
+                        End If
                         If iVisible Then
                             iHwnd = 0
                             iHwnd = GetControlHwnd2(iCtl)
@@ -22776,7 +22874,7 @@ Private Sub SubclassControlsPainting()
     Next
     For c = 1 To mSubclassedControlsForPaintingHwnds.Count
         iHwnd = mSubclassedControlsForPaintingHwnds(c)
-        AttachMessage Me, iHwnd, WM_PAINT
+        If Not HwndInCollection(mSubclassedButtonsForTextHwnds, iHwnd) Then AttachMessage Me, iHwnd, WM_PAINT
         AttachMessage Me, iHwnd, WM_MOVE
         If mRepaintSubclassedControls Then
             ' redraw the control
@@ -22785,6 +22883,373 @@ Private Sub SubclassControlsPainting()
     Next c
     mRepaintSubclassedControls = False
     
+End Sub
+
+Private Function HwndInCollection(nCol As Collection, ByVal nHwnd As LongPtr) As Boolean
+    Dim iItem As Variant
+    
+    If nCol Is Nothing Then Exit Function
+    On Error Resume Next
+    iItem = nCol(CStr(nHwnd))
+    HwndInCollection = (Err.Number = 0)
+    Err.Clear
+End Function
+
+' The buttons stay subclassed until the control terminates, in every tab, so a tab change does not
+' have to detach and attach them again.
+Private Sub AddButtonForText(nCtl As Object, ByVal nHwnd As LongPtr)
+#If BUTTONTEXTDIAG = 1 Then ' TEMP diagnostic
+    ButtonTextDiagLog "seen hwnd=" & Hex$(nHwnd) & " " & ButtonTextDiagName(nCtl) & " part=" & ButtonThemePart(nHwnd) & " listed=" & HwndInCollection(mSubclassedButtonsForTextHwnds, nHwnd)
+#End If
+    If ButtonThemePart(nHwnd) = 0 Then Exit Sub
+    If HwndInCollection(mSubclassedButtonsForTextHwnds, nHwnd) Then
+        mSubclassedButtonsForTextCtls.Remove CStr(nHwnd)
+        mSubclassedButtonsForTextCtls.Add nCtl, CStr(nHwnd)
+        Exit Sub
+    End If
+    mSubclassedButtonsForTextHwnds.Add nHwnd, CStr(nHwnd)
+    mSubclassedButtonsForTextCtls.Add nCtl, CStr(nHwnd)
+    AttachMessage Me, nHwnd, WM_PAINT
+    RedrawWindow nHwnd, ByVal 0&, 0&, RDW_INVALIDATE
+#If BUTTONTEXTDIAG = 1 Then ' TEMP diagnostic
+    ButtonTextDiagLog "add hwnd=" & Hex$(nHwnd) & " " & TypeName(nCtl)
+#End If
+End Sub
+
+#If BUTTONTEXTDIAG = 1 Then ' TEMP diagnostic
+Private Function ButtonTextDiagName(nCtl As Object) As String
+    On Error Resume Next
+    ButtonTextDiagName = nCtl.Name & " fore=" & Hex$(nCtl.ForeColor) & " left=" & nCtl.Left
+    Err.Clear
+End Function
+
+Private Sub ButtonTextDiagPaint(ByVal nHwnd As LongPtr, ByVal nForeColor As Long)
+    Dim iCtl As Object
+    Dim iTheme As LongPtr
+    Dim iThemeColor As Long
+    Dim iStr As String
+    
+    iStr = "paint hwnd=" & Hex$(nHwnd) & " draw=" & Hex$(nForeColor) & " themed=" & ButtonIsThemed(nHwnd) & " part=" & ButtonThemePart(nHwnd)
+    iStr = iStr & " inHwnds=" & HwndInCollection(mSubclassedButtonsForTextHwnds, nHwnd) & " inCtls=" & HwndInCollection(mSubclassedButtonsForTextCtls, nHwnd)
+    On Error Resume Next
+    Set iCtl = mSubclassedButtonsForTextCtls(CStr(nHwnd))
+    If Not iCtl Is Nothing Then iStr = iStr & " " & ButtonTextDiagName(iCtl) & " ctlhwnd=" & Hex$(iCtl.hWnd)
+    Err.Clear
+    On Error GoTo 0
+    iTheme = OpenButtonTheme
+    If GetThemeColor(iTheme, ButtonThemePart(nHwnd), 1, TMT_TEXTCOLOR, iThemeColor) = 0 Then iStr = iStr & " themetext=" & Hex$(iThemeColor)
+    CloseThemeData iTheme
+    ButtonTextDiagLog iStr
+End Sub
+
+Private Sub ButtonTextDiagLog(nLine As String)
+    Dim iFileNum As Integer
+    
+    iFileNum = FreeFile
+    Open Environ$("TEMP") & "\NewTab_btntext.log" For Append As #iFileNum
+    Print #iFileNum, Format$(Now, "hh:nn:ss") & " " & nLine
+    Close #iFileNum
+End Sub
+#End If
+
+' The theme part of a check box, option button or group box window, or 0: the VB intrinsic ones and
+' plain Win32 buttons such as the ones inside the VBCCR controls, whose hWnd is the button. With
+' visual styles the theme draws their caption and ignores ForeColor.
+Private Function ButtonThemePart(ByVal nHwnd As LongPtr) As Long
+    Dim iClass As String
+    Dim iLen As Long
+    Dim iStyle As Long
+    
+    iClass = String$(64, vbNullChar)
+    iLen = GetClassNameW(nHwnd, StrPtr(iClass), 64)
+    iClass = Left$(iClass, iLen)
+    If Left$(iClass, 10) = "ThunderRT6" Then iClass = "Thunder" & Mid$(iClass, 11)
+    If (iClass <> "ThunderCheckBox") And (iClass <> "ThunderOptionButton") And (iClass <> "ThunderFrame") And (iClass <> "Button") Then Exit Function
+    iStyle = GetWindowLong(nHwnd, GWL_STYLE)
+    If (iStyle And BS_PUSHLIKE) <> 0 Then Exit Function
+    Select Case iStyle And BS_TYPEMASK
+        Case BS_CHECKBOX, BS_AUTOCHECKBOX, BS_3STATE, BS_AUTO3STATE
+            ButtonThemePart = BP_CHECKBOX
+        Case BS_RADIOBUTTON, BS_AUTORADIOBUTTON
+            ButtonThemePart = BP_RADIOBUTTON
+        Case BS_GROUPBOX
+            ButtonThemePart = BP_GROUPBOX
+    End Select
+End Function
+
+' The RGB ForeColor to draw a subclassed button with, or -1 to let it paint itself: when it is not
+' themed (Windows then honors ForeColor) or when its ForeColor is the one the theme uses anyway.
+Private Function ButtonForeColorToDraw(ByVal nHwnd As LongPtr) As Long
+    Dim iCtl As Object
+    Dim iTheme As LongPtr
+    Dim iPart As Long
+    Dim iForeColor As Long
+    Dim iThemeColor As Long
+    
+    ButtonForeColorToDraw = -1
+    If Not HwndInCollection(mSubclassedButtonsForTextHwnds, nHwnd) Then Exit Function
+    iPart = ButtonThemePart(nHwnd)
+    If iPart = 0 Then Exit Function
+    If Not ButtonIsThemed(nHwnd) Then Exit Function
+    iForeColor = -1
+    On Error Resume Next
+    Set iCtl = mSubclassedButtonsForTextCtls(CStr(nHwnd))
+    iForeColor = iCtl.ForeColor
+    Err.Clear
+    On Error GoTo 0
+    If iForeColor = -1 Then Exit Function
+    iForeColor = TranslatedColor(iForeColor)
+    iTheme = OpenButtonTheme
+    If iTheme = 0 Then Exit Function
+    If GetThemeColor(iTheme, iPart, 1, TMT_TEXTCOLOR, iThemeColor) <> 0 Then
+        iThemeColor = GetSysColor(COLOR_BTNTEXT)
+    End If
+    CloseThemeData iTheme
+    If iForeColor <> iThemeColor Then ButtonForeColorToDraw = iForeColor
+End Function
+
+' Whether Windows draws this button with the theme. Not GetWindowTheme: the VB intrinsic ones are
+' themed but it returns 0 for them most of the time. BCM_GETTEXTMARGIN only exists in the buttons
+' of Common Controls 6, the only ones the theme draws.
+Private Function ButtonIsThemed(ByVal nHwnd As LongPtr) As Boolean
+    Dim iMargin As RECT
+    
+    If Not mSystemVisualStylesAvailable Then Exit Function
+    If IsAppThemed() = 0 Then Exit Function
+    ButtonIsThemed = (SendMessage(nHwnd, BCM_GETTEXTMARGIN, 0, VarPtr(iMargin)) <> 0)
+End Function
+
+Private Function OpenButtonTheme() As LongPtr
+    Dim iClass As String
+    
+    iClass = "Button"
+    OpenButtonTheme = OpenThemeData(0, StrPtr(iClass))
+End Function
+
+Private Function PaintButtonWithForeColor(ByVal nHwnd As LongPtr, ByVal nMsg As Long, ByVal nWParam As LongPtr, ByVal nLParam As LongPtr) As LongPtr
+    Dim iForeColor As Long
+    Dim iPs As PAINTSTRUCT
+    Dim iClientRect As RECT
+    Dim iTempDC As LongPtr
+    Dim iTempBmp As LongPtr
+    Dim iOldBmp As LongPtr
+    Dim iDC As LongPtr
+    
+    iForeColor = ButtonForeColorToDraw(nHwnd)
+#If BUTTONTEXTDIAG = 1 Then ' TEMP diagnostic
+    ButtonTextDiagPaint nHwnd, iForeColor
+#End If
+    If iForeColor = -1 Then
+        PaintButtonWithForeColor = CallOldWindowProc(nHwnd, nMsg, nWParam, nLParam)
+        Exit Function
+    End If
+    If ButtonThemePart(nHwnd) = BP_GROUPBOX Then
+        PaintButtonWithForeColor = CallOldWindowProc(nHwnd, nMsg, nWParam, nLParam)
+        If nWParam <> 0 Then
+            DrawButtonWithForeColor nHwnd, nWParam, iForeColor
+        Else
+            iDC = GetDC(nHwnd)
+            DrawButtonWithForeColor nHwnd, iDC, iForeColor
+            ReleaseDC nHwnd, iDC
+        End If
+        Exit Function
+    End If
+    If nWParam <> 0 Then
+        DrawButtonWithForeColor nHwnd, nWParam, iForeColor
+        Exit Function
+    End If
+    BeginPaint nHwnd, iPs
+    GetClientRect nHwnd, iClientRect
+    iTempDC = CreateCompatibleDC(iPs.hDC)
+    iTempBmp = CreateCompatibleBitmap(iPs.hDC, iClientRect.Right, iClientRect.Bottom)
+    iOldBmp = SelectObject(iTempDC, iTempBmp)
+    DrawButtonWithForeColor nHwnd, iTempDC, iForeColor
+    BitBlt iPs.hDC, 0, 0, iClientRect.Right, iClientRect.Bottom, iTempDC, 0, 0, vbSrcCopy
+    SelectObject iTempDC, iOldBmp
+    DeleteObject iTempBmp
+    DeleteDC iTempDC
+    EndPaint nHwnd, iPs
+End Function
+
+' Draws the whole button as the theme does, but with the caption in nForeColor.
+Private Sub DrawButtonWithForeColor(ByVal nHwnd As LongPtr, ByVal nDC As LongPtr, ByVal nForeColor As Long)
+    Dim iCtl As Object
+    Dim iBackColor As Long
+    Dim iTheme As LongPtr
+    Dim iPart As Long
+    Dim iState As Long
+    Dim iStyle As Long
+    Dim iExStyle As Long
+    Dim iBtnState As Long
+    Dim iCheck As Long
+    Dim iUIState As Long
+    Dim iEnabled As Boolean
+    Dim iClientRect As RECT
+    Dim iPartRect As RECT
+    Dim iTextRect As RECT
+    Dim iCalcRect As RECT
+    Dim iPartSize As POINTAPI
+    Dim iTM As TEXTMETRICW
+    Dim iCaption As String
+    Dim iLen As Long
+    Dim iFont As LongPtr
+    Dim iOldFont As LongPtr
+    Dim iFormat As Long
+    Dim iBrush As LongPtr
+    Dim iGap As Long
+    Dim iIndent As Long
+    Dim iTextWidth As Long
+    Dim iTextHeight As Long
+    
+    iPart = ButtonThemePart(nHwnd)
+    If iPart = 0 Then Exit Sub
+    iTheme = OpenButtonTheme
+    If iTheme = 0 Then Exit Sub
+    iBackColor = -1
+    On Error Resume Next
+    Set iCtl = mSubclassedButtonsForTextCtls(CStr(nHwnd))
+    iBackColor = TranslatedColor(iCtl.BackColor)
+    Err.Clear
+    On Error GoTo 0
+    If iBackColor = -1 Then iBackColor = GetSysColor(COLOR_BTNFACE)
+    iStyle = GetWindowLong(nHwnd, GWL_STYLE)
+    iExStyle = GetWindowLong(nHwnd, GWL_EXSTYLE)
+    iEnabled = (IsWindowEnabled(nHwnd) <> 0)
+    iBtnState = CLng(SendMessage(nHwnd, BM_GETSTATE, 0, 0))
+    iCheck = CLng(SendMessage(nHwnd, BM_GETCHECK, 0, 0))
+    iUIState = CLng(SendMessage(nHwnd, WM_QUERYUISTATE, 0, 0))
+    
+    ' The background as the button paints it itself: the parent's brush, or the parent's own drawing
+    ' when it gives none (a transparent VBCCR control)
+    GetClientRect nHwnd, iClientRect
+    iBrush = SendMessage(GetParent(nHwnd), WM_CTLCOLORSTATIC, nDC, nHwnd)
+    If iPart <> BP_GROUPBOX Then
+        If iBrush <> 0 Then
+            FillRect nDC, iClientRect, iBrush
+        Else
+            DrawThemeParentBackground nHwnd, nDC, 0
+        End If
+    End If
+    
+    iLen = GetWindowTextLength(nHwnd)
+    If iLen > 0 Then
+        iCaption = String$(iLen + 1, vbNullChar)
+        iLen = GetWindowTextW(nHwnd, StrPtr(iCaption), iLen + 1)
+        iCaption = Left$(iCaption, iLen)
+    End If
+    iFont = SendMessage(nHwnd, WM_GETFONT, 0, 0)
+    If iFont <> 0 Then iOldFont = SelectObject(nDC, iFont)
+    GetTextMetricsW nDC, iTM
+    SetBkMode nDC, 1 ' TRANSPARENT
+    If iEnabled Then
+        SetTextColorAPI nDC, nForeColor
+    Else
+        SetTextColorAPI nDC, MixColors(nForeColor, iBackColor, 50)
+    End If
+    
+    If (iUIState And UISF_HIDEACCEL) <> 0 Then iFormat = DT_HIDEPREFIX
+    If (iExStyle And WS_EX_RTLREADING) <> 0 Then iFormat = iFormat Or DT_RTLREADING
+    Select Case iStyle And BS_CENTER
+        Case BS_RIGHT
+            iFormat = iFormat Or DT_RIGHT
+        Case BS_CENTER
+            iFormat = iFormat Or DT_CENTER
+        Case BS_LEFT
+        Case Else
+            If (iExStyle And WS_EX_RIGHT) <> 0 Then iFormat = iFormat Or DT_RIGHT
+    End Select
+    
+    If iPart = BP_GROUPBOX Then
+        ' Only the caption, over what the original window procedure painted: the frame paints also the
+        ' windowless controls inside it (Labels, Images...)
+        iTextHeight = iTM.tmHeight
+        If iLen > 0 Then
+            iCalcRect = iClientRect
+            DrawTextW nDC, StrPtr(iCaption), -1, iCalcRect, iFormat Or DT_SINGLELINE Or DT_CALCRECT
+            iTextWidth = iCalcRect.Right - iCalcRect.Left
+            ' Where the theme puts the caption, measured on Windows 11
+            iIndent = Round(7 * mDPIScale)
+            iGap = Round(2 * mDPIScale)
+            iTextRect.Top = 0
+            iTextRect.Bottom = iTextHeight
+            If (iFormat And DT_RIGHT) <> 0 Then
+                iTextRect.Right = iClientRect.Right - iIndent
+                iTextRect.Left = iTextRect.Right - iTextWidth
+            ElseIf (iFormat And DT_CENTER) <> 0 Then
+                iTextRect.Left = (iClientRect.Right - iTextWidth) \ 2
+                iTextRect.Right = iTextRect.Left + iTextWidth
+            Else
+                iTextRect.Left = iIndent
+                iTextRect.Right = iIndent + iTextWidth
+            End If
+            iPartRect = iTextRect
+            iPartRect.Left = iTextRect.Left - iGap
+            iPartRect.Right = iTextRect.Right + iGap
+            If iBrush <> 0 Then
+                FillRect nDC, iPartRect, iBrush
+            Else
+                DrawThemeParentBackground nHwnd, nDC, VarPtr(iPartRect)
+            End If
+            DrawTextW nDC, StrPtr(iCaption), -1, iTextRect, (iFormat And Not (DT_RIGHT Or DT_CENTER)) Or DT_SINGLELINE
+        End If
+    Else
+        If iCheck = BST_CHECKED Then
+            iState = 5
+        ElseIf (iCheck = BST_INDETERMINATE) And (iPart = BP_CHECKBOX) Then
+            iState = 9
+        Else
+            iState = 1
+        End If
+        ' normal, hot, pressed, disabled
+        If Not iEnabled Then
+            iState = iState + 3
+        ElseIf (iBtnState And BST_PUSHED) <> 0 Then
+            iState = iState + 2
+        ElseIf (iBtnState And BST_HOT) <> 0 Then
+            iState = iState + 1
+        End If
+        GetThemePartSize iTheme, nDC, iPart, iState, 0, TS_DRAW, iPartSize
+        iGap = iTM.tmAveCharWidth \ 2
+        iPartRect.Top = (iClientRect.Bottom - iPartSize.Y) \ 2
+        iPartRect.Bottom = iPartRect.Top + iPartSize.Y
+        iTextRect = iClientRect
+        If (iStyle And BS_RIGHTBUTTON) <> 0 Then
+            iPartRect.Right = iClientRect.Right
+            iPartRect.Left = iPartRect.Right - iPartSize.X
+            iTextRect.Right = iPartRect.Left - iGap
+        Else
+            iPartRect.Left = 0
+            iPartRect.Right = iPartSize.X
+            iTextRect.Left = iPartRect.Right + iGap
+        End If
+        DrawThemeBackground iTheme, nDC, iPart, iState, iPartRect, iPartRect
+        If (iLen > 0) And (iTextRect.Right > iTextRect.Left) Then
+            iCalcRect = iTextRect
+            DrawTextW nDC, StrPtr(iCaption), -1, iCalcRect, iFormat Or DT_WORDBREAK Or DT_CALCRECT
+            iTextHeight = iCalcRect.Bottom - iCalcRect.Top
+            iTextWidth = iCalcRect.Right - iCalcRect.Left
+            iTextRect.Top = (iClientRect.Bottom - iTextHeight) \ 2
+            If iTextRect.Top < 0 Then iTextRect.Top = 0
+            iTextRect.Bottom = iTextRect.Top + iTextHeight
+            DrawTextW nDC, StrPtr(iCaption), -1, iTextRect, iFormat Or DT_WORDBREAK
+            If ((iBtnState And BST_FOCUS) <> 0) And ((iUIState And UISF_HIDEFOCUS) = 0) Then
+                If (iFormat And DT_RIGHT) <> 0 Then
+                    iCalcRect.Left = iTextRect.Right - iTextWidth
+                ElseIf (iFormat And DT_CENTER) <> 0 Then
+                    iCalcRect.Left = iTextRect.Left + (iTextRect.Right - iTextRect.Left - iTextWidth) \ 2
+                Else
+                    iCalcRect.Left = iTextRect.Left
+                End If
+                iCalcRect.Right = iCalcRect.Left + iTextWidth + 1
+                iCalcRect.Left = iCalcRect.Left - 1
+                iCalcRect.Top = iTextRect.Top
+                iCalcRect.Bottom = iTextRect.Bottom
+                DrawFocusRect nDC, iCalcRect
+            End If
+        End If
+    End If
+    If iFont <> 0 Then SelectObject nDC, iOldFont
+    CloseThemeData iTheme
 End Sub
 
 Private Function GetContainerByHwnd(ByVal nHwnd As LongPtr) As Object
@@ -25302,6 +25767,8 @@ Public Property Let SubclassingMethod(ByVal nValue As NTSubclassingMethodConstan
             #End If
             Set mSubclassedControlsForPaintingHwnds = New Collection
             Set mSubclassedFramesHwnds = New Collection
+            Set mSubclassedButtonsForTextHwnds = New Collection
+            Set mSubclassedButtonsForTextCtls = New Collection
             Set mSubclassedControlsForMoveHwnds = New Collection
             If mSubclassed Then
                 SubclassUserControl

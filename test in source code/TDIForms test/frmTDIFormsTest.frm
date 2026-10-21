@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{66E63055-5A66-4C79-9327-4BC077858695}#16.0#0"; "NewTab01.ocx"
+Object = "*\A..\..\control-source\NewTabCtl.vbp"
 Begin VB.Form frmTDIFormsTest 
    Caption         =   "TDI forms test"
    ClientHeight    =   8112

@@ -1,5 +1,5 @@
 VERSION 5.00
-Object = "{66E63055-5A66-4C79-9327-4BC077858695}#16.0#0"; "NewTab01.ocx"
+Object = "*\A..\control-source\NewTabCtl.vbp"
 Begin VB.Form frmCustomTDI 
    Caption         =   "Your own TDI"
    ClientHeight    =   5400
@@ -132,7 +132,7 @@ Private Function NewDocument(Optional ByVal nExistingTab As Long = -1) As Long
     Load txtDoc(iDoc)
     Set txtDoc(iDoc).Container = NewTab1
     NewTab1.ControlSetTab txtDoc(iDoc), iTab
-    NewTab1.Tab = iTab
+    NewTab1.TabSel = iTab
     ' Keeps the TextBox filling the tab when the form is resized
     NewTab1.FitToClientArea txtDoc(iDoc)
     txtDoc(iDoc).Visible = True
@@ -146,7 +146,7 @@ Private Function CloseDocument(ByVal nTab As Long) As Boolean
     
     iDoc = DocumentOfTab(nTab)
     If mModified(iDoc) Then
-        NewTab1.Tab = nTab
+        NewTab1.TabSel = nTab
         Select Case MsgBox("Save the changes to " & mTitle(iDoc) & "?", vbYesNoCancel Or vbQuestion)
             Case vbCancel
                 Exit Function
@@ -192,7 +192,7 @@ Private Sub mnuNew_Click()
 End Sub
 
 Private Sub mnuClose_Click()
-    If NewTab1.Tab > -1 Then CloseDocument NewTab1.Tab
+    If NewTab1.TabSel > -1 Then CloseDocument NewTab1.TabSel
 End Sub
 
 Private Sub mnuExit_Click()
