@@ -36,8 +36,7 @@ Begin VB.PropertyPage pagNewTabThemes
       _ExtentX        =   5546
       _ExtentY        =   1630
       ControlsBackColorApplied=   -2147483633
-      AutoTabHeight   =   -1  'True
-      ControlVersion  =   18
+      ControlVersion  =   19
    End
    Begin VB.CommandButton cmdCompare 
       Caption         =   "Compare"
@@ -223,8 +222,7 @@ Begin VB.PropertyPage pagNewTabThemes
          _ExtentX        =   10499
          _ExtentY        =   3408
          ControlsBackColorApplied=   -2147483633
-         AutoTabHeight   =   -1  'True
-         ControlVersion  =   18
+         ControlVersion  =   19
       End
       Begin NewTabCtl.NewTab NewTab2 
          Height          =   2172
@@ -236,8 +234,7 @@ Begin VB.PropertyPage pagNewTabThemes
          _ExtentY        =   3831
          Tabs            =   6
          ControlsBackColorApplied=   -2147483633
-         AutoTabHeight   =   -1  'True
-         ControlVersion  =   18
+         ControlVersion  =   19
          TabCaption(3)   =   "Tab 3 wider caption"
          TabCaption(4)   =   "Tab 4 wider caption"
       End
@@ -388,7 +385,7 @@ Option Explicit
 #Const THEMEROUNDTRIPDIAG = 0
 
 Private Declare Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
-Private Declare Function TranslateColor Lib "olepro32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As LongPtr, Col As Long) As Long
+Private Declare Function TranslateColor Lib "oleaut32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As LongPtr, Col As Long) As Long
 Private Declare Sub ColorRGBToHLS Lib "shlwapi" (ByVal clrRGB As Long, ByRef pwHue As Integer, ByRef pwLuminance As Integer, ByRef pwSaturation As Integer)
 Private Declare Function ColorHLSToRGB Lib "shlwapi" (ByVal wHue As Integer, ByVal wLuminance As Integer, ByVal wSaturation As Integer) As Long
 

@@ -521,7 +521,7 @@ Private Declare Function CreateEllipticRgn Lib "gdi32" (ByVal X1 As Long, ByVal 
 Private Declare Function CreatePolygonRgn Lib "gdi32" (lpPoint As POINTAPI, ByVal nCount As Long, ByVal nPolyFillMode As Long) As LongPtr
 Private Declare Function CombineRgn Lib "gdi32" (ByVal hDestRgn As LongPtr, ByVal hSrcRgn1 As LongPtr, ByVal hSrcRgn2 As LongPtr, ByVal nCombineMode As Long) As Long
 Private Declare Function SetWindowRgn Lib "user32" (ByVal hWnd As LongPtr, ByVal hRgn As LongPtr, ByVal bRedraw As Boolean) As Long
-Private Declare Function OleCreatePictureIndirect Lib "olepro32" (ByRef pPictDesc As PICTDESC, ByRef riid As Any, ByVal fPictureOwnsHandle As Long, ByRef pIPicture As IPicture) As Long
+Private Declare Function OleCreatePictureIndirect Lib "oleaut32" (ByRef pPictDesc As PICTDESC, ByRef riid As Any, ByVal fPictureOwnsHandle As Long, ByRef pIPicture As IPicture) As Long
 Private Declare Function IsIconic Lib "user32" (ByVal hWnd As LongPtr) As Long
 Private Declare Function ShowWindow Lib "user32" (ByVal hWnd As LongPtr, ByVal nCmdShow As Long) As Long
 Private Declare Function GetWindowTextLength Lib "user32" Alias "GetWindowTextLengthW" (ByVal hWnd As LongPtr) As Long
@@ -731,7 +731,7 @@ Private Declare Function SelectObject Lib "gdi32.dll" (ByVal hDC As LongPtr, ByV
 Private Declare Function GetObjectW Lib "gdi32.dll" (ByVal hObject As LongPtr, ByVal nCount As Long, lpObject As Any) As Long
 Private Declare Function TransparentBlt Lib "msimg32.dll" (ByVal hdcDest As LongPtr, ByVal nXOriginDest As Long, ByVal nYOriginDest As Long, ByVal nWidthDest As Long, ByVal nHeightDest As Long, ByVal hdcSrc As LongPtr, ByVal nXOriginSrc As Long, ByVal nYOriginSrc As Long, ByVal nWidthSrc As Long, ByVal nHeightSrc As Long, ByVal crTransparent As Long) As Long
 Private Declare Function DrawFocusRect Lib "user32" (ByVal hDC As LongPtr, lpRect As RECT) As Long
-Private Declare Function TranslateColor Lib "olepro32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As LongPtr, Col As Long) As Long
+Private Declare Function TranslateColor Lib "oleaut32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As LongPtr, Col As Long) As Long
 Private Declare Sub ColorRGBToHLS Lib "shlwapi" (ByVal clrRGB As Long, ByRef pwHue As Integer, ByRef pwLuminance As Integer, ByRef pwSaturation As Integer)
 Private Declare Function ColorHLSToRGB Lib "shlwapi" (ByVal wHue As Integer, ByVal wLuminance As Integer, ByVal wSaturation As Integer) As Long
 Private Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
@@ -19468,7 +19468,7 @@ End Function
 
 'extract Green component from a color
 Private Function GetGreenValue(ByVal RGBValue As Long) As Integer
-    GetGreenValue = ((RGBValue And &HFF00) / &H100) And &HFF
+    GetGreenValue = ((RGBValue And &HFF00&) / &H100) And &HFF
 End Function
 
 'extract Blue component from a color
@@ -24478,13 +24478,13 @@ Attribute ControlLeft.VB_ProcData.VB_Invoke_Property = ";Position"
         On Error GoTo 0
         If iControlName = "" Then
             RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
-            Exit Function
+            Exit Property
         End If
     ElseIf VarType(nControl) = vbString Then
         iControlName = LCase$(nControl)
     Else
         RaiseError 5, TypeName(Me) ' Invalid procedure call or argument
-        Exit Function
+        Exit Property
     End If
     
     iWithIndex = InStr(iControlName, "(") > 0
@@ -24579,7 +24579,7 @@ Public Property Let ControlLeft(nControl As Variant, ByVal Left As Single)
     End If
 End Property
 
-Public Sub ControlMove(nControl As Variant, ByVal Left As Single, ByVal Top As Single, Optional ByVal Width As Variant, Optional ByVal Height As Variant, Optional ByVal TabToMoveTheControl)
+Public Sub ControlMove(nControl As Variant, ByVal Left As Single, ByVal Top As Single, Optional ByVal Width As Variant, Optional ByVal Height As Variant, Optional ByVal TabToMoveTheControl As Variant)
 Attribute ControlMove.VB_Description = "Replaces the ControlName.Move method. The difference is that it takes into account the Left offset of controls on inactive tabs."
     Dim iCtl As Object
     Dim iFound As Boolean

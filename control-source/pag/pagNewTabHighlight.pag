@@ -552,8 +552,7 @@ Begin VB.PropertyPage pagNewTabHighlight
          _ExtentX        =   11663
          _ExtentY        =   1715
          ControlsBackColorApplied=   -2147483633
-         AutoTabHeight   =   -1  'True
-         ControlVersion  =   18
+         ControlVersion  =   19
          TabCaption(0)   =   ""
          TabCaption(1)   =   ""
          TabCaption(2)   =   ""
@@ -568,7 +567,7 @@ Attribute VB_Exposed = True
 Option Explicit
 
 Private Declare Function SendMessageW Lib "user32" (ByVal hWnd As LongPtr, ByVal wMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr) As LongPtr
-Private Declare Function OleTranslateColor Lib "olepro32.dll" (ByVal clr As OLE_COLOR, ByVal palet As LongPtr, Col As Long) As Long
+Private Declare Function OleTranslateColor Lib "oleaut32.dll" (ByVal clr As OLE_COLOR, ByVal palet As LongPtr, Col As Long) As Long
 
 Private Const CB_SETDROPPEDWIDTH As Long = &H160&
 

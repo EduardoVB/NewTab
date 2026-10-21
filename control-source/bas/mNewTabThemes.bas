@@ -2,7 +2,7 @@ Attribute VB_Name = "mNewTabThemes"
 Option Explicit
 
 Private Declare Function PathGetCharType Lib "shlwapi.dll" Alias "PathGetCharTypeW" (ByVal ch As Long) As Long
-Private Declare Function TranslateColor Lib "olepro32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As LongPtr, Col As Long) As Long
+Private Declare Function TranslateColor Lib "oleaut32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As LongPtr, Col As Long) As Long
 Private Declare Sub CopyMemory Lib "kernel32.dll" Alias "RtlMoveMemory" (ByRef Destination As Any, ByRef Source As Any, ByVal Length As Long)
 Private Declare Function FindWindowEx Lib "user32.dll" Alias "FindWindowExW" (ByVal hWndParent As LongPtr, ByVal hWndChildAfter As LongPtr, ByVal lpszClass As LongPtr, ByVal lpszWindow As LongPtr) As LongPtr
 Private Declare Function GetWindowThreadProcessId Lib "user32.dll" (ByVal hWnd As LongPtr, lpdwProcessId As Long) As Long

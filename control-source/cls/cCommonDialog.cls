@@ -29,7 +29,7 @@ Private Const LOGPIXELSY As Long = 90
 ' (same pattern as GetClassNameW in mCBTHook.bas).
 Private Declare Function DeviceCapabilities Lib "winspool.drv" Alias "DeviceCapabilitiesW" (ByVal lpDeviceName As LongPtr, ByVal lpPort As LongPtr, ByVal iIndex As Long, lpOutput As Any, lpDevMode As Any) As Long
 
-Private Declare Function OleTranslateColor Lib "olepro32.dll" (ByVal OLE_COLOR As Long, ByVal hPalette As LongPtr, pccolorref As Long) As Long
+Private Declare Function OleTranslateColor Lib "oleaut32.dll" (ByVal OLE_COLOR As Long, ByVal hPalette As LongPtr, pccolorref As Long) As Long
 Private Const CLR_INVALID = -1
 
 'API function called by ChooseColor method
@@ -1732,8 +1732,8 @@ Public Property Get Canceled() As Boolean
 End Property
 
 Private Function TranslateAColor(ByVal clr As OLE_COLOR, _
-                        Optional hPal As LongPtr = 0) As Long
-   If OleTranslateColor(clr, hPal, TranslateAColor) Then
+                        Optional hpal As LongPtr = 0) As Long
+   If OleTranslateColor(clr, hpal, TranslateAColor) Then
       TranslateAColor = CLR_INVALID
    End If
 End Function

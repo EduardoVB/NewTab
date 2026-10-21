@@ -84,7 +84,7 @@ Private Declare Function MoveWindow Lib "user32" (ByVal hWnd As LongPtr, ByVal X
 Private Declare Function GetWindowRect Lib "user32" (ByVal hWnd As LongPtr, lpRect As RECT) As Long
 Private Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
 Private Declare Function ScreenToClient Lib "user32" (ByVal hWnd As LongPtr, lpPoint As POINTAPI) As Long
-Private Declare Function TranslateColor Lib "olepro32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As LongPtr, Col As Long) As Long
+Private Declare Function TranslateColor Lib "oleaut32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As LongPtr, Col As Long) As Long
 ' GWL_HWNDPARENT holds an HWND: SetWindowLong truncates to 32 bits even on 64-bit
 ' Windows, so the ...LongPtr variant has to be used. NOTE: SetWindowLongPtrW only
 ' exists as a real DLL symbol on 64-bit Windows; on 32-bit that name doesn't

@@ -71,7 +71,7 @@ Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As LongPtr, ByVal hD
 Private Declare Function CreateDIBSection Lib "gdi32" (ByVal hDC As LongPtr, pbmi As BITMAPINFOHEADER, ByVal iUsage As Long, ppvBits As LongPtr, ByVal hSection As LongPtr, ByVal dwOffset As Long) As LongPtr
 Private Declare Function SetDIBits Lib "gdi32" (ByVal hDC As LongPtr, ByVal hBitmap As LongPtr, ByVal nStartScan As Long, ByVal nNumScans As Long, lpBits As Any, lpBI As BITMAPINFOHEADER, ByVal wUsage As Long) As Long
 Private Declare Function DeleteObject Lib "gdi32" (ByVal hObject As LongPtr) As Long
-Private Declare Function TranslateColor Lib "olepro32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As LongPtr, Col As Long) As Long
+Private Declare Function TranslateColor Lib "oleaut32.dll" Alias "OleTranslateColor" (ByVal clr As OLE_COLOR, ByVal palet As LongPtr, Col As Long) As Long
 
 Private Const MF_STRING = &H0&
 Private Const MF_POPUP = &H10&
