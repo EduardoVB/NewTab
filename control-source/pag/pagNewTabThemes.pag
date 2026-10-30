@@ -893,6 +893,8 @@ Private Sub PropertyPage_SelectionChanged()
     NewTab1.CloseButton = iCtl.CloseButton
     NewTab1.CloseButtonPosition = iCtl.CloseButtonPosition
     NewTab1.NewTabButton = IIf(iCtl.NewTabButtonEffective, ntYes, ntNo)
+    NewTab1.NewTabButtonPosition = iCtl.NewTabButtonPosition
+    
     Set iAuxNT = NewTab1
     iAuxNT.CopyGlyphSettingsFrom iCtl
     
