@@ -887,8 +887,8 @@ Private Type GUID
     Data4(0 To 7) As Byte
 End Type
 
-Private Declare Function SHCreateStreamOnFileEx Lib "shlwapi.dll" (ByVal pszFile As Long, ByVal grfMode As Long, ByVal dwAttributes As Long, ByVal fCreate As Long, ByVal pstmTemplate As Long, ByRef ppstm As IUnknown) As Long
-Private Declare Function IIDFromString Lib "ole32.dll" (ByVal lpsz As Long, ByRef lpiid As GUID) As Long
+Private Declare Function SHCreateStreamOnFileEx Lib "shlwapi.dll" (ByVal pszFile As LongPtr, ByVal grfMode As Long, ByVal dwAttributes As Long, ByVal fCreate As Long, ByVal pstmTemplate As LongPtr, ByRef ppstm As IUnknown) As Long
+Private Declare Function IIDFromString Lib "ole32.dll" (ByVal lpsz As LongPtr, ByRef lpiid As GUID) As Long
 Private Declare Function OleLoadPicture Lib "oleaut32.dll" (ByVal lpStream As IUnknown, ByVal lSize As Long, ByVal fRunmode As Long, ByRef riid As GUID, ByRef lplpvObj As IPictureDisp) As Long
 Private Const WM_MOUSEWHEEL As Long = &H20A
 Private Const WM_DESTROY As Long = &H2&
