@@ -56,7 +56,8 @@ Begin VB.PropertyPage pagNewTabIcons
          _ExtentX        =   11536
          _ExtentY        =   1397
          ControlsBackColorApplied=   -2147483633
-         ControlVersion  =   19
+         AutoTabHeight   =   -1  'True
+         ControlVersion  =   18
          TabCaption(0)   =   ""
          TabCaption(1)   =   ""
          TabCaption(2)   =   ""
@@ -880,16 +881,6 @@ Option Explicit
 
 Implements IBSSubclass
 
-Private Type GUID
-    Data1 As Long
-    Data2 As Integer
-    Data3 As Integer
-    Data4(0 To 7) As Byte
-End Type
-
-Private Declare Function SHCreateStreamOnFileEx Lib "shlwapi.dll" (ByVal pszFile As Long, ByVal grfMode As Long, ByVal dwAttributes As Long, ByVal fCreate As Long, ByVal pstmTemplate As Long, ByRef ppstm As IUnknown) As Long
-Private Declare Function IIDFromString Lib "ole32.dll" (ByVal lpsz As Long, ByRef lpiid As GUID) As Long
-Private Declare Function OleLoadPicture Lib "oleaut32.dll" (ByVal lpStream As IUnknown, ByVal lSize As Long, ByVal fRunmode As Long, ByRef riid As GUID, ByRef lplpvObj As IPictureDisp) As Long
 Private Const WM_MOUSEWHEEL As Long = &H20A
 Private Const WM_DESTROY As Long = &H2&
 
@@ -980,6 +971,7 @@ Private Const DT_CALCRECT = &H400&
 Private Const DT_CENTER = &H1&
 Private Const DT_SINGLELINE = &H20&
 
+Private Const cMsgBugIcons As String = "Note: If you are going to load *.ico files, do it from the property window (not from here). There seems to be a bug in VB6 that causes them to lose the transparency." & vbCrLf & "This operation will be Canceled." & vbCrLf & "To load pictures for different tabs in the property window (the one that appears pressing F4 on a control), select the appropriate tab with the Tab property and then load the picture in the Picture property (or Pic16, Pic20 and Pic24)."
 Private Const cCopyImageTTT As String = "Double click on the image to copy it to the clipboard"
 
 Private mLoading As Boolean
@@ -1139,12 +1131,16 @@ End Sub
 Private Sub cmdBrowsePicture_Click()
     Dim iDlg As New cCommonDialog
     
-    iDlg.Filter = "Image files|*.bmp;*.ico"
+    iDlg.Filter = "Bitmap files (*.bmp)|*.bmp"
     iDlg.ShowOpen
     If Not iDlg.Canceled Then
+        If LCase$(Right$(iDlg.FileName, 4)) = ".ico" Then
+            MsgBox cMsgBugIcons, vbExclamation
+            Exit Sub
+        End If
         Changed = True
         On Error Resume Next
-        Set mTabData(mTab).Picture = LoadPictureFile(iDlg.FileName)
+        Set mTabData(mTab).Picture = LoadPicture(iDlg.FileName)
         If Err.Number <> 0 Then
             MsgBox "Error: " & Err.Number & ", " & Err.Description, vbCritical
         End If
@@ -1199,12 +1195,16 @@ End Sub
 Private Sub cmdBrowsePic16_Click()
     Dim iDlg As New cCommonDialog
     
-    iDlg.Filter = "Image files|*.bmp;*.ico"
+    iDlg.Filter = "Bitmap files (*.bmp)|*.bmp"
     iDlg.ShowOpen
     If Not iDlg.Canceled Then
+        If LCase$(Right$(iDlg.FileName, 4)) = ".ico" Then
+            MsgBox cMsgBugIcons, vbExclamation
+            Exit Sub
+        End If
         Changed = True
         On Error Resume Next
-        Set mTabData(mTab).Pic16 = LoadPictureFile(iDlg.FileName)
+        Set mTabData(mTab).Pic16 = LoadPicture(iDlg.FileName)
         If Err.Number <> 0 Then
             MsgBox "Error: " & Err.Number & ", " & Err.Description, vbCritical
         End If
@@ -1224,11 +1224,16 @@ End Sub
 Private Sub cmdBrowsePic20_Click()
     Dim iDlg As New cCommonDialog
     
-    iDlg.Filter = "Image files|*.bmp;*.ico"
+    iDlg.Filter = "Bitmap files (*.bmp)|*.bmp"
     iDlg.ShowOpen
     If Not iDlg.Canceled Then
+        If LCase$(Right$(iDlg.FileName, 4)) = ".ico" Then
+            MsgBox cMsgBugIcons, vbExclamation
+            Exit Sub
+        End If
+        Changed = True
         On Error Resume Next
-        Set mTabData(mTab).Pic20 = LoadPictureFile(iDlg.FileName)
+        Set mTabData(mTab).Pic20 = LoadPicture(iDlg.FileName)
         If Err.Number <> 0 Then
             MsgBox "Error: " & Err.Number & ", " & Err.Description, vbCritical
         End If
@@ -1248,12 +1253,16 @@ End Sub
 Private Sub cmdBrowsePic24_Click()
     Dim iDlg As New cCommonDialog
     
-    iDlg.Filter = "Image files|*.bmp;*.ico"
+    iDlg.Filter = "Bitmap files (*.bmp)|*.bmp"
     iDlg.ShowOpen
     If Not iDlg.Canceled Then
+        If LCase$(Right$(iDlg.FileName, 4)) = ".ico" Then
+            MsgBox cMsgBugIcons, vbExclamation
+            Exit Sub
+        End If
         Changed = True
         On Error Resume Next
-        Set mTabData(mTab).Pic24 = LoadPictureFile(iDlg.FileName)
+        Set mTabData(mTab).Pic24 = LoadPicture(iDlg.FileName)
         If Err.Number <> 0 Then
             MsgBox "Error: " & Err.Number & ", " & Err.Description, vbCritical
         End If
@@ -2887,34 +2896,3 @@ Private Sub EnsureFontListLoaded()
     End If
     SendMessage cboTabIconFont.hWnd, WM_SETREDRAW, -1, 0
 End Sub
-
-' LoadPicture that keeps the original file data, so PropertyBag persists it unchanged (incl. icon alpha)
-Public Function LoadPictureFile(sFileName As String) As IPictureDisp
-    Const STGM_READ As Long = &H0&
-    Const STGM_SHARE_DENY_WRITE As Long = &H20&
-    Const NULL_PTR As Long = 0&
-    Const ERR_INVALID_PICTURE As Long = 481
-    Const STR_IID_IPICTUREDISP As String = "{7BF80981-BF32-101A-8BBB-00AA00300CAB}"
-    Dim pStream         As IUnknown
-    Dim uIID            As GUID
-    Dim oPicture        As IPictureDisp
-
-    ' Same behavior as LoadPicture(""): return Nothing
-    If LenB(sFileName) = 0 Then
-        Set LoadPictureFile = Nothing
-        Exit Function
-    End If
-
-    If SHCreateStreamOnFileEx(StrPtr(sFileName), STGM_READ Or STGM_SHARE_DENY_WRITE, 0, 0, NULL_PTR, pStream) < 0 Then
-        Err.Raise ERR_INVALID_PICTURE
-    End If
-    Call IIDFromString(StrPtr(STR_IID_IPICTUREDISP), uIID)
-
-    ' lSize = 0: read the whole stream
-    ' fRunmode = 0 (False): KeepOriginalFormat = True, original bytes are retained
-    If OleLoadPicture(pStream, 0, 0, uIID, oPicture) < 0 Then
-        Err.Raise ERR_INVALID_PICTURE
-    End If
-    Set LoadPictureFile = oPicture
-End Function
-
