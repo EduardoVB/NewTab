@@ -25,6 +25,42 @@ Begin VB.PropertyPage pagNewTabBehavior
       TabIndex        =   0
       Top             =   30
       Width           =   6624
+      Begin VB.CheckBox chkCanReorderTabs 
+         Height          =   255
+         Left            =   2400
+         TabIndex        =   2
+         Top             =   292
+         Width           =   255
+      End
+      Begin VB.CheckBox chkTabMousePointerHand 
+         Height          =   255
+         Left            =   2400
+         TabIndex        =   5
+         Top             =   652
+         Width           =   255
+      End
+      Begin VB.ComboBox cboTabTransition 
+         Height          =   300
+         Left            =   2400
+         Style           =   2  'Dropdown List
+         TabIndex        =   8
+         Top             =   990
+         Width           =   1900
+      End
+      Begin VB.CheckBox chkShowFocusRect 
+         Height          =   255
+         Left            =   2400
+         TabIndex        =   11
+         Top             =   1372
+         Width           =   255
+      End
+      Begin VB.CheckBox chkEnabled 
+         Height          =   255
+         Left            =   2400
+         TabIndex        =   14
+         Top             =   1732
+         Width           =   255
+      End
       Begin VB.Label lblCanReorderTabs 
          Alignment       =   1  'Right Justify
          Caption         =   "CanReorderTabs:"
@@ -33,13 +69,6 @@ Begin VB.PropertyPage pagNewTabBehavior
          TabIndex        =   1
          Top             =   310
          Width           =   2280
-      End
-      Begin VB.CheckBox chkCanReorderTabs 
-         Height          =   255
-         Left            =   2400
-         TabIndex        =   2
-         Top             =   292
-         Width           =   255
       End
       Begin VB.Label lblCanReorderTabsInfo 
          Caption         =   "the user can drag the tabs to reorder them"
@@ -69,13 +98,6 @@ Begin VB.PropertyPage pagNewTabBehavior
          Top             =   670
          Width           =   2280
       End
-      Begin VB.CheckBox chkTabMousePointerHand 
-         Height          =   255
-         Left            =   2400
-         TabIndex        =   5
-         Top             =   652
-         Width           =   255
-      End
       Begin VB.Label lblTabMousePointerHandInfo 
          Caption         =   "hand pointer over the tabs"
          BeginProperty Font 
@@ -103,14 +125,6 @@ Begin VB.PropertyPage pagNewTabBehavior
          TabIndex        =   7
          Top             =   1030
          Width           =   2280
-      End
-      Begin VB.ComboBox cboTabTransition 
-         Height          =   300
-         Left            =   2400
-         Style           =   2  'Dropdown List
-         TabIndex        =   8
-         Top             =   990
-         Width           =   1900
       End
       Begin VB.Label lblTabTransitionInfo 
          Caption         =   "when the active tab changes"
@@ -140,13 +154,6 @@ Begin VB.PropertyPage pagNewTabBehavior
          Top             =   1390
          Width           =   2280
       End
-      Begin VB.CheckBox chkShowFocusRect 
-         Height          =   255
-         Left            =   2400
-         TabIndex        =   11
-         Top             =   1372
-         Width           =   255
-      End
       Begin VB.Label lblShowFocusRectInfo 
          Caption         =   "on the active caption, with the focus"
          BeginProperty Font 
@@ -175,13 +182,6 @@ Begin VB.PropertyPage pagNewTabBehavior
          Top             =   1750
          Width           =   2280
       End
-      Begin VB.CheckBox chkEnabled 
-         Height          =   255
-         Left            =   2400
-         TabIndex        =   14
-         Top             =   1732
-         Width           =   255
-      End
       Begin VB.Label lblEnabledInfo 
          Caption         =   "not applied to the preview"
          BeginProperty Font 
@@ -209,6 +209,28 @@ Begin VB.PropertyPage pagNewTabBehavior
       TabIndex        =   16
       Top             =   2310
       Width           =   6624
+      Begin VB.ComboBox cboAutoRelocateControls 
+         Height          =   300
+         Left            =   2400
+         Style           =   2  'Dropdown List
+         TabIndex        =   18
+         Top             =   270
+         Width           =   1900
+      End
+      Begin VB.CheckBox chkChangeControlsBackColor 
+         Height          =   255
+         Left            =   2400
+         TabIndex        =   21
+         Top             =   652
+         Width           =   255
+      End
+      Begin VB.CheckBox chkChangeControlsForeColor 
+         Height          =   255
+         Left            =   2400
+         TabIndex        =   24
+         Top             =   1012
+         Width           =   255
+      End
       Begin VB.Label lblAutoRelocateControls 
          Alignment       =   1  'Right Justify
          Caption         =   "AutoRelocateControls:"
@@ -217,14 +239,6 @@ Begin VB.PropertyPage pagNewTabBehavior
          TabIndex        =   17
          Top             =   310
          Width           =   2280
-      End
-      Begin VB.ComboBox cboAutoRelocateControls 
-         Height          =   300
-         Left            =   2400
-         Style           =   2  'Dropdown List
-         TabIndex        =   18
-         Top             =   270
-         Width           =   1900
       End
       Begin VB.Label lblAutoRelocateControlsInfo 
          Caption         =   "when the tab body changes"
@@ -254,13 +268,6 @@ Begin VB.PropertyPage pagNewTabBehavior
          Top             =   670
          Width           =   2280
       End
-      Begin VB.CheckBox chkChangeControlsBackColor 
-         Height          =   255
-         Left            =   2400
-         TabIndex        =   21
-         Top             =   652
-         Width           =   255
-      End
       Begin VB.Label lblChangeControlsBackColorInfo 
          Caption         =   "they take the back color of the active tab"
          BeginProperty Font 
@@ -289,13 +296,6 @@ Begin VB.PropertyPage pagNewTabBehavior
          Top             =   1030
          Width           =   2280
       End
-      Begin VB.CheckBox chkChangeControlsForeColor 
-         Height          =   255
-         Left            =   2400
-         TabIndex        =   24
-         Top             =   1012
-         Width           =   255
-      End
       Begin VB.Label lblChangeControlsForeColorInfo 
          Caption         =   "they take a fore color readable on it"
          BeginProperty Font 
@@ -323,6 +323,21 @@ Begin VB.PropertyPage pagNewTabBehavior
       TabIndex        =   26
       Top             =   3870
       Width           =   6624
+      Begin VB.ComboBox cboOLEDropMode 
+         Height          =   300
+         Left            =   2400
+         Style           =   2  'Dropdown List
+         TabIndex        =   28
+         Top             =   270
+         Width           =   1900
+      End
+      Begin VB.CheckBox chkOLEDropOnOtherTabs 
+         Height          =   255
+         Left            =   2400
+         TabIndex        =   31
+         Top             =   652
+         Width           =   255
+      End
       Begin VB.Label lblOLEDropMode 
          Alignment       =   1  'Right Justify
          Caption         =   "OLEDropMode:"
@@ -331,14 +346,6 @@ Begin VB.PropertyPage pagNewTabBehavior
          TabIndex        =   27
          Top             =   310
          Width           =   2280
-      End
-      Begin VB.ComboBox cboOLEDropMode 
-         Height          =   300
-         Left            =   2400
-         Style           =   2  'Dropdown List
-         TabIndex        =   28
-         Top             =   270
-         Width           =   1900
       End
       Begin VB.Label lblOLEDropModeInfo 
          Caption         =   "Manual raises the OLE events"
@@ -368,13 +375,6 @@ Begin VB.PropertyPage pagNewTabBehavior
          Top             =   670
          Width           =   2280
       End
-      Begin VB.CheckBox chkOLEDropOnOtherTabs 
-         Height          =   255
-         Left            =   2400
-         TabIndex        =   31
-         Top             =   652
-         Width           =   255
-      End
       Begin VB.Label lblOLEDropOnOtherTabsInfo 
          Caption         =   "also on the inactive tabs"
          BeginProperty Font 
@@ -402,6 +402,13 @@ Begin VB.PropertyPage pagNewTabBehavior
       TabIndex        =   33
       Top             =   5070
       Width           =   6624
+      Begin VB.CheckBox chkHandleHighContrastTheme 
+         Height          =   255
+         Left            =   2400
+         TabIndex        =   35
+         Top             =   292
+         Width           =   255
+      End
       Begin VB.Label lblHandleHighContrastTheme 
          Alignment       =   1  'Right Justify
          Caption         =   "HandleHighContrastTheme:"
@@ -410,13 +417,6 @@ Begin VB.PropertyPage pagNewTabBehavior
          TabIndex        =   34
          Top             =   310
          Width           =   2280
-      End
-      Begin VB.CheckBox chkHandleHighContrastTheme 
-         Height          =   255
-         Left            =   2400
-         TabIndex        =   35
-         Top             =   292
-         Width           =   255
       End
       Begin VB.Label lblHandleHighContrastThemeInfo 
          Caption         =   "system colors under high contrast"
@@ -445,6 +445,14 @@ Begin VB.PropertyPage pagNewTabBehavior
       TabIndex        =   37
       Top             =   5910
       Width           =   6624
+      Begin VB.ComboBox cboTDIMode 
+         Height          =   300
+         Left            =   2400
+         Style           =   2  'Dropdown List
+         TabIndex        =   39
+         Top             =   270
+         Width           =   1900
+      End
       Begin VB.Label lblTDIMode 
          Alignment       =   1  'Right Justify
          Caption         =   "TDIMode:"
@@ -453,14 +461,6 @@ Begin VB.PropertyPage pagNewTabBehavior
          TabIndex        =   38
          Top             =   310
          Width           =   2280
-      End
-      Begin VB.ComboBox cboTDIMode 
-         Height          =   300
-         Left            =   2400
-         Style           =   2  'Dropdown List
-         TabIndex        =   39
-         Top             =   270
-         Width           =   1900
       End
       Begin VB.Label lblTDIModeInfo 
          Caption         =   "Only right after adding the control, before changing anything else and with no controls inside. Changing it rebuilds the tabs."
@@ -499,8 +499,7 @@ Begin VB.PropertyPage pagNewTabBehavior
          _ExtentX        =   11663
          _ExtentY        =   1715
          ControlsBackColorApplied=   -2147483633
-         AutoTabHeight   =   -1  'True
-         ControlVersion  =   18
+         ControlVersion  =   19
          TabCaption(0)   =   ""
          TabCaption(1)   =   ""
          TabCaption(2)   =   ""
@@ -632,7 +631,7 @@ Private Function CheckValue(nCheck As CheckBox) As Boolean
 End Function
 
 Private Function ComboValue(nCombo As ComboBox) As Long
-    If nCombo.ListIndex > -1 Then ComboValue = nCombo.ItemData(nCombo.ListIndex)
+    If nCombo.ListIndex > -1 Then ComboValue = CLng(nCombo.ItemData(nCombo.ListIndex))
 End Function
 
 Private Sub LoadCombos()

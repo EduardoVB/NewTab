@@ -80,6 +80,13 @@ Begin VB.PropertyPage pagNewTabStrip
          Top             =   2430
          Width           =   1900
       End
+      Begin VB.TextBox txtStripEndFreeSpace 
+         Height          =   310
+         Left            =   2400
+         TabIndex        =   54
+         Top             =   2790
+         Width           =   700
+      End
       Begin VB.Label lblTabOrientation 
          Alignment       =   1  'Right Justify
          Caption         =   "TabOrientation:"
@@ -274,13 +281,6 @@ Begin VB.PropertyPage pagNewTabStrip
          ToolTipText     =   "several rows (see Buttons)"
          Top             =   2470
          Width           =   2200
-      End
-      Begin VB.TextBox txtStripEndFreeSpace 
-         Height          =   310
-         Left            =   2400
-         TabIndex        =   54
-         Top             =   2790
-         Width           =   700
       End
       Begin VB.Label lblStripEndFreeSpace 
          Alignment       =   1  'Right Justify
@@ -652,8 +652,7 @@ Begin VB.PropertyPage pagNewTabStrip
          _ExtentX        =   11663
          _ExtentY        =   1715
          ControlsBackColorApplied=   -2147483633
-         AutoTabHeight   =   -1  'True
-         ControlVersion  =   18
+         ControlVersion  =   19
          TabCaption(0)   =   ""
          TabCaption(1)   =   ""
          TabCaption(2)   =   ""
@@ -817,7 +816,7 @@ Private Function SizeDiffers(ByVal nValue1 As Single, ByVal nValue2 As Single) A
 End Function
 
 Private Function ComboValue(nCombo As ComboBox) As Long
-    If nCombo.ListIndex > -1 Then ComboValue = nCombo.ItemData(nCombo.ListIndex)
+    If nCombo.ListIndex > -1 Then ComboValue = CLng(nCombo.ItemData(nCombo.ListIndex))
 End Function
 
 Private Sub LoadCombos()

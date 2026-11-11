@@ -13,50 +13,82 @@ Attribute VB_PredeclaredId = False
 Attribute VB_Exposed = False
 Option Explicit
 
+' Dialogs can be left out of the build from the project's conditional compilation arguments,
+' e.g. CDLG_NO_SAVE = 1 : CDLG_NO_PRINT = 1. A constant that is not defined leaves its dialog in.
+' CDLG_NO_OPEN, CDLG_NO_SAVE, CDLG_NO_COLOR, CDLG_NO_FONT, CDLG_NO_HELP, and CDLG_NO_PRINT for both
+' the printer and the page setup dialogs, which share the printer settings
+#Const CDLG_OPEN = (CDLG_NO_OPEN = 0)
+#Const CDLG_SAVE = (CDLG_NO_SAVE = 0)
+#Const CDLG_FILE = CDLG_OPEN Or CDLG_SAVE
+#Const CDLG_COLOR = (CDLG_NO_COLOR = 0)
+#Const CDLG_FONT = (CDLG_NO_FONT = 0)
+#Const CDLG_HELP = (CDLG_NO_HELP = 0)
+#Const CDLG_PRINT = (CDLG_NO_PRINT = 0)
+
 Const DC_PAPERS = 2
 Const DC_PAPERSIZE = 3
 
 Private Declare Function GetForegroundWindow Lib "user32" () As LongPtr
 Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As LongPtr, ByRef lpdwProcessId As Long) As Long
+#If CDLG_FONT Then
 Private Declare Function GetDC Lib "user32" (ByVal hWnd As LongPtr) As LongPtr
 Private Declare Function ReleaseDC Lib "user32" (ByVal hWnd As LongPtr, ByVal hDC As LongPtr) As Long
 Private Declare Function GetDeviceCaps Lib "gdi32" (ByVal hDC As LongPtr, ByVal nIndex As Long) As Long
 Private Const LOGPIXELSY As Long = 90
+#End If
 
+#If CDLG_PRINT Then
 ' NOTE: lpDeviceName/lpPort changed from As String to As LongPtr. VB6 always marshals
 ' ByVal String parameters through the ANSI codepage regardless of which alias (A/W) is
 ' declared, so real Unicode support requires bypassing that and passing StrPtr() directly
 ' (same pattern as GetClassNameW in mCBTHook.bas).
 Private Declare Function DeviceCapabilities Lib "winspool.drv" Alias "DeviceCapabilitiesW" (ByVal lpDeviceName As LongPtr, ByVal lpPort As LongPtr, ByVal iIndex As Long, lpOutput As Any, lpDevMode As Any) As Long
+#End If
 
+#If CDLG_COLOR Then
 Private Declare Function OleTranslateColor Lib "oleaut32.dll" (ByVal OLE_COLOR As Long, ByVal hPalette As LongPtr, pccolorref As Long) As Long
 Private Const CLR_INVALID = -1
+#End If
 
+#If CDLG_COLOR Then
 'API function called by ChooseColor method
 Private Declare Function ChooseColor Lib "comdlg32.dll" Alias "ChooseColorW" (pChoosecolor As T_ChooseColor) As Long
+#End If
 
+#If CDLG_FONT Then
 'API function called by ChooseFont method
 Private Declare Function CHOOSEFONT Lib "comdlg32.dll" Alias "ChooseFontW" (pChoosefont As T_CHOOSEFONT) As Long
+#End If
 
+#If CDLG_HELP Then
 'API function inside ShowHelp method
 Private Declare Function WinHelp Lib "user32" Alias "WinHelpW" (ByVal hWnd As LongPtr, ByVal lpHelpFile As LongPtr, ByVal wCommand As Long, ByVal dwData As Long) As Long
+#End If
 
+#If CDLG_OPEN Then
 'API function called by ShowOpen method
 Private Declare Function GetOpenFileName Lib "comdlg32.dll" Alias "GetOpenFileNameW" (pOpenfilename As T_OpenFilename) As Long
+#End If
 
+#If CDLG_SAVE Then
 'API function called by ShowSave method
 Private Declare Function GetSaveFileName Lib "comdlg32.dll" Alias "GetSaveFileNameW" (pOpenfilename As T_OpenFilename) As Long
+#End If
 
+#If CDLG_PRINT Then
 'API function called by ShowPrint method
 Private Declare Function PrintDlg Lib "comdlg32.dll" Alias "PrintDlgW" (pPrintdlg As T_PrintDlg) As Long
+#End If
 
 
 'API function to retrieve extended error information
 Private Declare Function CommDlgExtendedError Lib "comdlg32.dll" () As Long
 
+#If CDLG_PRINT Then
 Private Declare Function GetLocaleInfo Lib "kernel32" Alias "GetLocaleInfoW" (ByVal Locale As Long, ByVal LCType As Long, ByVal lpLCData As LongPtr, ByVal cchData As Long) As Long
 Private Const LOCALE_USER_DEFAULT As Long = &H400&
 Private Const LOCALE_IMEASURE As Long = &HD&
+#End If
 
 'API memory functions
 Private Declare Function GlobalAlloc Lib "kernel32" (ByVal wFlags As Long, ByVal dwBytes As LongPtr) As LongPtr
@@ -64,14 +96,11 @@ Private Declare Function GlobalFree Lib "kernel32" (ByVal hMem As LongPtr) As Lo
 Private Declare Function GlobalLock Lib "kernel32" (ByVal hMem As LongPtr) As LongPtr
 Private Declare Function GlobalUnlock Lib "kernel32" (ByVal hMem As LongPtr) As Long
 
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (hpvDest As Any, hpvSource As Any, ByVal cbCopy As Long)
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (hpvDest As Any, hpvSource As Any, ByVal cbCopy As LongPtr)
+#If CDLG_PRINT Then
 ' lstrlenW counts UTF-16 code units (not bytes) - see GetDevNameString
 Private Declare Function lstrlenPtr Lib "kernel32" Alias "lstrlenW" (ByVal lpString As LongPtr) As Long
-
-Private Type SHITEMID
-    cb As Long
-    abID As Byte
-End Type
+#End If
 
 'constants for API memory functions
 Private Const GMEM_MOVEABLE = &H2
@@ -167,7 +196,9 @@ Private Type T_PAGESETUPDLG
     hPageSetupTemplate          As LongPtr
 End Type
 
+#If CDLG_PRINT Then
 Private Declare Function PageSetupDlg Lib "COMDLG32" Alias "PageSetupDlgW" (lppage As T_PAGESETUPDLG) As Boolean
+#End If
     
 Private Const CC_ENABLEHOOK = &H10&
 Private Const CC_ENABLETEMPLATE = &H20&
@@ -372,25 +403,6 @@ Public Enum CommonDialogsFlags
     cdlbPSNoWarning = &H80&
     cdlbPSReturnDefault = &H400&
     cdlbPSShowHelp = &H800&
-    
-' Show Folder
-    cdlbSFReturnOnlyFSDirs = &H1&
-    cdlbSFDontGoBelowDomain = &H2&
-    cdlbSFStatusText = &H4&
-    cdlbSFReturnFSAncestors = &H8&
-    cdlbSFEditBox = &H10&
-    cdlbSFValidate = &H20&
-    cdlbSFNewDialogStyle = &H40&
-    cdlbSFUseNewUI = (cdlbSFNewDialogStyle Or cdlbSFEditBox)
-    cdlbSFBrowseIncludeURLs = &H80&
-    cdlbSFUAHint = &H100&
-    cdlbSFNoNewFolderButton = &H200&
-    cdlbSFNoTranslateTargets = &H400&
-    cdlbSFNoReturnOnlyFSDirs = &H800&
-    cdlbSFBrowseForComputer = &H1000&
-    cdlbSFBrowseForPrinter = &H2000&
-    cdlbSFBrowseIncludeFiles = &H4000&
-    cdlbSFShareable = &H8000&
 End Enum
 
 Public Enum cdeCommonDialogExFileFlagsConstants
@@ -640,10 +652,6 @@ Private Const cTopMarginDefault As Single = 20
 Private Const cBottomMarginDefault As Single = 20
 
 
-' added property for show folder
-Private mRootFolder As String
-Private mDialogHeader As String
-
 ' auxiliary variables
 Private mDevMode As DEVMODE
 Private mDevNames As DEVNAMES
@@ -655,6 +663,7 @@ Private mPageSet As Boolean
 
 Private mAmbientUserMode As Boolean
 
+#If CDLG_COLOR Then
 Public Sub ShowColor(Optional ByVal nFlags As cdeCommonDialogExColorFlagsConstants = -1)
     'display the color dialog box
     
@@ -737,7 +746,9 @@ Exit Sub
 ShowColorError:
     Exit Sub
 End Sub
+#End If
 
+#If CDLG_FONT Then
 Public Sub ShowFont(Optional ByVal nFlags As cdeCommonDialogExFontFlagsConstants = -1)
     'display the font dialog box
     
@@ -942,8 +953,10 @@ End Property
 Public Property Get Font() As StdFont
     Set Font = CloneFont(mFont)
 End Property
+#End If
 
 
+#If CDLG_HELP Then
 Public Sub ShowHelp()
     'run winhelp.exe with the specified help file
     Dim sHelpFileBuff As String
@@ -988,8 +1001,10 @@ Exit Sub
 ShowHelpError:
     Exit Sub
 End Sub
+#End If
 
 
+#If CDLG_OPEN Then
 Public Sub ShowOpen(Optional ByVal nFlags As cdeCommonDialogExFileFlagsConstants = -1)
     Dim iHwndOwner As LongPtr
     Dim iFlags As Long
@@ -1003,7 +1018,9 @@ Public Sub ShowOpen(Optional ByVal nFlags As cdeCommonDialogExFileFlagsConstants
     ShowFileDialog 1, iFlags, iHwndOwner    'Action property - ShowOpen
     
 End Sub
+#End If
 
+#If CDLG_PRINT Then
 Public Sub ShowPrinter(Optional ByVal nFlags As cdeCommonDialogExPrinterFlagsConstants = -1)
     Dim iHwndOwner As LongPtr
     Dim iFlags As Long
@@ -1178,8 +1195,10 @@ ShowPrinterError:
     Exit Sub
     
 End Sub
+#End If
 
 
+#If CDLG_SAVE Then
 Public Sub ShowSave(Optional ByVal nFlags As cdeCommonDialogExFileFlagsConstants = -1)
     Dim iHwndOwner As LongPtr
     Dim iFlags As Long
@@ -1194,8 +1213,10 @@ Public Sub ShowSave(Optional ByVal nFlags As cdeCommonDialogExFileFlagsConstants
     ShowFileDialog 2, iFlags, iHwndOwner   'Action property - ShowSave
 
 End Sub
+#End If
 
 
+#If CDLG_FILE Then
 Public Property Get FileName() As String
     FileName = mFileName
 End Property
@@ -1212,8 +1233,10 @@ End Property
 Public Property Let Filter(nValue As String)
     mFilter = nValue
 End Property
+#End If
 
 
+#If CDLG_FILE Then
 Private Function sLeftOfNull(ByVal sIn As String) As String
     'returns the part of sIn preceding Chr$(0)
     Dim lNullPos As Long
@@ -1283,7 +1306,9 @@ Private Function sAPIFilter(sIn As String) As String
     sAPIFilter = sOutStr
     
 End Function
+#End If
 
+#If CDLG_FILE Then
 Public Property Get FilterIndex() As Integer
     FilterIndex = mFilterIndex
 End Property
@@ -1291,6 +1316,7 @@ End Property
 Public Property Let FilterIndex(nValue As Integer)
     mFilterIndex = nValue
 End Property
+#End If
 
 Public Property Get CancelError() As Boolean
     CancelError = mCancelError
@@ -1308,6 +1334,7 @@ Public Property Let Color(nValue As Long)
     mColor = nValue
 End Property
 
+#If CDLG_PRINT Then
 Public Property Get Copies() As Long
     Copies = mCopies
 End Property
@@ -1323,7 +1350,9 @@ End Property
 Public Property Let Collate(nValue As Boolean)
     mCollate = nValue
 End Property
+#End If
 
+#If CDLG_FILE Then
 Public Property Get DefaultExt() As String
     DefaultExt = mDefaultExt
 End Property
@@ -1339,6 +1368,7 @@ End Property
 Public Property Let DialogTitle(nValue As String)
     mDialogTitle = nValue
 End Property
+#End If
 
 Public Property Get Flags() As CommonDialogsFlags
     Flags = mFlags
@@ -1348,6 +1378,7 @@ Public Property Let Flags(nValue As CommonDialogsFlags)
     mFlags = nValue
 End Property
 
+#If CDLG_FONT Then
 Public Property Get FontBold() As Boolean
     FontBold = mFont.Bold
 End Property
@@ -1395,18 +1426,22 @@ End Property
 Public Property Let FontUnderLine(nValue As Boolean)
     mFont.Underline = nValue
 End Property
+#End If
 
+#If CDLG_PRINT Then
 Public Property Get FromPage() As Long
-Attribute FromPage.VB_MemberFlags = "40"
     FromPage = mFromPage
 End Property
 
 Public Property Let FromPage(nValue As Long)
     mFromPage = nValue
 End Property
+#End If
 
 Public Property Get hDC() As LongPtr
+#If CDLG_PRINT Then
     EnsurePageSet
+#End If
     hDC = mhDc
 End Property
 
@@ -1415,6 +1450,7 @@ Public Property Let hDC(nValue As LongPtr)
 End Property
 
 
+#If CDLG_HELP Then
 Public Property Get HelpCommand() As Long
     HelpCommand = mHelpCommand
 End Property
@@ -1446,7 +1482,9 @@ End Property
 Public Property Let HelpKey(nValue As String)
     mHelpKey = nValue
 End Property
+#End If
 
+#If CDLG_FILE Then
 Public Property Get InitDir() As String
     InitDir = mInitDir
 End Property
@@ -1454,6 +1492,7 @@ End Property
 Public Property Let InitDir(nValue As String)
     mInitDir = Trim$(nValue)
 End Property
+#End If
 
 Public Property Get Max() As Long
     Max = mMax
@@ -1466,6 +1505,7 @@ Public Property Let Max(nValue As Long)
     End If
 End Property
 
+#If CDLG_FILE Then
 Public Property Get MaxFileSize() As Long
     MaxFileSize = mMaxFileSize
 End Property
@@ -1473,6 +1513,7 @@ End Property
 Public Property Let MaxFileSize(nValue As Long)
     mMaxFileSize = nValue
 End Property
+#End If
 
 Public Property Get Min() As Long
     Min = mMin
@@ -1489,6 +1530,7 @@ Public Property Get Object() As Object
     Set Object = Me
 End Property
 
+#If CDLG_PRINT Then
 Public Property Get ToPage() As Long
     ToPage = mToPage
 End Property
@@ -1496,7 +1538,9 @@ End Property
 Public Property Let ToPage(nValue As Long)
     mToPage = nValue
 End Property
+#End If
 
+#If CDLG_FILE Then
 Public Property Get FileTitle() As String
     FileTitle = mFileTitle
 End Property
@@ -1504,8 +1548,10 @@ End Property
 Public Property Let FileTitle(nValue As String)
     mFileTitle = nValue
 End Property
+#End If
 
 
+#If CDLG_FONT Then
 Private Function sByteArrayToString(abBytes() As Byte) As String
     'return a string from a buffer holding a null-terminated UTF-16LE (WCHAR) string,
     'e.g. LOGFONTW.lfFaceName. Each pair of bytes is one UTF-16 code unit.
@@ -1528,6 +1574,8 @@ Private Function sByteArrayToString(abBytes() As Byte) As String
     End If
     
 End Function
+#End If
+#If CDLG_FILE Then
 Private Sub ShowFileDialog(ByVal mAction As Integer, nFlags As Long, Optional ByVal nHwndOwner As LongPtr)
     
     'display the file dialog for ShowOpen or ShowSave
@@ -1678,10 +1726,14 @@ Private Sub ShowFileDialog(ByVal mAction As Integer, nFlags As Long, Optional By
     
     '***    call the GetOpenFileName API function
     Select Case mAction
+#If CDLG_OPEN Then
         Case 1  'ShowOpen
             mApiReturn = GetOpenFileName(tOpenFile)
+#End If
+#If CDLG_SAVE Then
         Case 2  'ShowSave
             mApiReturn = GetSaveFileName(tOpenFile)
+#End If
         Case Else   'unknown action
             Exit Sub
     End Select
@@ -1725,22 +1777,28 @@ ShowFileDialogError:
     Exit Sub
 
 End Sub
+#End If
 
 
 Public Property Get Canceled() As Boolean
     Canceled = mCancelled
 End Property
 
+#If CDLG_COLOR Then
 Private Function TranslateAColor(ByVal clr As OLE_COLOR, _
                         Optional hpal As LongPtr = 0) As Long
    If OleTranslateColor(clr, hpal, TranslateAColor) Then
       TranslateAColor = CLR_INVALID
    End If
 End Function
+#End If
 
 
 Private Sub Class_Initialize()
+#If CDLG_FILE Then
     mMaxFileSize = 255
+#End If
+#If CDLG_PRINT Then
     mUnits = vbMillimeters
     mAmbientUserMode = True
     mCopies = 1
@@ -1748,9 +1806,13 @@ Private Sub Class_Initialize()
     mRightMargin = cRightMarginDefault
     mTopMargin = cTopMarginDefault
     mBottomMargin = cBottomMarginDefault
+#End If
+#If CDLG_COLOR Then
     InitCustomColors
-    
+#End If
+#If CDLG_FONT Then
     Set mFont = New StdFont
+#End If
 End Sub
 
 Public Property Let Action(nValue As Integer)
@@ -1758,21 +1820,30 @@ Public Property Let Action(nValue As Integer)
         Case 0
             '
         Case 1
+#If CDLG_OPEN Then
             ShowOpen
+#End If
         Case 2
+#If CDLG_SAVE Then
             ShowSave
+#End If
         Case 3
             
         Case 4
             
         Case 5
+#If CDLG_PRINT Then
             ShowPrinter
+#End If
         Case 6
+#If CDLG_HELP Then
             ShowHelp
+#End If
     End Select
 End Property
 
 
+#If CDLG_PRINT Then
 Public Property Get Orientation() As cdePageOrientationConstants
     EnsurePageSet
     Orientation = mOrientation
@@ -2222,14 +2293,18 @@ Private Function UnsignedAdd(Start As LongPtr, Incr As Long) As LongPtr
    End If
    
 End Function
+#End If
 
 Private Sub Class_Terminate()
+#If CDLG_PRINT Then
     If mDevModePtr <> 0 Then
         GlobalUnlock mhDevMode
         GlobalUnlock mhDevNames
     End If
+#End If
 End Sub
 
+#If CDLG_PRINT Then
 Private Function GetLocaleMeasureSystem() As Long
     ' A fixed-length String (String * N) stores 1 byte/char, which isn't wide enough
     ' for GetLocaleInfoW's WCHAR buffer - use a normal (UTF-16) String and StrPtr().
@@ -2250,46 +2325,11 @@ Private Sub EnsurePageSet()
         End If
     End If
 End Sub
+#End If
 
 
-Public Property Get FolderName() As String
-    FolderName = mFileName
-End Property
-
-Public Property Let FolderName(nValue As String)
-    mFileName = nValue
-End Property
-
-
-Public Property Get FolderTitle() As String
-    FolderTitle = mFileTitle
-End Property
-
-Public Property Let FolderTitle(nValue As String)
-    mFileTitle = nValue
-End Property
-
-
-Public Property Get RootFolder() As String
-    RootFolder = mRootFolder
-End Property
-
-Public Property Let RootFolder(nValue As String)
-    mRootFolder = Trim$(nValue)
-End Property
-
-
-Public Property Get DialogHeader() As String
-    DialogHeader = mDialogHeader
-End Property
-
-Public Property Let DialogHeader(nValue As String)
-    mDialogHeader = nValue
-End Property
-
-
+#If CDLG_PRINT Then
 Public Property Let AmbientUserMode(nValue As Boolean)
-Attribute AmbientUserMode.VB_MemberFlags = "40"
     mAmbientUserMode = nValue
 End Property
 
@@ -2375,8 +2415,10 @@ End Function
 Public Property Get DevModePtr() As LongPtr
     DevModePtr = mDevModePtr
 End Property
+#End If
 
 
+#If CDLG_COLOR Then
 Public Property Let CustomColors(Index As Integer, nValue As Long)
     If (Index < 0) Or (Index > 15) Then Exit Property
     mCustomColors(Index) = nValue
@@ -2396,15 +2438,17 @@ Private Sub InitCustomColors()
         mCustomColors(c) = RGB(iByte, iByte, iByte)
     Next c
 End Sub
+#End If
 
+#If CDLG_PRINT Then
 Public Property Get PrinterDefault() As Variant
-Attribute PrinterDefault.VB_MemberFlags = "40"
     '
 End Property
 
 Public Property Let PrinterDefault(ByVal vNewValue As Variant)
     '
 End Property
+#End If
 
 Private Function GetActiveWindowHwnd() As LongPtr
     GetActiveWindowHwnd = GetForegroundWindow
@@ -2413,6 +2457,7 @@ Private Function GetActiveWindowHwnd() As LongPtr
     End If
 End Function
 
+#If CDLG_FONT Then
 Private Function CloneFont(nOrigFont As StdFont) As StdFont
     Dim iFont As New StdFont
     
@@ -2430,4 +2475,5 @@ Private Function CloneFont(nOrigFont As StdFont) As StdFont
     
     Set CloneFont = iFont
 End Function
+#End If
 

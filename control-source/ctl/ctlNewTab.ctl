@@ -620,7 +620,7 @@ Private Const cPicNNDeclaredDPI16 As Long = 96
 Private Const cPicNNDeclaredDPI20 As Long = 120
 Private Const cPicNNDeclaredDPI24 As Long = 144
 
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpvDest As Any, lpvSource As Any, ByVal cbCopy As LongPtr)
 Private Declare Function GetForegroundWindow Lib "user32" () As LongPtr
 Private Declare Function ValidateRect Lib "user32" (ByVal hWnd As LongPtr, lpRect As RECT) As Long
 Private Declare Function GetClientRect Lib "user32" (ByVal hWnd As LongPtr, lpRect As RECT) As Long
@@ -737,7 +737,12 @@ Private Declare Function TranslateColor Lib "oleaut32.dll" Alias "OleTranslateCo
 Private Declare Sub ColorRGBToHLS Lib "shlwapi" (ByVal clrRGB As Long, ByRef pwHue As Integer, ByRef pwLuminance As Integer, ByRef pwSaturation As Integer)
 Private Declare Function ColorHLSToRGB Lib "shlwapi" (ByVal wHue As Integer, ByVal wLuminance As Integer, ByVal wSaturation As Integer) As Long
 Private Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
-Private Declare Function WindowFromPoint Lib "user32" (ByVal xPoint As Long, ByVal yPoint As Long) As LongPtr
+' WindowFromPoint takes the POINT by value: on x64 the whole 8 byte struct goes in one register
+#If Win64 Then
+    Private Declare Function WindowFromPoint Lib "user32" (ByVal nPoint As LongLong) As LongPtr
+#Else
+    Private Declare Function WindowFromPoint Lib "user32" (ByVal xPoint As Long, ByVal yPoint As Long) As LongPtr
+#End If
 
 'Draw Text Constants
 Private Const DT_CALCRECT = &H400&
@@ -6401,10 +6406,7 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As LongPtr, ByVal iMsg As Lon
             End If
         Case WM_MOUSEACTIVATE ' UserControl message, only at run time (Ambient.UserMode),, to avoid taking the focus when the tab control is clicked in a non-clickable part (outside a tab).
             If mTabUnderMouse = -1 Then
-                Dim iPt2 As POINTAPI
-                
-                GetCursorPos iPt2
-                iHwnd = WindowFromPoint(iPt2.X, iPt2.Y)
+                iHwnd = WindowUnderCursor
                 If iHwnd = mUserControlHwnd Then
                     mNoActivate = True
                 End If
@@ -6460,7 +6462,7 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As LongPtr, ByVal iMsg As Lon
             
             Dim iUpdateRect As RECT
             Dim iControlRect As RECT
-            Dim iDestDC As Long
+            Dim iDestDC As LongPtr
             Dim iWidth As Long
             Dim iHeight As Long
             Dim iTempDC As LongPtr
@@ -6645,11 +6647,11 @@ Private Function IBSSubclass_WindowProc(ByVal hWnd As LongPtr, ByVal iMsg As Lon
             PostDrawMessage
         Case WM_KEYDOWN
             ' there is a VB6 bug: if the UserControl has ControlContainer = True, it produces a double KeyDown event to the parent form. The consumption of the WM_KEYDOWN message is to avoid that, and the following line is for not leaving the UserControl without the event. The same for WM_CHAR and WM_KEYUP
-            UserControl_KeyDown wParam And &HFF&, GetShiftState
+            UserControl_KeyDown CInt(wParam And &HFF&), GetShiftState
         Case WM_CHAR
-            UserControl_KeyPress wParam And &HFF&
+            UserControl_KeyPress CInt(wParam And &HFF&)
         Case WM_KEYUP
-            UserControl_KeyUp wParam And &HFF&, GetShiftState
+            UserControl_KeyUp CInt(wParam And &HFF&), GetShiftState
         Case WM_MOUSEWHEEL, WM_MOUSEHWHEEL
             If ScrollByWheel(iMsg = WM_MOUSEHWHEEL, wParam, lParam) Then
                 bConsume = True
@@ -7449,12 +7451,25 @@ Private Sub FinishHoverFadeOut()
     mFadeOutTab = -1
 End Sub
 
-Private Sub tmrTabMouseLeave_Timer()
+Private Function WindowUnderCursor() As LongPtr
     Dim iPt As POINTAPI
-    Dim iHwnd As LongPtr
+#If Win64 Then
+    Dim iPtPacked As LongLong
+#End If
     
     GetCursorPos iPt
-    iHwnd = WindowFromPoint(iPt.X, iPt.Y)
+#If Win64 Then
+    CopyMemory iPtPacked, iPt, 8
+    WindowUnderCursor = WindowFromPoint(iPtPacked)
+#Else
+    WindowUnderCursor = WindowFromPoint(iPt.X, iPt.Y)
+#End If
+End Function
+
+Private Sub tmrTabMouseLeave_Timer()
+    Dim iHwnd As LongPtr
+    
+    iHwnd = WindowUnderCursor
     If iHwnd <> mUserControlHwnd Then
         tmrTabMouseLeave.Enabled = False
         If mTabUnderMouse > -1 Then RaiseEvent_TabMouseLeave (mTabUnderMouse)
@@ -29183,7 +29198,7 @@ Private Function GetWindowCaption(ByVal hWnd As LongPtr) As String
     Const WM_GETTEXT = &HD
     
     Buffer = String$(GetWindowTextLength(hWnd) + 1, vbNullChar)
-    GetWindowCaption = Left$(Buffer, DefWindowProcW(hWnd, WM_GETTEXT, Len(Buffer), StrPtr(Buffer)))
+    GetWindowCaption = Left$(Buffer, CLng(DefWindowProcW(hWnd, WM_GETTEXT, Len(Buffer), StrPtr(Buffer))))
 End Function
 
 Friend Sub TDIFormClosing(ByVal nHwndForm As LongPtr)

@@ -969,13 +969,13 @@ End Sub
 
 Private Sub cboHighlightEffect_Click()
     If mLoading Then Exit Sub
-    mPreview.HighlightEffect = cboHighlightEffect.ItemData(cboHighlightEffect.ListIndex)
+    mPreview.HighlightEffect = CLng(cboHighlightEffect.ItemData(cboHighlightEffect.ListIndex))
     Changed = True
 End Sub
 
 Private Sub cboHighlightEffectOut_Click()
     If mLoading Then Exit Sub
-    mPreview.HighlightEffectOut = cboHighlightEffectOut.ItemData(cboHighlightEffectOut.ListIndex)
+    mPreview.HighlightEffectOut = CLng(cboHighlightEffectOut.ItemData(cboHighlightEffectOut.ListIndex))
     Changed = True
 End Sub
 
@@ -1069,7 +1069,7 @@ Private Function ColorHasAutomatic(ByVal nIndex As Long) As Boolean
 End Function
 
 Private Function CurrentColorIndex() As Long
-    CurrentColorIndex = cboColor.ItemData(cboColor.ListIndex)
+    CurrentColorIndex = CLng(cboColor.ItemData(cboColor.ListIndex))
 End Function
 
 Private Sub ShowCurrentColor(ByVal nUpdateText As Boolean)

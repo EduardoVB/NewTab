@@ -623,8 +623,7 @@ Begin VB.PropertyPage pagNewTabButtons
          _ExtentX        =   11663
          _ExtentY        =   1715
          ControlsBackColorApplied=   -2147483633
-         AutoTabHeight   =   -1  'True
-         ControlVersion  =   18
+         ControlVersion  =   19
          TabCaption(0)   =   ""
          TabCaption(1)   =   ""
          TabCaption(2)   =   ""
@@ -758,7 +757,7 @@ Private Sub PropertyPage_ApplyChanges()
     If iSC.CloseButtonPosition <> mPreview.CloseButtonPosition Then iSC.CloseButtonPosition = mPreview.CloseButtonPosition
     If iSC.CloseButtonPadding <> mPreview.CloseButtonPadding Then iSC.CloseButtonPadding = mPreview.CloseButtonPadding
     If cboNewTabButton.ListIndex > -1 Then
-        iValue = cboNewTabButton.ItemData(cboNewTabButton.ListIndex)
+        iValue = CLng(cboNewTabButton.ItemData(cboNewTabButton.ListIndex))
         If iSC.NewTabButton <> iValue Then iSC.NewTabButton = iValue
     End If
     If iSC.NewTabButtonPosition <> mPreview.NewTabButtonPosition Then iSC.NewTabButtonPosition = mPreview.NewTabButtonPosition
@@ -783,7 +782,7 @@ End Sub
 Private Sub cboCloseButtonPosition_Click()
     cboCloseButtonPosition.ToolTipText = cboCloseButtonPosition.Text
     If mLoading Then Exit Sub
-    mPreview.CloseButtonPosition = cboCloseButtonPosition.ItemData(cboCloseButtonPosition.ListIndex)
+    mPreview.CloseButtonPosition = CLng(cboCloseButtonPosition.ItemData(cboCloseButtonPosition.ListIndex))
     Changed = True
 End Sub
 
@@ -806,7 +805,7 @@ End Sub
 
 Private Sub cboNewTabButtonPosition_Click()
     If mLoading Then Exit Sub
-    mPreview.NewTabButtonPosition = cboNewTabButtonPosition.ItemData(cboNewTabButtonPosition.ListIndex)
+    mPreview.NewTabButtonPosition = CLng(cboNewTabButtonPosition.ItemData(cboNewTabButtonPosition.ListIndex))
     Changed = True
 End Sub
 
@@ -855,7 +854,7 @@ Private Function ColorHasAutomatic(ByVal nIndex As Long) As Boolean
 End Function
 
 Private Function CurrentColorIndex() As Long
-    CurrentColorIndex = cboColor.ItemData(cboColor.ListIndex)
+    CurrentColorIndex = CLng(cboColor.ItemData(cboColor.ListIndex))
 End Function
 
 Private Sub ShowCurrentColor(ByVal nUpdateText As Boolean)

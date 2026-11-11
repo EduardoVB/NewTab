@@ -51,6 +51,7 @@ RevisionVer=297
 AutoIncrementVer=1
 ServerSupportFiles=0
 VersionCompanyName="Empresa"
+CondComp="CDLG_NO_SAVE = 1 : CDLG_NO_HELP = 1 : CDLG_NO_PRINT = 1"
 CompilationType=0
 OptimizationType=0
 FavorPentiumPro(tm)=0

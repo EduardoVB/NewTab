@@ -931,7 +931,12 @@ End Type
 
 Private Declare Function GetTextMetricsW Lib "gdi32" (ByVal hDC As LongPtr, ByRef TEXTMETRICW As TEXTMETRICW) As Long
 Private Declare Function GetCursorPos Lib "user32" (lpPoint As POINTAPI) As Long
-Private Declare Function WindowFromPoint Lib "user32" (ByVal xPoint As Long, ByVal yPoint As Long) As LongPtr
+' WindowFromPoint takes the POINT by value: on x64 the whole 8 byte struct goes in one register
+#If Win64 Then
+    Private Declare Function WindowFromPoint Lib "user32" (ByVal nPoint As LongLong) As LongPtr
+#Else
+    Private Declare Function WindowFromPoint Lib "user32" (ByVal xPoint As Long, ByVal yPoint As Long) As LongPtr
+#End If
 
 Private Declare Function GetSystemMetrics Lib "user32" (ByVal nIndex As Long) As Long
 Private Declare Function GetAsyncKeyState Lib "user32" (ByVal vKey As Long) As Integer
@@ -953,7 +958,7 @@ Private Type GLYPHSET
 End Type
 
 Private Declare Function GetFontUnicodeRanges Lib "gdi32.dll" (ByVal hDC As LongPtr, lpGS As Any) As Long
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpvDest As Any, lpvSource As Any, ByVal cbCopy As LongPtr)
 Private Declare Function GetGlyphIndicesW Lib "gdi32.dll" (ByVal hDC As LongPtr, ByVal lpStr As LongPtr, ByVal lpStrLen As Long, ByVal pGI As LongPtr, ByVal Flags As Long) As Long
 Private Declare Function GetFontData Lib "gdi32" (ByVal hDC As LongPtr, ByVal dwTable As Long, ByVal dwOffset As Long, ByRef lpvBuffer As Any, ByVal cbData As Long) As Long
 Private Declare Function CreateFontW Lib "gdi32" (ByVal nHeight As Long, ByVal nWidth As Long, ByVal nEscapement As Long, ByVal nOrientation As Long, ByVal nWeight As Long, ByVal nItalic As Long, ByVal nUnderline As Long, ByVal nStrikeOut As Long, ByVal nCharSet As Long, ByVal nOutPrecision As Long, ByVal nClipPrecision As Long, ByVal nQuality As Long, ByVal nPitchAndFamily As Long, ByVal lpFaceName As LongPtr) As LongPtr
@@ -1050,7 +1055,7 @@ Private mKeepIconCharNote As Boolean
 
 Private Sub cboIconAlignment_Click()
     If Not mLoading And Not mShowingTabData Then Changed = True
-    NewTab1.IconAlignment = cboIconAlignment.ItemData(cboIconAlignment.ListIndex)
+    NewTab1.IconAlignment = CLng(cboIconAlignment.ItemData(cboIconAlignment.ListIndex))
 End Sub
 
 Private Sub cboTDIFormsIconSize_Click()
@@ -1080,7 +1085,7 @@ End Sub
 
 Private Sub cboScalePicturesForDPI_Click()
     If Not mLoading And Not mShowingTabData Then Changed = True
-    NewTab1.ScalePicturesForDPI = cboScalePicturesForDPI.ItemData(cboScalePicturesForDPI.ListIndex)
+    NewTab1.ScalePicturesForDPI = CLng(cboScalePicturesForDPI.ItemData(cboScalePicturesForDPI.ListIndex))
 End Sub
 
 Private Sub chkUseMaskColor_Click()
@@ -1562,12 +1567,12 @@ Private Sub PropertyPage_ApplyChanges()
     
     Set iSC = SelectedControls(0)
     iSC.HideAllContainedControls
-    If mTDIMode = ntTDIModeNone Then iSC.IconAlignment = cboIconAlignment.ItemData(cboIconAlignment.ListIndex)
+    If mTDIMode = ntTDIModeNone Then iSC.IconAlignment = CLng(cboIconAlignment.ItemData(cboIconAlignment.ListIndex))
     ' no TDI guard: a TDI strip shows the form icons and scales them the same way
-    If cboScalePicturesForDPI.ListIndex > -1 Then iSC.ScalePicturesForDPI = cboScalePicturesForDPI.ItemData(cboScalePicturesForDPI.ListIndex)
+    If cboScalePicturesForDPI.ListIndex > -1 Then iSC.ScalePicturesForDPI = CLng(cboScalePicturesForDPI.ItemData(cboScalePicturesForDPI.ListIndex))
     ' likewise unguarded: the combo is seeded from the control in every mode, so
     ' writing it back where it is not shown puts the same value in again
-    If cboTDIFormsIconSize.ListIndex > -1 Then iSC.TDIFormsIconSize = cboTDIFormsIconSize.ItemData(cboTDIFormsIconSize.ListIndex)
+    If cboTDIFormsIconSize.ListIndex > -1 Then iSC.TDIFormsIconSize = CLng(cboTDIFormsIconSize.ItemData(cboTDIFormsIconSize.ListIndex))
     iSC.MaskColor = NewTab1.MaskColor
     iSC.UseMaskColor = (chkUseMaskColor.Value = vbChecked)
     iTabsPrev = iSC.Tabs
@@ -1977,9 +1982,17 @@ End Sub
 
 Private Function WindowsUnderMouse() As LongPtr
     Dim iPt As POINTAPI
+#If Win64 Then
+    Dim iPtPacked As LongLong
+#End If
     
     GetCursorPos iPt
+#If Win64 Then
+    CopyMemory iPtPacked, iPt, 8
+    WindowsUnderMouse = WindowFromPoint(iPtPacked)
+#Else
     WindowsUnderMouse = WindowFromPoint(iPt.X, iPt.Y)
+#End If
 End Function
 
 Private Function IsMouseButtonPressed(nButton As NTMouseButtonsConstants) As Boolean

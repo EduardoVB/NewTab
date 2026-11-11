@@ -443,7 +443,7 @@ Private Sub cboThemes_Click()
         End If
         Exit Sub
     End If
-    mSelectedThemeLookupDataIndex = cboThemes.ItemData(cboThemes.ListIndex)
+    mSelectedThemeLookupDataIndex = CLng(cboThemes.ItemData(cboThemes.ListIndex))
     
     sLastListIndex = cboThemes.ListIndex
     If Not mLoading Then Changed = True
@@ -1106,7 +1106,7 @@ Private Sub LoadThemes()
     End If
     
     For c = 0 To cboThemes.ListCount - 1
-        iLdi = cboThemes.ItemData(c)
+        iLdi = CLng(cboThemes.ItemData(c))
         If iLdi > 0 Then
             If mThemesLookupData(iLdi).Hash = mSelectedSettingsHash Then
                 cboThemes.ListIndex = c

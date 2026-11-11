@@ -3,7 +3,7 @@ Option Explicit
 
 ' This subclasser uses Windows Common Controls subclassing with the interface of vbAccelerator's subtimer (AttachMessage/DettachMessage) that has the ability of only sending to the subclassed objects the messages that they need to handle (and not all window messages)
 
-#Const IDE_PROTECTION_ENABLED = 1 ' you can set it to 0 if you compile it into an OCX or EXE if you want, but anyway it shouldn't be neccesary since the IDE protection code won't get compiled anyway
+#Const IDE_PROTECTION_ENABLED = (TWINBASIC = 0)  ' you can set it to 0 if you compile it into an OCX or EXE if you want, but anyway it shouldn't be neccesary since the IDE protection code won't get compiled anyway
 ' IDE protection watchs for project resetting (Stop button), compiling and UserControls zombie states to remove all installed subclasses when they happen
 ' This IDE protection is needed only when the subclasser runs in source code
 ' It does not use any thunk when compiled, but uses some ASM thunks for IDE protection (this code does not get into the compiled program)
@@ -70,18 +70,18 @@ Private Type IMAGE_DOS_HEADER
     e_lfanew As Long
 End Type
  
-Private Declare Function VirtualAlloc Lib "kernel32" (ByRef lpAddress As Long, ByVal dwSize As Long, ByVal flAllocType As Long, ByVal flProtect As Long) As Long
-Private Declare Function VirtualFree Lib "kernel32.dll" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal dwFreeType As Long) As Long
-Private Declare Function VirtualProtect Lib "kernel32" (ByVal lpAddress As Long, ByVal dwSize As Long, ByVal flNewProtect As Long, ByRef lpflOldProtect As Long) As Long
-Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As LongPtr, ByVal lpProcName As String) As Long
+Private Declare Function VirtualAlloc Lib "kernel32" (ByRef lpAddress As LongPtr, ByVal dwSize As LongPtr, ByVal flAllocType As Long, ByVal flProtect As Long) As LongPtr
+Private Declare Function VirtualFree Lib "kernel32.dll" (ByVal lpAddress As LongPtr, ByVal dwSize As LongPtr, ByVal dwFreeType As Long) As Long
+Private Declare Function VirtualProtect Lib "kernel32" (ByVal lpAddress As LongPtr, ByVal dwSize As LongPtr, ByVal flNewProtect As Long, ByRef lpflOldProtect As Long) As Long
+Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As LongPtr, ByVal lpProcName As LongPtr) As LongPtr
 Private Declare Function GetClassNameW Lib "user32" (ByVal hWnd As LongPtr, ByVal lpClassName As LongPtr, ByVal nMaxCount As Long) As Long
 Private Declare Function GetWindowTextW Lib "user32.dll" (ByVal hWnd As LongPtr, ByVal lpString As LongPtr, ByVal cch As Long) As Long
 Private Declare Function EnumThreadWindows Lib "user32" (ByVal dwThreadId As Long, ByVal lpfn As LongPtr, ByVal lParam As LongPtr) As Long
 Private Declare Function IsWindowVisible Lib "user32" (ByVal hWnd As LongPtr) As Long
-Private Declare Function SetTimer Lib "user32" (ByVal hWnd As LongPtr, ByVal nIDEvent As Long, ByVal uElapse As Long, ByVal lpTimerFunc As LongPtr) As Long
-Private Declare Function KillTimer Lib "user32" (ByVal hWnd As LongPtr, ByVal nIDEvent As Long) As Long
+Private Declare Function SetTimer Lib "user32" (ByVal hWnd As LongPtr, ByVal nIDEvent As LongPtr, ByVal uElapse As Long, ByVal lpTimerFunc As LongPtr) As LongPtr
+Private Declare Function KillTimer Lib "user32" (ByVal hWnd As LongPtr, ByVal nIDEvent As LongPtr) As Long
 Private Declare Function GetKeyState Lib "user32" (ByVal nVirtKey As Long) As Integer
-Private Declare Function GetWindow Lib "user32" (ByVal hWnd As LongPtr, ByVal wCmd As Long) As Long
+Private Declare Function GetWindow Lib "user32" (ByVal hWnd As LongPtr, ByVal wCmd As Long) As LongPtr
 
 Private Const GW_HWNDNEXT As Long = 2
 Private Const GW_CHILD As Long = 5
@@ -154,7 +154,7 @@ Private Declare Function SetPropW Lib "user32" (ByVal hWnd As LongPtr, ByVal lpS
 Private Declare Function RemovePropW Lib "user32" (ByVal hWnd As LongPtr, ByVal lpString As LongPtr) As LongPtr
 Private Declare Function GetWindowThreadProcessId Lib "user32" (ByVal hWnd As LongPtr, lpdwProcessId As Long) As Long
 Private Declare Function GetCurrentProcessId Lib "kernel32" () As Long
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpvDest As Any, lpvSource As Any, ByVal cbCopy As LongPtr)
 Private Declare Function GetDesktopWindow Lib "user32" () As LongPtr
 
 Private Declare Function SetWindowSubclass Lib "comctl32" (ByVal hWnd As LongPtr, ByVal pfnSubclass As LongPtr, ByVal uIdSubclass As LongPtr, ByVal dwRefData As LongPtr) As Long
@@ -182,7 +182,7 @@ Public Enum EErrorWindowProc
 End Enum
 
 Private m_iCurrentMessage As Long
-Private m_f As Long
+Private m_f As LongPtr
 
 Private mPropsDatabaseChecked As Boolean
 Private mUseLocalPropsDB As Boolean
@@ -225,7 +225,7 @@ Private Sub ErrRaise(e As Long)
     End If
 End Sub
 
-Private Property Get MessageCount(ByVal hWnd As LongPtr) As Long
+Private Property Get MessageCount(ByVal hWnd As LongPtr) As LongPtr
     Dim sName As String
     
     sName = "C" & hWnd
@@ -239,7 +239,7 @@ Private Property Get MessageCount(ByVal hWnd As LongPtr) As Long
     End If
 End Property
 
-Private Property Let MessageCount(ByVal hWnd As LongPtr, ByVal Count As Long)
+Private Property Let MessageCount(ByVal hWnd As LongPtr, ByVal Count As LongPtr)
     Dim sName As String
     
     m_f = 1
@@ -268,7 +268,7 @@ Private Property Let OldWindowProc(ByVal hWnd As LongPtr, ByVal lPtr As LongPtr)
     End If
 End Property
 
-Private Property Get MessageClassCount(ByVal hWnd As LongPtr, ByVal iMsg As Long) As Long
+Private Property Get MessageClassCount(ByVal hWnd As LongPtr, ByVal iMsg As LongPtr) As LongPtr
     Dim sName As String
     
     sName = hWnd & "#" & iMsg & "C"
@@ -283,7 +283,7 @@ Private Property Get MessageClassCount(ByVal hWnd As LongPtr, ByVal iMsg As Long
     
 End Property
 
-Private Property Let MessageClassCount(ByVal hWnd As LongPtr, ByVal iMsg As Long, ByVal Count As Long)
+Private Property Let MessageClassCount(ByVal hWnd As LongPtr, ByVal iMsg As Long, ByVal Count As LongPtr)
     Dim sName As String
     
     sName = hWnd & "#" & iMsg & "C"
@@ -293,13 +293,13 @@ Private Property Let MessageClassCount(ByVal hWnd As LongPtr, ByVal iMsg As Long
     End If
 End Property
 
-Private Property Get MessageClass(ByVal hWnd As LongPtr, ByVal iMsg As Long, ByVal Index As Long) As LongPtr
+Private Property Get MessageClass(ByVal hWnd As LongPtr, ByVal iMsg As Long, ByVal Index As LongPtr) As LongPtr
     Dim sName As String
     sName = hWnd & "#" & iMsg & "#" & Index
     MessageClass = ThisGetProp(hWnd, sName)
 End Property
 
-Private Property Let MessageClass(ByVal hWnd As LongPtr, ByVal iMsg As Long, ByVal Index As Long, ByVal classPtr As LongPtr)
+Private Property Let MessageClass(ByVal hWnd As LongPtr, ByVal iMsg As Long, ByVal Index As LongPtr, ByVal classPtr As LongPtr)
     Dim sName As String
     
     sName = hWnd & "#" & iMsg & "#" & Index
@@ -310,9 +310,9 @@ Private Property Let MessageClass(ByVal hWnd As LongPtr, ByVal iMsg As Long, ByV
 End Property
 
 Sub AttachMessage(iwp As IBSSubclass, ByVal hWnd As LongPtr, ByVal iMsg As Long)
-    Dim msgCount As Long
-    Dim msgClassCount As Long
-    Dim msgClass As Long
+    Dim msgCount As LongPtr
+    Dim msgClassCount As LongPtr
+    Dim msgClass As LongPtr
     Dim iLng As LongPtr
     
     If Not mPropsDatabaseChecked Then
@@ -493,10 +493,10 @@ Sub AttachMessage(iwp As IBSSubclass, ByVal hWnd As LongPtr, ByVal iMsg As Long)
 End Sub
 
 Sub DetachMessage(iwp As IBSSubclass, ByVal hWnd As LongPtr, ByVal iMsg As Long)
-    Dim msgClassCount As Long
-    Dim msgClass As Long
-    Dim msgClassIndex As Long
-    Dim msgCount As Long
+    Dim msgClassCount As LongPtr
+    Dim msgClass As LongPtr
+    Dim msgClassIndex As LongPtr
+    Dim msgCount As LongPtr
     Dim iLng As LongPtr
     
     #If IDE_PROTECTION_ENABLED Then
@@ -609,12 +609,11 @@ Sub DetachMessage(iwp As IBSSubclass, ByVal hWnd As LongPtr, ByVal iMsg As Long)
 End Sub
 
 Private Function WindowProcSWS(ByVal hWnd As LongPtr, ByVal iMsg As Long, ByVal wParam As LongPtr, ByVal lParam As LongPtr, ByVal uIdSubclass As LongPtr, ByVal dwRefData As LongPtr) As LongPtr
-    
     Dim bCalled As Boolean
     Dim pSubClass As LongPtr
     Dim iwp As IBSSubclass
     Dim iwpT As IBSSubclass
-    Dim iIndex As Long
+    Dim iIndex As LongPtr
     Dim iHandled As Boolean
     Dim bConsume As Boolean
     Dim iResp As Long
@@ -758,7 +757,7 @@ Private Function WindowProcSWL(ByVal hWnd As LongPtr, ByVal iMsg As Long, ByVal 
     Dim pSubClass As LongPtr
     Dim iwp As IBSSubclass
     Dim iwpT As IBSSubclass
-    Dim iIndex As Long
+    Dim iIndex As LongPtr
     Dim iHandled As Boolean
     Dim bConsume As Boolean
     Dim iResp As Long
@@ -918,7 +917,7 @@ End Function
 
 
 Private Sub pClearUp(ByVal hWnd As LongPtr, Optional uIdSubclass As LongPtr)
-    Dim msgCount As Long
+    Dim msgCount As LongPtr
     
     ' this is only called if you haven't explicitly cleared up
     ' your subclass from the caller.  You will get a minor
@@ -960,7 +959,7 @@ Private Function ThisGetProp(ByVal hWnd As LongPtr, ByVal lpString As String) As
 #End If
 End Function
 
-Private Function ThisSetProp(ByVal hWnd As LongPtr, ByVal lpString As String, ByVal hData As LongPtr) As Long
+Private Function ThisSetProp(ByVal hWnd As LongPtr, ByVal lpString As String, ByVal hData As LongPtr) As LongPtr
 #If USE_ONLY_LOCAL_DB Then
     If hData = 0 Then
         ThisSetProp = MyRemoveProp(hWnd, lpString)
@@ -1346,16 +1345,16 @@ End Function
 
 #End If
 
+Private Function MakeTrue(Value As Boolean) As Boolean
+    MakeTrue = True
+    Value = True
+End Function
+
 #If IDE_PROTECTION_ENABLED Then
 
 Private Function GetIDEMainHwnd() As LongPtr
     If mIDEMainHwnd = 0 Then EnumThreadWindows App.ThreadID, AddressOf EnumThreadProc_GetIDEMainWindow, 0&
     GetIDEMainHwnd = mIDEMainHwnd
-End Function
-
-Private Function MakeTrue(Value As Boolean) As Boolean
-    MakeTrue = True
-    Value = True
 End Function
 
 Private Function IsHwndOfCodeWindowWatched(nHwnd As LongPtr) As Boolean
@@ -1441,7 +1440,7 @@ Private Sub InitializeIDEProtection()
     
     Debug.Assert MakeTrue(iInIDE)
     If iInIDE Then
-        Dim iHwndIDEMain As Long
+        Dim iHwndIDEMain As LongPtr
         Dim iOldProtect As Long
         Const MEM_COMMIT As Long = &H1000
         Const PAGE_EXECUTE_READWRITE As Long = &H40
@@ -1469,15 +1468,15 @@ Private Sub InitializeIDEProtection()
         iHwndIDEMain = GetIDEMainHwnd
         If iHwndIDEMain <> 0 Then
             ' EbProjectReset
-            Dim iIATEntryAddress_EbProjectReset As Long
-            Dim iFuncProcAddress_EbProjectReset As Long
-            Dim iLocalProcAddress_EbProjectReset As Long
-            Dim iASMThunkAddress_EbProjectReset As Long
+            Dim iIATEntryAddress_EbProjectReset As LongPtr
+            Dim iFuncProcAddress_EbProjectReset As LongPtr
+            Dim iLocalProcAddress_EbProjectReset As LongPtr
+            Dim iASMThunkAddress_EbProjectReset As LongPtr
 
             iLocalProcAddress_EbProjectReset = GetAddresOfProc(AddressOf IDEIsResetting)
             iFuncProcAddress_EbProjectReset = GetProp(iHwndIDEMain, "EbPR.ProAd")
             If iFuncProcAddress_EbProjectReset = 0 Then
-                iFuncProcAddress_EbProjectReset = GetProcAddress(GetModuleHandle("vba6.dll"), "EbProjectReset")
+                iFuncProcAddress_EbProjectReset = GetProcAddress(GetModuleHandle("vba6.dll"), StrPtr("EbProjectReset"))
                 SetProp iHwndIDEMain, "EbPR.ProAd", iFuncProcAddress_EbProjectReset
             End If
             iIATEntryAddress_EbProjectReset = GetProp(iHwndIDEMain, "EbPR.IATAd")
@@ -1495,7 +1494,7 @@ Private Sub InitializeIDEProtection()
                 If iASMThunkAddress_EbProjectReset <> 0 Then
                     
                     ' general (same protection for the whole memory block)
-                    iOldProtect = GetProp(iHwndIDEMain, "IAT.OrigProt")
+                    iOldProtect = CLng(GetProp(iHwndIDEMain, "IAT.OrigProt"))
                     If iOldProtect = 0 Then
                         VirtualProtect iIATEntryAddress_EbProjectReset, 4, PAGE_EXECUTE_READWRITE, iOldProtect
                         SetProp iHwndIDEMain, "IAT.OrigProt", iOldProtect
@@ -1511,8 +1510,8 @@ Private Sub InitializeIDEProtection()
                     ' restore original IAT entry
                     WriteByte iASMThunkAddress_EbProjectReset, &HC7 ' MOV
                     WriteByte iASMThunkAddress_EbProjectReset, &H5
-                    WriteLong iASMThunkAddress_EbProjectReset, iIATEntryAddress_EbProjectReset
-                    WriteLong iASMThunkAddress_EbProjectReset, iFuncProcAddress_EbProjectReset
+                    WriteLongPtr iASMThunkAddress_EbProjectReset, iIATEntryAddress_EbProjectReset
+                    WriteLongPtr iASMThunkAddress_EbProjectReset, iFuncProcAddress_EbProjectReset
                     ' jump to the original function address
                     WriteJump iASMThunkAddress_EbProjectReset, iFuncProcAddress_EbProjectReset
                 End If
@@ -1522,15 +1521,15 @@ Private Sub InitializeIDEProtection()
             End If
             
             ' TipStartMakeExe
-            Dim iIATEntryAddress_TipStartMakeExe As Long
-            Dim iFuncProcAddress_TipStartMakeExe As Long
-            Dim iLocalProcAddress_TipStartMakeExe As Long
-            Dim iASMThunkAddress_TipStartMakeExe As Long
+            Dim iIATEntryAddress_TipStartMakeExe As LongPtr
+            Dim iFuncProcAddress_TipStartMakeExe As LongPtr
+            Dim iLocalProcAddress_TipStartMakeExe As LongPtr
+            Dim iASMThunkAddress_TipStartMakeExe As LongPtr
             
             iLocalProcAddress_TipStartMakeExe = GetAddresOfProc(AddressOf IDEAboutToMakeExe)
             iFuncProcAddress_TipStartMakeExe = GetProp(iHwndIDEMain, "TSME.ProAd")
             If iFuncProcAddress_TipStartMakeExe = 0 Then
-                iFuncProcAddress_TipStartMakeExe = GetProcAddress(GetModuleHandle("vba6.dll"), "TipStartMakeExe")
+                iFuncProcAddress_TipStartMakeExe = GetProcAddress(GetModuleHandle("vba6.dll"), StrPtr("TipStartMakeExe"))
                 SetProp iHwndIDEMain, "TSME.ProAd", iFuncProcAddress_TipStartMakeExe
             End If
             iIATEntryAddress_TipStartMakeExe = GetProp(iHwndIDEMain, "TSME.IATAd")
@@ -1554,8 +1553,8 @@ Private Sub InitializeIDEProtection()
                     ' restore original IAT entry
                     WriteByte iASMThunkAddress_TipStartMakeExe, &HC7 ' MOV
                     WriteByte iASMThunkAddress_TipStartMakeExe, &H5
-                    WriteLong iASMThunkAddress_TipStartMakeExe, iIATEntryAddress_TipStartMakeExe
-                    WriteLong iASMThunkAddress_TipStartMakeExe, iFuncProcAddress_TipStartMakeExe
+                    WriteLongPtr iASMThunkAddress_TipStartMakeExe, iIATEntryAddress_TipStartMakeExe
+                    WriteLongPtr iASMThunkAddress_TipStartMakeExe, iFuncProcAddress_TipStartMakeExe
                     ' jump to the original function address
                     WriteJump iASMThunkAddress_TipStartMakeExe, iFuncProcAddress_TipStartMakeExe
                 End If
@@ -1565,15 +1564,15 @@ Private Sub InitializeIDEProtection()
             End If
         
             ' EbShowCode
-            Dim iIATEntryAddress_EbShowCode As Long
-            Dim iFuncProcAddress_EbShowCode As Long
-            Dim iLocalProcAddress_EbShowCode As Long
-            Dim iASMThunkAddress_EbShowCode As Long
+            Dim iIATEntryAddress_EbShowCode As LongPtr
+            Dim iFuncProcAddress_EbShowCode As LongPtr
+            Dim iLocalProcAddress_EbShowCode As LongPtr
+            Dim iASMThunkAddress_EbShowCode As LongPtr
             
             iLocalProcAddress_EbShowCode = GetAddresOfProc(AddressOf IDECodeWindowShowing)
             iFuncProcAddress_EbShowCode = GetProp(iHwndIDEMain, "EbSC.ProAd")
             If iFuncProcAddress_EbShowCode = 0 Then
-                iFuncProcAddress_EbShowCode = GetProcAddress(GetModuleHandle("vba6.dll"), "EbShowCode")
+                iFuncProcAddress_EbShowCode = GetProcAddress(GetModuleHandle("vba6.dll"), StrPtr("EbShowCode"))
                 SetProp iHwndIDEMain, "EbSC.ProAd", iFuncProcAddress_EbShowCode
             End If
             iIATEntryAddress_EbShowCode = GetProp(iHwndIDEMain, "EbSC.IATAd")
@@ -1614,14 +1613,14 @@ Private Sub TerminateIDEProtection_EbProjectReset()
     
     Debug.Assert MakeTrue(iInIDE)
     If iInIDE Then
-        Dim iHwndIDEMain As Long
+        Dim iHwndIDEMain As LongPtr
         Const MEM_RELEASE As Long = &H8000&
         
         iHwndIDEMain = GetIDEMainHwnd
         If iHwndIDEMain <> 0 Then
-            Dim iFuncProcAddress_EbProjectReset As Long
-            Dim iIATEntryAddress_EbProjectReset As Long
-            Dim iASMThunkAddress_EbProjectReset As Long
+            Dim iFuncProcAddress_EbProjectReset As LongPtr
+            Dim iIATEntryAddress_EbProjectReset As LongPtr
+            Dim iASMThunkAddress_EbProjectReset As LongPtr
             
             iFuncProcAddress_EbProjectReset = GetProp(iHwndIDEMain, "EbPR.ProAd")
             iIATEntryAddress_EbProjectReset = GetProp(iHwndIDEMain, "EbPR.IATAd")
@@ -1644,15 +1643,15 @@ Private Sub TerminateIDEProtection_OtherFunctions()
     
     Debug.Assert MakeTrue(iInIDE)
     If iInIDE Then
-        Dim iHwndIDEMain As Long
+        Dim iHwndIDEMain As LongPtr
         Const MEM_RELEASE As Long = &H8000&
         
         iHwndIDEMain = GetIDEMainHwnd
         If iHwndIDEMain <> 0 Then
             ' TipStartMakeExe
-            Dim iFuncProcAddress_TipStartMakeExe As Long
-            Dim iIATEntryAddress_TipStartMakeExe As Long
-            Dim iASMThunkAddress_TipStartMakeExe As Long
+            Dim iFuncProcAddress_TipStartMakeExe As LongPtr
+            Dim iIATEntryAddress_TipStartMakeExe As LongPtr
+            Dim iASMThunkAddress_TipStartMakeExe As LongPtr
             
             iFuncProcAddress_TipStartMakeExe = GetProp(iHwndIDEMain, "TSME.ProAd")
             iIATEntryAddress_TipStartMakeExe = GetProp(iHwndIDEMain, "TSME.IATAd")
@@ -1668,9 +1667,9 @@ Private Sub TerminateIDEProtection_OtherFunctions()
             End If
             
             ' EbShowCode
-            Dim iFuncProcAddress_EbShowCode As Long
-            Dim iIATEntryAddress_EbShowCode As Long
-            Dim iASMThunkAddress_EbShowCode As Long
+            Dim iFuncProcAddress_EbShowCode As LongPtr
+            Dim iIATEntryAddress_EbShowCode As LongPtr
+            Dim iASMThunkAddress_EbShowCode As LongPtr
             
             iFuncProcAddress_EbShowCode = GetProp(iHwndIDEMain, "EbSC.ProAd")
             iIATEntryAddress_EbShowCode = GetProp(iHwndIDEMain, "EbSC.IATAd")
@@ -1689,9 +1688,9 @@ Private Sub TerminateIDEProtection_OtherFunctions()
             ' restore protect
             Dim iOldProtect As Long
             
-            iOldProtect = GetProp(iHwndIDEMain, "IAT.OrigProt")
+            iOldProtect = CLng(GetProp(iHwndIDEMain, "IAT.OrigProt"))
             If iOldProtect <> 0 Then
-                Dim iIATEntryAddress_EbProjectReset As Long
+                Dim iIATEntryAddress_EbProjectReset As LongPtr
                 
                 iIATEntryAddress_EbProjectReset = GetProp(iHwndIDEMain, "EbPR.IATAd")
                 iIATEntryAddress_TipStartMakeExe = GetProp(iHwndIDEMain, "TSME.IATAd")
@@ -1720,11 +1719,11 @@ Private Sub TerminateIDEProtection()
     TerminateIDEProtection_OtherFunctions
 End Sub
 
-Private Function GetIATEntryAddress(ByVal nModule As String, ByVal nLibFncAddr As Long) As Long
+Private Function GetIATEntryAddress(ByVal nModule As String, ByVal nLibFncAddr As LongPtr) As LongPtr
     Dim hmod As LongPtr
-    Dim lpIAT As Long
-    Dim IATLen As Long
-    Dim IATPos As Long
+    Dim lpIAT As LongPtr
+    Dim IATLen As LongPtr
+    Dim IATPos As LongPtr
     Dim DOSHdr As IMAGE_DOS_HEADER
     Dim PEHdr As IMAGE_OPTIONAL_HEADER32
     Const IMAGE_NT_SIGNATURE As Long = &H4550
@@ -1749,35 +1748,35 @@ Private Function GetIATEntryAddress(ByVal nModule As String, ByVal nLibFncAddr A
     End If
 End Function
 
-Private Sub WriteJump(ByRef ASM As Long, ByRef Addr As Long)
+Private Sub WriteJump(ByRef ASM As LongPtr, ByRef Addr As LongPtr)
     WriteByte ASM, &HE9
-    WriteLong ASM, Addr - ASM - 4
+    WriteLongPtr ASM, Addr - ASM - 4
 End Sub
 
-Private Sub WriteCall(ByRef ASM As Long, ByRef Addr As Long)
+Private Sub WriteCall(ByRef ASM As LongPtr, ByRef Addr As LongPtr)
     WriteByte ASM, &HE8
-    WriteLong ASM, Addr - ASM - 4
+    WriteLongPtr ASM, Addr - ASM - 4
 End Sub
 
-Private Sub WriteLong(ByRef ASM As Long, ByRef Lng As Long)
+Private Sub WriteLongPtr(ByRef ASM As LongPtr, ByRef Lng As LongPtr)
     CopyMemory ByVal ASM, Lng, 4
     ASM = ASM + 4
 End Sub
 
-Private Sub WriteByte(ByRef ASM As Long, ByRef B As Byte)
+Private Sub WriteByte(ByRef ASM As LongPtr, ByRef B As Byte)
     CopyMemory ByVal ASM, B, 1
     ASM = ASM + 1
 End Sub
 
-Private Function DeRef(ByVal Addr As Long) As Long
+Private Function DeRef(ByVal Addr As LongPtr) As LongPtr
     CopyMemory DeRef, ByVal Addr, 4
 End Function
 
-Private Function UnsignedAdd(ByVal Start As Long, ByVal Incr As Long) As Long
+Private Function UnsignedAdd(ByVal Start As LongPtr, ByVal Incr As LongPtr) As LongPtr
     UnsignedAdd = ((Start Xor &H80000000) + Incr) Xor &H80000000
 End Function
 
-Private Function CLongToULong(ByVal Value As Long) As Double
+Private Function CLongToULong(ByVal Value As LongPtr) As Double
     Const OFFSET_4 As Double = 4294967296#
     If Value < 0 Then
         CLongToULong = Value + OFFSET_4

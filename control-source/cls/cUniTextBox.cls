@@ -67,8 +67,8 @@ Private Declare Function SetPropW Lib "user32.dll" (ByVal hWnd As LongPtr, ByVal
 ' on 32-bit those names don't exist (they're C-side macros pointing at SetWindowLongA/W),
 ' so the Alias has to be conditioned on bitness.
 #If Win64 Then
-    Private Declare Function SetWindowLongPtrW Lib "user32.dll" Alias "SetWindowLongPtrW" (ByVal hWnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As LongPtr) As LongPtr
-    Private Declare Function GetWindowLongPtrW Lib "user32.dll" Alias "GetWindowLongPtrW" (ByVal hWnd As LongPtr, ByVal nIndex As Long) As LongPtr
+    Private Declare Function SetWindowLongPtrW Lib "user32.dll" (ByVal hWnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As LongPtr) As LongPtr
+    Private Declare Function GetWindowLongPtrW Lib "user32.dll" (ByVal hWnd As LongPtr, ByVal nIndex As Long) As LongPtr
 #Else
     Private Declare Function SetWindowLongPtrW Lib "user32.dll" Alias "SetWindowLongW" (ByVal hWnd As LongPtr, ByVal nIndex As Long, ByVal dwNewLong As LongPtr) As LongPtr
     Private Declare Function GetWindowLongPtrW Lib "user32.dll" Alias "GetWindowLongW" (ByVal hWnd As LongPtr, ByVal nIndex As Long) As LongPtr
@@ -196,7 +196,8 @@ End Function
 Public Property Get Text() As String
     If m_Hwnd Then
         Dim lLength As Long
-        lLength = SendMessageW(m_Hwnd, WM_GETTEXTLENGTH, 0&, ByVal 0&)
+        
+        lLength = CLng(SendMessageW(m_Hwnd, WM_GETTEXTLENGTH, 0&, ByVal 0&))
         If lLength Then
             Text = String$(lLength, 0)
             SendMessageW m_Hwnd, WM_GETTEXT, lLength + 1&, ByVal StrPtr(Text)

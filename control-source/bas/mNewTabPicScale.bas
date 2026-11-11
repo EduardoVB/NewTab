@@ -72,7 +72,7 @@ End Enum
 '--- for CreateDIBSection / GetDIBits
 Private Const DIB_RGB_COLORS            As Long = 0
 
-Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpvDest As Any, lpvSource As Any, ByVal cbCopy As Long)
+Private Declare Sub CopyMemory Lib "kernel32" Alias "RtlMoveMemory" (lpvDest As Any, lpvSource As Any, ByVal cbCopy As LongPtr)
 Private Declare Function CreateCompatibleDC Lib "gdi32" (ByVal hDC As LongPtr) As LongPtr
 Private Declare Function DeleteDC Lib "gdi32" (ByVal hDC As LongPtr) As Long
 Private Declare Function SelectObject Lib "gdi32" (ByVal hDC As LongPtr, ByVal hObject As LongPtr) As LongPtr
@@ -365,7 +365,7 @@ Private Function pvGetDIBits(nPic As StdPicture, ByVal nMaskColor As Long, nBits
         ' TwipsPerPixel, which comes out short where 1440 / DPI is not a whole
         ' number. The Y origin is the picture height and the height negative,
         ' because himetric measures Y upwards while the DIB rows go down
-        iPic.Render iMemDC, 0, 0, nWidth, nHeight, 0, iPic.Height, iPic.Width, -iPic.Height, ByVal 0
+        iPic.Render CLng(iMemDC), 0, 0, nWidth, nHeight, 0, iPic.Height, iPic.Width, -iPic.Height, ByVal 0
         ReDim nBits(0 To nWidth * nHeight - 1) As Long
         Call CopyMemory(nBits(0), ByVal iBitsPtr, iHeader.biSizeImage)
         ' No alpha detection on this branch: a bitmap has no alpha channel for GDI and what Render
