@@ -1,3 +1,5 @@
+2026-11-11 update in mBSSubclass.bas (just code).
+2026-11-10 Code updated for x64 (for twinBASIC). The OCX file didn't change.
 2026-10-31 Removed the restriction that prevented loading *.ico files from the Icons properties page.
 2026-10-21 Improved ForeColor automatic adjustment when ChangeControlsForeColor is set to True. Now OptionButtons and CheckBoxes also adapt.
 2026-10-21 Changed some cosmetic issues in the code (no functionality change)

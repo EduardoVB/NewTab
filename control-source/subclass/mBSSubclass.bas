@@ -73,7 +73,7 @@ End Type
 Private Declare Function VirtualAlloc Lib "kernel32" (ByRef lpAddress As LongPtr, ByVal dwSize As LongPtr, ByVal flAllocType As Long, ByVal flProtect As Long) As LongPtr
 Private Declare Function VirtualFree Lib "kernel32.dll" (ByVal lpAddress As LongPtr, ByVal dwSize As LongPtr, ByVal dwFreeType As Long) As Long
 Private Declare Function VirtualProtect Lib "kernel32" (ByVal lpAddress As LongPtr, ByVal dwSize As LongPtr, ByVal flNewProtect As Long, ByRef lpflOldProtect As Long) As Long
-Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As LongPtr, ByVal lpProcName As LongPtr) As LongPtr
+Private Declare Function GetProcAddress Lib "kernel32" (ByVal hModule As LongPtr, ByVal lpProcName As String) As LongPtr
 Private Declare Function GetClassNameW Lib "user32" (ByVal hWnd As LongPtr, ByVal lpClassName As LongPtr, ByVal nMaxCount As Long) As Long
 Private Declare Function GetWindowTextW Lib "user32.dll" (ByVal hWnd As LongPtr, ByVal lpString As LongPtr, ByVal cch As Long) As Long
 Private Declare Function EnumThreadWindows Lib "user32" (ByVal dwThreadId As Long, ByVal lpfn As LongPtr, ByVal lParam As LongPtr) As Long
@@ -104,7 +104,7 @@ End Enum
 '
 ' Requires: None
 '
-' Copyright © 1998-2003 Steve McMahon for vbAccelerator
+' Copyright Â© 1998-2003 Steve McMahon for vbAccelerator
 ' --------------------------------------------------------------------------------------
 ' Visit vbAccelerator - advanced free source code for VB programmers
 ' http://vbaccelerator.com
@@ -1476,7 +1476,7 @@ Private Sub InitializeIDEProtection()
             iLocalProcAddress_EbProjectReset = GetAddresOfProc(AddressOf IDEIsResetting)
             iFuncProcAddress_EbProjectReset = GetProp(iHwndIDEMain, "EbPR.ProAd")
             If iFuncProcAddress_EbProjectReset = 0 Then
-                iFuncProcAddress_EbProjectReset = GetProcAddress(GetModuleHandle("vba6.dll"), StrPtr("EbProjectReset"))
+                iFuncProcAddress_EbProjectReset = GetProcAddress(GetModuleHandle("vba6.dll"), "EbProjectReset")
                 SetProp iHwndIDEMain, "EbPR.ProAd", iFuncProcAddress_EbProjectReset
             End If
             iIATEntryAddress_EbProjectReset = GetProp(iHwndIDEMain, "EbPR.IATAd")
@@ -1529,7 +1529,7 @@ Private Sub InitializeIDEProtection()
             iLocalProcAddress_TipStartMakeExe = GetAddresOfProc(AddressOf IDEAboutToMakeExe)
             iFuncProcAddress_TipStartMakeExe = GetProp(iHwndIDEMain, "TSME.ProAd")
             If iFuncProcAddress_TipStartMakeExe = 0 Then
-                iFuncProcAddress_TipStartMakeExe = GetProcAddress(GetModuleHandle("vba6.dll"), StrPtr("TipStartMakeExe"))
+                iFuncProcAddress_TipStartMakeExe = GetProcAddress(GetModuleHandle("vba6.dll"), "TipStartMakeExe")
                 SetProp iHwndIDEMain, "TSME.ProAd", iFuncProcAddress_TipStartMakeExe
             End If
             iIATEntryAddress_TipStartMakeExe = GetProp(iHwndIDEMain, "TSME.IATAd")
@@ -1572,7 +1572,7 @@ Private Sub InitializeIDEProtection()
             iLocalProcAddress_EbShowCode = GetAddresOfProc(AddressOf IDECodeWindowShowing)
             iFuncProcAddress_EbShowCode = GetProp(iHwndIDEMain, "EbSC.ProAd")
             If iFuncProcAddress_EbShowCode = 0 Then
-                iFuncProcAddress_EbShowCode = GetProcAddress(GetModuleHandle("vba6.dll"), StrPtr("EbShowCode"))
+                iFuncProcAddress_EbShowCode = GetProcAddress(GetModuleHandle("vba6.dll"), "EbShowCode")
                 SetProp iHwndIDEMain, "EbSC.ProAd", iFuncProcAddress_EbShowCode
             End If
             iIATEntryAddress_EbShowCode = GetProp(iHwndIDEMain, "EbSC.IATAd")
@@ -1687,30 +1687,39 @@ Private Sub TerminateIDEProtection_OtherFunctions()
             
             ' restore protect
             Dim iOldProtect As Long
+            Dim iIATEntryAddress_EbProjectReset As LongPtr
             
             iOldProtect = CLng(GetProp(iHwndIDEMain, "IAT.OrigProt"))
-            If iOldProtect <> 0 Then
-                Dim iIATEntryAddress_EbProjectReset As LongPtr
-                
-                iIATEntryAddress_EbProjectReset = GetProp(iHwndIDEMain, "EbPR.IATAd")
-                iIATEntryAddress_TipStartMakeExe = GetProp(iHwndIDEMain, "TSME.IATAd")
-                iIATEntryAddress_EbShowCode = GetProp(iHwndIDEMain, "EbSC.IATAd")
-                If (iIATEntryAddress_EbProjectReset = 0) And (iIATEntryAddress_TipStartMakeExe = 0) And (iIATEntryAddress_EbShowCode = 0) Then   ' if all IAT entries have already been restored
+            iIATEntryAddress_EbProjectReset = GetProp(iHwndIDEMain, "EbPR.IATAd")
+            iIATEntryAddress_TipStartMakeExe = GetProp(iHwndIDEMain, "TSME.IATAd")
+            iIATEntryAddress_EbShowCode = GetProp(iHwndIDEMain, "EbSC.IATAd")
+            If (iIATEntryAddress_EbProjectReset = 0) And (iIATEntryAddress_TipStartMakeExe = 0) And (iIATEntryAddress_EbShowCode = 0) Then   ' if all IAT entries have already been restored
+                If iOldProtect <> 0 Then
                     iIATEntryAddress_EbProjectReset = GetProp(iHwndIDEMain, "IAT.ProtAdd") ' get the address to restore the protection, one entry address is for all memory block protection, that includes all other IAT entries that habe been replaced
                     If iIATEntryAddress_EbProjectReset <> 0 Then
                         VirtualProtect iIATEntryAddress_EbProjectReset, 4, iOldProtect, iOldProtect
                         RemoveProp iHwndIDEMain, "IAT.OrigProt"
                         RemoveProp iHwndIDEMain, "IAT.ProtAdd"
-                        mIDEProtectionInitialized = False
-                        Set mCodeWindowsSubclassedHwnds = Nothing
-                        Set mCodeWindowsToWatch = Nothing
-                        Set mObjSubclassed = Nothing
-                        Set mObjSubclassed_CallCount = Nothing
+                        ResetIDEProtectionState
                     End If
+                Else
+                    ' No hook was installed (GetProcAddress or the IAT lookup failed): the state still has to be reset,
+                    ' or the next InitializeIDEProtection exits early and mAllSubclassesRemoved stays True.
+                    ResetIDEProtectionState
                 End If
             End If
+        Else
+            ResetIDEProtectionState
         End If
     End If
+End Sub
+
+Private Sub ResetIDEProtectionState()
+    mIDEProtectionInitialized = False
+    Set mCodeWindowsSubclassedHwnds = Nothing
+    Set mCodeWindowsToWatch = Nothing
+    Set mObjSubclassed = Nothing
+    Set mObjSubclassed_CallCount = Nothing
 End Sub
 
 Private Sub TerminateIDEProtection()
